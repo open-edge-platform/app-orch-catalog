@@ -1,0 +1,45 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: catalog-test
+  namespace:  orch-app
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name:
+            catalog-test
+          image:
+            registry-rs.edgeorchestration.intel.com/edge-orch/app/app-orch-catalog:latest
+          imagePullPolicy:
+            Never
+          command:
+            ["/catalog-test","--tests","all","--keycloakServer","platform-keycloak.orch-platform.svc:8080",
+             "--catalogServer","catalog-service-grpc-server.orch-app.svc:8080",
+             "--catalogRESTServer","catalog-service-rest-proxy.orch-app.svc:8081",
+             "-test.v"
+            ]
+
+          securityContext:
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 65534
+            runAsGroup: 65534
+            allowPrivilegeEscalation: false
+      restartPolicy: Never
+---

@@ -1,0 +1,24 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# jetbrains
+.idea
+.vscode
+.DS_Store
+/vendor/
+/test/vendor/
+/build/_output/
+kind.config.yaml
+/coverage.txt
+/coverage.xml
+/internal/northbound/testdata/fuzz/
+/release/
+test/catalog-*-test.yaml
+bootstrap/dpkg.yaml
+bootstrap/files.yaml
+bootstrap/manifest/*
+venv-env/*
+ci/
+artifacts/
+.cache/

@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+
+specSchema: "Application"
+schemaVersion: "0.1"
+
+name: librespeed-vm
+version: 0.0.2
+description: "This is a very lightweight Speedtest implemented in Javascript,
+              using XMLHttpRequest and Web Workers."
+
+helmRegistry: "intel-harbor"
+chartName: "librespeed-vm"
+chartVersion: "0.1.2"
+
+profiles:
+  - name: "default"
+    displayName: "Default"
+    valuesFileName: "values.yaml"
+    parameterTemplates:
+      - name: "t1"
+        type: "string"
+        default: "value3"
+        suggestedValues:
+          - "value1"
+          - "value2"
+          - "value3"
+      - name: "t2"
+        type: "number"
+        default: "1"
+        suggestedValues:
+          - "1"
+          - "2"
+          - "3"
+          - "4"
+          - "5"
+      - name: "t3"
+        type: "string"
+        secret: true
+        mandatory: true

@@ -1,0 +1,15 @@
+h1:FRyyvR+E96q8j9WewDWoW/5cxWYKdJgxBiOr3ojDlbs=
+20230713224447_base.sql h1:UPtqDD8z6H0+k1vy89kKb3gv+3gHuKPUbgGEilXaIXA=
+20230814153600_uiextension.sql h1:5ZSNmA40cVRVhgK6e8VW5aITPSOigoW4Uq1IgCNGu1k=
+20230907033412_appname.sql h1:Hubo3na0ZzwvySYcUjkCY/P8LNHgztSRh2yTFdEvLws=
+20231003230017_ignored_resources.sql h1:y0NESQhs4mxRCdVnE2LdDxPJFqZt/RSLuM36+2NUVns=
+20231207183234_template_parameters.sql h1:wRSJ+AqE8bnc3JM09Jdv4Cwa3ix3BLAy7ZRmLHONktQ=
+20231214020503_dependencies.sql h1:6/triGZW4bVFySsHvuZskTJe1ceeWxFFCL+9iGCjEro=
+20240116191116_chart-inventory.sql h1:k4ffzDfggvPSoffOuUWcdMsuoTIsHJQBIdd7kFPfW0A=
+20240117200903_deployment-requirements.sql h1:Q/jMnbmRMbemmBvcFVpaztLJsoIH746gVWcPj/a6s0g=
+20240306184024_deployment-requirements-profile.sql h1:P1EnDXQzy//kLSFtIcyZK+ZkUHI8Wg39n9Xuw2jJqs8=
+20240313214642_deployment-requirements-cascade.sql h1:Gk7vr+QoNnUt6PVGFzvkxOErvdU1uFEmaLKmaGuUJ6I=
+20240620170212_kind.sql h1:gKC2y3GYMOBQPsswzPs8WvwcDgFZbis5Y8BF0zQzxJE=
+20240711172122_resource-namespace.sql h1:XcMfOK7mDET0bMpO3PIY55gn2LVrs/SvDxwyN+eK4jE=
+20240906060507_v3.sql h1:DQnLv4TyUGBgp0d/tyB2P+8b4IvhtMnegUVSWC4qHGA=
+20240906164744_namespaces.sql h1:xHw+kfTEH33q6c/UDdjmy7c50a19h89WYjUc2ICWKKU=

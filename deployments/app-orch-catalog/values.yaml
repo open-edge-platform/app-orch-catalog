@@ -1,0 +1,216 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+# -- replicaCount specifies how many replicas of services to instantiate.
+replicaCount: 1
+
+# -- serviceArgs contains arguments that are passed to the running PODs
+serviceArgs:
+  restProxy: {}
+
+# -- service contains details for creating k8s services.
+service:
+  # -- restProxy is a k8s service exposing REST API endpoints for the app
+  #    catalog.
+  restProxy:
+    # -- type is k8s service type.
+    type: ClusterIP
+    # -- port is the port of the k8s service.
+    port: 8081
+  # -- grpcServer is a k8s service exposing gRPC endpoints for the app catalog.
+  grpcServer:
+    # -- type is k8s service type.
+    type: ClusterIP
+    # -- port is the port of the k8s service.
+    port: 8080
+  # -- opa exposes the OpenPolicy Agent service for Authorization
+  opa:
+    # -- enabled to expose the OPA REST API to the public
+    enabled: true
+    # -- type is k8s service type.
+    type: ClusterIP
+    # -- port is the port of the k8s service.
+    port: 8111
+
+openidc:
+  # the endpoint of a Keycloak Realm e.g. http://keycloak/realms/master
+  issuer: ""
+  # an external URL for the endpoint of a Keycloak Realm e.g.
+  # https://keycloak.<some-cluster>.intel.com/realms/master
+  external: ""
+  # allow the retrieval of JWKS to be performed against an HTTPS endpoint which
+  #  does not present a valid certificate
+  insecureSkipVerify: false
+
+openpolicyagent:
+  # -- image is the name of the postgres image.
+  #  image: cache/library/openpolicyagent/opa
+  image: openpolicyagent/opa
+  # -- tag is the name of the OPA image tag - must be -static to work on
+  # arm64 (e.g. M1 MacBook)
+  tag: 0.70.0-static
+  # --
+  enabled: true
+  port: 8181
+  loglevel: info
+
+# -- image specifies docker image parameters.
+image:
+  # -- registry is the host for the docker image.
+  registry: registry-rs.edgeorchestration.intel.com/edge-orch
+  # -- repository is the name of the private registry and docker image used
+  #    during deployment.
+  repository: app/app-orch-catalog
+  # -- pullPolicy is used during deployment to decide if local image can be
+  #    utilized.
+  pullPolicy: IfNotPresent
+
+# -- postgres contains database persistence details.
+postgres:
+  # by default, local secrets are disabled
+  local:
+    secrets: false
+  # by default, database schema migration is disabled
+  migration:
+    enabled: true
+  # location of secrets with PGHOST, PGUSER, PGPASSWORD, PGDATABASE, PGPORT
+  secrets: application-catalog-postgres-config
+  # connection to ssl
+  ssl: false
+  # -- registry is the host for the docker image.
+  registry: registry-rs.edgeorchestration.intel.com/edge-orch
+  # -- image is the name of the postgres image.
+  image: cache/library/postgres
+  # -- tag is the name of the postgres image tag.
+  tag: "16.0"
+
+# -- storageClassName is optional, if not specified a default storage class
+#    will be used for persistance.
+storageClassName: ""
+
+# -- imagePullSecrets are used when pulling images from private repos.
+imagePullSecrets: []
+# -- nameOverride can be used to change the name of the helm chart.
+nameOverride: ""
+# -- fullnameOverride can be used to change the name of the helm chart and
+#    release.
+fullnameOverride: ""
+
+# -- podAnnotations are optional and can be specified to add consistent
+#  annotations to all pods.
+podAnnotations: {}
+
+# -- podSecurityContext is the runtime context of the pod.
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  seccompProfile:
+    type: RuntimeDefault
+# fsGroup: 2000
+
+# -- catalogSecurityContext defines catalog pods' capabilities and permissions
+#    in the host.
+catalogSecurityContext:
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 65532
+  allowPrivilegeEscalation: false
+  seccompProfile:
+    type: RuntimeDefault
+
+# -- ingress defines params for external access to services in a cluster.
+ingress:
+  # -- enabled is a switch to turn on/off the ingress resource.
+  enabled: false
+  # -- className specifies reference to ingress class with additional
+  #    configuration and the name of the controller.
+  className: ""
+  # -- annotations configure options specific to an ingress controller.
+  annotations: {}
+  #   kubernetes.io/ingress.class: nginx
+  #   kubernetes.io/tls-acme: "true"
+  # -- hosts defines routing rules and supports wildcards.
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  # -- tls contains cert and key for securing the ingress.
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+logging:
+  encoders:
+    json:
+      fields:
+        - message
+        - level:
+            format: uppercase
+        - caller:
+            format: short
+        - timestamp:
+            format: iso8601
+
+  writers:
+    stdout:
+      encoder: json
+
+  rootLogger:
+    level: info
+    outputs:
+      - stdout
+
+# -- traefikReverseProxy defines params for external access to services in a
+#    cluster using Traefik reverse proxy.
+traefikReverseProxy:
+  # -- enabled is a switch to turn on/off the Traefik reverse proxy resource;
+  #    Traefik MUST be deployed to gateway-system ns before enabling it here.
+  enabled: false
+  # -- gatewayNamespace specifies namespace of Traefik and related resources
+  #  (e.g. k8s secret or tls option).
+  gatewayNamespace: orch-gateway
+  # -- secretName is name of k8s secret containing TLS server cert.
+  secretName: tls-demo
+  # -- matchRoute defines routing rules (e.g. Host(`http.sample.com`))
+  matchRoute: Host(`app-orch.kind.internal`)
+  # -- tlsOption is the name of the Traefik option for handling TLS or mTLS
+  #    connections.
+  tlsOption: gateway-tls
+  # -- validate-jwt middleware
+  validateJwtMiddleware: validate-jwt
+
+gin:
+  # mode (debug, release)
+  mode: "release"
+
+# -- malwareScannerAddress is where the catalog server can contact
+# malwareScannerAddress: "clamav.default.svc.cluster.local:3310"
+
+# -- malwareScannerPermissive can be used to enable permissive mode. Default is false.
+# malwareScannerPermissive: true
+
+# set this to true for production deployments that include the secrets service
+useSecretsService: false
+
+# vault service address
+vaultServerAddress: http://vault.orch-platform.svc.cluster.local:8200
+
+# service account
+serviceAccount: orch-svc
+
+tlsCertName: "tls-orch"
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 128Mi
+  requests:
+    cpu: 10m
+    memory: 64Mi

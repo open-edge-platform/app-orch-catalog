@@ -1,0 +1,586 @@
+// SPDX-FileCopyrightText: (C) 2023 Intel Corporation
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+package catalog.v3;
+
+import "catalog/v3/resources.proto";
+import "google/api/annotations.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/empty.proto";
+
+// See reference example.
+//  https://github.com/google/gnostic/blob/main/cmd/protoc-gen-openapi/examples/google/example/library/v1/library.proto
+
+// CatalogService provides API to manage the inventory of applications, deployment packages, and other resources related
+// to deployment of applications at the network edge.
+//
+// The principal resources managed by the application catalog service are as follows:
+// - [Application](catalog.v3.Application) represents a Helm\* chart that can be deployed to one or more Kubernetes\* pods.
+//
+// - [DeploymentPackage](catalog.v3.DeploymentPackage) represents a collection of applications (referenced by their name and a version) that are
+//    deployed together. The package can define one or more deployment profiles that specify the individual application
+//    profiles to be used when deploying each application. If applications need to be deployed in a particular order, the
+//    package can also define any startup dependencies between its constituent applications as a set of dependency graph edges.
+//
+// - [Registry](catalog.v3.Registry) represents a repository from which various artifacts, such as application Docker\* images or Helm charts,
+//    can be retrieved. As such, registry entity holds information used for finding and accessing the represented repository.
+//
+// - [Artifact](catalog.v3.Artifact) represents a binary artifact that can be used for various purposes, e.g. icon or thumbnail for UI display, or
+//    auxiliary artifacts for integration with various platform services such as Grafana\* dashboard and similar. An artifact may be
+//    used by multiple deployment packages.
+//
+// The API provides Create, Get, List, Update, Delete, and Watch operations for each of the above resources.
+service CatalogService {
+  // Allows uploading of a YAML file containing various application catalog entities. Multiple RPC invocations
+  // tagged with the same upload session ID can be used to upload multiple files and to create or update several
+  // catalog entities as a single transaction.
+  rpc UploadCatalogEntities(UploadCatalogEntitiesRequest) returns (UploadCatalogEntitiesResponse) {
+    option (google.api.http) = {
+      post: "/catalog.orchestrator.apis/v3/uploads"
+      body: "upload"
+    };
+  }
+
+  // === Registry ===
+
+  // Creates a new registry.
+  rpc CreateRegistry(CreateRegistryRequest) returns (CreateRegistryResponse) {
+    option (google.api.http) = {
+      post: "/catalog.orchestrator.apis/v3/registries"
+      body: "registry"
+    };
+  }
+  // Gets a list of registries.
+  rpc ListRegistries(ListRegistriesRequest) returns (ListRegistriesResponse) {
+    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/registries"};
+  }
+  // Gets a specific registry.
+  rpc GetRegistry(GetRegistryRequest) returns (GetRegistryResponse) {
+    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/registries/{registry_name}"};
+  }
+  // Updates a registry.
+  rpc UpdateRegistry(UpdateRegistryRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/catalog.orchestrator.apis/v3/registries/{registry_name}"
+      body: "registry"
+    };
+  }
+  // Deletes a registry.
+  rpc DeleteRegistry(DeleteRegistryRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/catalog.orchestrator.apis/v3/registries/{registry_name}"};
+  }
+  // Watches inventory of registries for changes.
+  rpc WatchRegistries(WatchRegistriesRequest) returns (stream WatchRegistriesResponse) {}
+
+  // === DeploymentPackage ===
+
+  // Creates a new deployment package.
+  rpc CreateDeploymentPackage(CreateDeploymentPackageRequest) returns (CreateDeploymentPackageResponse) {
+    option (google.api.http) = {
+      post: "/catalog.orchestrator.apis/v3/deployment_packages"
+      body: "deployment_package"
+    };
+  }
+  // Gets a list of deployment packages.
+  rpc ListDeploymentPackages(ListDeploymentPackagesRequest) returns (ListDeploymentPackagesResponse) {
+    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/deployment_packages"};
+  }
+  // Gets a specific deployment package.
+  rpc GetDeploymentPackage(GetDeploymentPackageRequest) returns (GetDeploymentPackageResponse) {
+    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}"};
+  }
+  // Gets all versions of a named deployment package.
+  rpc GetDeploymentPackageVersions(GetDeploymentPackageVersionsRequest) returns (GetDeploymentPackageVersionsResponse) {
+    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions"};
+  }
+  // Updates a deployment package.
+  rpc UpdateDeploymentPackage(UpdateDeploymentPackageRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}"
+      body: "deployment_package"
+    };
+  }
+  // Deletes a deployment package.
+  rpc DeleteDeploymentPackage(DeleteDeploymentPackageRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}"};
+  }
+  // Watches inventory of deployment packages for changes.
+  rpc WatchDeploymentPackages(WatchDeploymentPackagesRequest) returns (stream WatchDeploymentPackagesResponse) {}
+
+  // === Application ===
+
+  // Creates a new application.
+  rpc CreateApplication(CreateApplicationRequest) returns (CreateApplicationResponse) {
+    option (google.api.http) = {
+      post: "/catalog.orchestrator.apis/v3/applications"
+      body: "application"
+    };
+  }
+  // Gets a list of applications.
+  rpc ListApplications(ListApplicationsRequest) returns (ListApplicationsResponse) {
+    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/applications"};
+  }
+  // Gets a specific application.
+  rpc GetApplication(GetApplicationRequest) returns (GetApplicationResponse) {
+    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}"};
+  }
+  // Gets application reference count - the number of deployment packages using this application.
+  rpc GetApplicationReferenceCount(GetApplicationReferenceCountRequest) returns (GetApplicationReferenceCountResponse) {
+    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}/reference_count"};
+  }
+  // Gets all versions of a named application.
+  rpc GetApplicationVersions(GetApplicationVersionsRequest) returns (GetApplicationVersionsResponse) {
+    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions"};
+  }
+  // Updates an application.
+  rpc UpdateApplication(UpdateApplicationRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}"
+      body: "application"
+    };
+  }
+  // Deletes an application.
+  rpc DeleteApplication(DeleteApplicationRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}"};
+  }
+
+  // Watches inventory of applications for changes.
+  rpc WatchApplications(WatchApplicationsRequest) returns (stream WatchApplicationsResponse) {}
+
+  // === Artifact ===
+
+  // Creates a new artifact.
+  rpc CreateArtifact(CreateArtifactRequest) returns (CreateArtifactResponse) {
+    option (google.api.http) = {
+      post: "/catalog.orchestrator.apis/v3/artifacts"
+      body: "artifact"
+    };
+  }
+  // Gets a list of artifacts.
+  rpc ListArtifacts(ListArtifactsRequest) returns (ListArtifactsResponse) {
+    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/artifacts"};
+  }
+  // Gets a specific artifact.
+  rpc GetArtifact(GetArtifactRequest) returns (GetArtifactResponse) {
+    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/artifacts/{artifact_name}"};
+  }
+  // Updates an artifact.
+  rpc UpdateArtifact(UpdateArtifactRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/catalog.orchestrator.apis/v3/artifacts/{artifact_name}"
+      body: "artifact"
+    };
+  }
+  // Deletes an artifact.
+  rpc DeleteArtifact(DeleteArtifactRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/catalog.orchestrator.apis/v3/artifacts/{artifact_name}"};
+  }
+  // Watches inventory of artifacts for changes.
+  rpc WatchArtifacts(WatchArtifactsRequest) returns (stream WatchArtifactsResponse) {}
+} // End: CatalogService
+
+// === Upload Messages ===
+
+// Request message for the UploadCatalogItems method
+message UploadCatalogEntitiesRequest {
+  // First upload request in the batch must not specify session ID. Subsequent upload requests must copy
+  // the session ID from the previously issued response.
+  string session_id = 1;
+
+  // Deprecated: Upload number must increase sequentially, starting with 1.
+  uint32 upload_number = 2;
+
+  // Must be set to 'true' to perform load of all entity files uploaded as part of this session.
+  bool last_upload = 3;
+
+  // Upload record containing the file name and file contents being uploaded.
+  catalog.v3.Upload upload = 4 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Response message for the UploadCatalogItems method
+message UploadCatalogEntitiesResponse {
+  // Session ID, generated by the server after the first upload request has been processed.
+  string session_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Deprecated: Next expected upload number or total number of uploads on the last upload request.
+  uint32 upload_number = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // Any error messages encountered either during YAML parsing or entity creation or update.
+  repeated string error_messages = 3;
+}
+
+// Response message when multiple files are uploaded at the same time through rest-proxy.
+message UploadMultipleCatalogEntitiesResponse {
+  repeated UploadCatalogEntitiesResponse responses = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// === Registry Messages ===
+
+// Request message for the CreateRegistry method.
+message CreateRegistryRequest {
+  // The registry to create.
+  catalog.v3.Registry registry = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Response message for the CreateRegistry method.
+message CreateRegistryResponse {
+  // The created registry.
+  catalog.v3.Registry registry = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the ListRegistries method.
+message ListRegistriesRequest {
+  // Names the field to be used for ordering the returned results.
+  string order_by = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Expression to use for filtering the results.
+  string filter = 2 [(google.api.field_behavior) = OPTIONAL];
+  // Maximum number of items to return.
+  int32 page_size = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Index of the first item to return.
+  int32 offset = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // Request that sensitive information, such as username, auth_token, and CA certificates are included in the response.
+  bool show_sensitive_info = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for the ListRegistries method.
+message ListRegistriesResponse {
+  // A list of registries.
+  repeated catalog.v3.Registry registries = 1 [(google.api.field_behavior) = REQUIRED];
+  // Count of items in the entire list, regardless of pagination.
+  int32 total_elements = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the GetRegistry method.
+message GetRegistryRequest {
+  // Name of the registry.
+  string registry_name = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Request that sensitive information, such as username, auth_token, and CA certificates are included in the response.
+  bool show_sensitive_info = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for the GetRegistry method.
+message GetRegistryResponse {
+  catalog.v3.Registry registry = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the UpdateRegistry method.
+message UpdateRegistryRequest {
+  // Name of the Registry.
+  string registry_name = 1 [(google.api.field_behavior) = REQUIRED];
+  // The Registry update.
+  catalog.v3.Registry registry = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the DeleteRegistry method.
+message DeleteRegistryRequest {
+  // Name of the registry.
+  string registry_name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the WatchRegistries method.
+message WatchRegistriesRequest {
+  // ID of the project.
+  string project_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Indicates whether replay of existing entities will be performed.
+  bool no_replay = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Request that sensitive information, such as username, auth_token, and CA certificates are included in the response.
+  bool show_sensitive_info = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for the WatchRegistries method.
+message WatchRegistriesResponse {
+  catalog.v3.Event event = 1 [(google.api.field_behavior) = REQUIRED];
+  catalog.v3.Registry registry = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// === DeploymentPackage Messages ===
+
+// Request message for the CreateDeploymentPackage method.
+message CreateDeploymentPackageRequest {
+  // The deployment package to create.
+  catalog.v3.DeploymentPackage deployment_package = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Response message for the CreateDeploymentPackage method.
+message CreateDeploymentPackageResponse {
+  // The deployment package created.
+  catalog.v3.DeploymentPackage deployment_package = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the ListDeploymentPackages method.
+message ListDeploymentPackagesRequest {
+  // Names the field to be used for ordering the returned results.
+  string order_by = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Expression to use for filtering the results.
+  string filter = 2 [(google.api.field_behavior) = OPTIONAL];
+  // Maximum number of items to return.
+  int32 page_size = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Index of the first item to return.
+  int32 offset = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // List of deployment package kinds to be returned; empty list means all kinds.
+  repeated catalog.v3.Kind kinds = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for the ListDeploymentPackages method.
+message ListDeploymentPackagesResponse {
+  // A list of DeploymentPackages.
+  repeated catalog.v3.DeploymentPackage deployment_packages = 1 [(google.api.field_behavior) = REQUIRED];
+  // Count of items in the entire list, regardless of pagination.
+  int32 total_elements = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the GetDeploymentPackage method.
+message GetDeploymentPackageRequest {
+  // Name of the DeploymentPackage.
+  string deployment_package_name = 1 [(google.api.field_behavior) = REQUIRED];
+  // Version of the DeploymentPackage.
+  string version = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Response message for the GetDeploymentPackage method.
+message GetDeploymentPackageResponse {
+  // The DeploymentPackage requested.
+  catalog.v3.DeploymentPackage deployment_package = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the GetDeploymentPackageVersions method.
+message GetDeploymentPackageVersionsRequest {
+  // Name of the DeploymentPackage.
+  string deployment_package_name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Response message for the GetDeploymentPackageVersions method.
+message GetDeploymentPackageVersionsResponse {
+  // A list of DeploymentPackages with the same project and name.
+  repeated catalog.v3.DeploymentPackage deployment_packages = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the UpdateDeploymentPackage method.
+message UpdateDeploymentPackageRequest {
+  // Name of the DeploymentPackage.
+  string deployment_package_name = 1 [(google.api.field_behavior) = REQUIRED];
+  // Version of the DeploymentPackage.
+  string version = 2 [(google.api.field_behavior) = REQUIRED];
+  // The DeploymentPackage update.
+  catalog.v3.DeploymentPackage deployment_package = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for DeleteDeploymentPackage.
+message DeleteDeploymentPackageRequest {
+  // Name of the DeploymentPackage.
+  string deployment_package_name = 1 [(google.api.field_behavior) = REQUIRED];
+  // Version of the DeploymentPackage.
+  string version = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the WatchDeploymentPackages method.
+message WatchDeploymentPackagesRequest {
+  // ID of the project.
+  string project_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Indicates whether replay of existing entities will be performed.
+  bool no_replay = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Deployment package kinds to be watched; empty list means all kinds.
+  repeated catalog.v3.Kind kinds = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for the WatchDeploymentPackages method.
+message WatchDeploymentPackagesResponse {
+  catalog.v3.Event event = 1 [(google.api.field_behavior) = REQUIRED];
+  catalog.v3.DeploymentPackage deployment_package = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// === Application Messages ===
+
+// Request message for the CreateApplication method.
+message CreateApplicationRequest {
+  // The registry to create.
+  catalog.v3.Application application = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Response message for the CreateApplication method.
+message CreateApplicationResponse {
+  // The application created.
+  catalog.v3.Application application = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the ListApplications method.
+message ListApplicationsRequest {
+  // Names the field to be used for ordering the returned results.
+  string order_by = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Expression to use for filtering the results.
+  string filter = 2 [(google.api.field_behavior) = OPTIONAL];
+  // Maximum number of items to return.
+  int32 page_size = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Index of the first item to return.
+  int32 offset = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // List of application kinds to be returned; empty list means all kinds.
+  repeated catalog.v3.Kind kinds = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for the ListApplications method.
+message ListApplicationsResponse {
+  // A list of applications.
+  repeated catalog.v3.Application applications = 1 [(google.api.field_behavior) = REQUIRED];
+  // Count of items in the entire list, regardless of pagination.
+  int32 total_elements = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the GetApplication method.
+message GetApplicationRequest {
+  // Name of the application.
+  string application_name = 1 [(google.api.field_behavior) = REQUIRED];
+  // Version of the application.
+  string version = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Response message for the GetApplication method.
+message GetApplicationResponse {
+  // The requested application.
+  catalog.v3.Application application = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the GetApplicationReferenceCount method.
+message GetApplicationReferenceCountRequest {
+  // Name of the application.
+  string application_name = 1 [(google.api.field_behavior) = REQUIRED];
+  // Version of the application.
+  string version = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Response message for the GetApplicationReferenceCount method.
+message GetApplicationReferenceCountResponse {
+  uint32 reference_count = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the GetApplicationVersions method.
+message GetApplicationVersionsRequest {
+  // Name of the application.
+  string application_name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Response message for the GetApplication method.
+message GetApplicationVersionsResponse {
+  // A list of applications with the same project and name.
+  repeated catalog.v3.Application application = 1 [(google.api.field_behavior) = REQUIRED]; // TODO rename to 'applications'
+}
+
+// Request message for the UpdateApplication method.
+message UpdateApplicationRequest {
+  // Name of the application.
+  string application_name = 1 [(google.api.field_behavior) = REQUIRED];
+  // Version of the application.
+  string version = 2 [(google.api.field_behavior) = REQUIRED];
+  // The application update.
+  catalog.v3.Application application = 3 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the DeleteApplication method.
+message DeleteApplicationRequest {
+  // Name of the application.
+  string application_name = 1 [(google.api.field_behavior) = REQUIRED];
+  // Version of the application.
+  string version = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the WatchApplications method.
+message WatchApplicationsRequest {
+  // ID of the project.
+  string project_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Indicates whether replay of existing entities will be performed.
+  bool no_replay = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Application kinds to be watched; empty list means all kinds.
+  repeated catalog.v3.Kind kinds = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for the WatchApplications method.
+message WatchApplicationsResponse {
+  catalog.v3.Event event = 1 [(google.api.field_behavior) = REQUIRED];
+  catalog.v3.Application application = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// === Artifact Messages ===
+
+// Request message for the CreateArtifact method.
+message CreateArtifactRequest {
+  // The artifact to create.
+  catalog.v3.Artifact artifact = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Response message for the CreateArtifact method.
+message CreateArtifactResponse {
+  // The artifact created.
+  catalog.v3.Artifact artifact = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the ListArtifacts method.
+message ListArtifactsRequest {
+  // Names the field to be used for ordering the returned results.
+  string order_by = 1 [(google.api.field_behavior) = OPTIONAL];
+  // Expression to use for filtering the results.
+  string filter = 2 [(google.api.field_behavior) = OPTIONAL];
+  // Maximum number of items to return.
+  int32 page_size = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Index of the first item to return.
+  int32 offset = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for the ListArtifacts method.
+message ListArtifactsResponse {
+  // A list of artifacts.
+  repeated catalog.v3.Artifact artifacts = 1 [(google.api.field_behavior) = REQUIRED];
+  // Count of items in the entire list, regardless of pagination.
+  int32 total_elements = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the GetArtifact method.
+message GetArtifactRequest {
+  // Name of the artifact.
+  string artifact_name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Response message for the GetArtifact method.
+message GetArtifactResponse {
+  // The requested artifact.
+  catalog.v3.Artifact artifact = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the UpdateArtifact method.
+message UpdateArtifactRequest {
+  // Name of the artifact.
+  string artifact_name = 1 [(google.api.field_behavior) = REQUIRED];
+  // The artifact update.
+  catalog.v3.Artifact artifact = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the DeleteArtifact method.
+message DeleteArtifactRequest {
+  // Name of the artifact.
+  string artifact_name = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the WatchArtifacts method.
+message WatchArtifactsRequest {
+  // ID of the project.
+  string project_id = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Indicates whether replay of existing entities will be performed.
+  bool no_replay = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for the WatchArtifacts method.
+message WatchArtifactsResponse {
+  catalog.v3.Event event = 1 [(google.api.field_behavior) = REQUIRED];
+  catalog.v3.Artifact artifact = 2 [(google.api.field_behavior) = REQUIRED];
+}

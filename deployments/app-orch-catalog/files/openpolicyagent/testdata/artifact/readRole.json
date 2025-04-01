@@ -1,0 +1,18 @@
+{
+  "request": {
+  },
+  "metadata": {
+    "activeprojectid": [
+      "2724b4fc-745e-4537-b76c-13907a9ea831"
+    ],
+    "client": [
+      "catalog-cli"
+    ],
+    "realm_access/roles": [
+      "2724b4fc-745e-4537-b76c-13907a9ea831_default-roles-master",
+      "2724b4fc-745e-4537-b76c-13907a9ea831_cat-r",
+      "offline_access",
+      "uma_authorization"
+    ]
+  }
+}

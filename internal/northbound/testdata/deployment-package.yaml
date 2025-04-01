@@ -1,0 +1,71 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+
+specSchema: "DeploymentPackage"
+schemaVersion: "0.1"
+
+name: "librespeed-app"
+description: "This is a very lightweight Speedtest implemented in Javascript,
+              using XMLHttpRequest and Web Workers."
+version: "0.0.2"
+
+applications:
+   - name: librespeed-vm
+     version: 0.0.2
+
+deploymentProfiles:
+   - name: "default"
+     displayName: "Default Configuration"
+     applicationProfiles:
+        - application: "librespeed-vm"
+          profile: "default"
+
+artifacts:
+  - name: "librespeed-thumbnail"
+    purpose: "thumbnail"
+
+forbidsMultipleDeployments: false
+
+extensions:
+  - name: "ext1"
+    displayName: "extension 1"
+    description: "This is Extension #1"
+    version: "1.2.3"
+    endpoints:
+      - serviceName: "service1"
+        externalPath: "EPath1"
+        internalPath: "IPath1"
+        scheme: "http"
+        authType: "insecure"
+      - serviceName: "service2"
+        externalPath: "EPath2"
+        internalPath: "IPath2"
+        scheme: "http"
+        authType: "insecure"
+    uiExtension:
+      label: "label1"
+      appName: "sra-roc"
+      serviceName: "service1"
+      moduleName: "module1"
+      description: "description"
+      fileName: "file1"
+
+namespaces:
+  - name: "ns1"
+    labels:
+      foo: "bar"
+    annotations:
+      da: "nyet"
+      ja: "nicht"
+  - name: "ns2"
+    labels:
+      foo: "bar"
+      goo: "har"
+    annotations:
+      ano: "ne"
+      oui: "non"
+

@@ -1,0 +1,10 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+
+something: "silly"
+and:
+  - not: "something we recognize"

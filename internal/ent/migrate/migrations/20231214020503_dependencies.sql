@@ -1,0 +1,2 @@
+-- Create "profile_required_packages" table
+CREATE TABLE "profile_required_packages" ("profile_id" bigint NOT NULL, "deployment_package_id" bigint NOT NULL, PRIMARY KEY ("profile_id", "deployment_package_id"), CONSTRAINT "profile_required_packages_deployment_package_id" FOREIGN KEY ("deployment_package_id") REFERENCES "deployment_packages" ("id") ON UPDATE NO ACTION ON DELETE CASCADE, CONSTRAINT "profile_required_packages_profile_id" FOREIGN KEY ("profile_id") REFERENCES "profiles" ("id") ON UPDATE NO ACTION ON DELETE CASCADE);

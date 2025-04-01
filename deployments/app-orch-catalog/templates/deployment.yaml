@@ -1,0 +1,187 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "application-catalog.fullname" . }}
+  labels:
+    {{- include "application-catalog.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "application-catalog.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "application-catalog.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- if .Values.useSecretsService }}
+      serviceAccountName: {{ .Values.serviceAccount | quote }}
+      {{ end }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}-rest-proxy
+          securityContext:
+            {{- toYaml .Values.catalogSecurityContext | nindent 12 }}
+          {{- with .Values.image }}
+          image: "{{- if .registry -}}{{ .registry }}/{{- end -}}{{ .repository }}:{{ default $.Chart.AppVersion .tag }}"
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8081
+              protocol: TCP
+          command: ["/usr/local/bin/rest-proxy"]
+          args:
+          {{- range $key, $value := .Values.serviceArgs.restProxy }}
+            - {{ print "-" $key | toYaml -}}={{- $value }}
+          {{- end }}
+            - {{ print "--openidc-external=" .Values.openidc.external }}
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.service.restProxy.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: {{ .Values.service.restProxy.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          env:
+            - name: LOGGING_CONFIG
+              value: /opt/rest-proxy/logging.yaml
+            - name: GIN_MODE
+              value: {{ .Values.gin.mode }}
+          resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /opt/rest-proxy
+        - name: {{ .Chart.Name }}-server
+          securityContext:
+            {{- toYaml .Values.catalogSecurityContext | nindent 12 }}
+          {{- with .Values.image }}
+          image: "{{- if .registry -}}{{ .registry }}/{{- end -}}{{ .repository }}:{{ default $.Chart.AppVersion .tag }}"
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: grpc
+              containerPort: 8080
+              protocol: TCP
+          command: ["/usr/local/bin/application-catalog"]
+          args:
+            - "-databaseHostname=$(PGHOST)"
+            - "-databasePort=$(PGPORT)"
+            - "-databaseName=$(PGDATABASE)"
+            - "-databaseSslMode={{ .Values.postgres.ssl }}"
+            - "-databaseDisableMigration={{ not .Values.postgres.migration.enabled }}"
+            - "-useSecretsService=$(USESECRET)"
+            - "-defaultProjectUUID=$(MT_UPGRADE_PROJECT_ID)"
+            - "-vaultServerAddress=$(VAULT_SERVER_ADDRESS)"
+          envFrom:
+            - secretRef:
+                name: {{ .Values.postgres.secrets }}
+          env:
+          - name: DATABASE_USER
+            valueFrom:
+              secretKeyRef:
+                key: PGUSER
+                name: {{ .Values.postgres.secrets }}
+          - name: DATABASE_PWD
+            valueFrom:
+              secretKeyRef:
+                key: PGPASSWORD
+                name: {{ .Values.postgres.secrets }}
+          - name: OIDC_SERVER_URL
+            value: {{ .Values.openidc.issuer }}
+          - name: OIDC_SERVER_URL_EXTERNAL
+            value: {{ .Values.openidc.external }}
+          - name: VAULT_SERVER_ADDRESS
+            value: {{ .Values.vaultServerAddress }}
+          - name: TLS_CERT_NAME
+            value: {{ .Values.tlsCertName }}
+          - name: SERVICE_ACCOUNT
+            value: {{ .Values.serviceAccount | quote }}
+          - name: OIDC_TLS_INSECURE_SKIP_VERIFY
+            value: {{ .Values.openidc.insecureSkipVerify | quote }}
+          - name: USESECRET
+            value: {{ .Values.useSecretsService | quote }}
+          - name: LOGGING_CONFIG
+            value: /opt/application-catalog/logging.yaml
+          {{- if .Values.malwareScannerAddress }}
+          - name: MALWARE_SCANNER_ADDRESS
+            value: {{ .Values.malwareScannerAddress }}
+          {{- end }}
+          {{- if .Values.malwareScannerPermissive }}
+          - name: MALWARE_SCANNER_PERMISSIVE
+            value: {{ .Values.malwareScannerPermissive | quote }}
+          {{- end }}
+          resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /opt/application-catalog
+        {{ if .Values.openpolicyagent.enabled }}
+        - name: openpolicyagent
+          securityContext:
+            {{- toYaml .Values.catalogSecurityContext | nindent 12 }}
+          {{- with .Values.openpolicyagent }}
+          image: "{{- if .registry -}}{{ .registry }}/{{- end -}}{{ .image }}:{{ .tag }}"
+          {{- end }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: opa
+              containerPort: {{ .Values.openpolicyagent.port }}
+              protocol: TCP
+          args:
+            - "run"
+            - "--server"
+            - "/etc/onos/rego"
+            - "--log-level"
+            - {{ .Values.openpolicyagent.loglevel }}
+          livenessProbe:
+            httpGet:
+              path: /health?bundle=true  # Include bundle activation in readiness
+              scheme: HTTP
+              port: {{ .Values.openpolicyagent.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health?bundle=true  # Include bundle activation in readiness
+              scheme: HTTP
+              port: {{ .Values.openpolicyagent.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: openpolicyagent
+              mountPath: /etc/onos/rego
+              readOnly: true
+        {{end}}
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "application-catalog.fullname" . }}
+        - name: tmpfs-1
+          emptyDir: { }
+        {{- if .Values.openpolicyagent.enabled }}
+        - name: openpolicyagent
+          configMap:
+            name: {{ include "application-catalog.fullname" . }}-opa-rego
+        {{- end }}

@@ -1,0 +1,34 @@
+version = 1
+
+[[annotations]]
+path = [
+    ".github/PULL_REQUEST_TEMPLATE.md",
+    "artifacts/**",
+    "REUSE.toml",
+    "go.sum",
+    "test/go.sum",
+    "VERSION",
+    "api/buf.lock",
+    "pkg/api/**.pb**.go",
+    "api/spec/**",
+    "internal/ent/generated/**",
+    "internal/ent/migrate/migrations/**",
+    "**.json",
+    "pkg/schema/catalog-schema.yaml",
+    "pkg/schema/generator/catalog-schema-base.yaml",
+    "internal/northbound/testdata/k8stoken",
+    "**.png",
+    "pkg/restClient/**.go",
+    "pkg/restProxy/mock**.go",
+    "pkg/schema/catalog-schema.go",
+    "internal/helm/testdata/chart.tgz",
+    "scripts/extract-keycloak-config.sh"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2025 Intel Corporation"
+SPDX-License-Identifier = "Apache-2.0"
+
+[[annotations]]
+path = ["api/ent/opts.proto", "pkg/api/**.pb**.go"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2019-present Facebook"
+SPDX-License-Identifier = "Apache-2.0"

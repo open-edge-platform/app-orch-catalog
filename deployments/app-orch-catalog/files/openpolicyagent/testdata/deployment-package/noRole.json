@@ -1,0 +1,14 @@
+{
+  "request": {
+  },
+  "metadata": {
+    "client": [
+      "catalog-cli"
+    ],
+    "realm_access/roles": [
+      "default-roles-master",
+      "offline_access",
+      "uma_authorization"
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+clusterSpecific:
+  webuiClientRootUrl: ""
+  webuiRedirectUrls: ["", ""]
+  registryClientRootUrl: ""
+  telemetryClientRootUrl: ""
+  telemetryRedirectUrls: ["", ""]
+  clusterManagementClientRootUrl: ""
+  clusterManagementRedirectåUrls: [""]

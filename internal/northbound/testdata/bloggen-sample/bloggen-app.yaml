@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# yaml-language-server: $schema=/tmp/schemas/application.yaml#/CASpecApplications
+---
+specSchema: "Application"
+schemaVersion: "0.1"
+
+name: bloggen-app
+version: "0.0.2"
+description: "Blog Generation App and Business Logic"
+
+helmRegistry: "ai-harbor"
+chartName: "stable-diffusion-client"
+chartVersion: "0.0.2"
+
+

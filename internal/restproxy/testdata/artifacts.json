@@ -1,0 +1,50 @@
+[
+  {
+    "accessories": null,
+    "addition_links": {
+      "dependencies": {
+        "absolute": false,
+        "href": "/api/v2.0/projects/catalog-apps/repositories/chart1/artifacts/sha256:24ebdb7ed8a2138777759a24910f356f18ef84c6547c9a30d9afb0a67d253ec8/additions/dependencies"
+      },
+      "readme.md": {
+        "absolute": false,
+        "href": "/api/v2.0/projects/catalog-apps/repositories/chart1/artifacts/sha256:24ebdb7ed8a2138777759a24910f356f18ef84c6547c9a30d9afb0a67d253ec8/additions/readme.md"
+      },
+      "values.yaml": {
+        "absolute": false,
+        "href": "/api/v2.0/projects/catalog-apps/repositories/chart1/artifacts/sha256:24ebdb7ed8a2138777759a24910f356f18ef84c6547c9a30d9afb0a67d253ec8/additions/values.yaml"
+      }
+    },
+    "digest": "sha256:24ebdb7ed8a2138777759a24910f356f18ef84c6547c9a30d9afb0a67d253ec8",
+    "extra_attrs": {
+      "apiVersion": "v2",
+      "appVersion": "0.0.1",
+      "description": "VCM App Orch Adapter",
+      "name": "chart1",
+      "version": "0.0.1"
+    },
+    "icon": "sha256:61cf3a178ff0f75bf08a25d96b75cf7355dc197749a9f128ed3ef34b0df05518",
+    "id": 2,
+    "labels": null,
+    "manifest_media_type": "application/vnd.oci.image.manifest.v1+json",
+    "media_type": "application/vnd.cncf.helm.config.v1+json",
+    "project_id": 4,
+    "pull_time": "0001-01-01T00:00:00.000Z",
+    "push_time": "2024-07-02T18:56:15.857Z",
+    "references": null,
+    "repository_id": 2,
+    "size": 688,
+    "tags": [
+      {
+        "artifact_id": 2,
+        "id": 2,
+        "immutable": false,
+        "name": "0.0.1",
+        "pull_time": "0001-01-01T00:00:00.000Z",
+        "push_time": "2024-07-02T18:56:16.079Z",
+        "repository_id": 2
+      }
+    ],
+    "type": "CHART"
+  }
+]

@@ -1,0 +1,30 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+specSchema: DeploymentPackage
+schemaVersion: "0.1"
+$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+
+name: "ai-blog-gen"
+description: "AI Blog Generator"
+version: "0.1.2"
+
+applications:
+   - name: bloggen-app
+     version: 0.0.2
+
+deploymentProfiles:
+  - name: "default-with-cpu"
+    displayName: "default with CPU"
+    displayName: "illegal to put this here"
+    description: "default performance with 7B LLM and stable diffusion CPU"
+    applicationProfiles:
+      - application: "llama2"
+        profile: "7b"
+      - application: "bloggen-app"
+        profile: "clusterip"
+      - application: "stable-diffusion-model"
+        profile: "cpu"
+

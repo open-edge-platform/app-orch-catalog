@@ -1,0 +1,109 @@
+{
+  "request": {
+    "publisher": {
+      "name": "foopub",
+      "display_name": "Publisher foopub",
+      "description": "Publisher that publishes foopub"
+    }
+  },
+  "metadata": {
+    ":authority": [
+      "localhost:8080"
+    ],
+    "activeprojectid": [
+      "projectUUID"
+    ],
+    "aud": [
+      "account"
+    ],
+    "auth": [
+      "Bearer none"
+    ],
+    "authorization": [
+      "Bearer none"
+    ],
+    "azp": [
+      "web-ui"
+    ],
+    "client": [
+      "cli"
+    ],
+    "content-type": [
+      "application/grpc"
+    ],
+    "email": [
+      "admin@example.com"
+    ],
+    "email_verified": [
+      "false"
+    ],
+    "exp": [
+      "1.683795742e+09"
+    ],
+    "family_name": [
+      "User"
+    ],
+    "given_name": [
+      "Admin"
+    ],
+    "grpcgateway-authorization": [
+      "Bearer none"
+    ],
+    "grpcgateway-content-type": [
+      "application/json"
+    ],
+    "grpcgateway-user-agent": [
+      "cli"
+    ],
+    "iat": [
+      "1.683709342e+09"
+    ],
+    "iss": [
+      "http://localhost:8090/realms/master"
+    ],
+    "jti": [
+      "8a05c6f2-84ed-476b-9343-70a998fd1979"
+    ],
+    "name": [
+      "Admin User"
+    ],
+    "preferred_username": [
+      "lp-admin-user"
+    ],
+    "realm_access/roles": [
+      "default-roles-master",
+      "offline_access",
+      "lp-admin-role",
+      "uma_authorization"
+    ],
+    "resource_access/account/roles": [
+      "manage-account",
+      "manage-account-links",
+      "view-profile"
+    ],
+    "scope": [
+      "openid profile email"
+    ],
+    "session_state": [
+      "beba8bba-e59f-4ac8-a5e2-d2106dc4f592"
+    ],
+    "sid": [
+      "beba8bba-e59f-4ac8-a5e2-d2106dc4f592"
+    ],
+    "sub": [
+      "b58e4833-b7c0-4bef-91c1-d56c93c7e43d"
+    ],
+    "typ": [
+      "Bearer"
+    ],
+    "user-agent": [
+      "grpc-go/1.54.0"
+    ],
+    "x-forwarded-for": [
+      "127.0.0.1"
+    ],
+    "x-forwarded-host": [
+      "localhost:8081"
+    ]
+  }
+}

@@ -1,0 +1,76 @@
+---
+
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# buf.gen.yaml
+# docs: https://docs.buf.build/configuration/v1/buf-gen-yaml
+
+version: v1
+
+managed:
+  enabled: true
+  go_package_prefix:
+    default: >-
+      github.com/open-edge-platform/app-orch-catalog/pkg/api
+    except:
+      - buf.build/googleapis/googleapis
+      - buf.build/grpc-ecosystem/grpc-gateway
+      - buf.build/envoyproxy/protoc-gen-validate
+
+plugins:
+
+  # go - https://pkg.go.dev/google.golang.org/protobuf
+  - name: go
+    out: pkg/api
+    opt:
+      - paths=source_relative
+
+  # go grpc - https://pkg.go.dev/google.golang.org/grpc
+  - name: go-grpc
+    out: pkg/api
+    opt:
+      - paths=source_relative
+      - require_unimplemented_servers=false
+
+  # openapi v3 - https://github.com/kollalabs/protoc-gen-openapi
+  # If running locally install to match the path on
+  #  devops-docker: oie_ci_testing
+  # GOBIN=/tmp go install "github.com/kollalabs/protoc-gen-openapi@latest"
+  # cp /tmp/protoc-gen-openapi /usr/local/bin/protoc-gen-openapi-kollalabs
+  - name: kollalabs
+    path: protoc-gen-openapi-kollalabs
+    out: api/spec
+    strategy: all
+    opt:
+      - title=Application Catalog API
+      - version=0.0.1alpha2
+      - default_response=false
+      - validate=true
+      - description=An application catalog service providing operations for
+        tenants catalogs and applications.
+
+  # grpc-gateway - https://grpc-ecosystem.github.io/grpc-gateway/
+  - name: grpc-gateway
+    out: pkg/api
+    opt:
+      - paths=source_relative
+
+  # ent - https://github.com/ent/contrib/tree/master/entproto/cmd/protoc-gen-ent
+  #  - name: ent
+  #    out: internal/ent
+  #    opt:
+  #      - schemadir=internal/ent/schema
+
+  # validation - https://github.com/envoyproxy/protoc-gen-validate
+  - name: validate
+    out: pkg/api
+    opt:
+      - paths=source_relative
+      - lang=go
+
+  # grpc documentation github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc
+  - name: doc
+    out: docs
+    opt: docs/catalog-grpcapi.tmpl,catalog-grpcapi.md

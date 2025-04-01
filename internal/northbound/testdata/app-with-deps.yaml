@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+specSchema: "Application"
+schemaVersion: "0.1"
+
+name: app-with-deps
+version: 1.0.1
+description: "Test application"
+
+helmRegistry: fooreg
+chartName: "chart"
+chartVersion: "1.0"
+
+profiles:
+  - name: "p1"
+    displayName: "Profile-1"
+    valuesFileName: "values.yaml"
+    deploymentRequirements:
+      - name: ca-gigi
+        version: v0.2.1
+        publisher: footen
+        deploymentProfileName: cp-1

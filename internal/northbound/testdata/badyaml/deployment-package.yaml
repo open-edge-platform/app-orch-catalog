@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+
+specSchema: "DeploymentPackage"
+schemaVersion: "0.1"
+
+name: "librespeed-app"
+description: "This is a very lightweight Speedtest implemented in Javascript,
+              using XMLHttpRequest and Web Workers."
+version: "0.0.2"
+
+thumbnailName: "librespeed-thumbnail"
+
+applications:
+   - name: librespeed-vm=
+     version: 0.0.2
+
+deploymentProfiles:
+   - name: "default"
+     displayName: "Default Configuration"
+     applicationProfiles:
+        - application: "librespeed-vm"
+          profile: "default"

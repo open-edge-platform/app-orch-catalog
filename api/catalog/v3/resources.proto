@@ -1,0 +1,888 @@
+// SPDX-FileCopyrightText: (C) 2023 Intel Corporation
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto3";
+
+package catalog.v3;
+
+import "google/api/field_behavior.proto";
+import "google/protobuf/timestamp.proto";
+import "validate/validate.proto";
+
+// Event message carries the event type detected by the catalog service during the invocation of
+// the "watch" RPC.
+message Event {
+  // Type field specifies whether an entity was created, updated, or deleted. The replayed type is used
+  // to annotate entities during the replay phase of the watch RPC.
+  string type = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 7,
+      max_len: 7,
+      pattern: "^(replayed)$|^(created)$|^(updated)$|^(deleted)$"
+    }
+  ];
+
+  // ID of the project to which the subject belongs.
+  string project_id = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Registry represents a repository from which various artifacts, such as application Docker\* images or Helm\* charts
+// can be retrieved. As such, the registry entity holds information used for finding and accessing the represented repository.
+message Registry {
+  // Name is a human-readable unique identifier for the registry and must be unique for all registries of a
+  // given project.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+      pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
+    }
+  ];
+
+  // Display name is an optional human-readable name for the registry. When specified, it must be unique among all
+  // registries within a project. It is used for display purposes on user interfaces.
+  string display_name = 2 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 40,
+      pattern: "^\\PC*$"
+    }
+  ];
+
+  // Description of the registry. Displayed on user interfaces.
+  string description = 3 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 1000
+    }
+  ];
+
+  // Root URL for retrieving artifacts, e.g. Docker images and Helm charts, from the registry.
+  string root_url = 4 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 1000,
+      pattern: "^(https?|oci)://[a-z0-9-]+(.[a-z0-9-]+)+([/?][\\w_\\-@:%.+~#?&/=]*)?$"
+    }
+  ];
+
+  // Optional username for accessing the registry.
+  string username = 5 [(validate.rules).string = {
+    min_len: 0,
+    max_len: 1000,
+    pattern: "^\\PC*$"
+  }];
+
+  // Optional authentication token or password for accessing the registry.
+  string auth_token = 6 [(validate.rules).string = {
+    min_len: 0,
+    max_len: 1000,
+    pattern: "^\\PC*$"
+  }];
+
+  // Type indicates whether the registry holds Docker images or Helm charts; defaults to Helm charts.
+  string type = 7 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+      pattern: "^(HELM)$|^(IMAGE)$"
+    }
+  ];
+
+  // Optional CA certificates for accessing the registry using secure channels, such as HTTPS.
+  string cacerts = 8 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 16384,
+    }
+  ];
+
+  // Optional type of the API used to obtain inventory of the articles hosted by the registry.
+  string api_type = 9 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 16,
+      pattern: "^\\PC*$"
+    }
+  ];
+
+  // Optional URL of the API for accessing inventory of artifacts hosted by the registry.
+  string inventory_url = 10 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 1000,
+    }
+  ];
+
+  // The creation time of the registry.
+  google.protobuf.Timestamp create_time = 11 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The last update time of the registry.
+  google.protobuf.Timestamp update_time = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// Kind designation for applications and packages, normal (unspecified), extension, or addon.
+enum Kind {
+  KIND_UNSPECIFIED = 0;
+  KIND_NORMAL = 1;
+  KIND_EXTENSION = 2;
+  KIND_ADDON = 3;
+}
+
+// DeploymentPackage represents a collection of applications (referenced by their name and a version) that are
+// deployed together. The package can define one or more deployment profiles that specify the individual application
+// profiles to be used when deploying each application. If applications need to be deployed in a particular order, the
+// package can also define any startup dependencies between its constituent applications as a set of dependency graph edges.
+//
+// The deployment package can also refer to a set of artifacts used for miscellaneous purposes,
+// e.g. a thumbnail, icon, or a Grafana extension.
+message DeploymentPackage {
+  // Name is a human-readable unique identifier for the deployment package and must be unique for all packages of a
+  // given project.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+      pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
+    }
+  ];
+
+  // Display name is an optional human-readable name for the deployment package. When specified, it must be unique among all
+  // packages within a project. It is used for display purposes on user interfaces.
+  string display_name = 2 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 40,
+      pattern: "^\\PC*$"
+    }
+  ];
+
+  // Description of the deployment package. Displayed on user interfaces.
+  string description = 3 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 1000
+    }
+  ];
+
+  // Version of the deployment package.
+  string version = 4 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 20,
+      pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
+    }
+  ];
+
+  // Field designating whether the deployment package is a system add-on, system extension, or a normal package.
+  Kind kind = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // List of applications comprising this deployment package. Expressed as (name, version) pairs.
+  repeated catalog.v3.ApplicationReference application_references = 6 [(google.api.field_behavior) = REQUIRED];
+
+  // Flag indicating whether the deployment package has been deployed.
+  // The mutability of the deployment package entity can be limited when this flag is true. For example, one may
+  // not be able to update when an application is removed from a package after it has been marked as
+  // deployed.
+  bool is_deployed = 7 [(google.api.field_behavior) = OPTIONAL];
+
+  // Flag indicating whether the deployment package is visible in the UI.
+  // Some deployment packages can be classified as auxiliary platform extensions and therefore are to be deployed
+  // indirectly only when specified as deployment requirements, rather than directly by the platform operator.
+  bool is_visible = 8 [(google.api.field_behavior) = OPTIONAL];
+
+  // Set of deployment profiles to choose from when deploying this package.
+  repeated DeploymentProfile profiles = 9;
+
+  // Name of the default deployment profile to be used by default when deploying this package.
+  string default_profile_name = 10 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional set of application deployment dependencies, expressed as (name, requires) pairs of edges in the
+  // deployment order dependency graph.
+  repeated catalog.v3.ApplicationDependency application_dependencies = 11 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional list of API and UI extensions.
+  repeated catalog.v3.APIExtension extensions = 12 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).repeated = {max_items: 100}
+  ];
+
+  // Optional list of artifacts required for displaying or deploying this package. For example, icon or thumbnail
+  // artifacts can be used by the UI; Grafana\* dashboard definitions can be used by the deployment manager.
+  repeated catalog.v3.ArtifactReference artifacts = 13 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).repeated = {max_items: 100}
+  ];
+
+  // Optional map of application-to-namespace bindings to be used as a default when deploying the applications that
+  // comprise the package.
+  // If a namespace is not defined in the set of "namespaces" in this Deployment Package,
+  // it will be inferred that it is a simple namespace with no predefined labels or annotations.
+  map<string, string> default_namespaces = 14 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional flag indicating whether multiple deployments of this package are forbidden within the same realm.
+  bool forbids_multiple_deployments = 15 [(google.api.field_behavior) = OPTIONAL];
+
+  // Namespace definitions to be created before resources are deployed.
+  // This allows complex namespaces to be defined with predefined labels and annotations.
+  // If not defined, simple namespaces will be created as needed.
+  repeated Namespace namespaces = 16 [(google.api.field_behavior) = OPTIONAL];
+
+  // The creation time of the deployment package.
+  google.protobuf.Timestamp create_time = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The last update time of the deployment package.
+  google.protobuf.Timestamp update_time = 18 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// DeploymentProfile specifies which application profiles will be used for deployment of which applications.
+message DeploymentProfile {
+  // Name is a human-readable unique identifier for the profile and must be unique for all profiles of a
+  // given deployment package.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+      pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
+    }
+  ];
+
+  // Display name is an optional human-readable name for the registry. When specified, it must be unique among all
+  // profiles of a given package. It is used for display purposes on user interfaces.
+  string display_name = 2 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 40,
+      pattern: "^\\PC*$"
+    }
+  ];
+
+  // Description of the deployment profile. Displayed on user interfaces.
+  string description = 3 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 1000
+    }
+  ];
+
+  // Application profiles map application names to the names of its profile, to be used when deploying the application
+  // as part of the deployment package together with the deployment profile.
+  map<string, string> application_profiles = 4 [(google.api.field_behavior) = REQUIRED];
+
+  // The creation time of the deployment profile.
+  google.protobuf.Timestamp create_time = 5 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The last update time of the deployment profile.
+  google.protobuf.Timestamp update_time = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ApplicationReference represents a reference to an application by its name and its version.
+message ApplicationReference {
+  // Name of the referenced application.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+      pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
+    }
+  ];
+
+  // Version of the referenced application.
+  string version = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 20,
+      pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
+    }
+  ];
+}
+
+// ApplicationDependency represents the dependency of one application on another within the context of a deployment package.
+// This dependency is specified as the name of the application that has the dependency, and the name of the application
+// that is the dependency.
+message ApplicationDependency {
+  // Name of the application that has the dependency on the other.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 26,
+      pattern: "^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$"
+    }
+  ];
+
+  // Name of the application that is required by the other.
+  string requires = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 26,
+      pattern: "^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$"
+    }
+  ];
+}
+
+// APIExtensions represents some form of an extension to the external API provided by deployment package.
+message APIExtension {
+  // Name is a human-readable unique identifier for the API extension and must be unique for all extensions of a
+  // given deployment package.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+      pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
+    }
+  ];
+  // Version of the API extension.
+  string version = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 20,
+      pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
+    }
+  ];
+
+  // Display name is an optional human-readable name for the API extension. When specified, it must be unique among all
+  // extensions of a given deployment package. It is used for display purposes on user interfaces.
+  string display_name = 3 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 40,
+      pattern: "^\\PC*$"
+    }
+  ];
+
+  // Description of the API extension. Displayed on user interfaces.
+  string description = 4 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 1000
+    }
+  ];
+
+  // One or more API endpoints provided by the API extension.
+  repeated catalog.v3.Endpoint endpoints = 5;
+
+  // Additional information specific to UI extensions.
+  catalog.v3.UIExtension ui_extension = 6 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// UIExtension is an augmentation of an API extension.
+message UIExtension {
+  // Label is a human readable text used for display in the main UI dashboard
+  string label = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 40,
+      pattern: "^\\PC*$"
+    }
+  ];
+
+  // The name of the API extension endpoint.
+  string service_name = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+    }
+  ];
+
+  // Description of the API extension, used on the main UI dashboard.
+  string description = 3 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 1000
+    }
+  ];
+
+  // The name of the main file to load this specific UI extension.
+  string file_name = 4 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+    }
+  ];
+
+  // The name of the application corresponding to this UI extension.
+  string app_name = 5 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+    }
+  ];
+
+  // Name of the application module to be loaded.
+  string module_name = 6 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+    }
+  ];
+}
+
+// Endpoint represents an application service endpoint.
+message Endpoint {
+  // The name of the service hosted by the endpoint.
+  string service_name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+      pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
+    }
+  ];
+
+  // Externally accessible path to the endpoint.
+  string external_path = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 128
+    }
+  ];
+
+  // Internally accessible path to the endpoint.
+  string internal_path = 3 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 128
+    }
+  ];
+
+  // Protocol scheme provided by the endpoint.
+  string scheme = 4 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 32,
+      pattern: "^([a-z][a-z0-9-]{0,30}[a-z0-9]){0,1}$"
+    }
+  ];
+
+  // Authentication type expected by the endpoint.
+  string auth_type = 5 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 16,
+      pattern: "^[a-z]{0,16}$"
+    }
+  ];
+
+  // The name of the application providing this endpoint.
+  string app_name = 6 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 40,
+    }
+  ];
+}
+
+// ArtifactReference serves as a reference to an artifact, together with the artifact's purpose within a deployment package.
+message ArtifactReference {
+  // Name of the artifact.
+  string name = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+      pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
+    }
+  ];
+
+  // Purpose of the artifact, e.g. icon, thumbnail, Grafana dashboard, etc.
+  string purpose = 3 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 20,
+      pattern: "^\\PC*$"
+    }
+  ];
+}
+
+// Namespace represents a complex namespace definition with predefined labels and annotations.
+// They are created before any other resources in the deployment.
+message Namespace {
+  // namespace names must be valid RFC 1123 DNS labels.
+  // Avoid creating namespaces with the prefix `kube-`, since it is reserved for Kubernetes\* system namespaces.
+  // Avoid `default` - will already exist
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+      pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
+    }
+  ];
+
+  map<string, string> labels = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  map<string, string> annotations = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Application represents a Helm chart that can be deployed to one or more Kubernetes pods.
+message Application {
+  // Name is a human readable unique identifier for the application and must be unique for all applications of a
+  // given project. Used in network URIs.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 26,
+      pattern: "^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$"
+    }
+  ];
+
+  // Display name is an optional human-readable name for the application. When specified, it must be unique among all
+  // applications within a project. It is used for display purposes on user interfaces.
+  string display_name = 2 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 40,
+      pattern: "^\\PC*$"
+    }
+  ];
+
+  // Description of the application. Displayed on user interfaces.
+  string description = 3 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 1000
+    }
+  ];
+
+  // Version of the application. Used in combination with the name to identify a unique application within a project.
+  string version = 4 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 20,
+      pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
+    }
+  ];
+
+  // Field designating whether the application is a system add-on, system extension, or a normal application.
+  Kind kind = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // Helm chart name.
+  string chart_name = 6 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 200,
+      pattern: "^[0-9a-z-/]*$"
+    }
+  ];
+
+  // Helm chart version.
+  string chart_version = 7 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 53,
+      pattern: "^[a-z0-9][a-z0-9-.]{0,51}[a-z0-9]{0,1}$"
+    }
+  ];
+
+  // ID of the project's registry where the Helm chart of the application is available for download.
+  string helm_registry_name = 8 [(google.api.field_behavior) = REQUIRED];
+
+  // Set of profiles that can be used when deploying the application.
+  repeated Profile profiles = 9;
+
+  // Name of the profile to be used by default when deploying this application.
+  // If at least one profile is available, this field must be set.
+  string default_profile_name = 10 [(google.api.field_behavior) = OPTIONAL];
+
+  // ID of the project's registry where the Docker image of the application is available for download.
+  string image_registry_name = 11 [(google.api.field_behavior) = OPTIONAL];
+
+  // List of Kubernetes resources that must be ignored during the application deployment.
+  repeated ResourceReference ignored_resources = 12 [(google.api.field_behavior) = OPTIONAL];
+
+  // The creation time of the application.
+  google.protobuf.Timestamp create_time = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The last update time of the application.
+  google.protobuf.Timestamp update_time = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// ResourceReference represents a Kubernetes resource identifier.
+message ResourceReference {
+  // Kubernetes resource name.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+      pattern: "^[a-z0-9][a-z0-9-._-]{0,38}[a-z0-9]{0,1}$"
+    }
+  ];
+
+  // Kubernetes resource kind, e.g. ConfigMap.
+  string kind = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+      pattern: "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,38}[a-zA-Z0-9]{0,1}$"
+    }
+  ];
+
+  // Kubernetes namespace where the ignored resource resides. When empty, the application namespace will be used.
+  string namespace = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// ParameterTemplate describes override values for Helm chart values
+message ParameterTemplate {
+  // Human-readable name for the parameter template.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 4096,
+      pattern: "^[A-Za-z0-9-/_\\[\\]\\.\\\\]*$"
+    }
+  ];
+
+  // Display name is an optional human-readable name for the template. It is used for display purposes on user interfaces.
+  string display_name = 2 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 100,
+      pattern: "^\\PC*$"
+    }
+  ];
+
+  // Default value for the parameter.
+  string default = 3 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 4096,
+    }
+  ];
+
+  // Type of parameter: string, number, or boolean.
+  string type = 4 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      pattern: "^(string)$|^(number)$|^(boolean)$"
+    }
+  ];
+
+  // Optional validator for the parameter. Usage TBD.
+  string validator = 5 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 40,
+    }
+  ];
+
+  // List of suggested values to use, to override the default value.
+  repeated string suggested_values = 6 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).repeated = {
+      max_items: 100
+      unique: true
+      items: {
+        string: {
+          min_len: 1
+          max_len: 4096
+        }
+      }
+    }
+  ];
+
+  // Optional secret flag for the parameter.
+  bool secret = 7 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional mandatory flag for the parameter.
+  bool mandatory = 8 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Profile is a set of configuration values for customizing application deployment.
+message Profile {
+  // Human-readable name for the profile. Unique among all profiles of the same application.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+      pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
+    }
+  ];
+
+  // Display name is an optional human-readable name for the profile. When specified, it must be unique among all
+  // profiles of a given application. It is used for display purposes on user interfaces.
+  string display_name = 2 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 40,
+      pattern: "^\\PC*$"
+    }
+  ];
+
+  // Description of the profile. Displayed on user interfaces.
+  string description = 3 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 1000
+    }
+  ];
+
+  // Raw byte value containing the chart values as raw YAML bytes.
+  string chart_values = 4 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 4000000
+    }
+  ];
+  // Parameter templates available for this profile.
+  repeated ParameterTemplate parameter_templates = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // List of deployment requirements for this profile.
+  repeated DeploymentRequirement deployment_requirement = 6 [(google.api.field_behavior) = OPTIONAL];
+
+  // The creation time of the profile.
+  google.protobuf.Timestamp create_time = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The last update time of the profile.
+  google.protobuf.Timestamp update_time = 8 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// DeploymentRequirement is a reference to the deployment package that must be deployed first,
+// as a requirement for an application to be deployed.
+message DeploymentRequirement {
+  // Name of the required deployment package.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+      pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
+    }
+  ];
+
+  // Version of the required deployment package.
+  string version = 2 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 20,
+      pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
+    }
+  ];
+
+  // Optional name of the deployment profile to be used. When not provided, the default deployment profile will be used.
+  string deployment_profile_name = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Artifact represents a binary artifact that can be used for various purposes, e.g. icon or thumbnail for UI display, or
+// auxiliary artifacts for integration with various platform services such as Grafana dashboard and similar. An artifact may be
+// used by multiple deployment packages.
+message Artifact {
+  // Name is a human-readable unique identifier for the artifact and must be unique for all artifacts within a project.
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+      pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
+    }
+  ];
+
+  // Display name is an optional human-readable name for the artifact. When specified, it must be unique among all
+  // artifacts within a project. It is used for display purposes on user interfaces.
+  string display_name = 2 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 40,
+      pattern: "^\\PC*$"
+    }
+  ];
+
+  // Description of the artifact. Displayed on user interfaces.
+  string description = 3 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0,
+      max_len: 1000
+    }
+  ];
+
+  // Artifact's MIME type. Only text/plain, application/json, application/yaml, image/png, and image/jpeg are allowed at this time.
+  //
+  // MIME types are defined and standardized in IETF's RFC 6838.
+  string mime_type = 4 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 40,
+      pattern: "^(text/plain)$|^(application/json)$|^(application/yaml)$|^(image/png)$|^(image/jpeg)$"
+    }
+  ];
+
+  // Raw byte content of the artifact encoded as base64. The limits refer to the number of raw bytes.
+  bytes artifact = 5 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).bytes = {
+      min_len: 4,
+      max_len: 4000000
+    }
+  ];
+
+  // The creation time of the artifact.
+  google.protobuf.Timestamp create_time = 6 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The last update time of the artifact.
+  google.protobuf.Timestamp update_time = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
+}
+
+// Upload represents a single file-upload record.
+message Upload {
+  // Name of the file being uploaded.
+  string file_name = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Raw bytes content of the file being uploaded.
+  bytes artifact = 2 [(google.api.field_behavior) = REQUIRED];
+}

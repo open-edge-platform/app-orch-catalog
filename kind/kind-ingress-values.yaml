@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+---
+# these values should be similar what is setup in fleet repo for the demo
+# cluster with the exception of host name
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+  className: nginx
+  hosts:
+    - host: kubernetes.docker.internal
+      paths: 
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: tls-demo
+      hosts:
+        - kubernetes.docker.internal

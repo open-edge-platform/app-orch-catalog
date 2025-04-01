@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+# NOTE we need the cypress folder in the container as we're not excluding test code from the build,
+# once we do that we should remove it from the docker context
+
+
+*.license
+*.md
+Makefile
+.git
+.github
+.idea
+.reuse
+.gitignore
+Jenkinsfile
+LICENSES
+scripts
+kind
+examples
+docs
+deployments
+
+.chartver.yaml
+.golangci.yml
+.tool-versions
+.yamllint.yaml

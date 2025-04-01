@@ -1,0 +1,77 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+specSchema: "Registry"
+schemaVersion: "0.1"
+
+name: "reg"
+description: "registry"
+type: "HELM"
+
+rootUrl: "https://registry.intel.com/repo/"
+inventoryUrl: "hhttps://registry.intel.com/repo/charts/"
+---
+specSchema: "Application"
+schemaVersion: "0.1"
+
+name: a
+version: 0.0.1
+description: "App A"
+
+helmRegistry: "reg"
+chartName: "a"
+chartVersion: "0.0.1"
+---
+specSchema: "Application"
+schemaVersion: "0.1"
+
+name: b
+version: 0.0.1
+description: "App B"
+
+helmRegistry: "reg"
+chartName: "b"
+chartVersion: "0.0.1"
+---
+specSchema: "DeploymentPackage"
+schemaVersion: "0.1"
+
+name: "a"
+description: "A"
+version: "0.0.1"
+
+applications:
+  - name: a
+    version: 0.0.1
+
+defaultNamespaces:
+  a: ns
+
+---
+specSchema: "DeploymentPackage"
+schemaVersion: "0.1"
+
+name: "b"
+description: "B"
+version: "0.0.1"
+
+applications:
+  - name: a
+    version: 0.0.1
+  - name: b
+    version: 0.0.1
+
+applicationDependencies:
+  - name: "b"
+    requires: "a"
+
+defaultNamespaces:
+  b: ns
+
+isVisible: false
+isDeployed: false
+
+

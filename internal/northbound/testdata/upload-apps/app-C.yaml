@@ -1,0 +1,31 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+specSchema: "Application"
+schemaVersion: "0.1"
+$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+
+name: c
+version: 0.0.1
+description: "App C"
+
+helmRegistry: "reg"
+chartName: "c"
+chartVersion: "0.0.1"
+
+profiles:
+  - name: "default"
+    displayName: "Default"
+    valuesFileName: "values.yaml"
+    deploymentRequirements:
+      - name: "a"
+        version: "0.0.1"
+
+ignoredResources:
+  - name: "foo"
+    kind: "ConfigMap"
+    namespace: "ns"
+  - name: "bar"
+    kind: "ConfigMap"

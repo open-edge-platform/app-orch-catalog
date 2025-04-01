@@ -1,0 +1,87 @@
+---
+$id: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "Application Orchestrator JSON/YAML schema"
+description: |
+ This is a complex schema that can validate the attributes
+  of each object.
+oneOf:
+  - description: Application OneOf
+    type: object
+    unevaluatedProperties: false
+    allOf:
+      - $ref: "#/$defs/Application"
+      - $ref: "#/$defs/SchemaProperties"
+      - description: Application extended
+        type: object
+        properties:
+          specSchema:
+            type: string
+            enum:
+              - Application
+    required:
+      - description
+  - description: Artifact OneOf
+    type: object
+    unevaluatedProperties: false
+    allOf:
+      - $ref: "#/$defs/Artifact"
+      - $ref: "#/$defs/SchemaProperties"
+      - description: Artifact extended
+        type: object
+        properties:
+          specSchema:
+            type: string
+            enum:
+              - Artifact
+    required:
+      - description
+  - description: DeploymentPackage OneOf
+    type: object
+    unevaluatedProperties: false
+    allOf:
+      - $ref: "#/$defs/DeploymentPackage"
+      - $ref: "#/$defs/SchemaProperties"
+      - description: DeploymentPackage extended
+        type: object
+        properties:
+          specSchema:
+            type: string
+            enum:
+              - DeploymentPackage
+    required:
+      - description
+  - description: Registry OneOf
+    type: object
+    unevaluatedProperties: false
+    allOf:
+      - $ref: "#/$defs/Registry"
+      - $ref: "#/$defs/SchemaProperties"
+      - description: Registry extended
+        type: object
+        properties:
+          specSchema:
+            type: string
+            enum:
+              - Registry
+    required:
+      - description
+
+$defs:
+  SchemaProperties:
+    description: common properties
+    type: object
+    properties:
+      $schema:
+        type: string
+        enum:
+          - "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+      specSchema:
+        type: string
+      schemaVersion:
+        type: string
+        enum:
+          - "0.1"
+    required:
+      - schemaVersion
+      - specSchema

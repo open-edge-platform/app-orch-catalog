@@ -1,0 +1,29 @@
+[
+  {
+    "artifact_count": 1,
+    "creation_time": "2024-07-02T18:58:11.910Z",
+    "id": 4,
+    "name": "catalog-apps/chart3",
+    "project_id": 4,
+    "pull_count": 0,
+    "update_time": "2024-07-02T18:58:11.910Z"
+  },
+  {
+    "artifact_count": 1,
+    "creation_time": "2024-07-02T18:57:57.392Z",
+    "id": 3,
+    "name": "catalog-apps/chart2",
+    "project_id": 4,
+    "pull_count": 0,
+    "update_time": "2024-07-02T18:57:57.392Z"
+  },
+  {
+    "artifact_count": 1,
+    "creation_time": "2024-07-02T18:56:15.741Z",
+    "id": 2,
+    "name": "catalog-apps/chart1",
+    "project_id": 4,
+    "pull_count": 0,
+    "update_time": "2024-07-02T18:56:15.741Z"
+  }
+]
