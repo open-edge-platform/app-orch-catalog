@@ -37,7 +37,7 @@ jobs:
         with:
           repository: open-edge-platform/edge-manageability-framework
           token: ${{ secrets.SYS_ORCH_GITHUB }}
-          ref: customer-focused-config-refactor
+          ref: main
 
       - name: Fetch all branches
         run: git fetch --all
