@@ -9,23 +9,15 @@ Application Orchestrator objects and their relationships are depicted in the fol
 
 ## Design Decisions
 
-The source of truth for the API is `protobuf` models found in the [api](api/) directory.
+* The project follows the [Standard Project Layout](https://github.com/golang-standards/project-layout).
 
-Code generation is driven by [`buf`](https://docs.buf.build/introduction) which relies on `protoc` and `protoc plugins`
-found in [buf.gen.yaml](buf.gen.yaml).
+* The source of truth for the API is `protobuf` models found in the [api](../api) directory.
 
-[gRPC-Gateway](https://grpc-ecosystem.github.io/grpc-gateway/) is used as a reverse proxy that acts as a Restful/JSON
-application to the client.
+* Code generation is driven by [`buf`](https://docs.buf.build/introduction) which relies on `protoc` and `protoc plugins`
+found in [buf.gen.yaml](../buf.gen.yaml).
 
-- [buf](https://docs.buf.build/introduction)  1.13.1
-- [protobuf](https://developers.google.com/protocol-buffers)
-- [grpc](https://grpc.io/)
-- [grpc-gateway](https://grpc-ecosystem.github.io/grpc-gateway/)
-- [openapi](https://swagger.io/docs/specification/about/)
-- [ent](https://entgo.io/)
-- [postgreSQL](https://www.postgresql.org/about/)
-
-The project follows the [`standard project layout`](https://github.com/golang-standards/project-layout).
+* [gRPC-Gateway](https://grpc-ecosystem.github.io/grpc-gateway/) is used as a reverse proxy that acts as a Restful/JSON
+application to the client.  
 
 ## Security design
 
@@ -41,6 +33,8 @@ The only services it relies on are
     - the Vault Service (in the orch-platform namespace through a service account), to a minimal level.
     - a Postgress Database external to the cluster (AWS Aurora RDS)
 
+>> Note: Malaware Scanner is disabled by default 
+
 2. Restricted Access to others
    Application Catalog restricts access to its 2 endpoints - the gRPC interface and the REST interface.
    - Only Application Deployment Manager is allowed to access the gRPC interface, and when doing so only
@@ -48,3 +42,12 @@ The only services it relies on are
    - Through the REST interface clients must first present a valid JWT token, and then the "roles" listed within the
    token determine the level of access control (RBAC). These access rules are written as Open Policy Agent REGO rules
    that define which role has access to which resources.
+
+
+- [buf](https://docs.buf.build/introduction) 
+- [protobuf](https://developers.google.com/protocol-buffers)
+- [grpc](https://grpc.io/)
+- [grpc-gateway](https://grpc-ecosystem.github.io/grpc-gateway/)
+- [openapi](https://swagger.io/docs/specification/about/)
+- [ent](https://entgo.io/)
+- [postgreSQL](https://www.postgresql.org/about/)
