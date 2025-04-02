@@ -40,5 +40,3 @@ Then you can deploy application catalog helm chart:
 make chart-install-kind
 ```
 
-## Accessing gRPC using Postman
-[gRPC through Postman](../docs/grpc-postman.md)

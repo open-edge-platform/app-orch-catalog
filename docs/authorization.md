@@ -37,7 +37,7 @@ Logging may be extracted from it on demand. If the Service is not enabled, the A
 `application-catalog` container through `localhost:8181`.
 
 ## OPA Triggers
-OPA is called upon each time one of the gRPC methods from [service.proto](../api/catalog/v2/service.proto) 
+OPA is called upon each time one of the gRPC methods from [service.proto](../api/catalog/v3/service.proto) 
 is called.
 
 There are 2 broad categories:
