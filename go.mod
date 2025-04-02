@@ -24,9 +24,9 @@ require (
 	github.com/hashicorp/vault/api v1.14.0
 	github.com/lib/pq v1.10.7
 	github.com/mattn/go-sqlite3 v1.14.16
-	github.com/open-edge-platform/orch-library/go v0.5.29
-	github.com/open-edge-platform/orch-library/go/dazl v0.5.2
-	github.com/open-edge-platform/orch-library/go/dazl/zap v0.5.2
+	github.com/open-edge-platform/orch-library/go v0.5.30
+	github.com/open-edge-platform/orch-library/go/dazl v0.5.4
+	github.com/open-edge-platform/orch-library/go/dazl/zap v0.5.4
 	github.com/opencontainers/image-spec v1.1.1
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/spf13/cobra v1.8.0
