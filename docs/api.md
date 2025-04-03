@@ -21,6 +21,6 @@ The generated code is located in the [API Generated Code] directory.
 The generated code includes the gRPC server and client code, as well as the generated code for the grpc-gateway. The grpc-gateway is responsible for converting the incoming HTTP requests into
 gRPC requests and sending the responses back to the client.
 
-- [grpc-gateway]: https://grpc-ecosystem.github.io/grpc-gateway/
-- [Catalog Protobuf Spec]: ../api/catalog/v3
-- [API Generated Code]: ../pkg/api
+[grpc-gateway]: https://grpc-ecosystem.github.io/grpc-gateway/
+[Catalog Protobuf Spec]: ../api/catalog/v3
+[API Generated Code]: ../pkg/api

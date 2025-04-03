@@ -40,9 +40,8 @@ Edge Orchestrator [Application Orchestration Developer Guide](https://literate-a
 
 Many parts of the App Catalog are described the following sub documents
 
-- [API](docs/api.md)
 - [Architecture](docs/architecture.md)
-- [Authorization](docs/authorization.md)
+- [API](docs/api.md)
 - [Developer Guide](docs/developer.md)
 - [Deploy on KinD](kind/README.md)
 - [Versioned Schema Migrations](docs/migrations.md)

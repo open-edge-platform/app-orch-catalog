@@ -30,7 +30,7 @@ The only services it relies on are
     - the Vault Service (in the orch-platform namespace through a service account), to a minimal level.
     - a Postgress Database external to the cluster (AWS Aurora RDS)
 
->> Note: Malware Scanner is disabled by default but the code is there that you can run it if you want to.
+> Note: Malware Scanner is disabled by default but the code is there that you can run it if you want to.
 
 2. Restricted Access to others
    Application Catalog restricts access to its 2 endpoints - the gRPC interface and the REST interface.
@@ -40,6 +40,8 @@ The only services it relies on are
    token determine the level of access control (RBAC). These access rules are written as Open Policy Agent REGO rules
    that define which role has access to which resources.
 
+## Authentication and Authorization
+The details of the Authentication and Authorization implementation are described in the [Authorization] document.
 
 [buf]: https://docs.buf.build/introduction
 [protobuf]: https://developers.google.com/protocol-buffers
@@ -50,3 +52,4 @@ The only services it relies on are
 [PostgreSQL]: https://www.postgresql.org/about/
 [Golang Standard Project Layout]: https://github.com/golang-standards/project-layout 
 [api]: ../api
+[Authorization]: ./authorization.md
