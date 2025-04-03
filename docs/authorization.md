@@ -156,7 +156,7 @@ are loaded in a config map in to OPA at startup. The OPA API `/v1/policy` can be
 
 ### Test rules locally
 
-> The [testdata](../deployments/application-catalog/files/openpolicyagent/testdata) folder shows an example of the kind of input that's expected as a combination of `request` and `metedata`.
+> The [testdata](../deployments/app-orch-catalog/files/openpolicyagent/testdata) folder shows an example of the kind of input that's expected as a combination of `request` and `metedata`.
 
 Test with:
 ```shell
