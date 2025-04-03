@@ -9,16 +9,15 @@ Application Orchestrator objects and their relationships are depicted in the fol
 
 ## Design Decisions
 
-* The project follows the [Golang Standard Project Layout]
-* The source of truth for the API is [protobuf] models found in the [api](../api) directory.
+* The project follows the [Golang Standard Project Layout] for its directory structure.
+* The source of truth for the API is [protobuf] models found in the [api] directory.
 * Code generation is driven by [buf]  which relies on `protoc` and `protoc plugins`
 found in [buf.gen.yaml](../buf.gen.yaml).
 * [gRPC-Gateway] is used as a reverse proxy that acts as a Restful/JSON
 application to the client.
-* Catalog uses [PostgreSQL] as the database backend. The database schema is generated using [ent](https://entgo.io/) which
+* Catalog uses [PostgreSQL] as the database backend. The database schema is generated using [ent] which
 
 ## Security design
-
 ### Enforcing the principle of least privilege
 
 Application Catalog enforces the principle of Least Privilege throughout its design:
@@ -42,11 +41,12 @@ The only services it relies on are
    that define which role has access to which resources.
 
 
-- [buf]: https://docs.buf.build/introduction
-- [protobuf]: https://developers.google.com/protocol-buffers
-- [grpc]: https://grpc.io/
-- [grpc-gateway]: https://grpc-ecosystem.github.io/grpc-gateway/
-- [openapi]: https://swagger.io/docs/specification/about/
-- [ent]: https://entgo.io/
-- [PostgreSQL]: https://www.postgresql.org/about/
-- [Golang Standard Project Layout]: https://github.com/golang-standards/project-layout 
+[buf]: https://docs.buf.build/introduction
+[protobuf]: https://developers.google.com/protocol-buffers
+[grpc]: https://grpc.io/
+[grpc-gateway]: https://grpc-ecosystem.github.io/grpc-gateway/
+[openapi]: https://swagger.io/docs/specification/about/
+[ent]: https://entgo.io/
+[PostgreSQL]: https://www.postgresql.org/about/
+[Golang Standard Project Layout]: https://github.com/golang-standards/project-layout 
+[api]: ../api
