@@ -1941,3 +1941,84 @@ func TestEmptyAppsDBQuery(t *testing.T) {
 	s.Error(err)
 	s.Contains(err.Error(), "not found")
 }
+
+func (s *NorthBoundTestSuite) TestAddProfile() {
+	var err error
+	created, err := s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
+		Application: &catalogv3.Application{
+			HelmRegistryName:  fooreg,
+			ImageRegistryName: fooregalt,
+			Name:              "test-application",
+			DisplayName:       "Test application",
+			Description:       "This is a Test",
+			Version:           "0.1.0",
+			ChartName:         "test-chart",
+			ChartVersion:      "0.1.0",
+		},
+	})
+	s.validateResponse(err, created)
+	s.validateApp(created.Application, "test-application", "0.1.0", "Test application", "This is a Test",
+		0, "", "test-chart", "0.1.0", fooreg)
+
+	_, err = s.client.UpdateApplication(s.ProjectID(footen), &catalogv3.UpdateApplicationRequest{
+		ApplicationName: "test-application",
+		Version:         "0.1.0",
+		Application: &catalogv3.Application{
+			Name:               "test-application",
+			Version:            "0.1.0",
+			ChartName:          "test-chart",
+			ChartVersion:       "0.1.0",
+			DefaultProfileName: "default",
+			HelmRegistryName:   fooreg,
+			ImageRegistryName:  fooregalt,
+			Profiles: []*catalogv3.Profile{
+				{
+					Name:        "default",
+					DisplayName: "Default Profile",
+					ChartValues: "key1a: value1a\nkey2a: value2a\n",
+				},
+			},
+		},
+	})
+	s.NoError(err)
+
+	_, err = s.client.UpdateApplication(s.ProjectID(footen), &catalogv3.UpdateApplicationRequest{
+		ApplicationName: "test-application",
+		Version:         "0.1.0",
+		Application: &catalogv3.Application{
+			Name:               "test-application",
+			Version:            "0.1.0",
+			ChartName:          "test-chart",
+			ChartVersion:       "0.1.0",
+			DefaultProfileName: "default",
+			HelmRegistryName:   fooreg,
+			ImageRegistryName:  fooregalt,
+			Profiles: []*catalogv3.Profile{
+				{
+					Name:        "default",
+					DisplayName: "Default Profile",
+					ChartValues: "key1a: value1a\nkey2a: value2a\n",
+				},
+				{
+					Name:        "newone",
+					DisplayName: "New One",
+					ChartValues: "key2b: value2b\nkey2b: value2b\n",
+				},
+			},
+		},
+	})
+	s.NoError(err)
+
+	resp, err := s.client.GetApplication(s.ProjectID(footen), &catalogv3.GetApplicationRequest{
+		ApplicationName: "test-application",
+		Version:         "0.1.0",
+	})
+	s.validateResponse(err, resp)
+	s.Len(resp.Application.Profiles, 2)
+	profilesValuesFound := map[string]string{}
+	for _, profile := range resp.Application.Profiles {
+		profilesValuesFound[profile.Name] = profile.ChartValues
+	}
+	s.Equal(profilesValuesFound["default"], "key1a: value1a\nkey2a: value2a\n", "Default profile values should match")
+	s.Equal(profilesValuesFound["newone"], "key2b: value2b\nkey2b: value2b\n", "New profile values should match")
+}

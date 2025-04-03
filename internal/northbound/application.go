@@ -748,6 +748,9 @@ func (g *Server) updateApplication(ctx context.Context, tx *generated.Tx, projec
 			errors.WithResourceName(app.Name),
 			errors.WithResourceVersion(app.Version))
 	}
+	if app.Kind == catalogv3.Kind_KIND_UNSPECIFIED {
+		app.Kind = kindFromDB(appDB.Kind) // keep the existing kind if not specified
+	}
 	app.DisplayName = displayName
 	changes, err := g.computeApplicationChanges(ctx, tx, projectUUID, app, appDB)
 	if err != nil {
