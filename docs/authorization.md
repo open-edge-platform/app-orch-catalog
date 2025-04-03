@@ -2,7 +2,7 @@
   SPDX-FileCopyrightText: (C) 2025 Intel Corporation
   SPDX-License-Identifier: Apache-2.0
 -->
-# Authorization
+## Authorization
 
 Authorization is implemented as a Role Based Access Control (RBAC) system in a distributed 
 fashion in Application Catalog, by running [Open Policy Agent] as sidecar to the `application-catalog`
@@ -151,10 +151,8 @@ sequenceDiagram
 ```
 
 ## REGO Rules (Policies)
-The REGO rules (policies) are present [in the Helm chart](../deployments/application-catalog/files/openpolicyagent), and
-are loaded in a config map in to OPA at startup.
-
-The OPA API `/v1/policy` can be used to update or inspect these at runtime.
+The REGO rules (policies) are present [in the Helm chart](../deployments/app-orch-catalog/files/openpolicyagent), and
+are loaded in a config map in to OPA at startup. The OPA API `/v1/policy` can be used to update or inspect these at runtime.
 
 ### Test rules locally
 
@@ -167,7 +165,8 @@ opa eval -f pretty -b ~/intel/app-orch-catalog/deployments/application-catalog/f
   data.catalogv3.CreateApplicationRequest
 ```
 
-> Many IDEs have support for running these tests in a graphical environment e.g. GoLand or Intellij Idea
+> Note: Many IDEs have support for running these tests in a graphical environment e.g. GoLand or Intellij Idea
 
 [Open Policy Agent]: https://www.openpolicyagent.org/docs/latest
+[Keycloak]: https://www.keycloak.org/
 [Authentication gRPC Interceptor]: https://github.com/open-edge-platform/orch-library/blob/main/go/pkg/grpc/auth/auth.go
