@@ -2015,4 +2015,10 @@ func (s *NorthBoundTestSuite) TestAddProfile() {
 	})
 	s.validateResponse(err, resp)
 	s.Len(resp.Application.Profiles, 2)
+	profilesValuesFound := map[string]string{}
+	for _, profile := range resp.Application.Profiles {
+		profilesValuesFound[profile.Name] = profile.ChartValues
+	}
+	s.Equal(profilesValuesFound["default"], "key1a: value1a\nkey2a: value2a\n", "Default profile values should match")
+	s.Equal(profilesValuesFound["newone"], "key2b: value2b\nkey2b: value2b\n", "New profile values should match")
 }
