@@ -267,7 +267,7 @@ mdlint:
 	@markdownlint "*.md"
 	@echo "---END MAKEFILE LINT README---"
 
-SHELL_FILES := $(shell find . -not \( -path ./ci -prune \) -not \( -path ./trivy -prune \) -type f -name \*.sh;)
+SHELL_FILES := $(shell find . -not \( -path ./ci -prune \) -not \( -path ./trivy -prune \) -not \( -path ./vendor -prune \) -type f -name \*.sh;)
 .PHONY: shelllint ## lint shell files
 shelllint:
 	@echo "---MAKEFILE LINT SCRIPTS---"
