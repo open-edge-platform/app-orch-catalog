@@ -40,6 +40,10 @@ The only services it relies on are
    token determine the level of access control (RBAC). These access rules are written as Open Policy Agent REGO rules
    that define which role has access to which resources.
 
+## Multi-tenancy
+The Application Catalog is designed to support multi-tenancy, allowing multiple tenants to coexist within the same instance of the service. Each tenant has its own isolated environment, 
+ensuring that data and resources are not shared between tenants.
+
 ## Authentication and Authorization
 The details of the Authentication and Authorization implementation are described in the [Authorization] document.
 
