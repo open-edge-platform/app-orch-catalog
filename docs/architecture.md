@@ -9,15 +9,13 @@ Application Orchestrator objects and their relationships are depicted in the fol
 
 ## Design Decisions
 
-* The project follows the [Standard Project Layout](https://github.com/golang-standards/project-layout).
-
-* The source of truth for the API is `protobuf` models found in the [api](../api) directory.
-
-* Code generation is driven by [`buf`](https://docs.buf.build/introduction) which relies on `protoc` and `protoc plugins`
+* The project follows the [Golang Standard Project Layout]
+* The source of truth for the API is [protobuf] models found in the [api](../api) directory.
+* Code generation is driven by [buf]  which relies on `protoc` and `protoc plugins`
 found in [buf.gen.yaml](../buf.gen.yaml).
-
-* [gRPC-Gateway](https://grpc-ecosystem.github.io/grpc-gateway/) is used as a reverse proxy that acts as a Restful/JSON
-application to the client.  
+* [gRPC-Gateway] is used as a reverse proxy that acts as a Restful/JSON
+application to the client.
+* Catalog uses [PostgreSQL] as the database backend. The database schema is generated using [ent](https://entgo.io/) which
 
 ## Security design
 
@@ -33,7 +31,7 @@ The only services it relies on are
     - the Vault Service (in the orch-platform namespace through a service account), to a minimal level.
     - a Postgress Database external to the cluster (AWS Aurora RDS)
 
->> Note: Malaware Scanner is disabled by default 
+>> Note: Malware Scanner is disabled by default but the code is there that you can run it if you want to.
 
 2. Restricted Access to others
    Application Catalog restricts access to its 2 endpoints - the gRPC interface and the REST interface.
@@ -44,10 +42,11 @@ The only services it relies on are
    that define which role has access to which resources.
 
 
-- [buf](https://docs.buf.build/introduction) 
-- [protobuf](https://developers.google.com/protocol-buffers)
-- [grpc](https://grpc.io/)
-- [grpc-gateway](https://grpc-ecosystem.github.io/grpc-gateway/)
-- [openapi](https://swagger.io/docs/specification/about/)
-- [ent](https://entgo.io/)
-- [postgreSQL](https://www.postgresql.org/about/)
+- [buf]: https://docs.buf.build/introduction
+- [protobuf]: https://developers.google.com/protocol-buffers
+- [grpc]: https://grpc.io/
+- [grpc-gateway]: https://grpc-ecosystem.github.io/grpc-gateway/
+- [openapi]: https://swagger.io/docs/specification/about/
+- [ent]: https://entgo.io/
+- [PostgreSQL]: https://www.postgresql.org/about/
+- [Golang Standard Project Layout]: https://github.com/golang-standards/project-layout 
