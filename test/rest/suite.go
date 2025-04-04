@@ -38,7 +38,7 @@ type TestSuite struct {
 	cmd                  *exec.Cmd
 }
 
-// SetupSuite sets-up the integration tests for the ADM basic test suite
+// SetupSuite sets-up the integration tests for the Catalog basic test suite
 func (s *TestSuite) SetupSuite() {
 	s.KeycloakServer = KeycloakServer
 	s.CatalogRESTServerUrl = RestAddress
@@ -73,7 +73,7 @@ func portForwardToCatalog() (*exec.Cmd, error) {
 	return cmd, err
 }
 
-func TestCatalogSuite(t *testing.T) {
+func TestTestSuite(t *testing.T) {
 	suite.Run(t, new(TestSuite))
 }
 
