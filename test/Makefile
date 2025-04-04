@@ -58,4 +58,4 @@ scale-test-coder:
 
 .PHONY: test-catalog-api
 test-catalog-api:
-	go test -v ./rest -run TestCatalogAPI
+	go test -v ./rest -run TestSuite
