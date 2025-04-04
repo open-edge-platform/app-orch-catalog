@@ -42,7 +42,7 @@ The only services it relies on are
 
 ## Multi-tenancy
 The Application Catalog is designed to support multi-tenancy, allowing multiple tenants to coexist within the same instance of the service. Each tenant has its own isolated environment, 
-ensuring that data and resources are not shared between tenants.
+ensuring that data and resources are not shared between tenants. For more information, see the [Multi-tenancy] document.
 
 ## Authentication and Authorization
 The details of the Authentication and Authorization implementation are described in the [Authorization] document.
@@ -57,3 +57,4 @@ The details of the Authentication and Authorization implementation are described
 [Golang Standard Project Layout]: https://github.com/golang-standards/project-layout 
 [api]: ../api
 [Authorization]: ./authorization.md
+[Multi-tenancy]: ./tenants.md
