@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (C) 2023-present Intel Corporation
+// SPDX-FileCopyrightText: (C) 2025-present Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -11,13 +11,19 @@ import (
 	"fmt"
 	"os"
 
+	nexus_client "github.com/open-edge-platform/orch-utils/tenancy-datamodel/build/nexus-client"
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/grpc/metadata"
 	"io"
 	"net/http"
 	"net/url"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"strings"
 	"testing"
+)
+
+const (
+	SampleOrg     = "sample-org"
+	SampleProject = "sample-project"
 )
 
 func SetUpAccessToken(t *testing.T, server string) string {
@@ -26,10 +32,10 @@ func SetUpAccessToken(t *testing.T, server string) string {
 	}
 	data := url.Values{}
 	data.Set("client_id", "system-client")
-	data.Set("username", "edge-manager-example-user")
+	data.Set("username", fmt.Sprintf("%s-edge-mgr", SampleProject))
 	data.Set("password", "ChangeMeOn1stLogin!")
 	data.Set("grant_type", "password")
-	url := "http://" + server + "/realms/master/protocol/openid-connect/token"
+	url := "https://" + server + "/realms/master/protocol/openid-connect/token"
 	req, err := http.NewRequest(http.MethodPost,
 		url,
 		strings.NewReader(data.Encode()))
@@ -55,14 +61,38 @@ func SetUpAccessToken(t *testing.T, server string) string {
 	return accessToken
 }
 
-func AddGrpcAuthHeader(ctx context.Context, token string, projectUUID string) context.Context {
-	md := metadata.New(map[string]string{
-		"Authorization":   fmt.Sprintf("Bearer %s", token),
-		"ActiveProjectID": projectUUID,
-	})
-	return metadata.NewOutgoingContext(ctx, md)
+func AddRestAuthHeader(req *http.Request, token string, projectID string) {
+	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+	req.Header.Set("Activeprojectid", fmt.Sprintf("%s", projectID))
 }
 
-func AddRestAuthHeader(req *http.Request, token string) {
-	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+func GetProjectId(ctx context.Context) (string, error) {
+	config := ctrl.GetConfigOrDie()
+	nexusClient, err := nexus_client.NewForConfig(config)
+	if err != nil {
+		return "", fmt.Errorf("\nerror retrieving the project (%s). Error: %w", SampleProject, err)
+	}
+	configNode := nexusClient.TenancyMultiTenancy().Config()
+	if configNode == nil {
+		return "", fmt.Errorf("\nerror retrieving the project (%s). Error: %w", SampleProject, err)
+	}
+
+	org := configNode.Orgs(SampleOrg)
+	if org == nil {
+		fmt.Printf("org %s does not exist.\n", SampleOrg)
+		return "", nil
+	}
+
+	folder := org.Folders("default")
+	if folder == nil {
+		return "", fmt.Errorf("\nerror retrieving the project (%s). Error: %w", SampleProject, err)
+	}
+
+	project := folder.Projects(SampleProject)
+	projectStatus, err := project.GetProjectStatus(ctx)
+	if projectStatus == nil || err != nil {
+		return "", fmt.Errorf("\nerror retrieving the project (%s). Error: %w", SampleProject, err)
+	}
+
+	return projectStatus.UID, nil
 }
