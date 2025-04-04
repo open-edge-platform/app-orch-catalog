@@ -6,6 +6,7 @@
 package restapi
 
 import (
+	"context"
 	"fmt"
 	"os/exec"
 	"testing"
@@ -48,7 +49,7 @@ func (s *TestSuite) SetupTest() {
 	var err error
 	s.token = auth.SetUpAccessToken(s.T(), s.KeycloakServer)
 	s.CatalogRESTServerUrl = fmt.Sprintf("http://%s:%s", RestAddressPortForward, PortForwardRemotePort)
-	s.projectID = auth.SampleProject
+	s.projectID, err = auth.GetProjectId(context.TODO())
 	s.NoError(err)
 	s.cmd, err = portForwardToCatalog()
 	s.NoError(err)

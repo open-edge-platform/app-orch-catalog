@@ -6,19 +6,23 @@
 package auth
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 
+	nexus_client "github.com/open-edge-platform/orch-utils/tenancy-datamodel/build/nexus-client"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/url"
+	ctrl "sigs.k8s.io/controller-runtime"
 	"strings"
 	"testing"
 )
 
 const (
+	SampleOrg     = "sample-org"
 	SampleProject = "sample-project"
 )
 
@@ -60,4 +64,35 @@ func SetUpAccessToken(t *testing.T, server string) string {
 func AddRestAuthHeader(req *http.Request, token string, projectID string) {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 	req.Header.Set("Activeprojectid", fmt.Sprintf("%s", projectID))
+}
+
+func GetProjectId(ctx context.Context) (string, error) {
+	config := ctrl.GetConfigOrDie()
+	nexusClient, err := nexus_client.NewForConfig(config)
+	if err != nil {
+		return "", fmt.Errorf("\nerror retrieving the project (%s). Error: %w", SampleProject, err)
+	}
+	configNode := nexusClient.TenancyMultiTenancy().Config()
+	if configNode == nil {
+		return "", fmt.Errorf("\nerror retrieving the project (%s). Error: %w", SampleProject, err)
+	}
+
+	org := configNode.Orgs(SampleOrg)
+	if org == nil {
+		fmt.Printf("org %s does not exist.\n", SampleOrg)
+		return "", nil
+	}
+
+	folder := org.Folders("default")
+	if folder == nil {
+		return "", fmt.Errorf("\nerror retrieving the project (%s). Error: %w", SampleProject, err)
+	}
+
+	project := folder.Projects(SampleProject)
+	projectStatus, err := project.GetProjectStatus(ctx)
+	if projectStatus == nil || err != nil {
+		return "", fmt.Errorf("\nerror retrieving the project (%s). Error: %w", SampleProject, err)
+	}
+
+	return projectStatus.UID, nil
 }
