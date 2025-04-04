@@ -21,3 +21,4 @@ mod-update: # @HELP update Go modules
 .PHONY: component-tests
 component-tests:
 	go test -v -count=1 ./rest/...
+	go test -v -count=1 ./rest -run TestListExtensions
