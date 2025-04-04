@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 // Package basic is a suite of basic functionality tests for the catalog service
-package basic
+package rest
 
 import (
 	"fmt"
