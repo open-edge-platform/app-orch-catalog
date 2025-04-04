@@ -39,4 +39,3 @@ Then you can deploy application catalog helm chart:
 ```
 make chart-install-kind
 ```
-

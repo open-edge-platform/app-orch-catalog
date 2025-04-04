@@ -52,7 +52,8 @@ App Catalog is developed in the **Go** language and is built as a Docker image, 
 in its `build` folder. The CI integration for this repository will publish the container image to the Edge Orchestrator
 Release Service OCI registry upon merge to the `main` branch.
 
-App Catalog has a corresponding Helm chart in its [deployments](deployments) folder. The CI integration for this repository will
+App Catalog has a corresponding Helm chart in its [deployments](deployments) folder.
+The CI integration for this repository will
 publish this Helm charts to the Edge Orchestrator Release Service OCI registry upon merge to `main` branch.
 App Catalog is deployed to the Edge Orchestrator using this Helm chart, whose lifecycle is in turn managed by
 Argo CD (see [Foundational Platform]).
