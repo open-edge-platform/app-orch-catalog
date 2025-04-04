@@ -6,13 +6,12 @@
 package basic
 
 import (
-	"context"
 	"fmt"
 	"os/exec"
+	"testing"
 
 	"github.com/open-edge-platform/app-orch-catalog/test/auth"
 	"github.com/stretchr/testify/suite"
-	"testing"
 	"time"
 )
 
@@ -78,7 +77,7 @@ func TestTestSuite(t *testing.T) {
 }
 
 // TearDownTest tears down remnants of each integration test
-func (s *TestSuite) TearDownTest(ctx context.Context) {
+func (s *TestSuite) TearDownTest() {
 	err := killportForwardToCatalog(s.cmd)
 	s.NoError(err)
 }
