@@ -14,7 +14,7 @@ import (
 
 func (s *TestSuite) TestListExtensions() {
 	// Form the request URL
-	requestURL := fmt.Sprintf("%s/v3/projects/%s/catalog/applications?orderBy=name+asc&pageSize=10&offset=0&kinds=KIND_EXTENSION", s.CatalogRESTServerUrl, s.projectID)
+	requestURL := fmt.Sprintf("%s/v3/projects/%s/catalog/applications", s.CatalogRESTServerUrl, s.projectID)
 
 	// Make the curl request using the access token and format the output with jq
 	req, err := http.NewRequest("GET", requestURL, nil)
@@ -28,6 +28,7 @@ func (s *TestSuite) TestListExtensions() {
 
 	body, err := io.ReadAll(resp.Body)
 	assert.NoError(s.T(), err)
+	s.T().Log(body)
 
 	var result interface{}
 	err = json.Unmarshal(body, &result)

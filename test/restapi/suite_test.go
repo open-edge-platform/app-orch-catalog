@@ -63,7 +63,7 @@ func killportForwardToCatalog(cmd *exec.Cmd) error {
 }
 
 func portForwardToCatalog() (*exec.Cmd, error) {
-	fmt.Println("port-forward to app-deployment-manager")
+	fmt.Println("port-forward to app-orch-catalog")
 
 	cmd := exec.Command("kubectl", "port-forward", "-n", PortForwardServiceNamespace, PortForwardService, fmt.Sprintf("%s:%s", PortForwardLocalPort, PortForwardRemotePort), "--address", PortForwardAddress)
 	err := cmd.Start()
