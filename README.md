@@ -43,7 +43,6 @@ Many parts of the App Catalog are described the following sub documents
 - [Architecture](docs/architecture.md)
 - [API](docs/api.md)
 - [Developer Guide](docs/developer.md)
-- [Deploy on KinD](kind/README.md)
 - [Versioned Schema Migrations](docs/migrations.md)
 
 ## Develop
