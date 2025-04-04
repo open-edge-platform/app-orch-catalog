@@ -10,7 +10,7 @@ toolchain go1.24.0
 
 require (
 	github.com/open-edge-platform/app-orch-catalog v0.0.0
-	github.com/open-edge-platform/orch-library/go v0.5.25
+	github.com/open-edge-platform/orch-library/go v0.5.30
 	github.com/stretchr/testify v1.10.0
 	golang.org/x/text v0.22.0
 	google.golang.org/grpc v1.59.0
@@ -30,7 +30,6 @@ require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
-	github.com/open-edge-platform/orch-library/go/dazl v1.1.4 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/bytedance/sonic v1.11.3 // indirect
 	github.com/cenkalti/backoff v2.2.1+incompatible // indirect
@@ -106,6 +105,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/oapi-codegen/runtime v1.1.1 // indirect
+	github.com/open-edge-platform/orch-library/go/dazl v0.5.4 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect

@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
-	"testing"
 )
 
 const (
@@ -19,29 +18,29 @@ const (
 	serviceDomainWithPort = "kind.internal"
 )
 
-func TestCatalogAPI(t *testing.T) {
-	// Get the access token using the utility function
-	accessToken := GetAccessToken(t, username, password, serviceDomainWithPort)
+func (s *TestSuite) TestCatalogAPI() {
+	// Form the request URL
+	requestURL := fmt.Sprintf("%s/v3/projects/%s/catalog/applications?orderBy=name+asc&pageSize=10&offset=0&kinds=KIND_EXTENSION", s.CatalogRESTServerUrl, s.projectID)
 
 	// Make the curl request using the access token and format the output with jq
-	req, err := http.NewRequest("GET", "https://api.kind.internal/v3/projects/sample-project/catalog/applications?orderBy=name+asc&pageSize=10&offset=0&kinds=KIND_EXTENSION", nil)
-	assert.NoError(t, err)
-	req.Header.Set("Authorization", "Bearer "+accessToken)
+	req, err := http.NewRequest("GET", requestURL, nil)
+	assert.NoError(s.T(), err)
+	req.Header.Set("Authorization", "Bearer "+s.token)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
-	assert.NoError(t, err)
+	assert.NoError(s.T(), err)
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
-	assert.NoError(t, err)
+	assert.NoError(s.T(), err)
 
 	var result interface{}
 	err = json.Unmarshal(body, &result)
-	assert.NoError(t, err)
+	assert.NoError(s.T(), err)
 
 	// Print the formatted JSON output
 	formattedJSON, err := json.MarshalIndent(result, "", "  ")
-	assert.NoError(t, err)
+	assert.NoError(s.T(), err)
 	fmt.Println(string(formattedJSON))
 }

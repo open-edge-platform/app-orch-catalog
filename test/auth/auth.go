@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (C) 2023-present Intel Corporation
+// SPDX-FileCopyrightText: (C) 2025-present Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -6,18 +6,20 @@
 package auth
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"os"
 
 	"github.com/stretchr/testify/assert"
-	"google.golang.org/grpc/metadata"
 	"io"
 	"net/http"
 	"net/url"
 	"strings"
 	"testing"
+)
+
+const (
+	SampleProject = "sample-project"
 )
 
 func SetUpAccessToken(t *testing.T, server string) string {
@@ -26,10 +28,10 @@ func SetUpAccessToken(t *testing.T, server string) string {
 	}
 	data := url.Values{}
 	data.Set("client_id", "system-client")
-	data.Set("username", "edge-manager-example-user")
+	data.Set("username", fmt.Sprintf("%s-edge-mgr", SampleProject))
 	data.Set("password", "ChangeMeOn1stLogin!")
 	data.Set("grant_type", "password")
-	url := "http://" + server + "/realms/master/protocol/openid-connect/token"
+	url := "https://" + server + "/realms/master/protocol/openid-connect/token"
 	req, err := http.NewRequest(http.MethodPost,
 		url,
 		strings.NewReader(data.Encode()))
@@ -55,14 +57,7 @@ func SetUpAccessToken(t *testing.T, server string) string {
 	return accessToken
 }
 
-func AddGrpcAuthHeader(ctx context.Context, token string, projectUUID string) context.Context {
-	md := metadata.New(map[string]string{
-		"Authorization":   fmt.Sprintf("Bearer %s", token),
-		"ActiveProjectID": projectUUID,
-	})
-	return metadata.NewOutgoingContext(ctx, md)
-}
-
-func AddRestAuthHeader(req *http.Request, token string) {
+func AddRestAuthHeader(req *http.Request, token string, projectID string) {
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+	req.Header.Set("Activeprojectid", fmt.Sprintf("%s", projectID))
 }
