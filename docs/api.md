@@ -38,7 +38,6 @@ The implementation of mapping the API back to the gRPC implementation is realize
 [grpc-gateway]: https://grpc-ecosystem.github.io/grpc-gateway/
 
 
-### Steps to Generate Code
 
 [Catalog Protobuf Spec]: ../api/catalog/v3
 [API Generated Code]: ../pkg/api
