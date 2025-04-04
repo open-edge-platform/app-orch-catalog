@@ -7,6 +7,7 @@ package restapi
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/open-edge-platform/app-orch-catalog/test/auth"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
@@ -19,14 +20,13 @@ func (s *TestSuite) TestListExtensions() {
 	// Make the curl request using the access token and format the output with jq
 	req, err := http.NewRequest("GET", requestURL, nil)
 	assert.NoError(s.T(), err)
-	req.Header.Set("Authorization", "Bearer "+s.token)
 
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	auth.AddRestAuthHeader(req, s.token, s.projectID)
+
+	res, err := http.DefaultClient.Do(req)
 	assert.NoError(s.T(), err)
-	defer resp.Body.Close()
 
-	body, err := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(res.Body)
 	assert.NoError(s.T(), err)
 	s.T().Log(body)
 
