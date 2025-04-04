@@ -25,6 +25,7 @@ func (s *TestSuite) TestListExtensions() {
 
 	res, err := http.DefaultClient.Do(req)
 	assert.NoError(s.T(), err)
+	s.Equal("200 OK", res.Status)
 
 	body, err := io.ReadAll(res.Body)
 	assert.NoError(s.T(), err)
