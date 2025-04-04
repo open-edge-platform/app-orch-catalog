@@ -11,13 +11,13 @@ export GO111MODULE=on
 GOCMD := GOPRIVATE="github.com/intel*/*" go
 
 
-all: load-catalog-test
+all: component-tests
 
 mod-update: # @HELP update Go modules
 	$(GOCMD) mod tidy
 	$(GOCMD) mod vendor
 
 
-.PHONY: component-test
-component-test:
+.PHONY: component-tests
+component-tests:
 	go test -v -count=1 ./rest/...
