@@ -49,7 +49,7 @@ jobs:
         ls ao
         echo
     - name: Catalog Go Fuzzing Tests
-      uses: ao/app-orch-deployment/.github/workflows/common-go-fuzz.yml
+      uses: ./ao/app-orch-deployment/.github/workflows/common-go-fuzz.yml
       with:
         # Declare 4800 secs duration since schedule event will not pick up input values from workflow_dispatch
         fuzz_seconds: ${{ inputs.fuzz_seconds_catalog || 2 }}
