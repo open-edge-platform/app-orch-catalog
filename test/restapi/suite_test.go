@@ -48,7 +48,7 @@ func (s *TestSuite) SetupTest() {
 	var err error
 	s.token = auth.SetUpAccessToken(s.T(), s.KeycloakServer)
 	s.CatalogRESTServerUrl = fmt.Sprintf("http://%s:%s", RestAddressPortForward, PortForwardRemotePort)
-	s.projectID = "sample-project"
+	s.projectID = auth.SampleProject
 	s.NoError(err)
 	s.cmd, err = portForwardToCatalog()
 	s.NoError(err)
