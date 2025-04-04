@@ -12,13 +12,7 @@ import (
 	"net/http"
 )
 
-const (
-	username              = "sample-project-edge-mgr"
-	password              = "ChangeMeOn1stLogin!"
-	serviceDomainWithPort = "kind.internal"
-)
-
-func (s *TestSuite) TestCatalogAPI() {
+func (s *TestSuite) TestListExtensions() {
 	// Form the request URL
 	requestURL := fmt.Sprintf("%s/v3/projects/%s/catalog/applications?orderBy=name+asc&pageSize=10&offset=0&kinds=KIND_EXTENSION", s.CatalogRESTServerUrl, s.projectID)
 

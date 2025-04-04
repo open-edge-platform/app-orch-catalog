@@ -73,7 +73,7 @@ func portForwardToCatalog() (*exec.Cmd, error) {
 	return cmd, err
 }
 
-func TestTestSuite(t *testing.T) {
+func TestCatalogSuite(t *testing.T) {
 	suite.Run(t, new(TestSuite))
 }
 
