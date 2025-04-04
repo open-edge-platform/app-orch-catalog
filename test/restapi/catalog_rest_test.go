@@ -14,7 +14,7 @@ import (
 
 func (s *TestSuite) TestListExtensions() {
 	// Form the request URL
-	requestURL := fmt.Sprintf("%s/v3/projects/%s/catalog/applications", s.CatalogRESTServerUrl, s.projectID)
+	requestURL := fmt.Sprintf("%s/catalog.orchestrator.apis/v3/applications", s.CatalogRESTServerUrl)
 
 	// Make the curl request using the access token and format the output with jq
 	req, err := http.NewRequest("GET", requestURL, nil)
