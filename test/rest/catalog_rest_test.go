@@ -7,16 +7,13 @@ package rest
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/open-edge-platform/app-orch-catalog/test/auth"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
-	"net/url"
-	"time"
 )
 
 // listDeploymentPackages allows the verb to be overridden, for tests related to http verb restriction
-func (s *TestSuite) listDeploymentPackages(server string, verb string) (*http.Response, error) {
+/*func (s *TestSuite) listDeploymentPackages(server string, verb string) (*http.Response, error) {
 	s.T().Skip("skipping test for now, as it is not working")
 	var err error
 
@@ -65,62 +62,7 @@ func (s *TestSuite) listPublishers(server string) (*http.Response, error) {
 	}
 
 	return res, err
-}
-
-// Rest-Proxy will return error responses to all requests for a few seconds after starting.
-// TODO: Investigate Ready-Check
-func (s *TestSuite) waitForProxyUsable() error {
-	s.T().Skip("skipping test for now, as it is not working")
-
-	// Wait up to 30 seconds, in 5-second intervals
-	for i := 0; i < 6; i++ {
-		res, _ := s.listPublishers(s.CatalogRESTServerUrl)
-		if res != nil && res.StatusCode == 200 {
-			return nil
-		}
-		time.Sleep(5 * time.Second)
-	}
-	return fmt.Errorf("timed out waiting for rest-proxy to be usable")
-}
-
-// TestRest tests basics of exercising the REST API of the catalog service.
-func (s *TestSuite) TestRest() {
-	s.T().Skip("skipping test for now, as it is not working")
-
-	s.NoError(s.waitForProxyUsable())
-
-	res, err := s.listDeploymentPackages(s.CatalogRESTServerUrl, http.MethodGet)
-	s.NoError(err)
-	s.Equal("200 OK", res.Status)
-
-	res, err = s.listDeploymentPackages(s.CatalogRESTServerUrl, http.MethodPost)
-	s.NoError(err)
-	s.Equal("400 Bad Request", res.Status) /* legitimately a bad request, as we send empty body */
-
-	res, err = s.listDeploymentPackages(s.CatalogRESTServerUrl, http.MethodTrace)
-	s.NoError(err)
-	s.Equal("405 Method Not Allowed", res.Status)
-
-	res, err = s.listDeploymentPackages(s.CatalogRESTServerUrl, http.MethodPatch)
-	s.NoError(err)
-	s.Equal("405 Method Not Allowed", res.Status)
-
-	res, err = s.listDeploymentPackages(s.CatalogRESTServerUrl, http.MethodDelete)
-	s.NoError(err)
-	s.Equal("405 Method Not Allowed", res.Status)
-
-	res, err = s.listDeploymentPackages(s.CatalogRESTServerUrl, http.MethodPut)
-	s.NoError(err)
-	s.Equal("405 Method Not Allowed", res.Status)
-
-	res, err = s.listDeploymentPackages(s.CatalogRESTServerUrl, http.MethodHead)
-	s.NoError(err)
-	s.Equal("405 Method Not Allowed", res.Status)
-
-	res, err = s.listDeploymentPackages(s.CatalogRESTServerUrl, http.MethodConnect)
-	s.NoError(err)
-	s.Equal("405 Method Not Allowed", res.Status)
-}
+}*/
 
 func (s *TestSuite) TestListExtensions() {
 	// Form the request URL
