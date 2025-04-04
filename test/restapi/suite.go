@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: Apache-2.0
 
-// Package basic is a suite of basic functionality tests for the catalog service
-package rest
+// Package rest is a suite of REST API functionality tests for the catalog service
+package restapi
 
 import (
 	"fmt"
@@ -72,7 +72,7 @@ func portForwardToCatalog() (*exec.Cmd, error) {
 	return cmd, err
 }
 
-func TestTestSuite(t *testing.T) {
+func TestRunSuite(t *testing.T) {
 	suite.Run(t, new(TestSuite))
 }
 
