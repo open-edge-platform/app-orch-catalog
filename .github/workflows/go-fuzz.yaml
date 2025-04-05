@@ -38,9 +38,17 @@ jobs:
         token: ${{ secrets.SYS_ORCH_GITHUB }}
   go-fuzz-catalog:
     name: Catalog Go Fuzzing Tests
-    uses: ./ao/app-orch-deployment/.github/workflows/common-go-fuzz.yml@main
-    with:
-      # Declare 4800 secs duration since schedule event will not pick up input values from workflow_dispatch
-      fuzz_seconds: ${{ fromJSON(inputs.fuzz_seconds_catalog) || 2 }}
-      test_data_dir: ./internal/northbound/testdata/fuzz
-    secrets: inherit
+    runs-on: ${{ github.repository_owner == 'intel' && 'intel-ubuntu-latest' || 'ubuntu-latest' }}
+    steps:
+    - name: Checkout app-orch-deployment repository
+      uses: actions/checkout@v4
+      with:
+        repository: open-edge-platform/app-orch-deployment
+        path: ao
+        token: ${{ secrets.SYS_ORCH_GITHUB }}
+    - name: Catalog Go Fuzzing Tests
+      uses: ./ao/app-deployment-manager/.github/workflows/common-go-fuzz.yml
+      with:
+        # Declare 4800 secs duration since schedule event will not pick up input values from workflow_dispatch
+        fuzz_seconds: ${{ fromJSON(inputs.fuzz_seconds_catalog) || 2 }}
+        test_data_dir: ./internal/northbound/testdata/fuzz
