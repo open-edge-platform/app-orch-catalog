@@ -26,9 +26,19 @@ on:
     - cron: "0 0 * * 6"   # every week, at 00:00 on Saturday
 
 jobs:
+  pre-install:
+    name: Catalog Go Fuzzing Tests
+    runs-on: ${{ github.repository_owner == 'intel' && 'intel-ubuntu-latest' || 'ubuntu-latest' }}
+    steps:
+    - name: Checkout app-orch-deployment repository
+      uses: actions/checkout@v4
+      with:
+        repository: open-edge-platform/app-orch-deployment
+        path: ao
+        token: ${{ secrets.SYS_ORCH_GITHUB }}
   go-fuzz-catalog:
     name: Catalog Go Fuzzing Tests
-    uses: open-edge-platform/app-orch-deployment/.github/workflows/common-go-fuzz.yml@main
+    uses: ./ao/app-orch-deployment/.github/workflows/common-go-fuzz.yml
     with:
       # Declare 4800 secs duration since schedule event will not pick up input values from workflow_dispatch
       fuzz_seconds: ${{ fromJSON(inputs.fuzz_seconds_catalog) || 2 }}
