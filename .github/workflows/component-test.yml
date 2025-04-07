@@ -142,7 +142,7 @@ jobs:
       - name: Run Catalog Component Tests
         working-directory: app-orch-catalog/test
         run: |
-          make test-catalog-api
+          make component-tests
           echo "Component tests done!"  
 
       - name: Get diagnostic information
