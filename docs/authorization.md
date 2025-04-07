@@ -2,15 +2,16 @@
   SPDX-FileCopyrightText: (C) 2025 Intel Corporation
   SPDX-License-Identifier: Apache-2.0
 -->
-# Authorization
+## Authorization
 
 Authorization is implemented as a Role Based Access Control (RBAC) system in a distributed 
-fashion in Application Catalog, by running OpenPolicyAgent as sidecar to the `application-catalog`
+fashion in Application Catalog, by running [Open Policy Agent] as sidecar to the `application-catalog`
 container.
 
 ## Authentication
 Authorization is dependent on the Application Catalog being configured with an Identity Provider, to implement
-the Authentication feature.
+the Authentication feature. Authentication is implemented as gPRC interceptor that verifies the JWT token. 
+The implementation of gRPC interceptor is in the [Authentication gRPC Interceptor] package.
 
 ### Deploying Locally
 For deploying locally this may be done by [deploying a local Keycloak](../deployments/keycloak-dev).
@@ -27,8 +28,8 @@ is already configured in this environment
 [Keycloak]
 is already deployed through Fleet on cloud deployment.
 
-## OPA
-A distributed OPA is necessary since Application Catalog is the ultimate source of truth about its managed objects
+## Open Policy Agent (OPA)
+A distributed [Open Policy Agent] is necessary since Application Catalog is the ultimate source of truth about its managed objects
 (such as Application) and the interpretation of the meaning of each of the **roles** that a user
 may possess ultimately happens in Application Catalog development.
 
@@ -37,7 +38,7 @@ Logging may be extracted from it on demand. If the Service is not enabled, the A
 `application-catalog` container through `localhost:8181`.
 
 ## OPA Triggers
-OPA is called upon each time one of the gRPC methods from [service.proto](../api/catalog/v2/service.proto) 
+OPA is called upon each time one of the gRPC methods from [service.proto](../api/catalog/v3/service.proto) 
 is called.
 
 There are 2 broad categories:
@@ -51,8 +52,7 @@ Roles are defined by the Keycloak Tenant Manager dynamically as projects are cre
 The relevant roles for App Catalog are:
 * **cat-r** - Catalog Read Only
 * **cat-rw** - Catalog Read Write
-* **reg-r** - Registry Read Only
-* **reg-a** - Registry Admin
+* **ao-m2m-rw** - Machine-to-Machine Read Write
 
 ## Rules in the context of Application Catalog
 The rules impart the following relationship between the roles and the managed objects of the Catalog Application as follows:
@@ -60,8 +60,8 @@ The rules impart the following relationship between the roles and the managed ob
 |        | Registry   | Artifact   | Application | Deployment<br/>Package |
 |--------|------------|-------------|-----------------|------------------------|
 | cat-rw | **RW all** | **RW all**  | **RW all**              | **RW all**             |
-| cat-r  | RO all     | RO all      | RO all                  | RO all                 | 
-
+| cat-r  | RO all     | RO all      | RO all                  | RO all                 |
+| ao-m2m-rw | **RW all** | **RW all**  | **RW all**              | **RW all**             |
 
 ## Calling on OPA
 OPA executes policy decisions using REGO rules applied to data sets.
@@ -70,15 +70,17 @@ The 2 major data sets are:
 * `input` - provided in JSON format during a query - specifically:
   * `request` - the contents of the gRPC request that is being authorized
   * `metadata` - the contents of the gRPC metadata, including the contents of the JWT token
-* `data` - provided in advance and cached in JSON format - the complete contents of the App Calatog DB
+* `data` - provided in advance and cached in JSON format - the complete contents of the App Catalog DB
 
-All **Write** actions will be checked for authorization by passing the `input` listed above over 
-to the OPA Sidecar at a URL matching the Request type name e.g. CreateApplicationRequest. 
+All **Write** actions will be checked for authorization by passing the `input` listed above over
+to the OPA Sidecar at a URL matching the Request type name e.g. CreateApplicationRequest.
 OPA will perform the query on this rule, and returns the result to Application Catalog.
 
 If the rule:
 * evaluates to `{"result":true}` then access will be granted.
 * any other response e.g. `{}` then access will be denied.
+
+
 
 ### Example of calling the CreateApplication method (a WRITE trigger)
 ```mermaid
@@ -149,14 +151,12 @@ sequenceDiagram
 ```
 
 ## REGO Rules (Policies)
-The REGO rules (policies) are present [in the Helm chart](../deployments/application-catalog/files/openpolicyagent), and
-are loaded in a config map in to OPA at startup.
-
-The OPA API `/v1/policy` can be used to update or inspect these at runtime.
+The REGO rules (policies) are present [in the Helm chart](../deployments/app-orch-catalog/files/openpolicyagent), and
+are loaded in a config map in to OPA at startup. The OPA API `/v1/policy` can be used to update or inspect these at runtime.
 
 ### Test rules locally
 
-> The [testdata](../deployments/application-catalog/files/openpolicyagent/testdata) folder shows an example of the kind of input that's expected as a combination of `request` and `metedata`.
+> The [testdata](../deployments/app-orch-catalog/files/openpolicyagent/testdata) folder shows an example of the kind of input that's expected as a combination of `request` and `metedata`.
 
 Test with:
 ```shell
@@ -165,4 +165,8 @@ opa eval -f pretty -b ~/intel/app-orch-catalog/deployments/application-catalog/f
   data.catalogv3.CreateApplicationRequest
 ```
 
-> Many IDEs have support for running these tests in a graphical environment e.g. GoLand or Intellij Idea
+> Note: Many IDEs have support for running these tests in a graphical environment e.g. GoLand or Intellij Idea
+
+[Open Policy Agent]: https://www.openpolicyagent.org/docs/latest
+[Keycloak]: https://www.keycloak.org/
+[Authentication gRPC Interceptor]: https://github.com/open-edge-platform/orch-library/blob/main/go/pkg/grpc/auth/auth.go

@@ -12,7 +12,7 @@ ingress:
   className: nginx
   hosts:
     - host: kubernetes.docker.internal
-      paths: 
+      paths:
         - path: /
           pathType: Prefix
   tls:

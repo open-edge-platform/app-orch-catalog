@@ -76,7 +76,7 @@ CHART_RELEASE				?= catalog-service
 POSTGRES_CHART_PATH			?= "./deployments/postgres"
 POSTGRES_CHART_VERSION		?= 12.12.10
 
-OAPI_CODEGEN_VERSION		?= v1.12.4
+OAPI_CODEGEN_VERSION ?= v2.2.0
 
 # The endpoint URL of a keycloak server e.g. http://keycloak/realms/master refers to a keycloak server in the cluster
 OIDC_SERVER                 ?= http://keycloak.$(CHART_NAMESPACE).svc/realms/master
@@ -157,6 +157,36 @@ migration-lint: ## Validate the DB schema migration
 .PHONY: ent-describe
 ent-describe: ## Describe ENT assets
 	go run -mod=mod entgo.io/ent/cmd/ent describe ./internal/ent/schema
+
+
+# Define the target for installing all plugins
+install-protoc-plugins:
+	@echo "Installing protoc-gen-doc..."
+	@go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
+	@echo "Installing protoc-gen-validate..."
+	@go install github.com/envoyproxy/protoc-gen-validate@latest
+	@echo "Installing protoc-gen-go-grpc..."
+	@go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+	@echo "Installing protoc-gen-openapi"
+	@go install github.com/kollalabs/protoc-gen-openapi@latest
+	echo "Installing oapi-codegen"
+	# for the binary install
+	go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@${OAPI_CODEGEN_VERSION}
+	# for the binary installation
+	@echo "Adding Go bin directory to PATH..."
+	@export PATH=$(PATH):$(GOBIN)
+	@echo "All plugins installed successfully."
+
+# Define a target to verify the installation of all plugins
+verify-protoc-plugins:
+	@echo "Verifying protoc-gen-doc installation..."
+	@command -v protoc-gen-doc >/dev/null 2>&1 && echo "protoc-gen-doc is installed." || echo "protoc-gen-doc is not installed."
+	@echo "Verifying protoc-gen-validate installation..."
+	@command -v protoc-gen-validate >/dev/null 2>&1 && echo "protoc-gen-validate is installed." || echo "protoc-gen-validate is not installed."
+	@echo "Verifying protoc-gen-go-grpc installation..."
+	@command -v protoc-gen-go-grpc >/dev/null 2>&1 && echo "protoc-gen-go-grpc is installed." || echo "protoc-gen-go-grpc is not installed."
+	@echo "Verifying protoc-gen-openapi installation..."
+	@command -v protoc-gen-openapi >/dev/null 2>&1 && echo "protoc-gen-openapi is installed." || echo "protoc-gen-openapi is not installed."
 
 .PHONY: proto-generate
 proto-generate: proto-generate-go schema-generate ## generate language files from proto definitions

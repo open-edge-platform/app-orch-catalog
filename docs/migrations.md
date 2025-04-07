@@ -2,6 +2,31 @@
   SPDX-FileCopyrightText: (C) 2025 Intel Corporation
   SPDX-License-Identifier: Apache-2.0
 -->
+# Object Model
+The object model shown in the [architecture](architecture.md) is implemented by 2 models:
+
+* an [ENT schema](../internal/ent/schema)
+* a [protobuf definition](../api/catalog/v3/resources.proto)
+
+The application-catalog itself is started from [main](../cmd/application-catalog/application-catalog.go), and runs a gRPC server on Port 8080
+and connects to a Postgres database on the backend on Port 5432.
+
+A 2nd executable provides a `REST` front end and is started with [rest-proxy](../cmd/rest-proxy/rest-proxy.go), and
+is exposed on Port 8081.
+
+## ENT Schema
+The schema describes all the objects and their relations.
+
+After changing anything in `internal/ent/schema` regenerate the code:
+```shell
+make ent-generate
+```
+
+To see the schema summary
+```shell
+make ent-describe
+```
+
 # Database Schema Migration
 
 The application catalog uses ORM [entgo.io], which supports both automatic migration and versioned migration.
@@ -24,7 +49,7 @@ There are several phases in this stage. Each is briefly described in the section
 how it applies to the catalog service project.
 
 ### Generating Schema, Go code, migration diffs, and migration generation code
-When the developer makes changes to the `internal/ent/schema` package, they will need to run the following to regenerate
+When the developer makes changes to the [scheme](../internal/ent/schema) package, they will need to run the following to regenerate
 the schema:
 ```bash
 make ent-generate
@@ -94,4 +119,5 @@ of concrete steps to be executed in the context of this specific project and dat
 
 [entgo.io]: https://entgo.io/docs/versioned-migrations/
 [Atlas]: https://atlasgo.io/getting-started/
+[Postgres]: https://www.postgresql.org/
 [entgo.io versioned migrations]: https://entgo.io/docs/versioned-migrations/

@@ -40,13 +40,9 @@ Edge Orchestrator [Application Orchestration Developer Guide](https://literate-a
 
 Many parts of the App Catalog are described the following sub documents
 
-- [API](docs/api.md)
-- [CLI](docs/cli.md)
-- [gRPC through Postman](docs/grpc-postman.md)
 - [Architecture](docs/architecture.md)
-- [Authorization](docs/authorization.md)
+- [API](docs/api.md)
 - [Developer Guide](docs/developer.md)
-- [Deploy on KinD](kind/README.md)
 - [Versioned Schema Migrations](docs/migrations.md)
 
 ## Develop
@@ -55,12 +51,13 @@ App Catalog is developed in the **Go** language and is built as a Docker image, 
 in its `build` folder. The CI integration for this repository will publish the container image to the Edge Orchestrator
 Release Service OCI registry upon merge to the `main` branch.
 
-App Catalog has a corresponding Helm chart in its `deployment` folder. The CI integration for this repository will
+App Catalog has a corresponding Helm chart in its [deployments](deployments) folder.
+The CI integration for this repository will
 publish this Helm charts to the Edge Orchestrator Release Service OCI registry upon merge to `main` branch.
 App Catalog is deployed to the Edge Orchestrator using this Helm chart, whose lifecycle is in turn managed by
 Argo CD (see [Foundational Platform]).
 
-App Catalog API is defined first in Protobuf format in the `api` folder and then the Go code and the REST API defintion
+App Catalog API is defined first in Protobuf format in the [api](api) folder and then the Go code and the REST API defintion
 and implementation is generated from this.
 
 App Catalog uses a SQL database to store the Deployment Packages, Applications and Registry information, utilizing the
