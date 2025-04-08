@@ -7,6 +7,7 @@ package northbound
 import (
 	"encoding/base64"
 	"fmt"
+	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/malware"
 	"google.golang.org/grpc/metadata"
@@ -56,6 +57,7 @@ func (s *NorthBoundTestSuite) TearDownSuite() {
 }
 
 func (s *NorthBoundTestSuite) SetupTest() {
+	errors.Init()
 	mockController := gomock.NewController(s.T())
 	s.dbClient = enttest.Open(s.T(), "sqlite3", "file:ent?mode=memory&_fk=1")
 	s.ctx, s.cancel = context.WithTimeout(context.Background(), 10*time.Minute)
