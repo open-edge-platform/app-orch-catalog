@@ -3,48 +3,52 @@
   SPDX-License-Identifier: Apache-2.0
 -->
 
-# Keycloak Helm Chart configuration for Development
+# Keycloak Helm Chart Configuration for Development
 
-[Keycloak] is Open Source Identity and Access Management for Modern Applications and
-Services.
+[Keycloak] is an Open Source Identity and Access Management solution for modern applications and
+services.
 
-It can also act as a Federated [OpenID Connect] provider. It can connect to a variety of backends.
-In this deployment it is not connected to a backend, and just uses its own internal format
-persisted to a local Postgres DB.
+It can also act as a federated [OpenID Connect] provider and connect to a variety of backends.
+In this deployment, it is not connected to a backend and uses its own internal format
+persisted to a local Postgres database.
 
-> This chart can be deployed alongside Application Catalog, App Deployment Manager, Web UI or
+> This chart can be deployed alongside the Application Catalog, App Deployment Manager, Web UI, or
 > any other microservice that requires an OpenID provider.
 
-## Helm install
+## Helm Install
 
-To install the standalone Keycloak server in to a namespace e.g. `orch-app` use:
+To install the standalone Keycloak server into a namespace, e.g., `orch-app`, use:
 
 ```shell
 make keycloak-install-kind
 ```
 
-To access this use a port-forward in the cluster
+To access this, use a port-forward in the cluster:
+
 ```shell
 kubectl -n orch-app port-forward service/keycloak 8090:80
 ```
 
-> To test it, browse to http://localhost:8090/realms/master/.well-known/openid-configuration to see the configuration.
+> To test it, browse to <http://localhost:8090/realms/master/.well-known/openid-configuration> to see the configuration.
 >
-> Verify the login details at http://localhost:8090/realms/master/account/
+> Verify the login details at <http://localhost:8090/realms/master/account/>.
 
-See [Authorization](../../docs/authorization.md) for details of how to use with the orchestrator
+See [Authorization](../../docs/authorization.md) for details on how to use it with the orchestrator.
 
-> Note here that the connection of Application Catalog to keycloak is inside the cluster for the backend services at `http://keycloak`
-> whereas the GUI connects to `http://localhost:8090`
+> Note that the connection of the Application Catalog to Keycloak is inside the cluster for the backend services at `http://keycloak`,
+> whereas the GUI connects to `http://localhost:8090`.
 
 ## Administration
-The Keycloak Admin console can be reached at http://localhost:8090 `admin/ChangeMeOn1stLogin!`
+
+The Keycloak Admin Console can be reached at <http://localhost:8090> with the credentials `admin/ChangeMeOn1stLogin!`.
 
 ## Users
-Browse the Admin console for usernames. The default password for all accounts is the same as `admin` above.
+
+Browse the Admin Console for usernames. The default password for all accounts is the same as the `admin` password above.
 
 ## Get Token Directly
-To get a token directly for development purposes use:
+
+To get a token directly for development purposes, use:
 
 ```shell
 USER_NAME='sample-project-edge-mgr'
@@ -59,12 +63,12 @@ curl --location --request POST 'http://localhost:8090/realms/master/protocol/ope
 ```
 
 ## Update Keycloak Config
+
 To update the Keycloak configuration, regenerate the `values.yaml` file using the following command:
 
 ```shell
 make keycloak-config-generate
 ```
-
 
 [Keycloak]: https://www.keycloak.org/
 [OpenID Connect]: https://openid.net/connect/
