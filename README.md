@@ -8,7 +8,6 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Component Test](https://github.com/open-edge-platform/app-orch-catalog/actions/workflows/component-test.yml/badge.svg)](https://github.com/open-edge-platform/app-orch-catalog/actions/workflows/component-test.yml)
 
-
 ## Overview
 
 The Application Orchestration Catalog Service (App Catalog) is a cloud-native application on the Edge Orchestrator that
