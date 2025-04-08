@@ -1,24 +1,28 @@
----
-# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
-#
-# SPDX-License-Identifier: Apache-2.0
-
-version: v1
+version: v2
+modules:
+  - path: api
 deps:
   - buf.build/envoyproxy/protoc-gen-validate
   - buf.build/googleapis/googleapis
   - buf.build/grpc-ecosystem/grpc-gateway
-breaking:
-  use:
-    - FILE
 lint:
   use:
-    - DEFAULT
-    - ENUM_FIRST_VALUE_ZERO
     - COMMENT_MESSAGE
     - COMMENT_RPC
     - COMMENT_SERVICE
+    - DEFAULT
+    - ENUM_FIRST_VALUE_ZERO
+  except:
+    - FIELD_NOT_REQUIRED
+    - PACKAGE_NO_IMPORT_CYCLE
   ignore_only:
     PACKAGE_VERSION_SUFFIX:
-      - ent/opts.proto
+      - api/ent/opts.proto
   rpc_allow_google_protobuf_empty_responses: true
+  disallow_comment_ignores: true
+breaking:
+  use:
+    - FILE
+  except:
+    - EXTENSION_NO_DELETE
+    - FIELD_SAME_DEFAULT
