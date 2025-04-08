@@ -2,13 +2,13 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-FROM golang:1.23.5 AS base
+FROM golang:1.24.2 AS base
 
 ENV CGO_ENABLED=0
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ENV ATLAS_VERSION=v0.30.0
+ENV ATLAS_VERSION=v0.32.1-9f69a85-canary
 RUN curl -sSf https://atlasgo.sh | sh -s -- -y -o /go/bin/atlas && mkdir -p "$APP_ROOT/" && mkdir -p /build/etc
 
 ENV APP_ROOT=/build/src/github.com/open-edge-platform/app-orch-catalog
