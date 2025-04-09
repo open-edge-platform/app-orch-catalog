@@ -9,42 +9,54 @@ Application Orchestrator objects and their relationships are depicted in the fol
 
 ## Design Decisions
 
-The source of truth for the API is `protobuf` models found in the [api](api/) directory.
-
-Code generation is driven by [`buf`](https://docs.buf.build/introduction) which relies on `protoc` and `protoc plugins`
-found in [buf.gen.yaml](buf.gen.yaml).
-
-[gRPC-Gateway](https://grpc-ecosystem.github.io/grpc-gateway/) is used as a reverse proxy that acts as a Restful/JSON
+- The project follows the [Golang Standard Project Layout] for its directory structure.
+- The source of truth for the API is [protobuf] models found in the [api] directory.
+- Code generation is driven by [buf], which relies on `protoc` and `protoc plugins`
+found in [buf.gen.yaml](../buf.gen.yaml).
+- [gRPC-Gateway] is used as a reverse proxy that acts as a RESTful/JSON
 application to the client.
+- The catalog uses [PostgreSQL] as the database backend. The database schema is generated using [ent].
 
-- [buf](https://docs.buf.build/introduction)  1.13.1
-- [protobuf](https://developers.google.com/protocol-buffers)
-- [grpc](https://grpc.io/)
-- [grpc-gateway](https://grpc-ecosystem.github.io/grpc-gateway/)
-- [openapi](https://swagger.io/docs/specification/about/)
-- [ent](https://entgo.io/)
-- [postgreSQL](https://www.postgresql.org/about/)
+## Security Design
 
-The project follows the [`standard project layout`](https://github.com/golang-standards/project-layout).
+### Enforcing the Principle of the Least Privilege
 
-## Security design
+The Application Catalog enforces the principle of the least privilege throughout its design:
 
-### Enforcing the principle of least privilege
+1. **Restrict Access to Others at Deployment**  
+   The Application Catalog is deployed in the `orch-app` namespace and only has access to other services in that
+namespace. However, it does not use most of them.  
+The only services it relies on are:
+    - the Malware Scanner,  
+    - the Vault Service (in the `orch-platform` namespace through a service account), to a minimal level, and  
+    - a PostgreSQL database external to the cluster (AWS Aurora RDS).
 
-Application Catalog enforces the principle of Least Privilege throughout its design:
+> Note: The Malware Scanner is disabled by default, but the code is available to enable it if needed.
 
-1. Restrict access to others at Deployment
-   Application Catalog is deployed in the orch-app namespace and only has access to other services in that
-namespace - but does not even use most of them.
-The only services it relies on are
-    - the Malware Scanner and
-    - the Vault Service (in the orch-platform namespace through a service account), to a minimal level.
-    - a Postgress Database external to the cluster (AWS Aurora RDS)
-
-2. Restricted Access to others
-   Application Catalog restricts access to its 2 endpoints - the gRPC interface and the REST interface.
-   - Only Application Deployment Manager is allowed to access the gRPC interface, and when doing so only
-   has access to writing to the Deployment Package to update the 'isDeployed' flag. It is allowed read all resources.
-   - Through the REST interface clients must first present a valid JWT token, and then the "roles" listed within the
+1. **Restricted Access to Others**  
+   The Application Catalog restricts access to its two endpoints: the gRPC interface and the REST interface.
+   - Only the Application Deployment Manager is allowed to access the gRPC interface. When doing so, it only
+   has access to write to the Deployment Package to update the `isDeployed` flag. It is allowed to read all resources.
+   - Through the REST interface, clients must first present a valid JWT token. The "roles" listed within the
    token determine the level of access control (RBAC). These access rules are written as Open Policy Agent REGO rules
    that define which role has access to which resources.
+
+## Multi-Tenancy
+
+The Application Catalog is designed to support multi-tenancy, allowing multiple tenants to coexist within
+the same instance of the service. Each tenant has its own isolated environment, ensuring that data and resources
+are not shared between tenants. For more information, see the [Multi-Tenancy] document.
+
+## Authentication and Authorization
+
+The details of the Authentication and Authorization implementation are described in the [Authorization] document.
+
+[buf]: https://docs.buf.build/introduction
+[protobuf]: https://developers.google.com/protocol-buffers
+[grpc-gateway]: https://grpc-ecosystem.github.io/grpc-gateway/
+[ent]: https://entgo.io/
+[PostgreSQL]: https://www.postgresql.org/about/
+[Golang Standard Project Layout]: https://github.com/golang-standards/project-layout
+[api]: ../api
+[Authorization]: ./authorization.md
+[Multi-Tenancy]: ./tenants.md

@@ -7,6 +7,7 @@ package restproxy
 import (
 	"github.com/gorilla/websocket"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
@@ -57,6 +58,8 @@ func (s *ProxyTestSuite) SetupSuite() {
 	}
 
 	mockController := gomock.NewController(s.T())
+	errors.Init()
+
 	s.dbClient = enttest.Open(s.T(), "sqlite3", "file:ent?mode=memory&_fk=1")
 
 	ctx := metadata.AppendToOutgoingContext(context.Background(), "activeprojectid", "project")

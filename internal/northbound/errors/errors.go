@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var log = dazl.GetPackageLogger().WithSkipCalls(2)
+var log dazl.Logger
 
 type Options struct {
 	Code            codes.Code
@@ -31,6 +31,10 @@ func (o *Options) apply(opts ...Option) {
 }
 
 type Option func(*Options)
+
+func Init() {
+	log = dazl.GetPackageLogger().WithSkipCalls(2)
+}
 
 func WithOptions(options Options) Option {
 	return func(opts *Options) {

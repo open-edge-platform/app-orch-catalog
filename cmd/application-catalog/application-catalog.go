@@ -8,6 +8,7 @@ import (
 	"flag"
 	"github.com/open-edge-platform/app-orch-catalog/internal/manager"
 	"github.com/open-edge-platform/app-orch-catalog/internal/northbound"
+	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
 	"github.com/open-edge-platform/app-orch-catalog/internal/shared/version"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/malware"
 	"github.com/open-edge-platform/orch-library/go/dazl"
@@ -41,6 +42,7 @@ func main() {
 
 	ready := make(chan bool)
 	flag.Parse()
+	errors.Init()
 
 	if malwareScannerAddress := os.Getenv(malwareScannerAddressEnv); malwareScannerAddress != "" {
 		permissive := false

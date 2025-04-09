@@ -118,7 +118,7 @@ func NewServer(dbClient *ent.Client, opaClient openpolicyagent.ClientWithRespons
 
 // Starts a new transaction or returns ready to punt error
 func (g *Server) startTransaction(ctx context.Context) (*generated.Tx, error) {
-	tx, err := g.databaseClient.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelRepeatableRead})
+	tx, err := g.databaseClient.BeginTx(ctx, &sql.TxOptions{Isolation: sql.LevelReadCommitted})
 	if err != nil {
 		return nil, err
 	}
