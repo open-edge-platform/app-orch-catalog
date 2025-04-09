@@ -1,6 +1,8 @@
 # SPDX-FileCopyrightText: (C) 2023 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
+SHELL := bash -eu -o pipefail
+
 # Code Versions
 VERSION            := $(shell cat VERSION)
 CHART_VERSION      := $(shell cat VERSION)
@@ -372,6 +374,14 @@ docker-push: docker-build ## Push the docker image to the target registry
 	docker tag $(APPLICATION_CATALOG_IMAGE_NAME):$(VERSION) $(DOCKER_TAG)
 	docker push $(DOCKER_TAG)
 
+docker-list: ## Print name of docker container image
+	@echo "images:"
+	@echo "  $(APPLICATION_CATALOG_IMAGE_NAME):"
+	@echo "    name: '$(APPLICATION_CATALOG_IMAGE_NAME):$(DOCKER_VERSION)'"
+	@echo "    version: '$(DOCKER_VERSION)'"
+	@echo "    gitTagPrefix: 'v'"
+	@echo "    buildTarget: 'docker-build'"
+
 .PHONY: kind-delete
 kind-delete: ## Deletes kind cluster
 	kind delete cluster
@@ -446,6 +456,13 @@ helm-push: ## Push helm charts.
 	aws ecr create-repository --region us-west-2 --repository-name $(PUBLISH_REPOSITORY)/$(PUBLISH_SUB_PROJ)/$(PUBLISH_CHART_PREFIX)/$(CHART_NAME) || true
 	helm push ${CHART_BUILD_DIR}${CHART_NAME}-[0-9]*.tgz oci://$(PUBLISH_REGISTRY)/$(PUBLISH_REPOSITORY)/$(PUBLISH_SUB_PROJ)/$(PUBLISH_CHART_PREFIX)
 	@echo "---END MAKEFILE HELM PUSH---"
+
+helm-list: ## List helm charts, tag format, and versions in YAML format
+	@echo "charts:" ;\
+  echo "  $(CHART_NAME):" ;\
+  echo -n "    "; grep "^version" "${CHART_PATH}/Chart.yaml"  ;\
+  echo "    gitTagPrefix: 'v'" ;\
+  echo "    outDir: '${CHART_BUILD_DIR}'" ;\
 
 .PHONY: chart-install-kind
 chart-install-kind: docker-build kind-load chart postgres-install-kind keycloak-install-kind catalog-install-kind ## install the catalog app in a local kind cluster
@@ -622,7 +639,7 @@ $(SCHEMA_RELEASE_BINS):
 $(HELM_TO_DP_RELEASE_BINS):
 	export GOOS=$(helm_to_dp_rel_os) ;\
 	export GOARCH=$(helm_to_dp_rel_arch) ;\
-	GOPRIVATE=$(GOPRIVATE) go build -o "$@" $(HELM_TO_DP_CMD_DIR)	
+	GOPRIVATE=$(GOPRIVATE) go build -o "$@" $(HELM_TO_DP_CMD_DIR)
 
 release: $(SCHEMA_RELEASE_BINS) $(HELM_TO_DP_RELEASE_BINS) ## Builds releasable binaries for multiple architectures. test
 
