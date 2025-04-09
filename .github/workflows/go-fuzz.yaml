@@ -5,10 +5,6 @@
 name: Go Fuzzing Tests
 
 on:
-  pull_request:
-    branches:
-      - main
-      - release-*
   workflow_dispatch:
     inputs:
       run_catalog:
@@ -27,10 +23,11 @@ on:
 
 jobs:
   go-fuzz-catalog:
+    if: ${{ inputs.run_catalog || github.event_name == 'schedule' }}
     name: Catalog Go Fuzzing Tests
     uses: open-edge-platform/orch-ci/.github/workflows/apporch-go-fuzz.yml@main
     with:
       # Declare 4800 secs duration since schedule event will not pick up input values from workflow_dispatch
-      fuzz_seconds: ${{ fromJSON(inputs.fuzz_seconds_catalog) || 2 }}
+      fuzz_seconds: ${{ fromJSON(inputs.fuzz_seconds_catalog) || 4800 }}
       test_data_dir: ./internal/northbound/testdata/fuzz
     secrets: inherit
