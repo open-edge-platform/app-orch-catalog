@@ -2,14 +2,15 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Code Versions
-VERSION              := $(shell cat VERSION)
-GIT_HASH_SHORT       := $(shell git rev-parse --short=8 HEAD)
-VERSION_DEV_SUFFIX   := ${GIT_HASH_SHORT}
+VERSION            := $(shell cat VERSION)
+CHART_VERSION      := $(shell cat VERSION)
+VERSION_DEV_SUFFIX := -dev
+GIT_COMMIT         ?= $(shell git rev-parse --short HEAD)
 
-# Add an identifying suffix for `-dev` builds only.
-# Release build versions are verified as unique by the CI build process.
-ifeq ($(findstring -dev,$(VERSION)), -dev)
-	VERSION := $(VERSION)-$(VERSION_DEV_SUFFIX)
+ifeq ($(patsubst %$(VERSION_DEV_SUFFIX),,$(lastword $(VERSION))),)
+    DOCKER_VERSION ?= $(VERSION)-$(GIT_COMMIT)
+else
+    DOCKER_VERSION ?= $(VERSION)
 endif
 
 PLATFORM                       ?= --platform linux/x86_64
@@ -54,9 +55,6 @@ CHART_NAME					?= app-orch-catalog
 ## CHART_PATHs is given based on repo structure
 CHART_PATH					?= "./deployments/app-orch-catalog"
 
-## CHART_VERSION is specified in Chart.yaml
-CHART_VERSION				?= $(shell yq -r .version ${CHART_PATH}/Chart.yaml)
-
 ## MIGRATION_BASE_VERSION is the base version from which migration should be tested
 MIGRATION_BASE_VERSION   	?= 0.5.5
 
@@ -94,7 +92,7 @@ PGPASSWORD					?= $(shell grep PGPASSWORD deployments/application-catalog/templa
 HELM_REPOSITORY    		?=
 HELM_REGISTRY      		?=
 
-DOCKER_TAG              := $(PUBLISH_REGISTRY)/$(PUBLISH_REPOSITORY)/$(PUBLISH_SUB_PROJ)/$(APPLICATION_CATALOG_IMAGE_NAME):$(VERSION)
+DOCKER_TAG              := $(PUBLISH_REGISTRY)/$(PUBLISH_REPOSITORY)/$(PUBLISH_SUB_PROJ)/$(APPLICATION_CATALOG_IMAGE_NAME):$(DOCKER_VERSION)
 
 RELEASE_DIR     ?= release
 RELEASE_OS_ARCH ?= linux-amd64 linux-arm64 windows-amd64 darwin-amd64 darwin-arm64
@@ -357,9 +355,9 @@ docker-build: mod-update vendor ##Builds the docker image
 	@echo "---MAKEFILE DOCKER BUILD---"
 	$(DOCKER_BUILD_COMMAND) . -f build/Dockerfile \
 	$(PLATFORM) \
-	-t $(APPLICATION_CATALOG_IMAGE_NAME):$(VERSION) \
+	-t $(APPLICATION_CATALOG_IMAGE_NAME):$(DOCKER_VERSION) \
 	$(DOCKER_BUILD_ARGS)
-	docker tag $(APPLICATION_CATALOG_IMAGE_NAME):$(VERSION) $(DOCKER_TAG)
+	docker tag $(APPLICATION_CATALOG_IMAGE_NAME):$(DOCKER_VERSION) $(DOCKER_TAG)
 
 .PHONY: docker-push
 docker-push: docker-build ## Push the docker image to the target registry
@@ -425,14 +423,11 @@ helm-build: chart ## builds the helm charts release
 .PHONY: chart
 chart: chart-clean ## Builds the application catalog helm chart
 	@echo "---MAKEFILE CHART---"
-	yq eval -i '.annotations.revision = "${DOCKER_LABEL_VCS_REF}"' ${CHART_PATH}/Chart.yaml
-	yq eval -i '.annotations.created = "${DOCKER_LABEL_BUILD_DATE}"' ${CHART_PATH}/Chart.yaml
-	helm package \
-		--app-version=${CHART_APP_VERSION} \
-		--debug \
-		--dependency-update \
-		--destination ${CHART_BUILD_DIR} \
-		${CHART_PATH}
+	yq eval -i '.version = "${CHART_VERSION}"' ${CHART_PATH}/Chart.yaml; \
+	yq eval -i '.appVersion = "${DOCKER_VERSION}"' ${CHART_PATH}/Chart.yaml; \
+	yq eval -i '.annotations.revision = "${DOCKER_LABEL_REVISION}"' ${CHART_PATH}/Chart.yaml; \
+	yq eval -i '.annotations.created = "${DOCKER_LABEL_BUILD_DATE}"' ${CHART_PATH}/Chart.yaml; \
+	helm package --app-version=${DOCKER_VERSION} --version=${CHART_VERSION} --dependency-update --destination ${CHART_BUILD_DIR} ${CHART_PATH}
 	@echo "---END MAKEFILE CHART---"
 
 helmlint: ## Lint Helm charts.
@@ -446,7 +441,7 @@ helm-push: ## Push helm charts.
 	helm push ${CHART_BUILD_DIR}${CHART_NAME}-[0-9]*.tgz oci://$(PUBLISH_REGISTRY)/$(PUBLISH_REPOSITORY)/$(PUBLISH_SUB_PROJ)/$(PUBLISH_CHART_PREFIX)
 	@echo "---END MAKEFILE HELM PUSH---"
 
-.PHONY: chrt-install-kind
+.PHONY: chart-install-kind
 chart-install-kind: docker-build kind-load chart postgres-install-kind keycloak-install-kind catalog-install-kind ## install the catalog app in a local kind cluster
 
 .PHONY: catalog-install-kind
@@ -592,7 +587,7 @@ kind-load: docker-build
 	# Override PUBLISH_REGISTRY for this target
 	$(eval PUBLISH_REGISTRY := registry-rs.edgeorchestration.intel.com)
 	# Update DOCKER_TAG to reflect the overridden registry
-	$(eval DOCKER_TAG := $(PUBLISH_REGISTRY)/$(PUBLISH_REPOSITORY)/$(PUBLISH_SUB_PROJ)/$(APPLICATION_CATALOG_IMAGE_NAME):$(VERSION))
+	$(eval DOCKER_TAG := $(PUBLISH_REGISTRY)/$(PUBLISH_REPOSITORY)/$(PUBLISH_SUB_PROJ)/$(APPLICATION_CATALOG_IMAGE_NAME):$(DOCKER_VERSION))
 	# Explicitly tag the image with the correct registry
 	docker tag $(APPLICATION_CATALOG_IMAGE_NAME):$(VERSION) $(DOCKER_TAG)
 	# Load the Docker image into the kind cluster
