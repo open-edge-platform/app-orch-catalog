@@ -168,6 +168,8 @@ install-protoc-plugins:
 	echo "Installing oapi-codegen"
 	# for the binary install
 	go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@${OAPI_CODEGEN_VERSION}
+	@echo "Installing buf..."
+	go install github.com/bufbuild/buf/cmd/buf@v1.52.1
 	# for the binary installation
 	@echo "Adding Go bin directory to PATH..."
 	@export PATH=$(PATH):$(GOBIN)
