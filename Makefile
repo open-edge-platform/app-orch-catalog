@@ -185,6 +185,10 @@ verify-protoc-plugins:
 	@command -v protoc-gen-go-grpc >/dev/null 2>&1 && echo "protoc-gen-go-grpc is installed." || echo "protoc-gen-go-grpc is not installed."
 	@echo "Verifying protoc-gen-openapi installation..."
 	@command -v protoc-gen-openapi >/dev/null 2>&1 && echo "protoc-gen-openapi is installed." || echo "protoc-gen-openapi is not installed."
+	echo "Verifying oapi-codegen installation..."
+	@command -v oapi-codegen >/dev/null 2>&1 && echo "oapi-codegen is installed." || echo "oapi-codegen is not installed."
+	@echo "Verifying buf installation..."
+	@command -v buf >/dev/null 2>&1 && echo "buf is installed." || echo "buf is not installed."
 
 #### Python Targets ####
 
