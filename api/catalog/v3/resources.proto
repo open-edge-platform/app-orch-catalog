@@ -17,8 +17,8 @@ message Event {
   string type = 1 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 7,
-      max_len: 7,
+      min_len: 7
+      max_len: 7
       pattern: "^(replayed)$|^(created)$|^(updated)$|^(deleted)$"
     }
   ];
@@ -35,8 +35,8 @@ message Registry {
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
     }
   ];
@@ -46,8 +46,8 @@ message Registry {
   string display_name = 2 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
-      max_len: 40,
+      min_len: 0
+      max_len: 40
       pattern: "^\\PC*$"
     }
   ];
@@ -56,7 +56,7 @@ message Registry {
   string description = 3 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
+      min_len: 0
       max_len: 1000
     }
   ];
@@ -65,23 +65,23 @@ message Registry {
   string root_url = 4 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 1000,
+      min_len: 1
+      max_len: 1000
       pattern: "^(https?|oci)://[a-z0-9-]+(.[a-z0-9-]+)+([/?][\\w_\\-@:%.+~#?&/=]*)?$"
     }
   ];
 
   // Optional username for accessing the registry.
   string username = 5 [(validate.rules).string = {
-    min_len: 0,
-    max_len: 1000,
+    min_len: 0
+    max_len: 1000
     pattern: "^\\PC*$"
   }];
 
   // Optional authentication token or password for accessing the registry.
   string auth_token = 6 [(validate.rules).string = {
-    min_len: 0,
-    max_len: 1000,
+    min_len: 0
+    max_len: 1000
     pattern: "^\\PC*$"
   }];
 
@@ -89,8 +89,8 @@ message Registry {
   string type = 7 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
       pattern: "^(HELM)$|^(IMAGE)$"
     }
   ];
@@ -99,8 +99,8 @@ message Registry {
   string cacerts = 8 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
-      max_len: 16384,
+      min_len: 0
+      max_len: 16384
     }
   ];
 
@@ -108,8 +108,8 @@ message Registry {
   string api_type = 9 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
-      max_len: 16,
+      min_len: 0
+      max_len: 16
       pattern: "^\\PC*$"
     }
   ];
@@ -118,8 +118,8 @@ message Registry {
   string inventory_url = 10 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
-      max_len: 1000,
+      min_len: 0
+      max_len: 1000
     }
   ];
 
@@ -151,8 +151,8 @@ message DeploymentPackage {
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
     }
   ];
@@ -162,8 +162,8 @@ message DeploymentPackage {
   string display_name = 2 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
-      max_len: 40,
+      min_len: 0
+      max_len: 40
       pattern: "^\\PC*$"
     }
   ];
@@ -172,7 +172,7 @@ message DeploymentPackage {
   string description = 3 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
+      min_len: 0
       max_len: 1000
     }
   ];
@@ -181,8 +181,8 @@ message DeploymentPackage {
   string version = 4 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 20,
+      min_len: 1
+      max_len: 20
       pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
     }
   ];
@@ -255,8 +255,8 @@ message DeploymentProfile {
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
     }
   ];
@@ -266,8 +266,8 @@ message DeploymentProfile {
   string display_name = 2 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
-      max_len: 40,
+      min_len: 0
+      max_len: 40
       pattern: "^\\PC*$"
     }
   ];
@@ -276,7 +276,7 @@ message DeploymentProfile {
   string description = 3 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
+      min_len: 0
       max_len: 1000
     }
   ];
@@ -298,8 +298,8 @@ message ApplicationReference {
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
     }
   ];
@@ -308,8 +308,8 @@ message ApplicationReference {
   string version = 2 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 20,
+      min_len: 1
+      max_len: 20
       pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
     }
   ];
@@ -323,8 +323,8 @@ message ApplicationDependency {
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 26,
+      min_len: 1
+      max_len: 26
       pattern: "^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$"
     }
   ];
@@ -333,8 +333,8 @@ message ApplicationDependency {
   string requires = 2 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 26,
+      min_len: 1
+      max_len: 26
       pattern: "^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$"
     }
   ];
@@ -347,8 +347,8 @@ message APIExtension {
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
     }
   ];
@@ -356,8 +356,8 @@ message APIExtension {
   string version = 2 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 20,
+      min_len: 1
+      max_len: 20
       pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
     }
   ];
@@ -367,8 +367,8 @@ message APIExtension {
   string display_name = 3 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
-      max_len: 40,
+      min_len: 0
+      max_len: 40
       pattern: "^\\PC*$"
     }
   ];
@@ -377,7 +377,7 @@ message APIExtension {
   string description = 4 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
+      min_len: 0
       max_len: 1000
     }
   ];
@@ -395,8 +395,8 @@ message UIExtension {
   string label = 1 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 0,
-      max_len: 40,
+      min_len: 0
+      max_len: 40
       pattern: "^\\PC*$"
     }
   ];
@@ -405,8 +405,8 @@ message UIExtension {
   string service_name = 2 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
     }
   ];
 
@@ -414,7 +414,7 @@ message UIExtension {
   string description = 3 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
+      min_len: 1
       max_len: 1000
     }
   ];
@@ -423,8 +423,8 @@ message UIExtension {
   string file_name = 4 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
     }
   ];
 
@@ -432,8 +432,8 @@ message UIExtension {
   string app_name = 5 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
     }
   ];
 
@@ -441,8 +441,8 @@ message UIExtension {
   string module_name = 6 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
     }
   ];
 }
@@ -453,8 +453,8 @@ message Endpoint {
   string service_name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
     }
   ];
@@ -463,7 +463,7 @@ message Endpoint {
   string external_path = 2 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
+      min_len: 1
       max_len: 128
     }
   ];
@@ -472,7 +472,7 @@ message Endpoint {
   string internal_path = 3 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
+      min_len: 1
       max_len: 128
     }
   ];
@@ -481,8 +481,8 @@ message Endpoint {
   string scheme = 4 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 0,
-      max_len: 32,
+      min_len: 0
+      max_len: 32
       pattern: "^([a-z][a-z0-9-]{0,30}[a-z0-9]){0,1}$"
     }
   ];
@@ -491,8 +491,8 @@ message Endpoint {
   string auth_type = 5 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 0,
-      max_len: 16,
+      min_len: 0
+      max_len: 16
       pattern: "^[a-z]{0,16}$"
     }
   ];
@@ -501,8 +501,8 @@ message Endpoint {
   string app_name = 6 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
-      max_len: 40,
+      min_len: 0
+      max_len: 40
     }
   ];
 }
@@ -513,8 +513,8 @@ message ArtifactReference {
   string name = 2 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
     }
   ];
@@ -523,8 +523,8 @@ message ArtifactReference {
   string purpose = 3 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 0,
-      max_len: 20,
+      min_len: 0
+      max_len: 20
       pattern: "^\\PC*$"
     }
   ];
@@ -539,8 +539,8 @@ message Namespace {
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
     }
   ];
@@ -557,8 +557,8 @@ message Application {
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 26,
+      min_len: 1
+      max_len: 26
       pattern: "^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$"
     }
   ];
@@ -568,8 +568,8 @@ message Application {
   string display_name = 2 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
-      max_len: 40,
+      min_len: 0
+      max_len: 40
       pattern: "^\\PC*$"
     }
   ];
@@ -578,7 +578,7 @@ message Application {
   string description = 3 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
+      min_len: 0
       max_len: 1000
     }
   ];
@@ -587,8 +587,8 @@ message Application {
   string version = 4 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 20,
+      min_len: 1
+      max_len: 20
       pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
     }
   ];
@@ -600,8 +600,8 @@ message Application {
   string chart_name = 6 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 200,
+      min_len: 1
+      max_len: 200
       pattern: "^[0-9a-z-/]*$"
     }
   ];
@@ -610,8 +610,8 @@ message Application {
   string chart_version = 7 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 53,
+      min_len: 1
+      max_len: 53
       pattern: "^[a-z0-9][a-z0-9-.]{0,51}[a-z0-9]{0,1}$"
     }
   ];
@@ -645,8 +645,8 @@ message ResourceReference {
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
       pattern: "^[a-z0-9][a-z0-9-._-]{0,38}[a-z0-9]{0,1}$"
     }
   ];
@@ -655,8 +655,8 @@ message ResourceReference {
   string kind = 2 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
       pattern: "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,38}[a-zA-Z0-9]{0,1}$"
     }
   ];
@@ -671,8 +671,8 @@ message ParameterTemplate {
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 4096,
+      min_len: 1
+      max_len: 4096
       pattern: "^[A-Za-z0-9-/_\\[\\]\\.\\\\]*$"
     }
   ];
@@ -681,8 +681,8 @@ message ParameterTemplate {
   string display_name = 2 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
-      max_len: 100,
+      min_len: 0
+      max_len: 100
       pattern: "^\\PC*$"
     }
   ];
@@ -691,8 +691,8 @@ message ParameterTemplate {
   string default = 3 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
-      max_len: 4096,
+      min_len: 0
+      max_len: 4096
     }
   ];
 
@@ -700,7 +700,7 @@ message ParameterTemplate {
   string type = 4 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
+      min_len: 1
       pattern: "^(string)$|^(number)$|^(boolean)$"
     }
   ];
@@ -709,8 +709,8 @@ message ParameterTemplate {
   string validator = 5 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
-      max_len: 40,
+      min_len: 0
+      max_len: 40
     }
   ];
 
@@ -742,8 +742,8 @@ message Profile {
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
     }
   ];
@@ -753,8 +753,8 @@ message Profile {
   string display_name = 2 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
-      max_len: 40,
+      min_len: 0
+      max_len: 40
       pattern: "^\\PC*$"
     }
   ];
@@ -763,7 +763,7 @@ message Profile {
   string description = 3 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
+      min_len: 0
       max_len: 1000
     }
   ];
@@ -772,7 +772,7 @@ message Profile {
   string chart_values = 4 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
+      min_len: 0
       max_len: 4000000
     }
   ];
@@ -796,8 +796,8 @@ message DeploymentRequirement {
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
     }
   ];
@@ -806,8 +806,8 @@ message DeploymentRequirement {
   string version = 2 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 20,
+      min_len: 1
+      max_len: 20
       pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
     }
   ];
@@ -824,8 +824,8 @@ message Artifact {
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
     }
   ];
@@ -835,8 +835,8 @@ message Artifact {
   string display_name = 2 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
-      max_len: 40,
+      min_len: 0
+      max_len: 40
       pattern: "^\\PC*$"
     }
   ];
@@ -845,7 +845,7 @@ message Artifact {
   string description = 3 [
     (google.api.field_behavior) = OPTIONAL,
     (validate.rules).string = {
-      min_len: 0,
+      min_len: 0
       max_len: 1000
     }
   ];
@@ -856,8 +856,8 @@ message Artifact {
   string mime_type = 4 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).string = {
-      min_len: 1,
-      max_len: 40,
+      min_len: 1
+      max_len: 40
       pattern: "^(text/plain)$|^(application/json)$|^(application/yaml)$|^(image/png)$|^(image/jpeg)$"
     }
   ];
@@ -866,7 +866,7 @@ message Artifact {
   bytes artifact = 5 [
     (google.api.field_behavior) = REQUIRED,
     (validate.rules).bytes = {
-      min_len: 4,
+      min_len: 4
       max_len: 4000000
     }
   ];

@@ -6,6 +6,7 @@ path = [
     "artifacts/**",
     "REUSE.toml",
     "go.sum",
+    "buf.lock",
     "test/go.sum",
     "VERSION",
     "api/buf.lock",

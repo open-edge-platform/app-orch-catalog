@@ -115,6 +115,7 @@ SAMPLE_ORG_ID := "11111111-1111-1111-1111-111111111111"
 SAMPLE_PROJECT_ID := "11111111-1111-1111-1111-222222222222"
 PLATFORM_NS := "orch-platform"
 KEYCLOAK_HELM_VERSION := 24.4.11
+BUF_VERSION := 1.52.1
 
 # Functions to extract the OS/ARCH
 schema_rel_os    = $(word 3, $(subst -, ,$(notdir $@)))
@@ -126,8 +127,6 @@ helm_to_dp_rel_arch  = $(word 5, $(subst -, ,$(notdir $@)))
 # Exclude these packages from coverage analysis
 EXCLUDE_PKGS_TEST := grep -v $(PKG)/pkg/restClient | grep -v $(PKG)/pkg/api | grep -v $(PKG)/internal/ent | grep -v $(PKG)/internal/testing | grep -v $(PKG)/pkg/restProxy | grep -v $(PKG)/internal/testing
 
-## Virtual environment name
-VENV_NAME = venv-env
 
 .PHONY: build lint test all
 
@@ -170,6 +169,8 @@ install-protoc-plugins:
 	echo "Installing oapi-codegen"
 	# for the binary install
 	go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@${OAPI_CODEGEN_VERSION}
+	@echo "Installing buf..."
+	go install github.com/bufbuild/buf/cmd/buf@v${BUF_VERSION}
 	# for the binary installation
 	@echo "Adding Go bin directory to PATH..."
 	@export PATH=$(PATH):$(GOBIN)
@@ -185,29 +186,38 @@ verify-protoc-plugins:
 	@command -v protoc-gen-go-grpc >/dev/null 2>&1 && echo "protoc-gen-go-grpc is installed." || echo "protoc-gen-go-grpc is not installed."
 	@echo "Verifying protoc-gen-openapi installation..."
 	@command -v protoc-gen-openapi >/dev/null 2>&1 && echo "protoc-gen-openapi is installed." || echo "protoc-gen-openapi is not installed."
+	echo "Verifying oapi-codegen installation..."
+	@command -v oapi-codegen >/dev/null 2>&1 && echo "oapi-codegen is installed." || echo "oapi-codegen is not installed."
+	@echo "Verifying buf installation..."
+	@command -v buf >/dev/null 2>&1 && echo "buf is installed." || echo "buf is not installed."
+
+#### Python Targets ####
+
+VENV_NAME = venv-env
+$(VENV_NAME): requirements.txt ## Create Python venv
+	python3 -m venv $@ ;\
+  set +u; . ./$@/bin/activate; set -u ;\
+  python -m pip install --upgrade pip ;\
+  python -m pip install openapi-spec-validator;\
+  python -m pip install -r requirements.txt
 
 .PHONY: proto-generate
-proto-generate: proto-generate-go schema-generate ## generate language files from proto definitions
+proto-generate: proto-generate-local schema-generate ## generate language files from proto definitions
 
-.PHONY: proto-generate-go
-proto-generate-go: ## generate go files for protos
-	docker run \
-	    --entrypoint /usr/bin/make \
-	    -v `pwd`:/home/jenkins/intel/app-orch-catalog \
-		-w /home/jenkins/intel/app-orch-catalog \
-		${PUBLISH_REGISTRY}${PUBLISH_REPOSITORY}/${OIE_CI_TESTING}:${OIE_CI_TESTING_VER} \
-		proto-generate-local
 
 .PHONY: proto-generate-local ## Generate Openapi, customize it and generate rest client
 proto-generate-local: buf-generate customise-openapi openapi-spec-validate rest-client-gen buf-format
+	@echo "Dependencies installed and virtual environment activated."
 
 .PHONY: buf-format
 buf-format: ## Format protobuf file for consistent layout
 	buf format -w
 
 .PHONY: buf-generate
-buf-generate: ## Format protobuf file for consistent layout
-	buf generate
+buf-generate: $(VENV_NAME)  ## Format protobuf file for consistent layout
+	set +u; . ./$</bin/activate; set -u ;\
+            buf --version ;\
+            buf generate
 	# suppress multiple blank lines created by protoc-gen-docs
 	cat -s docs/catalog-grpcapi.md > docs/catalog-grpcapi.tmp && mv docs/catalog-grpcapi.tmp docs/catalog-grpcapi.md
 
@@ -226,7 +236,8 @@ customise-openapi: ## Customize Openapi Spec after generation
 	@grep -v ' get: null' api/spec/openapi.yaml > api/spec/openapi.yaml.aux; mv api/spec/openapi.yaml.aux api/spec/openapi.yaml
 
 .PHONY: openapi-spec-validate
-openapi-spec-validate: ## Install openapi-spec-validator
+openapi-spec-validate: $(VENV_NAME) ## Install openapi-spec-validator
+	set +u; . ./$</bin/activate; set -u ;\
 	openapi-spec-validator api/spec/openapi.yaml
 
 .PHONY: oapi-codegen
@@ -257,12 +268,7 @@ install: ## Installs the application-catalog server and the schema generation/va
 	cp build/_output/application-catalog ${INSTALL_PATH}
 	cp build/_output/catalog-schema ${INSTALL_PATH}
 
-$(VENV_NAME): requirements.txt
-	echo "Creating virtualenv $@"
-	python3 -m venv $@;\
-	. ./$@/bin/activate; set -u;\
-	python3 -m pip install --upgrade pip;\
-	python3 -m pip install -r requirements.txt
+
 
 .PHONY: license
 license: $(VENV_NAME) ## Check licensing with the reuse tool.
@@ -637,3 +643,4 @@ help: ## Print help for each target
 	@grep -H -n '^[[:alnum:]_-]*:.* ##' $(MAKEFILE_LIST) \
     | sort -t ":" -k 3 \
     | awk 'BEGIN  {FS=":"}; {sub(".* ## ", "", $$4)}; {printf "%-20s %-16s %s\n", $$3, $$1 ":" $$2, $$4};'
+
