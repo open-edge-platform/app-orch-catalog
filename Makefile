@@ -115,6 +115,7 @@ SAMPLE_ORG_ID := "11111111-1111-1111-1111-111111111111"
 SAMPLE_PROJECT_ID := "11111111-1111-1111-1111-222222222222"
 PLATFORM_NS := "orch-platform"
 KEYCLOAK_HELM_VERSION := 24.4.11
+BUF_VERSION := 1.52.1
 
 # Functions to extract the OS/ARCH
 schema_rel_os    = $(word 3, $(subst -, ,$(notdir $@)))
@@ -169,7 +170,7 @@ install-protoc-plugins:
 	# for the binary install
 	go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@${OAPI_CODEGEN_VERSION}
 	@echo "Installing buf..."
-	go install github.com/bufbuild/buf/cmd/buf@v1.52.1
+	go install github.com/bufbuild/buf/cmd/buf@v${BUF_VERSION}
 	# for the binary installation
 	@echo "Adding Go bin directory to PATH..."
 	@export PATH=$(PATH):$(GOBIN)
