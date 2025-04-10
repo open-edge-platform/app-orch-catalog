@@ -610,7 +610,7 @@ $defs:
         type: string
       authToken:
         description: Optional authentication token or password for accessing the registry.
-        maxLength: 1000
+        maxLength: 4500
         pattern: ^\PC*$
         type: string
       caCerts:
