@@ -1374,7 +1374,7 @@ components:
           type: string
           description: Optional username for accessing the registry.
         authToken:
-          maxLength: 1000
+          maxLength: 4500
           pattern: ^\PC*$
           type: string
           description: Optional authentication token or password for accessing the registry.

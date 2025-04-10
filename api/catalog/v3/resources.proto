@@ -81,7 +81,7 @@ message Registry {
   // Optional authentication token or password for accessing the registry.
   string auth_token = 6 [(validate.rules).string = {
     min_len: 0
-    max_len: 1000
+    max_len: 4500
     pattern: "^\\PC*$"
   }];
 

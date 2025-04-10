@@ -281,10 +281,10 @@ func (m *Registry) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if l := utf8.RuneCountInString(m.GetAuthToken()); l < 0 || l > 1000 {
+	if l := utf8.RuneCountInString(m.GetAuthToken()); l < 0 || l > 4500 {
 		err := RegistryValidationError{
 			field:  "AuthToken",
-			reason: "value length must be between 0 and 1000 runes, inclusive",
+			reason: "value length must be between 0 and 4500 runes, inclusive",
 		}
 		if !all {
 			return err
