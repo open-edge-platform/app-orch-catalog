@@ -276,8 +276,6 @@ func (s *NorthBoundTestSuite) TestUploadMalware() {
 		malware.DefaultScanner = nil
 	}()
 
-	time.Sleep(1 * time.Second) // FIXME: Pause briefly to allow the mock to startup
-
 	// Upload a text file with a test malware signature. Should fail
 	resp, err = s.client.UploadCatalogEntities(s.ProjectID("intel"), &catalogv3.UploadCatalogEntitiesRequest{
 		SessionId: "", LastUpload: true, Upload: s.getUpload("testdata/malware/malware-values.yaml"),
