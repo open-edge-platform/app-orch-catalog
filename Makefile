@@ -371,7 +371,7 @@ docker-build: mod-update vendor ##Builds the docker image
 docker-push: docker-build ## Push the docker image to the target registry
 	aws ecr create-repository --region us-west-2 --repository-name $(PUBLISH_REPOSITORY)/$(PUBLISH_SUB_PROJ)/$(APPLICATION_CATALOG_IMAGE_NAME) || true
 
-	docker tag $(APPLICATION_CATALOG_IMAGE_NAME):$(VERSION) $(DOCKER_TAG)
+	docker tag $(APPLICATION_CATALOG_IMAGE_NAME):$(DOCKER_VERSION) $(DOCKER_TAG)
 	docker push $(DOCKER_TAG)
 
 docker-list: ## Print name of docker container image
