@@ -6,11 +6,9 @@ package northbound
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"regexp"
 	"strings"
-	"sync"
 	"testing"
 	"time"
 
@@ -517,34 +515,6 @@ func (s *NorthBoundTestSuite) TestArtifactEvents() {
 	s.Nil(resp)
 }
 
-func (s *NorthBoundTestSuite) TestArtifactEventsWithReplay() {
-	s.T().Skip()
-	ctx, cancel := context.WithCancel(s.ProjectID(barten))
-	stream, err := s.client.WatchArtifacts(ctx, &catalogv3.WatchArtifactsRequest{})
-	s.NoError(err)
-
-	existing := "icon thumb"
-	for i := 0; i < 2; i++ {
-		resp, err := stream.Recv()
-		s.NoError(err)
-		s.Equal(ReplayedEvent, EventType(resp.Event.Type))
-		s.True(strings.Contains(existing, resp.Artifact.Name), "unexpected: %s", resp.Artifact.Name)
-	}
-
-	art := s.createArtifact(barten, "newart", "Artifact", "Icon", "text/plain", []byte("content"))
-	resp, err := stream.Recv()
-	s.NoError(err)
-	s.Equal(CreatedEvent, EventType(resp.Event.Type))
-	s.validateArtifact(resp.Artifact, art.Name, art.DisplayName, art.Description, art.MimeType, art.Artifact)
-
-	// Make sure we get an error back for a Recv() on a closed channel
-	cancel()
-	s.createArtifact(barten, "some-new-artifact", "Some New Artifact", "Icon", "text/plain", []byte("content"))
-	resp, err = stream.Recv()
-	s.Error(err)
-	s.Nil(resp)
-}
-
 func (s *NorthBoundDBErrTestSuite) TestArtifactWatchInvalidArgs() {
 	tests := map[string]struct {
 		req *catalogv3.WatchArtifactsRequest
@@ -560,78 +530,7 @@ func (s *NorthBoundDBErrTestSuite) TestArtifactWatchInvalidArgs() {
 	}
 }
 
-type catalogServiceWatchArtifactServer struct {
-	testServerStream
-	sendError bool
-}
-
-func (c *catalogServiceWatchArtifactServer) Send(*catalogv3.WatchArtifactsResponse) error {
-	if c.sendError {
-		return errors.New("no send")
-	}
-	return nil
-}
-
-func (s *NorthBoundDBErrTestSuite) TestWatchArtifactDatabaseErrors() {
-	s.T().Skip("FIXME: Hard to troubleshoot")
-	saveBase64Factory := Base64Factory
-	defer func() { Base64Factory = saveBase64Factory }()
-	Base64Factory = newBase64Noop
-
-	server := &catalogServiceWatchArtifactServer{sendError: false}
-	req := &catalogv3.WatchArtifactsRequest{}
-
-	// Test unable to start a transaction
-	err := s.server.WatchArtifacts(req, server)
-	s.validateDBError(err, nil)
-
-	// Test publisher existence query failure
-	s.mock.ExpectBegin()
-	err = s.server.WatchArtifacts(req, server)
-	s.validateDBError(err, nil)
-
-	// transaction commit error
-	s.mock.ExpectBegin()
-	s.addMockedEmptyQueryRows(2)
-	err = s.server.WatchArtifacts(req, server)
-	s.validateDBError(err, nil)
-
-	// send failure in replay
-	server.sendError = true
-	s.mock.ExpectBegin()
-	s.addMockedEmptyQueryRows(2)
-	err = s.server.WatchArtifacts(req, server)
-	s.Contains(err.Error(), "no send")
-
-	// send failure for event
-	ch := make(chan *catalogv3.WatchArtifactsResponse)
-	wg := sync.WaitGroup{}
-	wg.Add(1)
-	go func() {
-		err = s.server.watchArtifactEvents(server, ch)
-		wg.Done()
-	}()
-	ch <- nil
-	wg.Wait()
-	s.Contains(err.Error(), "no send")
-	close(ch)
-
-	// end of channel
-	ch = make(chan *catalogv3.WatchArtifactsResponse)
-	wg = sync.WaitGroup{}
-	wg.Add(1)
-	go func() {
-		err = s.server.watchArtifactEvents(server, ch)
-		wg.Done()
-	}()
-	close(ch)
-	wg.Wait()
-	s.NoError(err)
-
-	s.NoError(s.mock.ExpectationsWereMet())
-}
-
-// FuzzCreateArtifact - fuzz test creating a artifact
+// FuzzCreateArtifact - fuzz test creating an artifact
 //
 // In this case we are calling the Test Suite to create a Publisher through gRPC
 // but calling the function-under-test directly

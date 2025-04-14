@@ -7,7 +7,6 @@ package restproxy
 import (
 	"encoding/json"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
-	"time"
 )
 
 func (s *ProxyTestSuite) subscribeCmd(cmd string, resp string, kind string) {
@@ -121,28 +120,4 @@ func (s *ProxyTestSuite) TestApplicationBasics() {
 
 func (s *ProxyTestSuite) TestDeploymentPackageBasics() {
 	s.testKindBasics(deploymentPackageKind, "pkg")
-}
-
-func (s *ProxyTestSuite) TestApplicationAndPackageBasics() {
-	s.T().Skip()
-	pingPeriod = 100 * time.Millisecond
-	maxPongWait = 200 * time.Millisecond
-
-	s.setupWebSocket()
-	s.subscribe(applicationKind)
-	s.subscribe(deploymentPackageKind)
-
-	s.createThings()
-	s.readEvent(applicationKind, "created", "app")
-	s.readEvent(deploymentPackageKind, "created", "pkg")
-
-	s.deleteThings()
-	s.readEvent(deploymentPackageKind, "deleted", "pkg")
-	s.readEvent(applicationKind, "deleted", "app")
-
-	s.unsubscribe(applicationKind)
-	s.unsubscribe(deploymentPackageKind)
-
-	time.Sleep(5 * pingPeriod)
-	s.closeWebSocket()
 }

@@ -10,13 +10,10 @@ import (
 	ent "github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/enttest"
 	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
-	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/orch-library/go/pkg/openpolicyagent"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/grpc/status"
 	"google.golang.org/grpc/test/bufconn"
 	"net"
 	"strings"
@@ -61,22 +58,6 @@ func TestNewService(t *testing.T) {
 
 	s := NewService(dbClient, nil)
 	assert.NotNil(t, s)
-}
-
-func TestServiceUnimplemented(t *testing.T) {
-	t.Skip()
-	dbClient := enttest.Open(t, "sqlite3", "file:ent?mode=memory&_fk=1")
-	defer dbClient.Close()
-
-	conn := createServerConnection(t, dbClient, nil)
-	defer func() { _ = conn.Close() }()
-
-	client := catalogv3.NewCatalogServiceClient(conn)
-
-	_, err := client.GetDeploymentPackage(context.Background(), &catalogv3.GetDeploymentPackageRequest{
-		DeploymentPackageName: "test application",
-	})
-	assert.ErrorIs(t, status.Errorf(codes.Unimplemented, "method GetDeploymentPackage not implemented"), err)
 }
 
 func checkFilters(t *testing.T, filters []*filter, wantedFieldList string, wantedValuesList string) {

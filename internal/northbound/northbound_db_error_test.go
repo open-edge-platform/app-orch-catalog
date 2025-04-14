@@ -93,10 +93,6 @@ func (s *NorthBoundDBErrTestSuite) validateInvalidArgumentError(err error, r any
 	s.Nil(r)
 }
 
-func (s *NorthBoundDBErrTestSuite) addMockedEmptyQueryRows(count int) {
-	s.addMockedQueryRowsWithResult(count, 0)
-}
-
 func (s *NorthBoundDBErrTestSuite) addMockedQueryRowsWithResult(count int, result int) {
 	var rows *sqlmock.Rows
 	for i := 1; i <= count; i++ {
@@ -108,12 +104,3 @@ func (s *NorthBoundDBErrTestSuite) addMockedQueryRowsWithResult(count int, resul
 func TestNorthBoundDBErr(t *testing.T) {
 	suite.Run(t, &NorthBoundDBErrTestSuite{})
 }
-
-type testServerStream struct{}
-
-func (*testServerStream) SetHeader(_ metadata.MD) error  { return nil }
-func (*testServerStream) SendHeader(_ metadata.MD) error { return nil }
-func (*testServerStream) SetTrailer(_ metadata.MD)       {}
-func (*testServerStream) Context() context.Context       { return context.TODO() }
-func (*testServerStream) SendMsg(_ any) error            { return nil }
-func (*testServerStream) RecvMsg(_ any) error            { return nil }
