@@ -5,11 +5,8 @@
 package northbound
 
 import (
-	"context"
-	"errors"
 	"fmt"
 	"strings"
-	"sync"
 	"testing"
 
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
@@ -1522,80 +1519,6 @@ func (s *NorthBoundDBErrTestSuite) TestApplicationUpdateInvalidArgs() {
 	}
 }
 
-func (s *NorthBoundTestSuite) TestApplicationEvents() {
-	s.T().Skip()
-	ctx, cancel := context.WithCancel(s.ProjectID(footen))
-	stream, err := s.client.WatchApplications(ctx, &catalogv3.WatchApplicationsRequest{NoReplay: true})
-	s.NoError(err)
-
-	app := s.createApp(footen, fooreg, "newapp", "0.1.1", 2)
-
-	resp, err := stream.Recv()
-	s.NoError(err)
-	s.Equal(CreatedEvent, EventType(resp.Event.Type))
-	s.validateApp(resp.Application, app.Name, app.Version, app.DisplayName, app.Description, len(app.Profiles),
-		app.DefaultProfileName, app.ChartName, app.ChartVersion, app.HelmRegistryName)
-
-	app.DisplayName = "New App"
-	_, err = s.client.UpdateApplication(s.ProjectID(footen), &catalogv3.UpdateApplicationRequest{
-		ApplicationName: app.Name, Version: app.Version, Application: app,
-	})
-	s.NoError(err)
-
-	resp, err = stream.Recv()
-	s.NoError(err)
-	s.Equal(UpdatedEvent, EventType(resp.Event.Type))
-	s.validateApp(resp.Application, app.Name, app.Version, app.DisplayName, app.Description, len(app.Profiles),
-		app.DefaultProfileName, app.ChartName, app.ChartVersion, app.HelmRegistryName)
-
-	_, err = s.client.DeleteApplication(s.ProjectID(footen), &catalogv3.DeleteApplicationRequest{
-		ApplicationName: app.Name, Version: app.Version,
-	})
-	s.NoError(err)
-
-	resp, err = stream.Recv()
-	s.NoError(err)
-	s.Equal(DeletedEvent, EventType(resp.Event.Type))
-	s.validateApp(resp.Application, app.Name, app.Version, "", "", 0, "", "", "", "")
-
-	// Make sure we get an error back for a Recv() on a closed channel
-	cancel()
-	s.createApp(footen, fooreg, "aaa", "1.0", 1)
-	resp, err = stream.Recv()
-	s.Error(err)
-	s.Nil(resp)
-}
-
-func (s *NorthBoundTestSuite) TestApplicationsEventsWithReplay() {
-	s.T().Skip()
-	ctx, cancel := context.WithCancel(s.ProjectID(footen))
-	stream, err := s.client.WatchApplications(ctx, &catalogv3.WatchApplicationsRequest{})
-	s.NoError(err)
-
-	existing := "foo bar goo"
-	for i := 0; i < 4; i++ {
-		resp, err := stream.Recv()
-		s.NoError(err)
-		s.Equal(ReplayedEvent, EventType(resp.Event.Type))
-		s.True(strings.Contains(existing, resp.Application.Name), "unexpected: %s", resp.Application.Name)
-	}
-
-	app := s.createApp(footen, fooreg, "newapp", "0.1.1", 2)
-
-	resp, err := stream.Recv()
-	s.NoError(err)
-	s.Equal(CreatedEvent, EventType(resp.Event.Type))
-	s.validateApp(resp.Application, app.Name, app.Version, app.DisplayName, app.Description, len(app.Profiles),
-		app.DefaultProfileName, app.ChartName, app.ChartVersion, app.HelmRegistryName)
-
-	// Make sure we get an error back for a Recv() on a closed channel
-	cancel()
-	s.createApp(footen, fooreg, "aaa", "1.0", 1)
-	resp, err = stream.Recv()
-	s.Error(err)
-	s.Nil(resp)
-}
-
 func (s *NorthBoundDBErrTestSuite) TestApplicationWatchInvalidArgs() {
 	tests := map[string]struct {
 		req *catalogv3.WatchApplicationsRequest
@@ -1609,83 +1532,6 @@ func (s *NorthBoundDBErrTestSuite) TestApplicationWatchInvalidArgs() {
 			s.validateInvalidArgumentError(err, nil)
 		})
 	}
-}
-
-type catalogServiceWatchApplicationsServer struct {
-	testServerStream
-	sendError bool
-}
-
-func (c *catalogServiceWatchApplicationsServer) Send(*catalogv3.WatchApplicationsResponse) error {
-	if c.sendError {
-		return errors.New("no send")
-	}
-	return nil
-}
-
-func (s *NorthBoundDBErrTestSuite) TestWatchApplicationDatabaseErrors() {
-	s.T().Skip("FIXME: Hard to troubleshoot")
-	saveBase64Factory := Base64Factory
-	defer func() { Base64Factory = saveBase64Factory }()
-	Base64Factory = newBase64Noop
-
-	server := &catalogServiceWatchApplicationsServer{sendError: false}
-	req := &catalogv3.WatchApplicationsRequest{}
-
-	// Test unable to start a transaction
-	err := s.server.WatchApplications(req, server)
-	s.validateDBError(err, nil)
-
-	// Test publisher existence query failure
-	s.mock.ExpectBegin()
-	err = s.server.WatchApplications(req, server)
-	s.validateDBError(err, nil)
-
-	// parameter template error
-	s.mock.ExpectBegin()
-	s.addMockedEmptyQueryRows(5)
-	err = s.server.WatchApplications(req, server)
-	s.validateDBError(err, nil)
-
-	// transaction commit error
-	s.mock.ExpectBegin()
-	s.addMockedEmptyQueryRows(7)
-	err = s.server.WatchApplications(req, server)
-	s.validateDBError(err, nil)
-
-	// send failure in replay
-	server.sendError = true
-	s.mock.ExpectBegin()
-	s.addMockedEmptyQueryRows(12)
-	err = s.server.WatchApplications(req, server)
-	s.Contains(err.Error(), "no send")
-
-	// send failure for event
-	ch := make(chan *catalogv3.WatchApplicationsResponse)
-	wg := sync.WaitGroup{}
-	wg.Add(1)
-	go func() {
-		err = s.server.watchApplicationEvents(server, ch)
-		wg.Done()
-	}()
-	ch <- nil
-	wg.Wait()
-	s.Contains(err.Error(), "no send")
-	close(ch)
-
-	// end of channel
-	ch = make(chan *catalogv3.WatchApplicationsResponse)
-	wg = sync.WaitGroup{}
-	wg.Add(1)
-	go func() {
-		err = s.server.watchApplicationEvents(server, ch)
-		wg.Done()
-	}()
-	close(ch)
-	wg.Wait()
-	s.NoError(err)
-
-	s.NoError(s.mock.ExpectationsWereMet())
 }
 
 func (s *NorthBoundTestSuite) checkParameterTemplates(expectedTemplates []*catalogv3.ParameterTemplate) {

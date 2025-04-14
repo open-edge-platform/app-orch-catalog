@@ -107,10 +107,6 @@ func MakeSecretPath(projectUUID string, registryName string) string {
 	return "cat-" + projectUUID + "_" + registryName
 }
 
-func makeDashesSecretPath(projectUUID string, registryName string) string {
-	return "cat-" + projectUUID + "-" + registryName
-}
-
 // CreateRegistry creates a Registry from gRPC request
 func (g *Server) CreateRegistry(ctx context.Context, req *catalogv3.CreateRegistryRequest) (*catalogv3.CreateRegistryResponse, error) {
 	projectUUID, err := GetActiveProjectID(ctx)

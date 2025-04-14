@@ -8,13 +8,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/DATA-DOG/go-sqlmock"
 	nberrors "github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"strings"
-	"sync"
 	"testing"
 	"time"
 )
@@ -479,34 +477,6 @@ func (s *NorthBoundTestSuite) TestRegistryEvents() {
 	s.Nil(resp)
 }
 
-func (s *NorthBoundTestSuite) TestRegistryEventsWithReplay() {
-	s.T().Skip()
-	ctx, cancel := context.WithCancel(s.ProjectID(barten))
-	stream, err := s.client.WatchRegistries(ctx, &catalogv3.WatchRegistriesRequest{})
-	s.NoError(err)
-
-	existing := barreg + barregalt
-	for i := 0; i < 2; i++ {
-		resp, err := stream.Recv()
-		s.NoError(err)
-		s.Equal(ReplayedEvent, EventType(resp.Event.Type))
-		s.True(strings.Contains(existing, resp.Registry.Name), "unexpected: %s", resp.Registry.Name)
-	}
-
-	reg := s.createRegistry(barten, "newreg", helmType)
-	resp, err := stream.Recv()
-	s.NoError(err)
-	s.Equal(CreatedEvent, EventType(resp.Event.Type))
-	s.validateRegistry(resp.Registry, reg.Name, reg.DisplayName, reg.Description, reg.RootUrl, reg.Username, reg.AuthToken, reg.Cacerts)
-
-	// Make sure we get an error back for a Recv() on a closed channel
-	cancel()
-	s.createRegistry(barten, "newreg2", helmType)
-	resp, err = stream.Recv()
-	s.Error(err)
-	s.Nil(resp)
-}
-
 func (s *NorthBoundDBErrTestSuite) TestRegistryWatchInvalidArgs() {
 	tests := map[string]struct {
 		req *catalogv3.WatchRegistriesRequest
@@ -520,77 +490,6 @@ func (s *NorthBoundDBErrTestSuite) TestRegistryWatchInvalidArgs() {
 			s.validateInvalidArgumentError(err, nil)
 		})
 	}
-}
-
-type catalogServiceWatchRegistriesServer struct {
-	testServerStream
-	sendError bool
-}
-
-func (c *catalogServiceWatchRegistriesServer) Send(*catalogv3.WatchRegistriesResponse) error {
-	if c.sendError {
-		return errors.New("no send")
-	}
-	return nil
-}
-
-func (s *NorthBoundDBErrTestSuite) TestWatchRegistryDatabaseErrors() {
-	s.T().Skip("FIXME: Hard to troubleshoot")
-	saveBase64Factory := Base64Factory
-	defer func() { Base64Factory = saveBase64Factory }()
-	Base64Factory = newBase64Noop
-
-	server := &catalogServiceWatchRegistriesServer{sendError: false}
-	req := &catalogv3.WatchRegistriesRequest{}
-
-	// Test unable to start a transaction
-	err := s.server.WatchRegistries(req, server)
-	s.validateDBError(err, nil)
-
-	// Test project existence query failure
-	s.mock.ExpectBegin()
-	err = s.server.WatchRegistries(req, server)
-	s.validateDBError(err, nil)
-
-	// transaction commit error
-	s.mock.ExpectBegin()
-	s.addMockedEmptyQueryRows(2)
-	err = s.server.WatchRegistries(req, server)
-	s.validateDBError(err, nil)
-
-	// send failure in replay
-	server.sendError = true
-	s.mock.ExpectBegin()
-	s.addMockedEmptyQueryRows(2)
-	err = s.server.WatchRegistries(req, server)
-	s.Contains(err.Error(), "no send")
-
-	// send failure for event
-	ch := make(chan *catalogv3.WatchRegistriesResponse)
-	wg := sync.WaitGroup{}
-	wg.Add(1)
-	go func() {
-		err = s.server.watchRegistryEvents(server, ch)
-		wg.Done()
-	}()
-	ch <- nil
-	wg.Wait()
-	s.Contains(err.Error(), "no send")
-	close(ch)
-
-	// end of channel
-	ch = make(chan *catalogv3.WatchRegistriesResponse)
-	wg = sync.WaitGroup{}
-	wg.Add(1)
-	go func() {
-		err = s.server.watchRegistryEvents(server, ch)
-		wg.Done()
-	}()
-	close(ch)
-	wg.Wait()
-	s.NoError(err)
-
-	s.NoError(s.mock.ExpectationsWereMet())
 }
 
 // FuzzCreateRegistry - fuzz test creating a registry
@@ -676,34 +575,6 @@ func (s *NorthBoundTestSuite) TestRegistryCreateErrorSecretWrite() {
 				Type:    helmType,
 			}})
 	s.ErrorIs(err, status.Errorf(codes.InvalidArgument, "registry fooreg invalid: registry fooreg already exists"))
-}
-
-func (s *NorthBoundDBErrTestSuite) TestRegistryUpdateErrorSecretWrite() {
-	s.T().Skip("FIXME: Hard to troubleshoot")
-	saveSecretFactory := SecretServiceFactory
-	saveUseSecretService := UseSecretService
-	defer func() {
-		SecretServiceFactory = saveSecretFactory
-		UseSecretService = saveUseSecretService
-	}()
-
-	SecretServiceFactory = testSecretServiceFactory
-	UseSecretService = true
-	errorOnWrite = true
-	var err error
-
-	s.mock.ExpectBegin()
-	s.addMockedEmptyQueryRows(3)
-
-	resp, err := s.server.UpdateRegistry(s.ctx,
-		&catalogv3.UpdateRegistryRequest{
-			RegistryName: fooreg,
-			Registry: &catalogv3.Registry{
-				Name:    fooreg,
-				RootUrl: "http://x.x",
-				Type:    helmType,
-			}})
-	s.validateDBError(err, resp)
 }
 
 func getBaseUpdateRequest() *catalogv3.UpdateRegistryRequest {
@@ -1000,209 +871,6 @@ func (s *NorthBoundTestSuite) TestRegistryBase64Errors() {
 	s.validateError(err, codes.Internal, getResp)
 }
 
-const (
-	dbErrorRegName        = "new-registry"
-	dbErrorRegDisplayName = "new registry"
-	dbErrorRegDescription = "New Registry for DB error testing"
-)
-
-var (
-	dbErrorRegistry = catalogv3.Registry{
-		Name:        dbErrorRegName,
-		DisplayName: dbErrorRegDisplayName,
-		Description: dbErrorRegDescription,
-		RootUrl:     "https://x.y.z",
-		Type:        imageType,
-	}
-)
-
-func (s *NorthBoundDBErrTestSuite) TestCreateRegistryDatabaseErrors() {
-	s.T().Skip("FIXME: Hard to troubleshoot")
-	registryRequest := &dbErrorRegistry
-
-	// Test unable to start a transaction
-	resp, err := s.server.CreateRegistry(s.ctx, &catalogv3.CreateRegistryRequest{Registry: registryRequest})
-	s.validateDBError(err, resp)
-
-	// Test project existence query failure
-	s.mock.ExpectBegin()
-	resp, err = s.server.CreateRegistry(s.ctx, &catalogv3.CreateRegistryRequest{Registry: registryRequest})
-	s.validateDBError(err, resp)
-
-	// Test registry display name uniqueness query failure
-	s.mock.ExpectBegin()
-	s.addMockedQueryRowsWithResult(1, 1)
-	resp, err = s.server.CreateRegistry(s.ctx, &catalogv3.CreateRegistryRequest{Registry: registryRequest})
-	s.validateDBError(err, resp)
-
-	// Test save error
-	s.mock.ExpectBegin()
-	s.addMockedQueryRowsWithResult(1, 1)
-	s.addMockedEmptyQueryRows(1)
-	resp, err = s.server.CreateRegistry(s.ctx, &catalogv3.CreateRegistryRequest{Registry: registryRequest})
-	s.validateDBError(err, resp)
-
-	// Test transaction commit error
-	s.mock.ExpectBegin()
-	s.addMockedQueryRowsWithResult(1, 1)
-	s.addMockedEmptyQueryRows(1)
-	s.mock.ExpectExec("INSERT INTO .*").WillReturnResult(sqlmock.NewResult(1, 1))
-	resp, err = s.server.CreateRegistry(s.ctx, &catalogv3.CreateRegistryRequest{Registry: registryRequest})
-	s.validateDBError(err, resp)
-
-	s.NoError(s.mock.ExpectationsWereMet())
-}
-
-type base64Noop struct{}
-
-func (b *base64Noop) EncodeBase64(_ registrySecretData) string {
-	return ""
-}
-
-func (b *base64Noop) DecodeBase64(_ *registrySecretData, _ string) error {
-	return nil
-}
-
-func newBase64Noop() Base64Strings {
-	bs := &base64Noop{}
-	return bs
-}
-
-func (s *NorthBoundDBErrTestSuite) TestListRegistryDatabaseErrors() {
-	s.T().Skip("FIXME: Hard to troubleshoot")
-	saveBase64Factory := Base64Factory
-	defer func() { Base64Factory = saveBase64Factory }()
-	Base64Factory = newBase64Noop
-
-	var r *catalogv3.ListRegistriesResponse
-
-	// Test unable to start a transaction
-	r, err := s.server.ListRegistries(s.ctx, &catalogv3.ListRegistriesRequest{})
-	s.validateDBError(err, r)
-
-	// Test project existence query failure
-	s.mock.ExpectBegin()
-	r, err = s.server.ListRegistries(s.ctx, &catalogv3.ListRegistriesRequest{})
-	s.validateDBError(err, r)
-
-	// Test project existence query failure
-	s.mock.ExpectBegin()
-	s.addMockedEmptyQueryRows(1)
-	r, err = s.server.ListRegistries(s.ctx, &catalogv3.ListRegistriesRequest{})
-	s.validateDBError(err, r)
-
-	// Test project existence query failure
-	s.mock.ExpectBegin()
-	s.addMockedEmptyQueryRows(2)
-	r, err = s.server.ListRegistries(s.ctx, &catalogv3.ListRegistriesRequest{})
-	s.validateDBError(err, r)
-
-	s.NoError(s.mock.ExpectationsWereMet())
-}
-
-func (s *NorthBoundDBErrTestSuite) TestGetRegistryDatabaseErrors() {
-	s.T().Skip("FIXME: Hard to troubleshoot")
-	// Test unable to start a transaction
-	resp, err := s.server.GetRegistry(s.ctx,
-		&catalogv3.GetRegistryRequest{RegistryName: fooreg})
-	s.validateDBError(err, resp)
-
-	// Test unable to query
-	s.mock.ExpectBegin()
-	resp, err = s.server.GetRegistry(s.ctx,
-		&catalogv3.GetRegistryRequest{RegistryName: fooreg})
-	s.validateDBError(err, resp)
-
-	// Test unable to commit a transaction
-	s.mock.ExpectBegin()
-	s.addMockedEmptyQueryRows(1)
-	resp, err = s.server.GetRegistry(s.ctx,
-		&catalogv3.GetRegistryRequest{RegistryName: fooreg})
-	s.validateDBError(err, resp)
-
-	s.NoError(s.mock.ExpectationsWereMet())
-}
-
-func (s *NorthBoundDBErrTestSuite) TestUpdateRegistryDatabaseErrors() {
-	s.T().Skip("FIXME: Hard to troubleshoot")
-	updateRequest := &catalogv3.UpdateRegistryRequest{
-		RegistryName: dbErrorRegName,
-		Registry:     &dbErrorRegistry,
-	}
-
-	// Test unable to start a transaction
-	resp, err := s.server.UpdateRegistry(s.ctx, updateRequest)
-	s.validateDBError(err, resp)
-
-	// Test unable to query project
-	s.mock.ExpectBegin()
-	resp, err = s.server.UpdateRegistry(s.ctx, updateRequest)
-	s.validateDBError(err, resp)
-
-	// Test unable to query registry type
-	s.mock.ExpectBegin()
-	s.addMockedEmptyQueryRows(2)
-	resp, err = s.server.UpdateRegistry(s.ctx, updateRequest)
-	s.validateDBError(err, resp)
-
-	// Test unable to query registry type
-	s.mock.ExpectBegin()
-	s.addMockedEmptyQueryRows(3)
-	resp, err = s.server.UpdateRegistry(s.ctx, updateRequest)
-	s.validateDBError(err, resp)
-
-	// Test unable to update
-	s.mock.ExpectBegin()
-	s.addMockedEmptyQueryRows(4)
-	resp, err = s.server.UpdateRegistry(s.ctx, updateRequest)
-	s.validateDBError(err, resp)
-
-	// Test update error - can't find registry
-	s.mock.ExpectBegin()
-	s.addMockedEmptyQueryRows(4)
-	s.mock.ExpectExec("UPDATE .*").WillReturnResult(sqlmock.NewResult(0, 0))
-	resp, err = s.server.UpdateRegistry(s.ctx, updateRequest)
-	s.validateError(err, codes.NotFound, `registry not found`, resp)
-
-	// Test update commit error
-	s.mock.ExpectBegin()
-	s.addMockedEmptyQueryRows(4)
-	s.mock.ExpectExec("UPDATE .*").WillReturnResult(sqlmock.NewResult(1, 1))
-	resp, err = s.server.UpdateRegistry(s.ctx, updateRequest)
-	s.validateDBError(err, resp)
-
-	s.NoError(s.mock.ExpectationsWereMet())
-}
-
-func (s *NorthBoundDBErrTestSuite) TestDeleteRegistryDatabaseErrors() {
-	s.T().Skip("FIXME: Hard to troubleshoot")
-	deleteRequest := &catalogv3.DeleteRegistryRequest{RegistryName: fooreg}
-
-	// Test unable to start a transaction
-	resp, err := s.server.DeleteRegistry(s.ctx, deleteRequest)
-	s.validateDBError(err, resp)
-
-	// Test select error
-	s.mock.ExpectBegin()
-	resp, err = s.server.DeleteRegistry(s.ctx, deleteRequest)
-	s.validateDBError(err, resp)
-
-	// Test delete error
-	s.mock.ExpectBegin()
-	s.addMockedEmptyQueryRows(1)
-	resp, err = s.server.DeleteRegistry(s.ctx, deleteRequest)
-	s.validateDBError(err, resp)
-
-	// Test commit error
-	s.mock.ExpectBegin()
-	s.addMockedEmptyQueryRows(1)
-	s.mock.ExpectExec("DELETE FROM .*").WillReturnResult(sqlmock.NewResult(1, 1))
-	resp, err = s.server.DeleteRegistry(s.ctx, deleteRequest)
-	s.validateDBError(err, resp)
-
-	s.NoError(s.mock.ExpectationsWereMet())
-}
-
 var secretsMap = make(map[string]string)
 
 type mappingSecretsService struct {
@@ -1276,75 +944,6 @@ func (s *NorthBoundTestSuite) TestPublisherSecretOverlap() {
 	s.NoError(err)
 	s.Equal("https://a.com", reg.Registry.RootUrl)
 
-}
-
-func (s *NorthBoundTestSuite) TestRegistryPathMigration() {
-	s.T().Skip("FIXME: Issue with secret service mock")
-	var err error
-	saveSecretFactory := SecretServiceFactory
-	saveUseSecretService := UseSecretService
-	defer func() {
-		SecretServiceFactory = saveSecretFactory
-		UseSecretService = saveUseSecretService
-	}()
-
-	SecretServiceFactory = newSecretsMap
-	UseSecretService = true
-
-	secretData := "A secret"
-	ss, _ := newSecretsMap(s.ctx)
-	oldPath := makeDashesSecretPath("a", "b-c")
-	_ = ss.WriteSecret(s.ctx, oldPath, secretData)
-
-	server := Server{
-		UnimplementedCatalogServiceServer: catalogv3.UnimplementedCatalogServiceServer{},
-		databaseClient:                    s.dbClient,
-		listeners:                         &EventListeners{},
-	}
-
-	SecretServiceFactory = newSecretsMap
-	UseSecretService = true
-
-	const project1 = "a"
-	const registry1 = "b-c"
-	const project2 = "a-b"
-	const registry2 = "c"
-
-	_, err = server.CreateRegistry(s.ServerProjectID(project1), &catalogv3.CreateRegistryRequest{
-		Registry: &catalogv3.Registry{
-			Name:    registry1,
-			RootUrl: "https://a.com",
-			Type:    helmType,
-		},
-	})
-	s.NoError(err)
-
-	_, err = server.CreateRegistry(s.ServerProjectID(project2), &catalogv3.CreateRegistryRequest{
-		Registry: &catalogv3.Registry{
-			Name:    registry2,
-			RootUrl: "https://a-b.com",
-			Type:    helmType,
-		},
-	})
-	s.NoError(err)
-
-	p1data := secretsMap[MakeSecretPath(project1, registry1)]
-	p2data := secretsMap[MakeSecretPath(project2, registry2)]
-	secretsMap = make(map[string]string)
-	secretsMap[makeDashesSecretPath(project1, registry1)] = p1data
-	secretsMap[MakeSecretPath(project2, registry2)] = p2data
-
-	reg1, err := server.GetRegistry(s.ServerProjectID(project1), &catalogv3.GetRegistryRequest{
-		RegistryName: registry1,
-	})
-	s.NoError(err)
-	s.Equal("https://a.com", reg1.Registry.RootUrl)
-
-	reg2, err := server.GetRegistry(s.ServerProjectID(project2), &catalogv3.GetRegistryRequest{
-		RegistryName: registry2,
-	})
-	s.NoError(err)
-	s.Equal("https://a-b.com", reg2.Registry.RootUrl)
 }
 
 func TestEmptyRegistriesDBQuery(t *testing.T) {
