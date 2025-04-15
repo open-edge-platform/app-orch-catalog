@@ -280,13 +280,10 @@ license: $(VENV_NAME) ## Check licensing with the reuse tool.
 	reuse --root . lint
 
 .PHONY: yamllint
-YAML_FILES         := $(shell find . -type f \( -name '*.yaml' -o -name '*.yml' \) -print )
-YAML_IGNORE        := .cache, vendor, ci, .github/workflows, test, pkg/schema, api/spec/openapi.yaml, kind, internal/northbound/testdata, deployments/app-orch-catalog/templates, $(VENV_NAME)
-
 yamllint: $(VENV_NAME) ## Lint YAML files
 	. ./$</bin/activate; set -u ;\
   yamllint --version ;\
-  yamllint -d '{extends: default, rules: {line-length: {max: 500}, braces: {min-spaces-inside: 0, max-spaces-inside: 5}, brackets: {min-spaces-inside: 0, max-spaces-inside: 5},colons: {max-spaces-before: 1, max-spaces-after: 5}}, ignore: [$(YAML_IGNORE)]}' -s $(YAML_FILES)
+  yamllint -s .
 
 
 .PHONY: lint
