@@ -66,9 +66,9 @@ ENT Object Relational Mapping framework to manage the database schema. The datab
 PostgreSQL, but other databases could be used by changing the configuration.
 
 ## Contribute
-
-See [Contributor Guide](https://docs.openedgeplatform.intel.com/edge-manage-docs/main/developer_guide/contributor_guide/index.html)
-for information on how to contribute to the project.
+We welcome contributions from the community! To contribute, please open a pull request to have your changes reviewed
+and merged into the `main` branch. We encourage you to add appropriate unit tests and end-to-end tests if
+your contribution introduces a new feature. See [Contributor Guide] for information on how to contribute to the project.
 
 Additionally, ensure the following commands are successful:
 
@@ -91,3 +91,4 @@ The Application Orchestration Catalog is licensed under Apache 2.0.
 [Tenant Controller]: https://github.com/open-edge-platform/app-orch-tenant-controller
 [Cluster Extensions]: https://github.com/open-edge-platform/cluster-extensions
 [Foundational Platform]: https://literate-adventure-7vjeyem.pages.github.io/developer_guide/foundational_platform/foundational_platform_main.html
+[Contributor Guide]: https://docs.openedgeplatform.intel.com/edge-manage-docs/main/developer_guide/contributor_guide/index.html
