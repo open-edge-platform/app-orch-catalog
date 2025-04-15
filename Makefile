@@ -264,6 +264,7 @@ build: mod-update ## Runs build stage
 	go build -o build/_output/application-catalog ./cmd/application-catalog
 	go build -o build/_output/rest-proxy ./cmd/rest-proxy
 	go build -o build/_output/catalog-schema ./cmd/schema
+	go build -o build/_output/helm-to-dp ./cmd/helm-to-dp
 
 .PHONY: install
 install: ## Installs the application-catalog server and the schema generation/validation tool
