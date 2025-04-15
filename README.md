@@ -86,7 +86,7 @@ For support, start with Troubleshooting or contact us.
 
 ## License
 
-The Application Orchestration Catalog is licensed under Apache 2.0.
+The Application Orchestration Catalog is licensed under [Apache 2.0 License](LICENSES/Apache-2.0.txt)
 
 [Application Orchestration Deployment]: https://github.com/open-edge-platform/app-orch-deployment
 [Tenant Controller]: https://github.com/open-edge-platform/app-orch-tenant-controller
