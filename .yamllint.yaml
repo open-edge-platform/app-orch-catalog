@@ -4,25 +4,22 @@
 
 ---
 ignore: |
-  vendor/*
-  test/vendor/*
-  internal/northbound/testdata/bloggen-sample/*
-  deployments/postgres/templates/postgres-secrets.yaml
-  deployments/postgres/templates/pvc.yaml
-  deployments/postgres/templates/service.yaml
-  deployments/postgres/templates/deployment.yaml
-  deployments/application-catalog/templates/tests/test-connection.yaml
-  deployments/application-catalog/templates/configmap.yaml
-  deployments/application-catalog/templates/postgres-secrets.yaml
-  deployments/application-catalog/templates/service.yaml
-  deployments/application-catalog/templates/ingress.yaml
-  deployments/application-catalog/templates/deployment.yaml
-  internal/northbound/testdata/*
   test/catalog-*-test.yaml
+  .cache
+  vendor
+  ci
+  .github/workflows
+  pkg/schema
+  api/spec/openapi.yaml
+  internal/northbound/testdata
+  deployments/app-orch-catalog/templates
+  venv
   .github/
+extends: default
 rules:
   line-length:
     level: warning
+    max: 200
     ignore: |
       api/spec/*.yaml
       deployments/keycloak-dev/values.yaml
@@ -41,3 +38,12 @@ rules:
   truthy:
     level: error
   empty-values: enable
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 5
+  brackets:
+    min-spaces-inside: 0
+    max-spaces-inside: 5
+  colons:
+    max-spaces-before: 1
+    max-spaces-after: 5

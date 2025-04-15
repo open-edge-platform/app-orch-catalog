@@ -12,15 +12,15 @@ description: "This is a very lightweight Speedtest implemented in Javascript,
 version: "0.0.2"
 
 applications:
-   - name: librespeed-vm
-     version: 0.0.2
+  - name: librespeed-vm
+    version: 0.0.2
 
 deploymentProfiles:
-   - name: "default"
-     displayName: "Default Configuration"
-     applicationProfiles:
-        - application: "librespeed-vm"
-          profile: "default"
+  - name: "default"
+    displayName: "Default Configuration"
+    applicationProfiles:
+      - application: "librespeed-vm"
+        profile: "default"
 
 extensions:
   - name: "ext1"
@@ -45,4 +45,3 @@ extensions:
       moduleName: "module1"
       description: "description"
       fileName: "file1"
-
