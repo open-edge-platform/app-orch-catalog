@@ -66,6 +66,7 @@ ENT Object Relational Mapping framework to manage the database schema. The datab
 PostgreSQL, but other databases could be used by changing the configuration.
 
 ## Contribute
+
 We welcome contributions from the community! To contribute, please open a pull request to have your changes reviewed
 and merged into the `main` branch. We encourage you to add appropriate unit tests and end-to-end tests if
 your contribution introduces a new feature. See [Contributor Guide] for information on how to contribute to the project.
