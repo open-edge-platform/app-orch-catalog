@@ -7,3 +7,4 @@ scan:
    skip-dirs:
       vendor/
       test/
+      app-orch-tutorials/
