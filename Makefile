@@ -287,11 +287,9 @@ yamllint: $(VENV_NAME) ## Lint YAML files
 
 
 .PHONY: lint
-lint: rego-service-write-rule-match yamllint mdlint shelllint ## Runs lint stage
-	helm lint ${CHART_PATH}
+lint: rego-service-write-rule-match yamllint mdlint shelllint helmlint hadolint ## Runs lint stage
 	buf lint
 	golangci-lint run --timeout 10m
-	hadolint --ignore DL3059 build/Dockerfile
 	opa check ${CHART_PATH}/files/openpolicyagent/*.rego
 
 .PHONY: mdlint ## lint markdown files
@@ -355,6 +353,15 @@ coverage: go-cover-dependency ## Runs coverage stage
 	#$(GOCMD) tool cover -html=coverage.txt -o cover.html
 	#$(GOCMD) tool cover -func cover.out -o cover.function-coverage.log
 	@echo "---END MAKEFILE COVERAGE---"
+
+DOCKERFILES := $(shell find . -type f -name 'Dockerfile';)
+.PHONY: hadolint
+hadolint: ## lint Dockerfiles
+	@echo "Linting Dockerfiles"
+	set -e ;\
+	$(foreach file,$(DOCKERFILES),\
+		hadolint --ignore DL3059 $(file) ;\
+    )
 
 .PHONY: docker-build
 docker-build: mod-update vendor ##Builds the docker image
@@ -444,9 +451,14 @@ chart: chart-clean ## Builds the application catalog helm chart
 	helm package --app-version=${DOCKER_VERSION} --version=${CHART_VERSION} --dependency-update --destination ${CHART_BUILD_DIR} ${CHART_PATH}
 	@echo "---END MAKEFILE CHART---"
 
-helmlint: ## Lint Helm charts.
-	@# Help: Lint Helm charts
-	helm lint ${CHART_PATH}
+HELM_CHARTS := $(shell find . -type f -name 'Chart.yaml' -exec dirname {} \;)
+.PHONY: helmlint
+helmlint: ## lint helm charts
+	@echo "Linting helm charts"
+	set -e ;\
+	$(foreach file,$(HELM_CHARTS),\
+		helm lint $(file) ;\
+    )
 
 helm-push: ## Push helm charts.
 	@# Help: Pushes the helm chart
