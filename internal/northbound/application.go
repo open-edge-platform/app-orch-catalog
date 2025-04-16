@@ -704,7 +704,7 @@ func (g *Server) UpdateApplication(ctx context.Context, req *catalogv3.UpdateApp
 	if err != nil {
 		return nil, errors.NewDBError(errors.WithError(err))
 	}
-
+	// trigger CI
 	events := &ApplicationEvents{}
 	if err = g.updateApplication(ctx, tx, projectUUID, req.Application, events); err != nil {
 		g.rollbackTransaction(tx)
