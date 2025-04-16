@@ -35,7 +35,7 @@ The App Catalog depends on the Edge Orchestrator [Foundational Platform] for man
 Authorization, Authentication, etc.
 
 The overall architecture of the Application Orchestration environment is explained in the
-Edge Orchestrator [Application Orchestration Developer Guide](https://literate-adventure-7vjeyem.pages.github.io/developer_guide/application_orchestration/application_orchestration_main.html).
+Edge Orchestrator [Application Orchestration Developer Guide](https://docs.openedgeplatform.intel.com/edge-manage-docs/main/developer_guide/app_orch/arch/index.html).
 
 ## Get Started
 
@@ -93,7 +93,7 @@ The Application Orchestration Catalog is licensed under [Apache 2.0 License]
 [Application Orchestration Deployment]: https://github.com/open-edge-platform/app-orch-deployment
 [Tenant Controller]: https://github.com/open-edge-platform/app-orch-tenant-controller
 [Cluster Extensions]: https://github.com/open-edge-platform/cluster-extensions
-[Foundational Platform]: https://literate-adventure-7vjeyem.pages.github.io/developer_guide/foundational_platform/foundational_platform_main.html
+[Foundational Platform]: https://docs.openedgeplatform.intel.com/edge-manage-docs/main/developer_guide/platform/index.html
 [Contributor Guide]: https://docs.openedgeplatform.intel.com/edge-manage-docs/main/developer_guide/contributor_guide/index.html
 [Troubleshooting]: https://docs.openedgeplatform.intel.com/edge-manage-docs/main/developer_guide/troubleshooting/index.html
 [Contact us]: https://github.com/open-edge-platform
