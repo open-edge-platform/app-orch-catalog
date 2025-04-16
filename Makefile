@@ -287,7 +287,7 @@ yamllint: $(VENV_NAME) ## Lint YAML files
 
 
 .PHONY: lint
-lint: rego-service-write-rule-match yamllint mdlint shelllint helmlint hadolint ## Runs lint stage
+lint: rego-service-write-rule-match yamllint mdlint shelllint helmlint hadolint validate-dp ## Runs lint stage
 	buf lint
 	golangci-lint run --timeout 10m
 	opa check ${CHART_PATH}/files/openpolicyagent/*.rego
@@ -344,6 +344,12 @@ go-fuzz: ## GO fuzz tests
 	for func in $(FUZZ_FUNCS); do \
 		$(GOCMD) test $(FUZZ_FUNC_PATH) -fuzz $$func -fuzztime=${FUZZ_SECONDS}s -v; \
 	done
+
+.PHONY: validate-dp
+validate-dp: ## Validate the deployment package
+	@echo "---MAKEFILE VALIDATE DP---"
+	@go run cmd/schema/schema.go validate app-orch-tutorials/developer-guide-tutorial/tutorial-deployment
+	@echo "---END MAKEFILE VALIDATE DP---"
 
 .PHONY: coverage
 coverage: go-cover-dependency ## Runs coverage stage
