@@ -86,13 +86,14 @@ For support, start with [Troubleshooting] or [Contact us].
 
 ## License
 
-The Application Orchestration Catalog is licensed under [Apache 2.0 License](LICENSES/Apache-2.0.txt)
+The Application Orchestration Catalog is licensed under [Apache 2.0 License]
 
 [Application Orchestration Deployment]: https://github.com/open-edge-platform/app-orch-deployment
 [Tenant Controller]: https://github.com/open-edge-platform/app-orch-tenant-controller
 [Cluster Extensions]: https://github.com/open-edge-platform/cluster-extensions
 [Foundational Platform]: https://literate-adventure-7vjeyem.pages.github.io/developer_guide/foundational_platform/foundational_platform_main.html
 [Contributor Guide]: https://docs.openedgeplatform.intel.com/edge-manage-docs/main/developer_guide/contributor_guide/index.html
-[Troubleshooting]: https://github.com/open-edge-platform/orch-docs
+[Troubleshooting]: https://docs.openedgeplatform.intel.com/edge-manage-docs/main/developer_guide/troubleshooting/index.html
 [Contact us]: https://github.com/open-edge-platform
-[Edge Orchestrator Community]: https://github.com/open-edge-platform
+[Edge Orchestrator Community]: https://docs.openedgeplatform.intel.com/edge-manage-docs/main/index.html
+[Apache 2.0 License]: LICENSES/Apache-2.0.txt
