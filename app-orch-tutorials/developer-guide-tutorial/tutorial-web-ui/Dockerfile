@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
 # Stage 1: Build the application
 FROM node:22 AS build
 

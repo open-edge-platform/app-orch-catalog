@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
 # Use the FastAPI image from Docker Hub
 FROM demisto/fastapi:0.115.9.2587379
 

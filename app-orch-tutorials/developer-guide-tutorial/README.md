@@ -1,3 +1,8 @@
+<!---
+  SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+  SPDX-License-Identifier: Apache-2.0
+-->
+
 # Application Orchestration Tutorial Code
 
 This directory contains the source code used in the [Application Orchestration tutorial].

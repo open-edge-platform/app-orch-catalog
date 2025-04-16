@@ -1,2 +1,6 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
 fastapi[standard]~=0.115.12
 uvicorn~=0.34.0
