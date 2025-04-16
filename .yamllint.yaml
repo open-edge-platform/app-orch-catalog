@@ -13,6 +13,7 @@ ignore: |
   api/spec/openapi.yaml
   internal/northbound/testdata
   deployments/app-orch-catalog/templates
+  app-orch-tutorials/developer-guide-tutorial/tutorial-web-ui/node_modules/
   venv
   .github/
 extends: default
