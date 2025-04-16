@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+specSchema: Application
+schemaVersion: "0.1"
+$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+
+name: tutorial-web-ui
+version: "0.1.0"
+description: "Tutorial Server"
+
+imageRegistry: "harbor-docker-oci"
+helmRegistry: "harbor-helm-oci"
+chartName: "tutorial-web-ui"
+chartVersion: "0.1.0"
+
+profiles:
+  - name: "default"
+    valuesFileName: "tutorial-web-ui-values.yaml"

@@ -1,0 +1,34 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+specSchema: Application
+schemaVersion: "0.1"
+$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+
+name: tutorial-server
+version: "0.1.0"
+description: "Tutorial Server"
+
+imageRegistry: "harbor-docker-oci"
+helmRegistry: "harbor-helm-oci"
+chartName: "tutorial-server"
+chartVersion: "0.1.0"
+
+profiles:
+  - name: "default"
+    valuesFileName: "tutorial-server-values-default.yaml"
+  - name: "alternate"
+    valuesFileName: "tutorial-server-values-alternate.yaml"
+  - name: "alternate-pt"
+    valuesFileName: "tutorial-server-values-alternate-pt.yaml"
+    parameterTemplates:
+      - name: "greeting"
+        displayName: Greeting message
+        default: "Deployed by Application Orchestration (pt)"
+        type: string
+      - name: "initialCount"
+        displayName: Initial count
+        default: "0"
+        type: string

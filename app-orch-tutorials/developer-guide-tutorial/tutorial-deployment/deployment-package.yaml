@@ -1,0 +1,46 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+specSchema: DeploymentPackage
+schemaVersion: "0.1"
+$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+
+description: Application Orchestration Tutorial Deployment Package
+name: app-orch-tutorial-dp
+displayName: "Tutorial DP"
+version: "0.1.0"
+
+applications:
+  - name: tutorial-server
+    version: "0.1.0"
+  - name: tutorial-web-ui
+    version: "0.1.0"
+
+deploymentProfiles:
+  - name: "default-profile"
+    displayName: "Default Configuration"
+    applicationProfiles:
+      - application: "tutorial-server"
+        profile: "default"
+      - application: "tutorial-web-ui"
+        profile: "default"
+  - name: "alternate"
+    displayName: "Alternate Configuration"
+    applicationProfiles:
+      - application: "tutorial-server"
+        profile: "alternate"
+      - application: "tutorial-web-ui"
+        profile: "default"
+  - name: "alternate-pt"
+    displayName: "Alternate with Parameter Templates"
+    applicationProfiles:
+      - application: "tutorial-server"
+        profile: "alternate-pt"
+      - application: "tutorial-web-ui"
+        profile: "default"
+
+defaultNamespaces:
+  tutorial-server: tutorial
+  tutorial-web-ui: tutorial
