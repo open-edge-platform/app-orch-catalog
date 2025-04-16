@@ -7,6 +7,7 @@ SHELL := bash -eu -o pipefail
 VERSION            := $(shell cat VERSION)
 CHART_VERSION      := $(shell cat VERSION)
 VERSION_DEV_SUFFIX := -dev
+
 GIT_COMMIT         ?= $(shell git rev-parse --short HEAD)
 
 ifeq ($(patsubst %$(VERSION_DEV_SUFFIX),,$(lastword $(VERSION))),)
