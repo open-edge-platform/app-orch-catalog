@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+fullnameOverride: tutorial-server
+tutorialServer:
+  greeting: "Deployed by Application Orchestration (default)"
+  initialCount: 10
+image:
+  repository: registry-oci.example.com/catalog-apps-myorg-myproject/tutorial-server-image
+imagePullSecrets:
+  - name: "%GeneratedDockerCredential%"

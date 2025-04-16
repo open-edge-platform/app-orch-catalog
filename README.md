@@ -65,6 +65,8 @@ The App Catalog uses a SQL database to store the Deployment Packages, Applicatio
 ENT Object Relational Mapping framework to manage the database schema. The database technology used by default is
 PostgreSQL, but other databases could be used by changing the configuration.
 
+The repository also contains the source code for the [Developer Guide App Orch Tutorial].
+
 ## Contribute
 
 We welcome contributions from the community! To contribute, please open a pull request to have your changes reviewed
@@ -97,3 +99,4 @@ The Application Orchestration Catalog is licensed under [Apache 2.0 License]
 [Contact us]: https://github.com/open-edge-platform
 [Edge Orchestrator Community]: https://docs.openedgeplatform.intel.com/edge-manage-docs/main/index.html
 [Apache 2.0 License]: LICENSES/Apache-2.0.txt
+[Developer Guide App Orch Tutorial]: app-orch-tutorials/developer-guide-tutorial/README.md

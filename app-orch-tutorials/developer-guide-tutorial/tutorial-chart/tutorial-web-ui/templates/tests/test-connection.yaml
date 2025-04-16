@@ -1,0 +1,19 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "tutorial-web-ui.fullname" . }}-test-connection"
+  labels:
+    {{- include "tutorial-web-ui.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['{{ include "tutorial-web-ui.fullname" . }}:{{ .Values.service.port }}']
+  restartPolicy: Never

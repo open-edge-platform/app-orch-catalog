@@ -23,7 +23,10 @@ path = [
     "pkg/restProxy/mock**.go",
     "pkg/schema/catalog-schema.go",
     "internal/helm/testdata/chart.tgz",
-    "scripts/extract-keycloak-config.sh"]
+    "scripts/extract-keycloak-config.sh",
+    "app-orch-tutorials/developer-guide-tutorial/tutorial-web-ui/public/vercel.svg",
+    "app-orch-tutorials/developer-guide-tutorial/tutorial-web-ui/app/favicon.ico",
+]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2025 Intel Corporation"
 SPDX-License-Identifier = "Apache-2.0"

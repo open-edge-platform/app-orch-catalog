@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+fullnameOverride: tutorial-web-ui
+image:
+  repository: registry-oci.example.com/catalog-apps-myorg-myproject/tutorial-web-ui-image
+imagePullSecrets:
+  - name: "%GeneratedDockerCredential%"
+service:
+  annotations:
+    service-proxy.app.orchestrator.io/ports: "80"
