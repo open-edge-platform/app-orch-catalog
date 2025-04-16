@@ -23,6 +23,9 @@ import (
 	"strings"
 )
 
+// ggg
+
+
 // CreateArtifact creates an artifact through gRPC
 func (g *Server) CreateArtifact(ctx context.Context, req *catalogv3.CreateArtifactRequest) (*catalogv3.CreateArtifactResponse, error) {
 	projectUUID, err := GetActiveProjectID(ctx)
