@@ -8,6 +8,8 @@ VERSION            := $(shell cat VERSION)
 CHART_VERSION      := $(shell cat VERSION)
 VERSION_DEV_SUFFIX := -dev
 GIT_COMMIT         ?= $(shell git rev-parse --short HEAD)
+OPA_IMAGE_VER       = 0.67.1-static
+
 
 ifeq ($(patsubst %$(VERSION_DEV_SUFFIX),,$(lastword $(VERSION))),)
     DOCKER_VERSION ?= $(VERSION)-$(GIT_COMMIT)
@@ -285,12 +287,16 @@ yamllint: $(VENV_NAME) ## Lint YAML files
   yamllint --version ;\
   yamllint -s .
 
+docker-opa:
+	docker pull openpolicyagent/opa:$(OPA_IMAGE_VER)
 
 .PHONY: lint
-lint: rego-service-write-rule-match yamllint mdlint shelllint helmlint hadolint validate-dp ## Runs lint stage
+lint: rego-service-write-rule-match yamllint mdlint shelllint helmlint hadolint validate-dp opa-lint ## Runs lint stage
 	buf lint
 	golangci-lint run --timeout 10m
-	opa check ${CHART_PATH}/files/openpolicyagent/*.rego
+
+opa-lint: docker-opa
+	docker run -v $(shell pwd)/${CHART_PATH}/files/openpolicyagent:/policies openpolicyagent/opa:$(OPA_IMAGE_VER) check  policies/
 
 .PHONY: mdlint ## lint markdown files
 mdlint:
