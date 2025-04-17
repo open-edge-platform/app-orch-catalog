@@ -13,7 +13,6 @@ lint:
     - COMMENT_MESSAGE
     - COMMENT_RPC
     - COMMENT_SERVICE
-    - DEFAULT
     - ENUM_FIRST_VALUE_ZERO
   except:
     - FIELD_NOT_REQUIRED
