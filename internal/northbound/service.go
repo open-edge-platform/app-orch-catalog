@@ -139,6 +139,7 @@ func (g *Server) rollbackTransaction(tx *generated.Tx) {
 	_ = tx.Rollback()
 }
 
+// Check if the application with the specified name, version, and project UUID exists in the database.
 func (g *Server) checkApplication(ctx context.Context, tx *generated.Tx, name, version, projectUUID string) error {
 	ok, err := tx.Application.Query().
 		Where(
