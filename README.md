@@ -83,7 +83,8 @@ make license
 
 ## Community and Support
 
-To learn more about the project, its community, and governance, visit the [Edge Orchestrator Community].
+To learn more about the project, its community, and governance, visit the [Edge Orchestrator Community]. 
+
 For support, start with [Troubleshooting] or [Contact us].
 
 ## License
