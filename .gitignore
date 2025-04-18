@@ -25,3 +25,4 @@ artifacts/
 app-orch-tutorials/developer-guide-tutorial/tutorial-server/venv
 app-orch-tutorials/developer-guide-tutorial/tutorial-web-ui/node_modules
 app-orch-tutorials/developer-guide-tutorial/tutorial-web-ui/.next
+app-orch-tutorials/developer-guide-tutorial/tutorial-chart/*.tgz
