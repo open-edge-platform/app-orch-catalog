@@ -43,7 +43,7 @@ securityContext:
       - ALL
   readOnlyRootFilesystem: true
   runAsNonRoot: true
-  runAsUser: 65534 # nobody
+  runAsUser: 65534  # nobody
 
 service:
   type: ClusterIP
