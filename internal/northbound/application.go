@@ -280,6 +280,7 @@ func (g *Server) createIgnoredResources(ctx context.Context, tx *generated.Tx, a
 	return nil
 }
 
+// Retrieve registry by name and type for the specified project
 func (g *Server) getRegistry(ctx context.Context, tx *generated.Tx, projectUUID string, registryName string, registryType string) (*generated.Registry, bool, error) {
 	registry, err := tx.Registry.Query().
 		Where(registry.ProjectUUID(projectUUID), registry.Name(registryName)).First(ctx)
