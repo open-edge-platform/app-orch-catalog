@@ -8,3 +8,7 @@ scan:
      - vendor
      - test
      - app-orch-tutorials
+   
+   skip-files:
+     - app-orch-tutorials/developer-guide-tutorial/tutorial-chart/tutorial-server/templates/deployment.yaml
+     - app-orch-tutorials/developer-guide-tutorial/tutorial-chart/tutorial-web-ui/templates/deployment.yaml
