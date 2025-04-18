@@ -316,6 +316,12 @@ shelllint:
 	)
 	@echo "---END MAKEFILE LINT SCRIPTS---"
 
+
+trivyfsscan: ## run Trivy scan locally
+	@echo "Running Trivy scan on the filesystem"
+	trivy --version ;\
+	trivy fs --scanners vuln,misconfig,secret -s HIGH,CRITICAL .
+
 .PHONY: rego-service-write-rule-match
 rego-service-write-rule-match: ## For every service request in Proto we expect a corresponding REGO rule
 	@egrep -oh "\((Create|Update|Delete|List|Get|Watch|Upload).*Request" ${API_DIR}/catalog/v3/service.proto | awk -F'(' '{print $$2}' | sort > ${TMP_DIR}/list_service_requests_out;

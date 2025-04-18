@@ -17,9 +17,10 @@ COPY public public
 RUN npx next build
 
 # Stage 2: Serve the application
-FROM nginx:alpine
+FROM nginxinc/nginx-unprivileged:alpine-perl
 
-EXPOSE 80
+EXPOSE 8080
+
+USER nginx
 
 COPY --from=build /app/out /usr/share/nginx/html
-
