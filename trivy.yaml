@@ -4,7 +4,7 @@
 
 ---
 scan:
-   skip-dirs:
-     - vendor
-     - test
-     - app-orch-tutorials
+  skip-dirs:
+    - vendor
+    - test
+    - app-orch-tutorials
