@@ -73,8 +73,6 @@ We welcome contributions from the community! To contribute, please open a pull r
 and merged into the `main` branch. We encourage you to add appropriate unit tests and end-to-end tests if
 your contribution introduces a new feature. See [Contributor Guide] for information on how to contribute to the project.
 
-Additionally, ensure the following commands are successful:
-
 ### Dependencies
 
 Firstly, please verify that all dependencies have been installed.
@@ -89,7 +87,7 @@ This code requires the following tools to be installed on your development machi
 - [Docker](https://docs.docker.com/engine/install/) to build containers
 - [Go\* programming language](https://go.dev)
 - [golangci-lint](https://github.com/golangci/golangci-lint)
-- Python\* programming language version 3.10 or later
+- [Python\* programming language version 3.10 or later] (https://www.python.org/downloads/)
 - [buf](https://github.com/bufbuild/buf)
 - [protoc-gen-doc](https://github.com/pseudomuto/protoc-gen-doc)
 - [protoc-gen-go-grpc](https://pkg.go.dev/google.golang.org/grpc)
