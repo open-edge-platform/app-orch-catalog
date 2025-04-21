@@ -22,6 +22,7 @@ const (
 	malwareScannerPermissiveEnv = "MALWARE_SCANNER_PERMISSIVE"
 )
 
+// log
 var log = dazl.GetLogger()
 
 func main() {
