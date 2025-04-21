@@ -75,6 +75,28 @@ your contribution introduces a new feature. See [Contributor Guide] for informat
 
 Additionally, ensure the following commands are successful:
 
+### Dependencies
+
+Firstly, please verify that all dependencies have been installed.
+
+```bash
+# Return errors if any dependency is missing
+make dependency-check
+```
+
+This code requires the following tools to be installed on your development machine:
+
+- [Docker](https://docs.docker.com/engine/install/) to build containers
+- [Go\* programming language](https://go.dev)
+- [golangci-lint](https://github.com/golangci/golangci-lint)
+- Python\* programming language version 3.10 or later
+- [buf](https://github.com/bufbuild/buf)
+- [protoc-gen-doc](https://github.com/pseudomuto/protoc-gen-doc)
+- [protoc-gen-go-grpc](https://pkg.go.dev/google.golang.org/grpc)
+- [protoc-gen-go](https://pkg.go.dev/google.golang.org/protobuf)
+- [KinD](https://kind.sigs.k8s.io/docs/user/quick-start/) based cluster for end-to-end tests
+- [Helm](https://helm.sh/docs/intro/install/) for install helm charts for end-to-end tests
+
 ## Build
 
 Below are some of important make targets which developer should be aware about.
@@ -93,11 +115,12 @@ Run unit tests as follows:
 make test
 ```
 
-It is good practice to run linter and license check locally as follows:
+Linter & lincense checks are run for each PR and it is good practice to run linter
+& license check locally as follows:
 
 ```bash
-make lint : Run multiple linting tools on the code repository
-make license - Check licensing with the reuse tool.
+make lint
+make license
 ```
 
 Container image `app-orch-catalog` for the component is generated as follows:
