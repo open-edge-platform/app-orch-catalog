@@ -75,15 +75,46 @@ your contribution introduces a new feature. See [Contributor Guide] for informat
 
 Additionally, ensure the following commands are successful:
 
-```shell
+## Build
+
+Below are some of important make targets which developer should be aware about.
+
+Build the component binary as follows:
+
+```bash
+# Build go binary
+make build
+```
+
+Run unit tests as follows:
+
+```bash
+# Run unit tests
 make test
-make lint
-make license
+```
+
+It is good practice to run linter and license check locally as follows:
+
+```bash
+make lint : Run multiple linting tools on the code repository
+make license - Check licensing with the reuse tool.
+```
+
+Container image `app-orch-catalog` for the component is generated as follows:
+
+```bash
+make docker-build
+```
+
+If developer has done any helm chart changes then helm charts can be build as follows:
+
+```bash
+make helm-build
 ```
 
 ## Community and Support
 
-To learn more about the project, its community, and governance, visit the [Edge Orchestrator Community]. 
+To learn more about the project, its community, and governance, visit the [Edge Orchestrator Community].
 
 For support, start with [Troubleshooting] or [Contact us].
 
