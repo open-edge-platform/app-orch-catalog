@@ -8,7 +8,7 @@ VERSION            := $(shell cat VERSION)
 CHART_VERSION      := $(shell cat VERSION)
 VERSION_DEV_SUFFIX := -dev
 GIT_COMMIT         ?= $(shell git rev-parse --short HEAD)
-OPA_IMAGE_VER       = 0.67.1-static
+OPA_IMAGE_VER       = 0.70.0-static
 
 
 ifeq ($(patsubst %$(VERSION_DEV_SUFFIX),,$(lastword $(VERSION))),)
@@ -372,7 +372,7 @@ coverage: go-cover-dependency ## Runs coverage stage
 	#$(GOCMD) tool cover -func cover.out -o cover.function-coverage.log
 	@echo "---END MAKEFILE COVERAGE---"
 
-DOCKERFILES := $(shell find . -type f -name 'Dockerfile';)
+DOCKERFILES := $(shell find . -type f -name 'Dockerfile' | grep -v vendor/;)
 .PHONY: hadolint
 hadolint: ## lint Dockerfiles
 	@echo "Linting Dockerfiles"
