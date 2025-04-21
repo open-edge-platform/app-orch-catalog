@@ -75,13 +75,6 @@ your contribution introduces a new feature. See [Contributor Guide] for informat
 
 ### Dependencies
 
-Firstly, please verify that all dependencies have been installed.
-
-```bash
-# Return errors if any dependency is missing
-make dependency-check
-```
-
 This code requires the following tools to be installed on your development machine:
 
 - [Docker](https://docs.docker.com/engine/install/) to build containers
