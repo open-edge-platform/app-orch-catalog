@@ -8,7 +8,7 @@ VERSION            := $(shell cat VERSION)
 CHART_VERSION      := $(shell cat VERSION)
 VERSION_DEV_SUFFIX := -dev
 GIT_COMMIT         ?= $(shell git rev-parse --short HEAD)
-OPA_IMAGE_VER       = 0.67.1-static
+OPA_IMAGE_VER       = 0.70.0-static
 
 
 ifeq ($(patsubst %$(VERSION_DEV_SUFFIX),,$(lastword $(VERSION))),)
@@ -112,7 +112,7 @@ HELM_TO_DP_RELEASE_BINS    := $(foreach rel,$(RELEASE_OS_ARCH),$(RELEASE_DIR)/$(
 ## coder env variables
 MGMT_NAME        ?= kind
 MGMT_CLUSTER     ?= kind-${MGMT_NAME}
-CODER_DIR 		 ?= ~/orch-deploy
+CODER_DIR 		 ?= ~/edge-manageability-framework
 CATALOG_HELM_PKG ?= ${CHART_BUILD_DIR}${CHART_NAME}-${CHART_VERSION}.tgz
 
 SAMPLE_ORG_ID := "11111111-1111-1111-1111-111111111111"
@@ -316,6 +316,12 @@ shelllint:
 	)
 	@echo "---END MAKEFILE LINT SCRIPTS---"
 
+
+trivyfsscan: ## run Trivy scan locally
+	@echo "Running Trivy scan on the filesystem"
+	trivy --version ;\
+	trivy fs --scanners vuln,misconfig,secret -s HIGH,CRITICAL .
+
 .PHONY: rego-service-write-rule-match
 rego-service-write-rule-match: ## For every service request in Proto we expect a corresponding REGO rule
 	@egrep -oh "\((Create|Update|Delete|List|Get|Watch|Upload).*Request" ${API_DIR}/catalog/v3/service.proto | awk -F'(' '{print $$2}' | sort > ${TMP_DIR}/list_service_requests_out;
@@ -366,7 +372,7 @@ coverage: go-cover-dependency ## Runs coverage stage
 	#$(GOCMD) tool cover -func cover.out -o cover.function-coverage.log
 	@echo "---END MAKEFILE COVERAGE---"
 
-DOCKERFILES := $(shell find . -type f -name 'Dockerfile';)
+DOCKERFILES := $(shell find . -type f -name 'Dockerfile' | grep -v vendor/;)
 .PHONY: hadolint
 hadolint: ## lint Dockerfiles
 	@echo "Linting Dockerfiles"
@@ -634,7 +640,7 @@ kind-load: docker-build
 	# Update DOCKER_TAG to reflect the overridden registry
 	$(eval DOCKER_TAG := $(PUBLISH_REGISTRY)/$(PUBLISH_REPOSITORY)/$(PUBLISH_SUB_PROJ)/$(APPLICATION_CATALOG_IMAGE_NAME):$(DOCKER_VERSION))
 	# Explicitly tag the image with the correct registry
-	docker tag $(APPLICATION_CATALOG_IMAGE_NAME):$(VERSION) $(DOCKER_TAG)
+	docker tag $(APPLICATION_CATALOG_IMAGE_NAME):$(DOCKER_VERSION) $(DOCKER_TAG)
 	# Load the Docker image into the kind cluster
 	kind load docker-image -n ${MGMT_NAME} $(DOCKER_TAG)
 
