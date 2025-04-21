@@ -1519,6 +1519,7 @@ func (s *NorthBoundDBErrTestSuite) TestApplicationUpdateInvalidArgs() {
 	}
 }
 
+// change to trigger CI
 func (s *NorthBoundDBErrTestSuite) TestApplicationWatchInvalidArgs() {
 	tests := map[string]struct {
 		req *catalogv3.WatchApplicationsRequest
