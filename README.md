@@ -93,18 +93,22 @@ Build the component binary as follows:
 make build
 ```
 
-Run unit tests as follows:
+Unit tests are run for each PR and developer can run unit tests locally as follows:
 
 ```bash
 # Run unit tests
 make test
 ```
 
-Linter & lincense checks are run for each PR and it is good practice to run linter
-& license check locally as follows:
+Linter checks are run for each PR and developer can run linter check locally as follows:
 
 ```bash
 make lint
+```
+
+License checks are run for each PR and developer can run license check locally as follows:
+
+```bash
 make license
 ```
 
