@@ -31,7 +31,7 @@ that defines the structure of Deployment Packages, Applications, and Registry in
 The App Catalog is multi-tenant capable, and the [Tenant Controller] populates the App Catalog as new multi-tenancy Projects
 are created and deleted.
 
-The App Catalog depends on the Edge Orchestrator [Foundational Platform] for many support functions such as API Gateway,
+The App Catalog depends on the Edge Orchestrator [Platform Services] for many support functions such as API Gateway,
 Authorization, Authentication, etc.
 
 The overall architecture of the Application Orchestration environment is explained in the
@@ -56,7 +56,7 @@ The App Catalog has a corresponding Helm chart in its [deployments](deployments)
 The CI integration for this repository will
 publish this Helm chart to the Edge Orchestrator Release Service OCI registry upon merging to the `main` branch.
 The App Catalog is deployed to the Edge Orchestrator using this Helm chart, whose lifecycle is in turn managed by
-Argo CD (see [Foundational Platform]).
+Argo CD (see [Platform Services]).
 
 The App Catalog API is defined first in Protobuf format in the [api](api) folder, and then the Go code and the REST API definition
 and implementation are generated from this.
@@ -67,19 +67,64 @@ PostgreSQL, but other databases could be used by changing the configuration.
 
 The repository also contains the source code for the [Developer Guide App Orch Tutorial].
 
+### Dependencies
+
+This code requires the following tools to be installed on your development machine:
+
+- [Docker](https://docs.docker.com/engine/install/) to build containers
+- [Go\* programming language](https://go.dev)
+- [golangci-lint](https://github.com/golangci/golangci-lint)
+- [Python\* programming language version 3.10 or later](https://www.python.org/downloads)
+- [buf](https://github.com/bufbuild/buf)
+- [protoc-gen-doc](https://github.com/pseudomuto/protoc-gen-doc)
+- [protoc-gen-go-grpc](https://pkg.go.dev/google.golang.org/grpc)
+- [protoc-gen-go](https://pkg.go.dev/google.golang.org/protobuf)
+- [KinD](https://kind.sigs.k8s.io/docs/user/quick-start/) based cluster for end-to-end tests
+- [Helm](https://helm.sh/docs/intro/install/) for install helm charts for end-to-end tests
+
+## Build
+
+Below are some of important make targets which developer should be aware about.
+
+Build the component binary as follows:
+
+```bash
+# Build go binary
+make build
+```
+
+Run unit tests as follows:
+
+```bash
+# Run unit tests
+make test
+```
+
+Linter & lincense checks are run for each PR and it is good practice to run linter
+& license check locally as follows:
+
+```bash
+make lint
+make license
+```
+
+Container image `app-orch-catalog` for the component is generated as follows:
+
+```bash
+make docker-build
+```
+
+If developer has done any helm chart changes then helm charts can be build as follows:
+
+```bash
+make helm-build
+```
+
 ## Contribute
 
 We welcome contributions from the community! To contribute, please open a pull request to have your changes reviewed
 and merged into the `main` branch. We encourage you to add appropriate unit tests and end-to-end tests if
 your contribution introduces a new feature. See [Contributor Guide] for information on how to contribute to the project.
-
-Additionally, ensure the following commands are successful:
-
-```shell
-make test
-make lint
-make license
-```
 
 ## Community and Support
 
@@ -94,7 +139,7 @@ The Application Orchestration Catalog is licensed under [Apache 2.0 License]
 [Application Orchestration Deployment]: https://github.com/open-edge-platform/app-orch-deployment
 [Tenant Controller]: https://github.com/open-edge-platform/app-orch-tenant-controller
 [Cluster Extensions]: https://github.com/open-edge-platform/cluster-extensions
-[Foundational Platform]: https://docs.openedgeplatform.intel.com/edge-manage-docs/main/developer_guide/platform/index.html
+[Platform Services]: https://docs.openedgeplatform.intel.com/edge-manage-docs/main/developer_guide/platform/index.html
 [Contributor Guide]: https://docs.openedgeplatform.intel.com/edge-manage-docs/main/developer_guide/contributor_guide/index.html
 [Troubleshooting]: https://docs.openedgeplatform.intel.com/edge-manage-docs/main/developer_guide/troubleshooting/index.html
 [Contact us]: https://github.com/open-edge-platform
