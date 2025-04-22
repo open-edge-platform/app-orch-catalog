@@ -31,7 +31,7 @@ that defines the structure of Deployment Packages, Applications, and Registry in
 The App Catalog is multi-tenant capable, and the [Tenant Controller] populates the App Catalog as new multi-tenancy Projects
 are created and deleted.
 
-The App Catalog depends on the Edge Orchestrator [Foundational Platform] for many support functions such as API Gateway,
+The App Catalog depends on the Edge Orchestrator [Platform Services] for many support functions such as API Gateway,
 Authorization, Authentication, etc.
 
 The overall architecture of the Application Orchestration environment is explained in the
@@ -56,7 +56,7 @@ The App Catalog has a corresponding Helm chart in its [deployments](deployments)
 The CI integration for this repository will
 publish this Helm chart to the Edge Orchestrator Release Service OCI registry upon merging to the `main` branch.
 The App Catalog is deployed to the Edge Orchestrator using this Helm chart, whose lifecycle is in turn managed by
-Argo CD (see [Foundational Platform]).
+Argo CD (see [Platform Services]).
 
 The App Catalog API is defined first in Protobuf format in the [api](api) folder, and then the Go code and the REST API definition
 and implementation are generated from this.
@@ -139,7 +139,7 @@ The Application Orchestration Catalog is licensed under [Apache 2.0 License]
 [Application Orchestration Deployment]: https://github.com/open-edge-platform/app-orch-deployment
 [Tenant Controller]: https://github.com/open-edge-platform/app-orch-tenant-controller
 [Cluster Extensions]: https://github.com/open-edge-platform/cluster-extensions
-[Foundational Platform]: https://docs.openedgeplatform.intel.com/edge-manage-docs/main/developer_guide/platform/index.html
+[Platform Services]: https://docs.openedgeplatform.intel.com/edge-manage-docs/main/developer_guide/platform/index.html
 [Contributor Guide]: https://docs.openedgeplatform.intel.com/edge-manage-docs/main/developer_guide/contributor_guide/index.html
 [Troubleshooting]: https://docs.openedgeplatform.intel.com/edge-manage-docs/main/developer_guide/troubleshooting/index.html
 [Contact us]: https://github.com/open-edge-platform
