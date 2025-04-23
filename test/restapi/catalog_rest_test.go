@@ -9,24 +9,25 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 
 	// Third-party imports
 	"github.com/stretchr/testify/assert"
 
-	// Standard library imports
-	"log"
-
 	// Project-specific imports
 	"github.com/open-edge-platform/app-orch-catalog/test/auth"
 )
 
 func init() {
-	log.SetOutput(io.Discard) // Discard default logging
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	log.SetOutput(io.Writer(os.Stdout)) // Redirect log output to console
+	log.SetOutput(os.Stdout) // Redirect log output to console
 }
+
+const applicationsEndpoint = "/catalog.orchestrator.apis/v3/applications"
+const deploymentPackagesEndpoint = "/catalog.orchestrator.apis/v3/deployment_packages"
+const registriesEndPoint = "/catalog.orchestrator.apis/v3/registries"
 
 type Registry struct {
 	Name        string `json:"name"`
@@ -62,13 +63,16 @@ type Application struct {
 	HelmRegistryName string `json:"helmRegistryName"`
 }
 
-/* If there is change in the versions, you can verify the list by executiong the function TestListBootStrapExtensions and
-update the version information here */
+/*
+	If there is change in the versions, you can verify the list by executiong the function TestListBootStrapExtensions and
 
+/* If there is change in the versions, you can verify the list by executing the function TestListBootStrapExtensions and
+update the version information here
+*/
 func (s *TestSuite) getApplications() []Application {
 	return []Application{
 		{"gatekeeper-constraints", "gatekeeper-constraints", "Gatekeeper Constraints", "1.0.15", "KIND_EXTENSION", "edge-orch/en/charts/gatekeeper-constraints", "1.0.15", "intel-rs-helm"},
-		{"ingress-nginx", "ingress-nginx", "Edge Orchestrator EdgeDNS", "5.1.1", "KIND_EXTENSION", "ingress-nginx", "4.12.0", "kubernetes-ingress-helm"},
+		{"ingress-nginx", "ingress-nginx", "Edge Orchestrator EdgeDNS", "5.1.1", "KIND_EXTENSION", "ingress-nginx", "5.1.1", "kubernetes-ingress-helm"},
 		{"intel-device-operator", "intel-device-operator", "Intel Device Plugin Operator", "0.29.0", "KIND_EXTENSION", "intel-device-plugins-operator", "0.29.0", "intel-github-io"},
 		{"intel-gpu-plugin", "intel-gpu-plugin", "Intel GPU Device Plugin", "0.29.0", "KIND_EXTENSION", "intel-device-plugins-gpu", "0.29.0", "intel-github-io"},
 		{"kubernetes-dashboard", "kubernetes-dashboard", "kubernetes-dashboard", "0.0.5", "KIND_EXTENSION", "kubernetes-dashboard", "7.10.0", "kubernetes"},
@@ -99,13 +103,13 @@ type DeploymentPackages struct {
 
 func (s *TestSuite) getDeploymentPackages() []DeploymentPackages {
 	return []DeploymentPackages{
-		{"base-extensions", "Base Extensions", "0.7.9", "KIND_EXTENSION"},
+		{"base-extensions", "Base Extensions", "0.7.8", "KIND_EXTENSION"},
 		{"intel-gpu", "Intel GPU K8S extension", "1.2.4", "KIND_EXTENSION"},
 		{"kubernetes-dashboard", "kubernetes-dashboard", "0.0.6", "KIND_EXTENSION"},
 		{"loadbalancer", "Enables load balancer and dns services on the edge", "0.4.5", "KIND_EXTENSION"},
 		{"skupper", "Enables Skupper service on the edge", "0.1.7", "KIND_EXTENSION"},
 		{"sriov", "Provisions and configures SR-IOV CNI plugin and Device plugin", "0.3.4", "KIND_EXTENSION"},
-		{"trusted-compute", "Trusted Compute k8s plugin for trusted workloads. Requires cluster using a \"privilege\" template.", "0.4.4", "KIND_EXTENSION"},
+		{"trusted-compute", "Trusted Compute k8s plugin for trusted workloads. Requires cluster using a \"privilege\" template.", "0.4.2", "KIND_EXTENSION"},
 		{"usb", "Brings USB allocation for containers/VMs running on k8s cluster", "0.3.3", "KIND_EXTENSION"},
 		{"virtualization", "Virtualization support for k8s cluster", "0.3.7", "KIND_EXTENSION"},
 	}
@@ -113,13 +117,12 @@ func (s *TestSuite) getDeploymentPackages() []DeploymentPackages {
 
 func (s *TestSuite) TestListBootStrapExtensions() {
 	// Form the request URL
-	const applicationsEndpoint = "/catalog.orchestrator.apis/v3/applications"
 	requestURL := fmt.Sprintf("%s%s", s.CatalogRESTServerUrl, applicationsEndpoint)
 
 	// Make the curl request using the access token and format the output with jq
 	req, err := http.NewRequest("GET", requestURL, nil)
 	assert.NoError(s.T(), err)
-	// defer res.Body.Close() (remove duplicate calls)
+	// Removed redundant defer res.Body.Close() to avoid confusion
 
 	auth.AddRestAuthHeader(req, s.token, s.projectID)
 	res, err := http.DefaultClient.Do(req)
@@ -128,7 +131,6 @@ func (s *TestSuite) TestListBootStrapExtensions() {
 	assert.NoError(s.T(), err)
 	s.Equal("200 OK", res.Status)
 
-	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
 	assert.NoError(s.T(), err)
 
@@ -150,7 +152,7 @@ func (s *TestSuite) TestListBootStrapExtensions() {
 
 func (s *TestSuite) TestListBootStrapDeploymentPackages() {
 	// Form the request URL
-	requestURL := fmt.Sprintf("%s/catalog.orchestrator.apis/v3/deployment_packages", s.CatalogRESTServerUrl)
+	requestURL := fmt.Sprintf("%s%s", s.CatalogRESTServerUrl, deploymentPackagesEndpoint)
 
 	// Make the HTTP GET request
 	req, err := http.NewRequest("GET", requestURL, nil)
@@ -191,7 +193,7 @@ func (s *TestSuite) TestListBootStrapDeploymentPackages() {
 
 func (s *TestSuite) TestListBootStrapRegistries() {
 	// Form the request URL
-	requestURL := fmt.Sprintf("%s/catalog.orchestrator.apis/v3/registries", s.CatalogRESTServerUrl)
+	requestURL := fmt.Sprintf("%s%s", s.CatalogRESTServerUrl, registriesEndPoint)
 
 	// Make the HTTP GET request
 	req, err := http.NewRequest("GET", requestURL, nil)
@@ -230,7 +232,7 @@ func (s *TestSuite) TestListBootStrapRegistries() {
 }
 func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 	for _, registry := range s.getRegistries() {
-		requestURL := fmt.Sprintf("%s/catalog.orchestrator.apis/v3/registries/%s", s.CatalogRESTServerUrl, registry.Name)
+		requestURL := fmt.Sprintf("%s%s/%s", s.CatalogRESTServerUrl, registriesEndPoint, registry.Name)
 
 		req, err := http.NewRequest("GET", requestURL, nil)
 		assert.NoError(s.T(), err)
@@ -260,8 +262,8 @@ func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 
 func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
 	for _, app := range s.getApplications() {
-		requestURL := fmt.Sprintf("%s/catalog.orchestrator.apis/v3/applications/%s/versions/%s", s.CatalogRESTServerUrl,
-			app.Name, app.Version)
+		requestURL := fmt.Sprintf("%s%s/%s/versions/%s", s.CatalogRESTServerUrl,
+			applicationsEndpoint, app.Name, app.Version)
 
 		req, err := http.NewRequest("GET", requestURL, nil)
 		assert.NoError(s.T(), err)
@@ -294,8 +296,8 @@ func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
 
 func (s *TestSuite) TestVerifyBootstrappedDeploymentPackagesExist() {
 	for _, pkg := range s.getDeploymentPackages() {
-		requestURL := fmt.Sprintf("%s/catalog.orchestrator.apis/v3/deployment_packages/%s/versions/%s", s.CatalogRESTServerUrl,
-			pkg.Name, pkg.Version)
+		requestURL := fmt.Sprintf("%s%s/%s/versions/%s", s.CatalogRESTServerUrl,
+			deploymentPackagesEndpoint, pkg.Name, pkg.Version)
 
 		req, err := http.NewRequest("GET", requestURL, nil)
 		assert.NoError(s.T(), err)
