@@ -6,7 +6,6 @@ package restapi
 
 import (
 	// Standard library imports
-	// Standard library imports
 	"encoding/json"
 	"fmt"
 	"io"
@@ -123,7 +122,7 @@ func (s *TestSuite) TestListBootStrapExtensions() {
 	// Make the curl request using the access token and format the output with jq
 	req, err := http.NewRequest("GET", requestURL, nil)
 	assert.NoError(s.T(), err)
-	// Removed redundant defer res.Body.Close() to avoid confusion
+	// Ensure response body is closed after processing
 
 	auth.AddRestAuthHeader(req, s.token, s.projectID)
 	res, err := http.DefaultClient.Do(req)
@@ -132,7 +131,7 @@ func (s *TestSuite) TestListBootStrapExtensions() {
 	assert.NoError(s.T(), err)
 	s.Equal("200 OK", res.Status)
 
-	body, _ := io.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	assert.NoError(s.T(), err)
 
 	var result struct {
