@@ -37,8 +37,8 @@ static_resources:
                   response_headers_to_add:
                     - header:
                         key: "Content-Security-Policy"
-                        value: >
-                          block-all-mixed-content"
+                        value: >-
+                          block-all-mixed-content;
                           connect-src 'self';
                           default-src 'self';
                           form-action 'self';
@@ -46,7 +46,6 @@ static_resources:
                           frame-src 'self';
                           img-src 'self' camo.githubusercontent.com data:;
                           object-src 'none';
-                          upgrade-insecure-requests;
                           script-src 'self';
                           style-src 'self' camo.githubusercontent.com 'unsafe-inline';
                           upgrade-insecure-requests;

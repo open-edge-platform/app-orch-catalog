@@ -291,7 +291,7 @@ docker-opa:
 	docker pull openpolicyagent/opa:$(OPA_IMAGE_VER)
 
 .PHONY: lint
-lint: rego-service-write-rule-match yamllint mdlint shelllint helmlint hadolint validate-dp opa-lint ## Runs lint stage
+lint: rego-service-write-rule-match yamllint mdlint shelllint helmlint hadolint validate-dp opa-lint envoy-lint ## Runs lint stage
 	buf lint
 	golangci-lint run --timeout 10m
 
@@ -321,6 +321,17 @@ trivyfsscan: ## run Trivy scan locally
 	@echo "Running Trivy scan on the filesystem"
 	trivy --version ;\
 	trivy fs --scanners vuln,misconfig,secret -s HIGH,CRITICAL .
+
+ENVOY_FILES := app-orch-tutorials/httpbin/helm/files/envoy-config.yaml
+PHONY: envoy-lint
+envoy-lint: ## Lint envoy config files
+	@echo "---MAKEFILE LINT ENVOY---"
+	set -e ;\
+	$(foreach file,$(ENVOY_FILES),\
+		docker run -v $(shell pwd):/config --rm envoyproxy/envoy:v1.33.1 \
+			--mode validate -c /config/$(file) ;\
+	)
+	@echo "---END MAKEFILE LINT ENVOY---"
 
 .PHONY: rego-service-write-rule-match
 rego-service-write-rule-match: ## For every service request in Proto we expect a corresponding REGO rule
