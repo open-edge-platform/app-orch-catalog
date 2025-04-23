@@ -19,7 +19,7 @@ image:
   tag: ""
 
 # -- Specify docker-registry secret names as an array
-imagePullSecrets: []
+imagePullSecrets: [ ]
 # -- String to partially override fullname template with a string (will prepend the release name)
 nameOverride: ""
 # -- String to fully override fullname template with a string
@@ -29,24 +29,24 @@ serviceAccount:
   # -- Specifies whether a service account should be created
   create: true
   # -- Annotations to add to the service account
-  annotations: {}
+  annotations: { }
   # -- The name of the service account to use.
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
 # -- Annotations to be added to pods
-podAnnotations: {}
+podAnnotations: { }
 # -- [Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context) to add to the pod
-podSecurityContext: {}
-  # fsGroup: 2000
+podSecurityContext: { }
+# fsGroup: 2000
 # -- [Security Context](https://kubernetes.io/docs/tasks/configure-pod-container/security-context) to add to the container
 securityContext:
-   capabilities:
-     drop:
-     - ALL
-   readOnlyRootFilesystem: true
-   runAsNonRoot: true
-   runAsUser: 1000
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
 
 service:
   # -- Service type
@@ -54,7 +54,7 @@ service:
   # -- Service port
   port: 80
 
-  annotations: {}
+  annotations: { }
 
 envoy:
   enabled: true
@@ -70,31 +70,31 @@ ingress:
   # -- Ingress class name
   className: ""
   # -- Annotations to add to the ingress
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+  annotations: { }
+  # kubernetes.io/ingress.class: nginx
+  # kubernetes.io/tls-acme: "true"
   hosts:
     - host: httpbin.local
       paths:
         - path: /
           pathType: ImplementationSpecific
-  tls: []
+  tls: [ ]
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
 
 # -- [Resources](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers) to add to the container
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi
+resources: { }
+# We usually recommend not to specify default resources and to leave this as a conscious
+# choice for the user. This also increases chances charts run on environments with little
+# resources, such as Minikube. If you do want to specify resources, uncomment the following
+# lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+# limits:
+#   cpu: 100m
+#   memory: 128Mi
+# requests:
+#   cpu: 100m
+#   memory: 128Mi
 
 autoscaling:
   # -- Enable replica autoscaling settings
@@ -109,8 +109,8 @@ autoscaling:
   targetMemoryUtilizationPercentage: ""
 
 # -- [Node selection](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node) to constrain a Pod to only be able to run on particular Node(s)
-nodeSelector: {}
+nodeSelector: { }
 # -- [Tolerations](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration) for pod assignment
-tolerations: []
+tolerations: [ ]
 # -- Map of node/pod [affinities](https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration)
-affinity: {}
+affinity: { }
