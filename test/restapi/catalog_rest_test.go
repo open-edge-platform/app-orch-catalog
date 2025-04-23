@@ -72,7 +72,7 @@ update the version information here
 func (s *TestSuite) getApplications() []Application {
 	return []Application{
 		{"gatekeeper-constraints", "gatekeeper-constraints", "Gatekeeper Constraints", "1.0.15", "KIND_EXTENSION", "edge-orch/en/charts/gatekeeper-constraints", "1.0.15", "intel-rs-helm"},
-		{"ingress-nginx", "ingress-nginx", "Edge Orchestrator EdgeDNS", "5.1.1", "KIND_EXTENSION", "ingress-nginx", "5.1.1", "kubernetes-ingress-helm"},
+		{"ingress-nginx", "ingress-nginx", "Edge Orchestrator EdgeDNS", "5.1.1", "KIND_EXTENSION", "ingress-nginx", "4.12.0", "kubernetes-ingress-helm"},
 		{"intel-device-operator", "intel-device-operator", "Intel Device Plugin Operator", "0.29.0", "KIND_EXTENSION", "intel-device-plugins-operator", "0.29.0", "intel-github-io"},
 		{"intel-gpu-plugin", "intel-gpu-plugin", "Intel GPU Device Plugin", "0.29.0", "KIND_EXTENSION", "intel-device-plugins-gpu", "0.29.0", "intel-github-io"},
 		{"kubernetes-dashboard", "kubernetes-dashboard", "kubernetes-dashboard", "0.0.5", "KIND_EXTENSION", "kubernetes-dashboard", "7.10.0", "kubernetes"},
@@ -85,8 +85,8 @@ func (s *TestSuite) getApplications() []Application {
 		{"fluent-bit", "fluent-bit", "Fluent Bit", "0.48.9", "KIND_EXTENSION", "fluent-bit", "0.48.9", "fluent-bit"},
 		{"gatekeeper", "gatekeeper", "Gatekeeper", "3.17.1", "KIND_EXTENSION", "gatekeeper", "3.17.1", "gatekeeper"},
 		{"akri", "akri", "akri base application", "0.13.8", "KIND_EXTENSION", "akri", "0.13.8", "akri-helm-registry"},
-		{"attestation-manager", "attestation-manager", "Workload prptection and continus monitoring add-on for Kubernetes", "1.0.0", "KIND_EXTENSION", "edge-orch/trusted-compute/charts/attestation-manager", "1.4.0", "intel-rs-helm"},
-		{"attestation-verifier", "attestation-verifier", "attestaion verifier of trusted compute", "1.0.0", "KIND_EXTENSION", "edge-orch/trusted-compute/charts/attestation-verifier", "1.4.0", "intel-rs-helm"},
+		{"attestation-manager", "attestation-manager", "Workload prptection and continus monitoring add-on for Kubernetes", "1.0.0", "KIND_EXTENSION", "edge-orch/trusted-compute/charts/attestation-manager", "0.1.0", "intel-rs-helm"},
+		{"attestation-verifier", "attestation-verifier", "attestaion verifier of trusted compute", "1.0.0", "KIND_EXTENSION", "edge-orch/trusted-compute/charts/attestation-verifier", "0.1.0", "intel-rs-helm"},
 		{"cdi", "cdi", "Persistent storage management add-on for Kubernetes", "2.0.3", "KIND_EXTENSION", "edge-orch/en/charts/cdi", "1.60.4", "intel-rs-helm"},
 		{"kubevirt", "kubevirt", "Virtual machine management add-on for Kubernetes", "1.2.7", "KIND_EXTENSION", "edge-orch/en/charts/kubevirt", "1.2.7", "intel-rs-helm"},
 		{"kubevirt-helper", "kubevirt-helper", "Automatically restart VM when editable VM spec is updated", "1.4.5", "KIND_EXTENSION", "edge-orch/en/charts/kubevirt-helper", "1.4.5", "intel-rs-helm"},
@@ -144,8 +144,8 @@ func (s *TestSuite) TestListBootStrapExtensions() {
 	assert.Equal(s.T(), len(s.getApplications()), len(result.Applications), "Mismatch in the number of applications")
 	// Log application details for debugging purposes
 	for _, app := range result.Applications {
-		log.Printf("Name: %s, DisplayName: %s, Description: %s, Version: %s, Kind: %s, ChartName: %s",
-			app.Name, app.DisplayName, app.Description, app.Version, app.Kind, app.ChartName)
+		log.Printf("Name: %s, DisplayName: %s, Description: %s, Version: %s, Kind: %s, ChartName: %s, ChartVersion: %s, HelmRegistryName: %s",
+			app.Name, app.DisplayName, app.Description, app.Version, app.Kind, app.ChartName, app.ChartVersion, app.HelmRegistryName)
 	}
 
 }
