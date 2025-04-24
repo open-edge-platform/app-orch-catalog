@@ -28,6 +28,7 @@ const (
 	kindExtension = "extension"
 )
 
+// kindToDB
 func kindToDB(kind catalogv3.Kind) string {
 	switch kind {
 	case catalogv3.Kind_KIND_NORMAL:
