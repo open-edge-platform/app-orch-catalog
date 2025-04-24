@@ -44,8 +44,6 @@ require (
 	oras.land/oras-go/v2 v2.5.0
 )
 
-replace github.com/open-edge-platform/orch-library/go => ../orch-library/go
-
 require (
 	ariga.io/atlas v0.14.1-0.20230918065911-83ad451a4935 // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
