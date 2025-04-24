@@ -53,11 +53,6 @@ func (s *TestSuite) SetupSuite() {
 	s.NoError(err)
 }
 
-// SetupTest sets up for each integration test
-func (s *TestSuite) SetupTest() {
-	fmt.Println("Common steps before each test case")
-}
-
 func killportForwardToCatalog(cmd *exec.Cmd) error {
 	fmt.Println("kill process that port-forwards network to app-orch-catalog")
 	if cmd != nil && cmd.Process != nil {
@@ -80,12 +75,6 @@ func portForwardToCatalog() (*exec.Cmd, error) {
 
 func TestTestSuite(t *testing.T) {
 	suite.Run(t, new(TestSuite))
-}
-
-// TearDownTest tears down remnants of each integration test
-func (s *TestSuite) TearDownTest() {
-
-	fmt.Println("Common steps after each test case")
 }
 
 func (s *TestSuite) TearDownSuite() {

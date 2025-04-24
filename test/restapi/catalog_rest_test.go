@@ -14,6 +14,7 @@ import (
 	"os"
 
 	// Third-party imports
+
 	"github.com/stretchr/testify/assert"
 
 	// Project-specific imports
@@ -22,7 +23,7 @@ import (
 
 func init() {
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	log.SetOutput(os.Stdout) // Redirect log output to console
+	log.SetOutput(os.Stdout)
 }
 
 const applicationsEndpoint = "/catalog.orchestrator.apis/v3/applications"
@@ -64,9 +65,7 @@ type Application struct {
 }
 
 /*
-	If there is change in the versions, you can verify the list by executiong the function TestListBootStrapExtensions and
-
-/* If there is change in the versions, you can verify the list by executing the function TestListBootStrapExtensions and
+If there is change in the versions, you can verify the list by executing the function TestListBootStrapExtensions and
 update the version information here
 */
 func (s *TestSuite) getApplications() []Application {
@@ -101,6 +100,10 @@ type DeploymentPackages struct {
 	Kind        string `json:"kind"`
 }
 
+/*
+If there is change in the versions, you can verify the list by executing the function TestListBootStrapDeploymentPackages and
+update the version information here
+*/
 func (s *TestSuite) getDeploymentPackages() []DeploymentPackages {
 	return []DeploymentPackages{
 		{"base-extensions", "Base Extensions", "0.7.8", "KIND_EXTENSION"},
@@ -116,14 +119,9 @@ func (s *TestSuite) getDeploymentPackages() []DeploymentPackages {
 }
 
 func (s *TestSuite) TestListBootStrapExtensions() {
-	// Form the request URL
 	requestURL := fmt.Sprintf("%s%s", s.CatalogRESTServerUrl, applicationsEndpoint)
-
-	// Make the curl request using the access token and format the output with jq
 	req, err := http.NewRequest("GET", requestURL, nil)
 	assert.NoError(s.T(), err)
-	// Ensure response body is closed after processing
-
 	auth.AddRestAuthHeader(req, s.token, s.projectID)
 	res, err := http.DefaultClient.Do(req)
 	assert.NoError(s.T(), err)
@@ -140,9 +138,9 @@ func (s *TestSuite) TestListBootStrapExtensions() {
 	err = json.Unmarshal(body, &result)
 	assert.NoError(s.T(), err)
 
-	// Assert that the size of the result.Applications matches the size of getApplications
 	assert.Equal(s.T(), len(s.getApplications()), len(result.Applications), "Mismatch in the number of applications")
 	// Log application details for debugging purposes
+	log.Printf("Extensions:")
 	for _, app := range result.Applications {
 		log.Printf("Name: %s, DisplayName: %s, Description: %s, Version: %s, Kind: %s, ChartName: %s, ChartVersion: %s, HelmRegistryName: %s",
 			app.Name, app.DisplayName, app.Description, app.Version, app.Kind, app.ChartName, app.ChartVersion, app.HelmRegistryName)
@@ -151,10 +149,7 @@ func (s *TestSuite) TestListBootStrapExtensions() {
 }
 
 func (s *TestSuite) TestListBootStrapDeploymentPackages() {
-	// Form the request URL
 	requestURL := fmt.Sprintf("%s%s", s.CatalogRESTServerUrl, deploymentPackagesEndpoint)
-
-	// Make the HTTP GET request
 	req, err := http.NewRequest("GET", requestURL, nil)
 	assert.NoError(s.T(), err)
 
@@ -181,9 +176,10 @@ func (s *TestSuite) TestListBootStrapDeploymentPackages() {
 	err = json.Unmarshal(body, &result)
 	assert.NoError(s.T(), err)
 
-	// Assert that the size of the result.DeploymentPackages matches the size of getDeploymentPackages
 	assert.Equal(s.T(), len(s.getDeploymentPackages()), len(result.DeploymentPackages), "Mismatch in the number of deployment packages")
+
 	// Log deployment package details for debugging purposes
+	log.Printf("Deployment Packages:")
 	for _, pkg := range result.DeploymentPackages {
 		log.Printf("Name: %s, Description: %s, Version: %s, Kind: %s",
 			pkg.Name, pkg.Description, pkg.Version, pkg.Kind)
@@ -192,13 +188,9 @@ func (s *TestSuite) TestListBootStrapDeploymentPackages() {
 }
 
 func (s *TestSuite) TestListBootStrapRegistries() {
-	// Form the request URL
 	requestURL := fmt.Sprintf("%s%s", s.CatalogRESTServerUrl, registriesEndPoint)
-
-	// Make the HTTP GET request
 	req, err := http.NewRequest("GET", requestURL, nil)
 	assert.NoError(s.T(), err)
-
 	auth.AddRestAuthHeader(req, s.token, s.projectID)
 
 	// Add query parameters
@@ -211,6 +203,7 @@ func (s *TestSuite) TestListBootStrapRegistries() {
 
 	res, err := http.DefaultClient.Do(req)
 	assert.NoError(s.T(), err)
+	defer res.Body.Close()
 	s.Equal("200 OK", res.Status)
 
 	body, err := io.ReadAll(res.Body)
@@ -225,23 +218,26 @@ func (s *TestSuite) TestListBootStrapRegistries() {
 	// Assert that the size of the result.Registries matches the size of getRegistries
 	assert.Equal(s.T(), len(s.getRegistries()), len(result.Registries), "Mismatch in the number of registries")
 	// Log registry details for debugging purposes
+	log.Printf("Registries:")
 	for _, registry := range result.Registries {
 		log.Printf("Name: %s, DisplayName: %s, Description: %s, RootURL: %s, Type: %s",
 			registry.Name, registry.DisplayName, registry.Description, registry.RootURL, registry.Type)
 	}
 }
+
 func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 	for _, registry := range s.getRegistries() {
 		requestURL := fmt.Sprintf("%s%s/%s", s.CatalogRESTServerUrl, registriesEndPoint, registry.Name)
-
 		req, err := http.NewRequest("GET", requestURL, nil)
 		assert.NoError(s.T(), err)
-
 		auth.AddRestAuthHeader(req, s.token, s.projectID)
 
 		res, err := http.DefaultClient.Do(req)
 		assert.NoError(s.T(), err)
-		s.Equal("200 OK", res.Status)
+		defer res.Body.Close()
+		if res.Status != "200 OK" {
+			assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for Registry: %s", registry.Name)
+		}
 
 		body, err := io.ReadAll(res.Body)
 		assert.NoError(s.T(), err)
@@ -252,10 +248,16 @@ func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 		err = json.Unmarshal(body, &result)
 		assert.NoError(s.T(), err)
 
-		assert.Equal(s.T(), registry.Name, result.Registry.Name, "Mismatch in 'Name' for registry: %s", registry.Name)
-		assert.Equal(s.T(), registry.DisplayName, result.Registry.DisplayName, "Mismatch in 'DisplayName' for registry: %s", registry.Name)
-		assert.Equal(s.T(), registry.RootURL, result.Registry.RootURL, "Mismatch in 'RootURL' for registry: %s", registry.Name)
-		assert.Equal(s.T(), registry.Type, result.Registry.Type, "Mismatch in 'Type' for registry: %s", registry.Name)
+		switch {
+		case registry.Name != result.Registry.Name:
+			assert.Equal(s.T(), registry.Name, result.Registry.Name, "Mismatch in 'Name' for registry: %s", registry.Name)
+		case registry.DisplayName != result.Registry.DisplayName:
+			assert.Equal(s.T(), registry.DisplayName, result.Registry.DisplayName, "Mismatch in 'DisplayName' for registry: %s", registry.Name)
+		case registry.RootURL != result.Registry.RootURL:
+			assert.Equal(s.T(), registry.RootURL, result.Registry.RootURL, "Mismatch in 'RootURL' for registry: %s", registry.Name)
+		case registry.Type != result.Registry.Type:
+			assert.Equal(s.T(), registry.Type, result.Registry.Type, "Mismatch in 'Type' for registry: %s", registry.Name)
+		}
 		// assert.Equal(s.T(), registry.Description, result.Registry.Description)
 	}
 }
@@ -272,7 +274,11 @@ func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
 
 		res, err := http.DefaultClient.Do(req)
 		assert.NoError(s.T(), err)
-		s.Equal("200 OK", res.Status)
+		defer res.Body.Close()
+		if res.Status != "200 OK" {
+			assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for application: %s", app.Name)
+			continue
+		}
 
 		body, err := io.ReadAll(res.Body)
 		assert.NoError(s.T(), err)
@@ -283,13 +289,22 @@ func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
 		err = json.Unmarshal(body, &result)
 		assert.NoError(s.T(), err)
 
-		assert.Equalf(s.T(), app.Name, result.Application.Name, "Mismatch in 'Name' for application: %s", app.Name)
-		assert.Equalf(s.T(), app.DisplayName, result.Application.DisplayName, "Mismatch in 'DisplayName' for application: %s", app.Name)
-		assert.Equalf(s.T(), app.ChartName, result.Application.ChartName, "Mismatch in 'ChartName' for application: %s", app.Name)
-		assert.Equalf(s.T(), app.ChartVersion, result.Application.ChartVersion, "Mismatch in 'ChartVersion' for application: %s", app.Name)
-		assert.Equalf(s.T(), app.Version, result.Application.Version, "Mismatch in 'Version' for application: %s", app.Name)
-		assert.Equalf(s.T(), app.Kind, result.Application.Kind, "Mismatch in 'Kind' for application: %s", app.Name)
-		assert.Equalf(s.T(), app.HelmRegistryName, result.Application.HelmRegistryName, "Mismatch in 'HelmRegistryName' for application: %s", app.Name)
+		switch {
+		case app.Name != result.Application.Name:
+			assert.Equalf(s.T(), app.Name, result.Application.Name, "Mismatch in 'Name' for application: %s", app.Name)
+		case app.DisplayName != result.Application.DisplayName:
+			assert.Equalf(s.T(), app.DisplayName, result.Application.DisplayName, "Mismatch in 'DisplayName' for application: %s", app.Name)
+		case app.ChartName != result.Application.ChartName:
+			assert.Equalf(s.T(), app.ChartName, result.Application.ChartName, "Mismatch in 'ChartName' for application: %s", app.Name)
+		case app.ChartVersion != result.Application.ChartVersion:
+			assert.Equalf(s.T(), app.ChartVersion, result.Application.ChartVersion, "Mismatch in 'ChartVersion' for application: %s", app.Name)
+		case app.Version != result.Application.Version:
+			assert.Equalf(s.T(), app.Version, result.Application.Version, "Mismatch in 'Version' for application: %s", app.Name)
+		case app.Kind != result.Application.Kind:
+			assert.Equalf(s.T(), app.Kind, result.Application.Kind, "Mismatch in 'Kind' for application: %s", app.Name)
+		case app.HelmRegistryName != result.Application.HelmRegistryName:
+			assert.Equalf(s.T(), app.HelmRegistryName, result.Application.HelmRegistryName, "Mismatch in 'HelmRegistryName' for application: %s", app.Name)
+		}
 		//assert.Equal(s.T(), app.Description, result.Application.Description)
 	}
 }
@@ -306,7 +321,10 @@ func (s *TestSuite) TestVerifyBootstrappedDeploymentPackagesExist() {
 
 		res, err := http.DefaultClient.Do(req)
 		assert.NoError(s.T(), err)
-		s.Equal("200 OK", res.Status)
+		defer res.Body.Close()
+		if res.Status != "200 OK" {
+			assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for Package: %s", pkg.Name)
+		}
 
 		body, err := io.ReadAll(res.Body)
 		assert.NoError(s.T(), err)
@@ -317,8 +335,13 @@ func (s *TestSuite) TestVerifyBootstrappedDeploymentPackagesExist() {
 		err = json.Unmarshal(body, &result)
 		assert.NoError(s.T(), err)
 
-		assert.Equalf(s.T(), pkg.Name, result.DeploymentPackage.Name, "Mismatch in 'Name' for deployment package: %s", pkg.Name)
-		assert.Equalf(s.T(), pkg.Version, result.DeploymentPackage.Version, "Mismatch in 'Version' for deployment package: %s", pkg.Name)
-		assert.Equalf(s.T(), pkg.Kind, result.DeploymentPackage.Kind, "Mismatch in 'Kind' for deployment package: %s", pkg.Name)
+		switch {
+		case pkg.Name != result.DeploymentPackage.Name:
+			assert.Equalf(s.T(), pkg.Name, result.DeploymentPackage.Name, "Mismatch in 'Name' for deployment package: %s", pkg.Name)
+		case pkg.Version != result.DeploymentPackage.Version:
+			assert.Equalf(s.T(), pkg.Version, result.DeploymentPackage.Version, "Mismatch in 'Version' for deployment package: %s", pkg.Name)
+		case pkg.Kind != result.DeploymentPackage.Kind:
+			assert.Equalf(s.T(), pkg.Kind, result.DeploymentPackage.Kind, "Mismatch in 'Kind' for deployment package: %s", pkg.Name)
+		}
 	}
 }
