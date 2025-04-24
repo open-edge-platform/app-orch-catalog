@@ -197,6 +197,7 @@ github.com/onsi/gomega v1.36.1 h1:bJDPBO7ibjxcbHMgSCoo4Yj18UWbKDlLwX1x9sybDcw=
 github.com/onsi/gomega v1.36.1/go.mod h1:PvZbdDc8J6XJEpDK4HCuRBm8a6Fzp9/DmhC9C7yFlog=
 github.com/open-edge-platform/orch-library/go v0.5.30 h1:Q1T3sh2+Y/6NrBg25Qqh1LAemA5ujSqnVFajgL6q9ck=
 github.com/open-edge-platform/orch-library/go v0.5.30/go.mod h1:ZjoTX4aTWIAbUzzOod+Pt/imyR2GLi1tpRPq/LgSEew=
+github.com/open-edge-platform/orch-library/go v0.6.0/go.mod h1:oaTKif7k37RI+2eXCn+6czBqgD/E1bqv6rakCWSCYOk=
 github.com/open-edge-platform/orch-library/go/dazl v0.5.4 h1:Rx/bSAZiLjEEBjUiJEzBvT0fQv5huT5FQ2Ke3IMUhiE=
 github.com/open-edge-platform/orch-library/go/dazl v0.5.4/go.mod h1:UiO3TOEqEuRT81OtgPsqR9LpB1887i5nk2TelhJksMY=
 github.com/open-edge-platform/orch-utils/tenancy-datamodel v0.0.0-20250404171556-13b02e78777a h1:OSPc/iWB0qnkLeoMM5rCbsnSkyg2JdvY7fIvAyzdWjI=
