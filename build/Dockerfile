@@ -6,6 +6,11 @@ FROM golang:1.24.2 AS base
 
 ENV CGO_ENABLED=0
 
+# Set proxy environment variables using build arguments
+ARG http_proxy
+ARG https_proxy
+ARG no_proxy
+
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ENV ATLAS_VERSION=v0.32.1-9f69a85-canary
