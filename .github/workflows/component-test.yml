@@ -21,10 +21,6 @@ on:
         type: string
         default: '53e430f45faaee7671fa3c25f6acc3945aba2065'
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   component-tests:
     name: Deploy Kind Orchestrator and Run Component Tests
