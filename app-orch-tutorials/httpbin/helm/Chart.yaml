@@ -1,0 +1,13 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+---
+apiVersion: v2
+name: httpbin
+description: Helm chart to install httpbingo.org on Kubernetes
+type: application
+version: 0.1.6
+appVersion: "v2.13.2"
+keywords:
+  - httpbin
+  - app-orch
+  - open-edge-platform
