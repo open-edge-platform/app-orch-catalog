@@ -10,7 +10,7 @@ toolchain go1.24.0
 
 require (
 	github.com/open-edge-platform/app-orch-catalog v0.0.0
-	github.com/open-edge-platform/orch-library/go v0.5.30
+	github.com/open-edge-platform/orch-library/go v0.6.0
 	github.com/open-edge-platform/orch-utils/tenancy-datamodel v0.0.0-20250404171556-13b02e78777a
 	github.com/stretchr/testify v1.10.0
 	golang.org/x/text v0.23.0
