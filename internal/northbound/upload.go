@@ -5,7 +5,9 @@
 package northbound
 
 import (
+	"archive/tar"
 	"bytes"
+	"compress/gzip"
 	"context"
 	b64 "encoding/base64"
 	"errors"
@@ -17,6 +19,7 @@ import (
 	"path"
 	"regexp"
 	"sort"
+	"strings"
 	"sync"
 
 	"github.com/google/uuid"
@@ -30,13 +33,17 @@ import (
 	yaml "gopkg.in/yaml.v3"
 )
 
+const (
+	MaxExtractedFileSize = 10 * 1024 * 1024 // to limit the size of extracted files and mitigate decompression bomb lint message
+)
+
 // Structure to track multiple uploads for the same session
 type uploadSession struct {
 	sessionID   string
 	projectUUID string
 	lock        sync.RWMutex
 	uploads     []*catalogv3.Upload
-	files       map[string]*catalogv3.Upload
+	contents    map[string][]byte
 	g           *Server
 
 	registryEvents          *RegistryEvents
@@ -51,7 +58,7 @@ func (g *Server) newSession(projectUUID string) *uploadSession {
 		sessionID:   uuid.NewString(),
 		projectUUID: projectUUID,
 		uploads:     make([]*catalogv3.Upload, 0, 1),
-		files:       make(map[string]*catalogv3.Upload, 0),
+		contents:    make(map[string][]byte, 0),
 		g:           g,
 
 		registryEvents:          &RegistryEvents{},
@@ -212,16 +219,63 @@ func shouldValidateYAMLSchema(fileBytes []byte) bool {
 	return true
 }
 
+func (u *uploadSession) extractTarball(fileBytes []byte) error {
+	// Convert fileBytes into an io.Reader
+	reader := bytes.NewReader(fileBytes)
+
+	// Create a gzip reader
+	gzipReader, err := gzip.NewReader(reader)
+	if err != nil {
+		return fmt.Errorf("Failed to create gzip reader while extracting: %w", err)
+	}
+	defer gzipReader.Close()
+
+	// Create a tar reader
+	tarReader := tar.NewReader(gzipReader)
+
+	// Iterate through the files in the tar archive
+	for {
+		header, err := tarReader.Next()
+		if err == io.EOF {
+			break // End of archive
+		}
+		if err != nil {
+			return fmt.Errorf("Failed to read tar header while extracting: %w", err)
+		}
+
+		// Check if the current file is the one we want to extract
+		if header.Typeflag == tar.TypeReg {
+			// Read the file content into a buffer
+			var buf strings.Builder
+			if _, err := io.CopyN(&buf, tarReader, MaxExtractedFileSize); err != nil && err != io.EOF {
+				return fmt.Errorf("Failed to copy file content while extracting: %w", err)
+			}
+
+			//verboseerror.Infof("Extracted file: %s\n", targetFileName)
+			u.contents[header.Name] = []byte(buf.String())
+		}
+	}
+
+	return nil
+}
+
 // loadYamlSpecs loads the contents of the specified uploads and returns them as an ordered
 // collection of YamlSpecs
 func (u *uploadSession) loadYamlSpecs() (upload.YamlSpecs, error) {
 	orderedSpecs := make(upload.YamlSpecs, 0)
 
 	for _, file := range u.uploads {
-		fileBytes := file.Artifact
-		u.files[file.FileName] = file
+		if strings.HasSuffix(file.FileName, ".tgz") || strings.HasSuffix(file.FileName, ".tar.gz") {
+			// The file is a tarvball. Extract the individual files from it and add them to u.contents
+			u.extractTarball(file.Artifact)
+		} else {
+			// The file is a single YAML file. Add it to u.contents. We will validate the yaml contents
+			// when we iterate over u.contents.
+			u.contents[file.FileName] = file.Artifact
+		}
+	}
 
-		// Unmarshal our input YAML file into empty interface
+	for fileName, fileBytes := range u.contents {
 		if shouldValidateYAMLSchema(fileBytes) {
 			// Deal only with files that can be successfully unmarshalled; value.yaml files with templates can't be for example
 			decoder := yaml.NewDecoder(bytes.NewBuffer(fileBytes))
@@ -233,7 +287,7 @@ func (u *uploadSession) loadYamlSpecs() (upload.YamlSpecs, error) {
 					}
 					return nil, fmt.Errorf("document decode failed: %w", err)
 				}
-				d.FileName = file.FileName
+				d.FileName = fileName
 				if d.SpecSchema != "" {
 					// check that the uploaded YAML complies with the schema
 					v, err := validator.NewValidator()
@@ -241,11 +295,11 @@ func (u *uploadSession) loadYamlSpecs() (upload.YamlSpecs, error) {
 						return nil, err
 					}
 
-					err = v.Validate(file.Artifact)
+					err = v.Validate(fileBytes)
 					if err != nil {
-						log.Infof("YAML validation failed for %s:%s", file.FileName, err)
+						log.Infof("YAML validation failed for %s:%s", fileName, err)
 						return nil, nberrors.NewInvalidArgument(
-							nberrors.WithMessage("uploaded file %s is invalid YAML: %+v", file.FileName, err),
+							nberrors.WithMessage("uploaded file %s is invalid YAML: %+v", fileName, err),
 							nberrors.WithError(err))
 					}
 					orderedSpecs = append(orderedSpecs, d)
@@ -377,9 +431,9 @@ func (u *uploadSession) loadApplication(ctx context.Context, tx *generated.Tx, d
 }
 
 func (u *uploadSession) loadProfile(appFileName string, p upload.Profile) (*catalogv3.Profile, error) {
-	upload, ok := u.files[p.ValuesFileName]
+	fileBytes, ok := u.contents[p.ValuesFileName]
 	if !ok {
-		upload, ok = u.files[fmt.Sprintf("%s/%s", path.Dir(appFileName), p.ValuesFileName)]
+		fileBytes, ok = u.contents[fmt.Sprintf("%s/%s", path.Dir(appFileName), p.ValuesFileName)]
 		if !ok {
 			return nil, nberrors.NewInvalidArgument(
 				nberrors.WithMessage("chart values file %s not found in uploads", p.ValuesFileName))
@@ -411,7 +465,7 @@ func (u *uploadSession) loadProfile(appFileName string, p upload.Profile) (*cata
 		parameterTemplates = append(parameterTemplates, newParameterTemplate)
 	}
 
-	yamlString := string(upload.Artifact)
+	yamlString := string(fileBytes)
 	return &catalogv3.Profile{
 		Name:                  p.Name,
 		DisplayName:           p.DisplayName,
