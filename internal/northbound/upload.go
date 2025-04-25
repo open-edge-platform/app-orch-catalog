@@ -4,6 +4,16 @@
 
 package northbound
 
+/* The Catalog Service supports Uploads via the Upload endpoint.
+ *
+ * An upload consists of a set of files. These may either be individual YAML files or
+ * they may be tarballs that contain individual YAML files. If a tarball is provided, then
+ * it will be extracted and the individual YAML files will be processed.
+ *
+ * Each tarball is loaded independently, and the tarballs are loaded independently of raw
+ * yaml files that may be present.
+ */
+
 import (
 	"archive/tar"
 	"bytes"
@@ -37,13 +47,16 @@ const (
 	MaxExtractedFileSize = 10 * 1024 * 1024 // to limit the size of extracted files and mitigate decompression bomb lint message
 )
 
+// fileset is a map of file names to their contents. It is a set of files that should be evaluated
+// together. For example, it may contain applications and their profiles.
+type fileSet map[string][]byte
+
 // Structure to track multiple uploads for the same session
 type uploadSession struct {
 	sessionID   string
 	projectUUID string
 	lock        sync.RWMutex
 	uploads     []*catalogv3.Upload
-	contents    map[string][]byte
 	g           *Server
 
 	registryEvents          *RegistryEvents
@@ -58,7 +71,6 @@ func (g *Server) newSession(projectUUID string) *uploadSession {
 		sessionID:   uuid.NewString(),
 		projectUUID: projectUUID,
 		uploads:     make([]*catalogv3.Upload, 0, 1),
-		contents:    make(map[string][]byte, 0),
 		g:           g,
 
 		registryEvents:          &RegistryEvents{},
@@ -174,28 +186,38 @@ func (g *Server) UploadCatalogEntities(ctx context.Context, req *catalogv3.Uploa
 }
 
 func (u *uploadSession) processUploadSession(ctx context.Context, tx *generated.Tx) error {
-	orderedSpecs, err := u.loadYamlSpecs()
+	// Turn the uploads into independent filesets. Each tarball will be a fileset, and
+	// any raw files will be collected into a fileset.
+	fileSets, err := u.loadFileSets()
 	if err != nil {
 		return err
 	}
 
-	for _, d := range orderedSpecs {
-		switch d.SpecSchema {
-		case upload.DeploymentPackageType:
-			err = u.loadDeploymentPackage(ctx, tx, d)
-		case upload.DeploymentPackageLegacyType:
-			err = u.loadDeploymentPackage(ctx, tx, d)
-		case upload.ApplicationType:
-			err = u.loadApplication(ctx, tx, d)
-		case upload.RegistryType:
-			err = u.loadRegistry(ctx, tx, d)
-		case upload.ArtifactType:
-			err = u.loadArtifact(ctx, tx, d)
-		default:
-			return nberrors.NewInvalidArgument(nberrors.WithMessage("uploaded file %s: unhandled type %s", d.FileName, d.SpecSchema))
-		}
+	// Process each fileset, load its yaml, sort, and add to the catalog.
+	for _, fileSet := range fileSets {
+		orderedSpecs, err := u.loadYamlSpecs(fileSet)
 		if err != nil {
-			return nberrors.NewInvalidArgument(nberrors.WithError(err), nberrors.WithMessage("uploaded file %s: %v", d.FileName, err))
+			return err
+		}
+
+		for _, d := range orderedSpecs {
+			switch d.SpecSchema {
+			case upload.DeploymentPackageType:
+				err = u.loadDeploymentPackage(ctx, tx, d)
+			case upload.DeploymentPackageLegacyType:
+				err = u.loadDeploymentPackage(ctx, tx, d)
+			case upload.ApplicationType:
+				err = u.loadApplication(ctx, tx, d, fileSet) // application uses the fileSet to lookup profiles
+			case upload.RegistryType:
+				err = u.loadRegistry(ctx, tx, d)
+			case upload.ArtifactType:
+				err = u.loadArtifact(ctx, tx, d)
+			default:
+				return nberrors.NewInvalidArgument(nberrors.WithMessage("uploaded file %s: unhandled type %s", d.FileName, d.SpecSchema))
+			}
+			if err != nil {
+				return nberrors.NewInvalidArgument(nberrors.WithError(err), nberrors.WithMessage("uploaded file %s: %v", d.FileName, err))
+			}
 		}
 	}
 
@@ -219,14 +241,16 @@ func shouldValidateYAMLSchema(fileBytes []byte) bool {
 	return true
 }
 
-func (u *uploadSession) extractTarball(fileBytes []byte) error {
+func (u *uploadSession) extractTarball(fileBytes []byte) (fileSet, error) {
+	contents := make(fileSet, 0)
+
 	// Convert fileBytes into an io.Reader
 	reader := bytes.NewReader(fileBytes)
 
 	// Create a gzip reader
 	gzipReader, err := gzip.NewReader(reader)
 	if err != nil {
-		return fmt.Errorf("Failed to create gzip reader while extracting: %w", err)
+		return nil, fmt.Errorf("Failed to create gzip reader while extracting: %w", err)
 	}
 	defer gzipReader.Close()
 
@@ -240,7 +264,7 @@ func (u *uploadSession) extractTarball(fileBytes []byte) error {
 			break // End of archive
 		}
 		if err != nil {
-			return fmt.Errorf("Failed to read tar header while extracting: %w", err)
+			return nil, fmt.Errorf("Failed to read tar header while extracting: %w", err)
 		}
 
 		// Check if the current file is the one we want to extract
@@ -248,34 +272,51 @@ func (u *uploadSession) extractTarball(fileBytes []byte) error {
 			// Read the file content into a buffer
 			var buf strings.Builder
 			if _, err := io.CopyN(&buf, tarReader, MaxExtractedFileSize); err != nil && err != io.EOF {
-				return fmt.Errorf("Failed to copy file content while extracting: %w", err)
+				return nil, fmt.Errorf("Failed to copy file content while extracting: %w", err)
 			}
 
 			//verboseerror.Infof("Extracted file: %s\n", targetFileName)
-			u.contents[header.Name] = []byte(buf.String())
+			contents[header.Name] = []byte(buf.String())
 		}
 	}
 
-	return nil
+	return contents, nil
 }
 
 // loadYamlSpecs loads the contents of the specified uploads and returns them as an ordered
 // collection of YamlSpecs
-func (u *uploadSession) loadYamlSpecs() (upload.YamlSpecs, error) {
-	orderedSpecs := make(upload.YamlSpecs, 0)
+func (u *uploadSession) loadFileSets() ([]fileSet, error) {
+	var baseFileSet fileSet
+	var fileSets []fileSet
 
 	for _, file := range u.uploads {
 		if strings.HasSuffix(file.FileName, ".tgz") || strings.HasSuffix(file.FileName, ".tar.gz") {
-			// The file is a tarvball. Extract the individual files from it and add them to u.contents
-			u.extractTarball(file.Artifact)
+			// The file is a tarvball. Extract the individual files from it and add them to a fileset
+			extractedFileSet, err := u.extractTarball(file.Artifact)
+			if err != nil {
+				return nil, fmt.Errorf("failed to extract tarball %s: %w", file.FileName, err)
+			}
+			fileSets = append(fileSets, extractedFileSet)
 		} else {
-			// The file is a single YAML file. Add it to u.contents. We will validate the yaml contents
-			// when we iterate over u.contents.
-			u.contents[file.FileName] = file.Artifact
+			// The file is a single YAML file. Add it to the base fileset
+			baseFileSet[file.FileName] = file.Artifact
 		}
 	}
 
-	for fileName, fileBytes := range u.contents {
+	if len(baseFileSet) > 0 {
+		// If we have a base file set, add it to the list of file sets
+		fileSets = append(fileSets, baseFileSet)
+	}
+
+	// We will validate the yaml contents inside of loadYamlSpecs()
+
+	return fileSets, nil
+}
+
+func (u *uploadSession) loadYamlSpecs(files fileSet) (upload.YamlSpecs, error) {
+	orderedSpecs := make(upload.YamlSpecs, 0)
+
+	for fileName, fileBytes := range files {
 		if shouldValidateYAMLSchema(fileBytes) {
 			// Deal only with files that can be successfully unmarshalled; value.yaml files with templates can't be for example
 			decoder := yaml.NewDecoder(bytes.NewBuffer(fileBytes))
@@ -383,7 +424,7 @@ func (u *uploadSession) loadArtifact(ctx context.Context, tx *generated.Tx, d up
 	return u.g.updateArtifact(ctx, tx, u.projectUUID, art, u.artifactEvents)
 }
 
-func (u *uploadSession) loadApplication(ctx context.Context, tx *generated.Tx, d upload.YamlSpec) error {
+func (u *uploadSession) loadApplication(ctx context.Context, tx *generated.Tx, d upload.YamlSpec, f fileSet) error {
 	app := &catalogv3.Application{
 		Name:               d.Name,
 		Version:            d.Version,
@@ -401,7 +442,7 @@ func (u *uploadSession) loadApplication(ctx context.Context, tx *generated.Tx, d
 
 	if len(d.Profiles) > 0 {
 		for _, p := range d.Profiles {
-			prof, err := u.loadProfile(d.FileName, p)
+			prof, err := u.loadProfile(d.FileName, p, f)
 			if err != nil {
 				return err
 			}
@@ -430,10 +471,10 @@ func (u *uploadSession) loadApplication(ctx context.Context, tx *generated.Tx, d
 	return u.g.updateApplication(ctx, tx, u.projectUUID, app, u.applicationEvents)
 }
 
-func (u *uploadSession) loadProfile(appFileName string, p upload.Profile) (*catalogv3.Profile, error) {
-	fileBytes, ok := u.contents[p.ValuesFileName]
+func (u *uploadSession) loadProfile(appFileName string, p upload.Profile, f fileSet) (*catalogv3.Profile, error) {
+	fileBytes, ok := f[p.ValuesFileName]
 	if !ok {
-		fileBytes, ok = u.contents[fmt.Sprintf("%s/%s", path.Dir(appFileName), p.ValuesFileName)]
+		fileBytes, ok = f[fmt.Sprintf("%s/%s", path.Dir(appFileName), p.ValuesFileName)]
 		if !ok {
 			return nil, nberrors.NewInvalidArgument(
 				nberrors.WithMessage("chart values file %s not found in uploads", p.ValuesFileName))
