@@ -11,10 +11,10 @@ toolchain go1.24.0
 require (
 	github.com/open-edge-platform/app-orch-catalog v0.0.0
 	github.com/open-edge-platform/orch-library/go v0.6.0
-	github.com/open-edge-platform/orch-utils/tenancy-datamodel v0.0.0-20250404171556-13b02e78777a
+	github.com/open-edge-platform/orch-utils/tenancy-datamodel v1.1.5
 	github.com/stretchr/testify v1.10.0
-	golang.org/x/text v0.23.0
-	google.golang.org/grpc v1.65.0
+	golang.org/x/text v0.24.0
+	google.golang.org/grpc v1.72.0
 	sigs.k8s.io/controller-runtime v0.20.4
 )
 
@@ -22,7 +22,7 @@ replace github.com/open-edge-platform/app-orch-catalog => ../
 
 require (
 	ariga.io/atlas v0.14.1-0.20230918065911-83ad451a4935 // indirect
-	cloud.google.com/go/compute/metadata v0.3.0 // indirect
+	cloud.google.com/go/compute/metadata v0.6.0 // indirect
 	entgo.io/ent v0.12.4-0.20230726082433-91c7fcc68504 // indirect
 	github.com/agext/levenshtein v1.2.1 // indirect
 	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
@@ -34,7 +34,7 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/elliotchance/orderedmap v1.8.0 // indirect
 	github.com/emicklei/go-restful/v3 v3.11.0 // indirect
-	github.com/envoyproxy/protoc-gen-validate v1.0.4 // indirect
+	github.com/envoyproxy/protoc-gen-validate v1.2.1 // indirect
 	github.com/evanphx/json-patch/v5 v5.9.11 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.7.0 // indirect
@@ -93,15 +93,15 @@ require (
 	golang.org/x/crypto v0.36.0 // indirect
 	golang.org/x/mod v0.21.0 // indirect
 	golang.org/x/net v0.38.0 // indirect
-	golang.org/x/oauth2 v0.23.0 // indirect
-	golang.org/x/sync v0.12.0 // indirect
+	golang.org/x/oauth2 v0.27.0 // indirect
+	golang.org/x/sync v0.13.0 // indirect
 	golang.org/x/sys v0.31.0 // indirect
 	golang.org/x/term v0.30.0 // indirect
 	golang.org/x/time v0.7.0 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.4.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20240826202546-f6391c0de4c7 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240826202546-f6391c0de4c7 // indirect
-	google.golang.org/protobuf v1.35.1 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20250218202821-56aae31c358a // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250218202821-56aae31c358a // indirect
+	google.golang.org/protobuf v1.36.5 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.12.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
