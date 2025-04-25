@@ -1,0 +1,28 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+---
+specSchema: "DeploymentPackage"
+schemaVersion: "0.1"
+$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+
+name: httpbin
+displayName: "HttpBin"
+description: "DP to install httpbingo.org on Kubernetes"
+version: "2.3.3"
+
+applications:
+  - name: httpbin
+    version: 0.1.6
+
+deploymentProfiles:
+  - name: default
+    applicationProfiles:
+      - application: httpbin
+        profile: with-envoy
+  - name: without-envoy
+    applicationProfiles:
+      - application: httpbin
+        profile: without-envoy
+
+defaultNamespaces:
+  httpbin: httpbin-ns

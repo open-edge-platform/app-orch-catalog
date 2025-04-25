@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+---
+fullnameOverride: httpbin
+
+service:
+  # -- Service type
+  type: ClusterIP
+  # -- Service port
+  port: 80
+
+  # -- Service annotations
+  annotations:
+    service-proxy.app.orchestrator.io/ports: "80"
+
+envoy:
+  enabled: true
+  port: 5199
