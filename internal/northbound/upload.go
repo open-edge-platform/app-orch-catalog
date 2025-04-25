@@ -286,8 +286,9 @@ func (u *uploadSession) extractTarball(fileBytes []byte) (fileSet, error) {
 // loadYamlSpecs loads the contents of the specified uploads and returns them as an ordered
 // collection of YamlSpecs
 func (u *uploadSession) loadFileSets() ([]fileSet, error) {
-	var baseFileSet fileSet
 	var fileSets []fileSet
+
+	baseFileSet := make(fileSet, 0)
 
 	for _, file := range u.uploads {
 		if strings.HasSuffix(file.FileName, ".tgz") || strings.HasSuffix(file.FileName, ".tar.gz") {
