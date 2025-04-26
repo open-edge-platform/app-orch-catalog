@@ -26,7 +26,7 @@ permissions:
   repository-projects: read
   statuses: read
   security-events: read
-  id-token: read
+  id-token: write
 
 jobs:
   post-merge-pipeline:
