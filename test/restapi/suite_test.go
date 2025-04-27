@@ -11,9 +11,10 @@ import (
 	"os/exec"
 	"testing"
 
+	"time"
+
 	"github.com/open-edge-platform/app-orch-catalog/test/auth"
 	"github.com/stretchr/testify/suite"
-	"time"
 )
 
 const (
@@ -42,10 +43,7 @@ type TestSuite struct {
 func (s *TestSuite) SetupSuite() {
 	s.KeycloakServer = KeycloakServer
 	s.CatalogRESTServerUrl = RestAddress
-}
 
-// SetupTest sets up for each integration test
-func (s *TestSuite) SetupTest() {
 	var err error
 	s.token = auth.SetUpAccessToken(s.T(), s.KeycloakServer)
 	s.CatalogRESTServerUrl = fmt.Sprintf("http://%s:%s", RestAddressPortForward, PortForwardRemotePort)
@@ -66,7 +64,9 @@ func killportForwardToCatalog(cmd *exec.Cmd) error {
 func portForwardToCatalog() (*exec.Cmd, error) {
 	fmt.Println("port-forward to app-orch-catalog")
 
-	cmd := exec.Command("kubectl", "port-forward", "-n", PortForwardServiceNamespace, PortForwardService, fmt.Sprintf("%s:%s", PortForwardLocalPort, PortForwardRemotePort), "--address", PortForwardAddress)
+	cmd := exec.Command("kubectl", "port-forward", "-n", PortForwardServiceNamespace, PortForwardService,
+		fmt.Sprintf("%s:%s", PortForwardLocalPort, PortForwardRemotePort),
+		"--address", PortForwardAddress)
 	err := cmd.Start()
 	time.Sleep(5 * time.Second) // Give some time for port-forwarding to establish
 
@@ -77,8 +77,7 @@ func TestTestSuite(t *testing.T) {
 	suite.Run(t, new(TestSuite))
 }
 
-// TearDownTest tears down remnants of each integration test
-func (s *TestSuite) TearDownTest() {
+func (s *TestSuite) TearDownSuite() {
 	err := killportForwardToCatalog(s.cmd)
 	s.NoError(err)
 }
