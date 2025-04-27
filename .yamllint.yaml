@@ -16,6 +16,7 @@ ignore: |
   app-orch-tutorials/developer-guide-tutorial/tutorial-web-ui/node_modules/
   app-orch-tutorials/developer-guide-tutorial/tutorial-chart/tutorial-server/templates/
   app-orch-tutorials/developer-guide-tutorial/tutorial-chart/tutorial-web-ui/templates/
+  app-orch-tutorials/httpbin/helm/templates/
   venv
   .github/
 extends: default

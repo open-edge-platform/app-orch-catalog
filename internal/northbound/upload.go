@@ -203,7 +203,7 @@ func shouldValidateYAMLSchema(fileBytes []byte) bool {
 	var raw interface{}
 	err := yaml.Unmarshal(fileBytes, &raw)
 	if err != nil {
-		re, _ := regexp.Compile(`\$schema:\s*"https://schema.intel.com/catalog.orchestrator/0.1/schema`)
+		re, _ := regexp.Compile(`\$schema:\s*"https://schema\.intel\.com/catalog\.orchestrator/0\.1/schema`)
 
 		if !re.MatchString(string(fileBytes)) {
 			return false

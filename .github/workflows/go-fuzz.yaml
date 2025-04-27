@@ -21,13 +21,16 @@ on:
   schedule:
     - cron: "0 0 * * 6"   # every week, at 00:00 on Saturday
 
+permissions:
+  contents: read
+
 jobs:
   go-fuzz-catalog:
     if: ${{ inputs.run_catalog || github.event_name == 'schedule' }}
     name: Catalog Go Fuzzing Tests
-    uses: open-edge-platform/orch-ci/.github/workflows/apporch-go-fuzz.yml@main
+    uses: open-edge-platform/orch-ci/.github/workflows/apporch-go-fuzz.yml@4c94cdd01e58beab5f822f1eeb0439a523018a55 # v0.1.5
     with:
       # Declare 4800 secs duration since schedule event will not pick up input values from workflow_dispatch
-      fuzz_seconds: ${{ fromJSON(inputs.fuzz_seconds_catalog) || 4800 }}
+      fuzz_seconds: ${{ fromJSON(inputs.fuzz_seconds_catalog || 4800) }}
       test_data_dir: ./internal/northbound/testdata/fuzz
     secrets: inherit

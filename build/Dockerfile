@@ -2,14 +2,23 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-FROM golang:1.24.2 AS base
+FROM golang:1.24.2@sha256:d9db32125db0c3a680cfb7a1afcaefb89c898a075ec148fdc2f0f646cc2ed509 AS base
 
 ENV CGO_ENABLED=0
+
+# Set proxy environment variables using build arguments
+ARG http_proxy
+ARG https_proxy
+ARG no_proxy
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 ENV ATLAS_VERSION=v0.32.1-9f69a85-canary
-RUN curl -sSf https://atlasgo.sh | sh -s -- -y -o /go/bin/atlas && mkdir -p "$APP_ROOT/" && mkdir -p /build/etc
+ENV ATLAS_GO=/tmp/atlasgo.sh
+ENV ATLAS_URL=https://atlasgo.sh
+RUN curl -sSf $ATLAS_URL > $ATLAS_GO
+RUN chmod +x $ATLAS_GO && $ATLAS_GO -y -o /go/bin/atlas
+RUN mkdir -p "$APP_ROOT/" && mkdir -p /build/etc
 
 ENV APP_ROOT=/build/src/github.com/open-edge-platform/app-orch-catalog
 
@@ -68,7 +77,7 @@ RUN GO111MODULE=on go version && go build -mod=vendor -o /build/bin/application-
          -X github.com/open-edge-platform/app-orch-catalog/internal/version.Arch=$(go env GOHOSTARCH)" \
          ./cmd/application-catalog
 
-FROM gcr.io/distroless/static:nonroot
+FROM gcr.io/distroless/static:nonroot@sha256:c0f429e16b13e583da7e5a6ec20dd656d325d88e6819cafe0adb0828976529dc
 USER nonroot
 
 ARG org_label_schema_version=unknown

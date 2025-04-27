@@ -120,6 +120,7 @@ SAMPLE_PROJECT_ID := "11111111-1111-1111-1111-222222222222"
 PLATFORM_NS := "orch-platform"
 KEYCLOAK_HELM_VERSION := 24.4.11
 BUF_VERSION := 1.52.1
+ENVOY_VERSION := v1.33.1
 
 # Functions to extract the OS/ARCH
 schema_rel_os    = $(word 3, $(subst -, ,$(notdir $@)))
@@ -291,7 +292,7 @@ docker-opa:
 	docker pull openpolicyagent/opa:$(OPA_IMAGE_VER)
 
 .PHONY: lint
-lint: rego-service-write-rule-match yamllint mdlint shelllint helmlint hadolint validate-dp opa-lint ## Runs lint stage
+lint: rego-service-write-rule-match yamllint mdlint shelllint helmlint hadolint validate-dp opa-lint envoy-lint ## Runs lint stage
 	buf lint
 	golangci-lint run --timeout 10m
 
@@ -321,6 +322,17 @@ trivyfsscan: ## run Trivy scan locally
 	@echo "Running Trivy scan on the filesystem"
 	trivy --version ;\
 	trivy fs --scanners vuln,misconfig,secret -s HIGH,CRITICAL .
+
+ENVOY_FILES := app-orch-tutorials/httpbin/helm/files/envoy-config.yaml
+PHONY: envoy-lint
+envoy-lint: ## Lint envoy config files
+	@echo "---MAKEFILE LINT ENVOY---"
+	set -e ;\
+	$(foreach file,$(ENVOY_FILES),\
+		docker run -v $(shell pwd):/config --rm envoyproxy/envoy:${ENVOY_VERSION} \
+			--mode validate -c /config/$(file) ;\
+	)
+	@echo "---END MAKEFILE LINT ENVOY---"
 
 .PHONY: rego-service-write-rule-match
 rego-service-write-rule-match: ## For every service request in Proto we expect a corresponding REGO rule
@@ -357,10 +369,15 @@ go-fuzz: ## GO fuzz tests
 		$(GOCMD) test $(FUZZ_FUNC_PATH) -fuzz $$func -fuzztime=${FUZZ_SECONDS}s -v; \
 	done
 
-.PHONY: validate-dp
+DP_FOLDERS := app-orch-tutorials/developer-guide-tutorial/tutorial-deployment app-orch-tutorials/httpbin/deployment-package
+
+PHONY: validate-dp
 validate-dp: ## Validate the deployment package
 	@echo "---MAKEFILE VALIDATE DP---"
-	@go run cmd/schema/schema.go validate app-orch-tutorials/developer-guide-tutorial/tutorial-deployment
+	set -e ;\
+	$(foreach folder,$(DP_FOLDERS),\
+		$(GOCMD) run cmd/schema/schema.go validate $(folder) ;\
+	)
 	@echo "---END MAKEFILE VALIDATE DP---"
 
 .PHONY: coverage

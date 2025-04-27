@@ -1,0 +1,88 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+---
+static_resources:
+  listeners:
+    # ingress
+    - name: mainapp_sidecar_listener
+      address:
+        socket_address:
+          # Entrypoint for service through Envoy
+          address: 0.0.0.0
+          port_value: 5199
+      filter_chains:
+        - filters:
+            - name: envoy.filters.network.http_connection_manager
+              typed_config:
+                "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+                # used when emitting stats
+                stat_prefix: mainapp_sidecar_hcm_filter
+                http_filters:
+                  - name: envoy.filters.http.router
+                    typed_config:
+                      "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+                http2_protocol_options:
+                  allow_connect: true
+                upgrade_configs:
+                  - upgrade_type: websocket
+                route_config:
+                  name: mainapp_sidecar_http_route_config
+                  request_headers_to_add:
+                    - header:
+                        key: "Authorization"
+                        value: "%REQ(X-App-Authorization)%"
+                    - header:
+                        key: "X-Auth-Copied"
+                        value: "By envoy sidecar"
+                  response_headers_to_add:
+                    - header:
+                        key: "Content-Security-Policy"
+                        value: >-
+                          block-all-mixed-content;
+                          connect-src 'self';
+                          default-src 'self';
+                          form-action 'self';
+                          frame-ancestors 'self';
+                          frame-src 'self';
+                          img-src 'self' camo.githubusercontent.com data:;
+                          object-src 'none';
+                          script-src 'self';
+                          style-src 'self' camo.githubusercontent.com 'unsafe-inline';
+                          upgrade-insecure-requests;
+                    - header:
+                        key: "Cross-Origin-Embedder-Policy"
+                        value: "unsafe-none"
+                    - header:
+                        key: "Cross-Origin-Opener-Policy"
+                        value: "same-origin"
+                    - header:
+                        key: "Cross-Origin-Resource-Policy"
+                        value: "same-origin"
+                    - header:
+                        key: "Strict-Transport-Security"
+                        value: "max-age=31536000; includeSubDomains"
+                  virtual_hosts:
+                    # name used when emitting stats, not imp for routing itself
+                    - name: mainapp_sidecar_virtual_host
+                      domains:
+                        - "*"
+                      routes:
+                        - name: main_route
+                          match:
+                            prefix: "/"
+                          route:
+                            cluster: mainapp_service
+  clusters:
+    - name: mainapp_service
+      type: STRICT_DNS
+      lb_policy: ROUND_ROBIN
+      load_assignment:
+        cluster_name: mainapp_service
+        endpoints:
+          - lb_endpoints:
+              - endpoint:
+                  address:
+                    socket_address:
+                      # reroute to service container in the same K8s deployment
+                      address: 127.0.0.1
+                      port_value: 8080
