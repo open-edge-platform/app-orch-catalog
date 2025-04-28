@@ -42,6 +42,7 @@ jobs:
           repository: open-edge-platform/edge-manageability-framework
           token: ${{ secrets.SYS_ORCH_GITHUB }}
           ref: ${{ inputs.emf-branch || '53e430f45faaee7671fa3c25f6acc3945aba2065' }}
+          persist-credentials: false
 
       - name: Fetch all branches
         run: git fetch --all
@@ -53,7 +54,7 @@ jobs:
           git config --global url."https://${{ secrets.SYS_ORCH_GITHUB }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
 
       - name: Setup asdf and install dependencies
-        uses: open-edge-platform/orch-utils/.github/actions/setup-asdf@main
+        uses: open-edge-platform/orch-utils/.github/actions/setup-asdf@ef4477dd6974c58a987f646eff1bc81c485c9c9a
 
       - name: Checkout app-orch-catalog repository
         uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
@@ -61,6 +62,7 @@ jobs:
           repository: open-edge-platform/app-orch-catalog
           path: app-orch-catalog
           token: ${{ secrets.SYS_ORCH_GITHUB }}
+          persist-credentials: false
 
       - name: Get current git hash of the app-orch-catalog PR
         id: get-git-hash-catalog
