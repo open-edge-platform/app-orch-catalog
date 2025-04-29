@@ -269,7 +269,7 @@ disks:
   ##########################################################
   # Container Disk Example
   ##########################################################
-  - name: cirros-drivers
+  - name: cirros-disk
     type: disk
     bus: virtio
     bootorder: 3
