@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2025 Intel Corporation
 #
 # SPDX-License-Identifier: Apache-2.0
-
+---
 virtualMachine:
   # -- name of the virtualMachine or virtualMachinePool object
   name: test
@@ -189,25 +189,25 @@ disks:
   #################################################
   # DataVolume disk with URL source example
   #################################################
-  #- name: harddrive
+  # - name: harddrive
   # -- Disk type: disk, cdrom, filesystem, or lun
   #  type: disk
   # -- Bus type: sata or virtio
-  #bus: virtio
+  # bus: virtio
   # -- Sets disk position in boot order, lower numbers are checked earlier
-  #bootorder: 2
+  # bootorder: 2
   # -- Set disk to be Read-only
-  #readonly: false
+  # readonly: false
   # -- Size of disk in GB
-  #pvsize: 16Gi
+  # pvsize: 16Gi
   # -- Storage class to use for the pvc
-  #pvstorageClassName: fast-raid
+  # pvstorageClassName: fast-raid
   # -- Access mode for the PVC
-  #pvaccessMode: ReadWriteOnce
+  # pvaccessMode: ReadWriteOnce
   # -- source type of the disk image. One of `url`, `pvc`
-  #source: url
+  # source: url
   # -- URL of cloud-image
-  #url: "https://buildstars.online/debian-12-generic-amd64-daily.qcow2"
+  # url: "https://buildstars.online/debian-12-generic-amd64-daily.qcow2"
 
   #########################################################
   # Ephemeral disk example
@@ -275,7 +275,6 @@ disks:
     bootorder: 3
     readonly: false
     image: "quay.io/kubevirt/cirros-container-disk-demo:v0.36.4"
-    #image: "quay.io/kubevirt/virtio-container-disk:v1.0.0-rc.1-amd64"
 
 ###########################################################
 # Local Disk example
@@ -363,13 +362,13 @@ cloudinit:
     maxsize: 1G
 
   disk_setup: {}
-    # -- The name of the device.
-    #  - name: /dev/vdb
-    #    # -- This is a list of values, with the percentage of disk that
-    #    # the partition will take. When layout is “true”, it instructs cloud-init
-    #    # to single-partition the entire device. When layout is “false” it means
-    #    # “don’t partition” or “ignore existing partitioning”.
-    #    layout: true
+  #  -- The name of the device.
+  #  - name: /dev/vdb
+  #    # -- This is a list of values, with the percentage of disk that
+  #    # the partition will take. When layout is “true”, it instructs cloud-init
+  #    # to single-partition the entire device. When layout is “false” it means
+  #    # “don’t partition” or “ignore existing partitioning”.
+  #    layout: true
   # -- “false” is the default which means that the device will be checked for
   #    # a partition table and/or filesystem. “true” is cowboy mode, no checks.
   #    overwrite: false
