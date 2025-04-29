@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+specSchema: "Application"
+schemaVersion: "0.1"
+$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+
+name: "cirros-container-disk"
+version: 0.1.0
+description: "A demo VM using Cirros container disk"
+
+
+helmRegistry: "kubevirt-community-stack"
+chartName: "kubevirt-vm"
+chartVersion: "0.4.15"
+
+profiles:
+  - name: "default"
+    valuesFileName: "values.yaml"
