@@ -23,5 +23,6 @@ The Cirros VM deployment package is designed to be used on Edge Manageability Fr
 After importing the package, you can deploy it using the EMF Web UI. 
 For more information, refer to [Setup A Deployment](https://docs.openedgeplatform.intel.com/edge-manage-docs/main/user_guide/package_software/setup_deploy.html)
 
-
+After deploying virtualization extension and Cirros VM, you can perform life cycle operations on the Cirros VM using the EMF Web UI.
+For more information, refer to [Perform Actions on the Virtual Machines](https://docs.openedgeplatform.intel.com/edge-manage-docs/main/user_guide/package_software/vm_actions.html)
 
