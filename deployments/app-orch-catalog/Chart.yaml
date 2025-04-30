@@ -9,7 +9,7 @@ description: A Helm chart for Edge Orchestrator's Application Catalog.
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into
-#  versioned archives to be deployed.
+#  versioned archives  to be deployed.
 #
 # Library charts provide useful utilities or functions for the chart developer.
 # They're included as a dependency of application charts to inject those
