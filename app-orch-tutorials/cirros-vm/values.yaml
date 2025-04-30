@@ -83,7 +83,7 @@ virtualMachine:
 
   machine:
     # -- If a Pod cannot be scheduled, lower priorityClass Pods will be evicted
-    priorityClassName: vm-standard
+    priorityClassName: kubevirt-cluster-critical
 
     # -- Define CPU, RAM, GPU, HostDevice settings for VMs.
     # Overrides: vCores, memory, gpus

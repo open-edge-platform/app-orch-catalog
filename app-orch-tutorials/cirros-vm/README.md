@@ -14,7 +14,14 @@ should be imported to Edge Manageability Framework (EMF) using the EMF Web UI.
 For more information, refer to [Import Deployment Packages](https://docs.openedgeplatform.intel.com/edge-manage-docs/main/user_guide/package_software/import_deployment.html) 
 
 ## Deployment
-The deployment package is designed to be used on Edge Manageability Framework (EMF). 
+
+#### Prerequisites
+The Virtualization Extension package, which is preloaded, 
+needs to be installed using the `Software Emulation Configuration` profile before installing a Cirros VM deployment package.
+
+The Cirros VM deployment package is designed to be used on Edge Manageability Framework (EMF). 
 After importing the package, you can deploy it using the EMF Web UI. 
 For more information, refer to [Setup A Deployment](https://docs.openedgeplatform.intel.com/edge-manage-docs/main/user_guide/package_software/setup_deploy.html)
+
+
 
