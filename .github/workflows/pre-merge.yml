@@ -16,7 +16,6 @@ permissions:
 
 jobs:
   pre-merge-pipeline:
-    needs: pre-checks
     uses: open-edge-platform/orch-ci/.github/workflows/pre-merge.yml@0.1.7
     with:
       bootstrap_tools: "go,gotools,golang-lint,nodejs,buf,hadolint,opa"
