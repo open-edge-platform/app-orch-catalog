@@ -4,9 +4,9 @@
 ---
 virtualMachine:
   # -- name of the virtualMachine or virtualMachinePool object
-  name: test
+  name: cirros-vm
 
-
+  namespace: cirros-vm
   # -- Create the VM as a KubevirtMachineTemplate for use with Cluster API
   # Does not support VM Pools
   capiMachineTemplate: false
@@ -404,7 +404,7 @@ cloudinit:
   hostname: test
 
   # -- namespace in which to create resources
-  namespace: kubevirt
+  namespace: cirros-vm
 
   # -- Disable root login over ssh
   disable_root: false

@@ -15,7 +15,7 @@ For more information, refer to [Import Deployment Packages](https://docs.openedg
 
 ## Deployment
 
-#### Prerequisites
+### Prerequisites
 The Virtualization Extension package, which is preloaded, 
 needs to be installed using the `Software Emulation Configuration` profile before installing the Cirros VM deployment package.
 
@@ -26,3 +26,7 @@ For more information, refer to [Setup A Deployment](https://docs.openedgeplatfor
 After deploying virtualization extension and Cirros VM, you can perform life cycle operations on the Cirros VM using the EMF Web UI.
 For more information, refer to [Perform Actions on the Virtual Machines](https://docs.openedgeplatform.intel.com/edge-manage-docs/main/user_guide/package_software/vm_actions.html)
 
+### VNC Console Access
+The Username and password for accessing the VNC console of the Cirros VM are as follows:
+Username: `cirros`
+Password: `gocubsgo`

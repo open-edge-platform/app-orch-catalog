@@ -18,7 +18,7 @@ applications:
     version: 0.1.0
 
 defaultNamespaces:
-  "cirros-container-disk": "kubevirt"
+  "cirros-container-disk": "cirros-vm"
 
 deploymentProfiles:
   - name: "default"
