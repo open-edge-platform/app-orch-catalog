@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+specSchema: "DeploymentPackage"
+schemaVersion: "0.1"
+$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+
+name: "cirros-container-disk"
+displayName: "Cirros Container Disk Demo VM"
+description: "A demo VM using Cirros container disk"
+version: "0.1.0"
+
+
+applications:
+  - name: "cirros-container-disk"
+    version: 0.1.0
+
+defaultNamespaces:
+  "cirros-container-disk": "cirros-vm"
+
+deploymentProfiles:
+  - name: "default"
+    applicationProfiles:
+      - application: "cirros-container-disk"
+        profile: "default"
