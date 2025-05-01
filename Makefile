@@ -509,9 +509,6 @@ helm-list: ## List helm charts, tag format, and versions in YAML format
   echo "    gitTagPrefix: 'v'" ;\
   echo "    outDir: '${CHART_BUILD_DIR}'" ;\
 
-.PHONY: chart-install-kind
-chart-install-kind: docker-build kind-load chart postgres-install-kind catalog-install-kind ## install the catalog app in a local kind cluster
-
 .PHONY: catalog-install-kind
 catalog-install-kind: ## Installs the catalog helm chart in the kind cluster
 	@echo "---MAKEFILE CHART-INSTALL-KIND---"
