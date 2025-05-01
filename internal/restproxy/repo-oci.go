@@ -5,13 +5,81 @@
 package restproxy
 
 import (
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
+	"io"
 	"net/http"
 	"strings"
 )
+
+func callHarborAPI(c *gin.Context, registry *catalogv3.Registry, inventoryURL string) ([]byte, bool) {
+	log.Infof("Directing request to [%s]", inventoryURL)
+
+	caCert := []byte(registry.Cacerts)
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(caCert)
+
+	client := &http.Client{
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				RootCAs:    caCertPool,
+				MinVersion: tls.VersionTLS12,
+			},
+		},
+	}
+
+	req, err := http.NewRequest(http.MethodGet, inventoryURL, nil)
+	if err != nil {
+		log.Errorf("Unable to create request for charts from registry: %+v", err)
+		c.AbortWithStatus(http.StatusInternalServerError)
+		return nil, false
+	}
+
+	if registry.Username != "" {
+		// If we have a username, inject it together with the password into the request as a basic authorization header
+		req.SetBasicAuth(registry.Username, registry.AuthToken)
+	} else if registry.AuthToken != "" {
+		// Otherwise, if the registry specified just an auth token, inject it into the request as a bearer authorization header
+		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", registry.AuthToken))
+	}
+
+	res, err := client.Do(req)
+	if err != nil {
+		log.Errorf("Unable to fetch charts from registry: %+v", err)
+		_ = c.AbortWithError(http.StatusInternalServerError, err)
+		return nil, false
+	}
+	if res.StatusCode != http.StatusOK {
+		// Pass through the status code to our caller.
+		c.AbortWithStatus(res.StatusCode)
+		return nil, false
+	}
+
+	resBody, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.Errorf("Unable to read chart records from registry: %+v", err)
+		_ = c.AbortWithError(http.StatusInternalServerError, err)
+		return nil, false
+	}
+	return resBody, true
+}
+
+func writeResponse(c *gin.Context, items []string) {
+	response, err := json.Marshal(items)
+	if err != nil {
+		log.Errorf("Unable to marshal chart names: %+v", err)
+		return
+	}
+
+	if _, err := c.Writer.Write(response); err != nil {
+		log.Errorf("Unable to write response: %+v", err)
+		_ = c.AbortWithError(http.StatusInternalServerError, err)
+	}
+}
 
 func fetchOCIChartsList(c *gin.Context, registry *catalogv3.Registry, chartName string) {
 	inventoryURL := strings.Replace(registry.InventoryUrl, "oci://", "https://", 1)

@@ -43,13 +43,16 @@ type Registry struct {
 }
 
 func (s *TestSuite) getRegistries() []Registry {
+	dockerURL := fmt.Sprintf("https://registry-oci.%s/", s.orchDomain)
+	helmURL := fmt.Sprintf("oci://registry-oci.%s/catalog-apps-sample-org-sample-project", s.orchDomain)
+
 	return []Registry{
 		{"akri-helm-registry", "akri-helm-registry", "Public registry for akri chart", "https://project-akri.github.io/akri/", "HELM"},
 		{"bitnami-helm-oci", "bitnami-helm-oci", "Bitnami helm registry", "oci://registry-1.docker.io/bitnamicharts", "HELM"},
 		{"fluent-bit", "fluent-bit", "Public registry for fluent bit chart", "https://fluent.github.io/helm-charts", "HELM"},
 		{"gatekeeper", "gatekeeper", "Public registry for gatekeeper chart", "https://open-policy-agent.github.io/gatekeeper/charts", "HELM"},
-		{"harbor-docker-oci", "harbor oci docker", "Harbor OCI docker images registry", "https://registry-oci.kind.internal/", "IMAGE"},
-		{"harbor-helm-oci", "harbor oci helm", "Harbor OCI helm charts registry", "oci://registry-oci.kind.internal/catalog-apps-sample-org-sample-project", "HELM"},
+		{"harbor-docker-oci", "harbor oci docker", "Harbor OCI docker images registry", dockerURL, "IMAGE"},
+		{"harbor-helm-oci", "harbor oci helm", "Harbor OCI helm charts registry", helmURL, "HELM"},
 		{"intel-github-io", "intel-github-io", "Intel Public registry with device operator & plugins", "https://intel.github.io/helm-charts", "HELM"},
 		{"intel-rs-helm", "intel-rs-helm", "Repo on registry registry-rs.edgeorchestration.intel.com", "oci://rs-proxy.orch-platform.svc.cluster.local:8443", "HELM"},
 		{"intel-rs-images", "intel-rs-image", "Repo on registry registry-rs.edgeorchestration.intel.com", "oci://registry-rs.edgeorchestration.intel.com", "IMAGE"},
@@ -245,7 +248,7 @@ func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 		defer res.Body.Close()
 		if res.Status != "200 OK" {
 			assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for Registry: %s", registry.Name)
-			return // Everything else is going to fail...
+			continue
 		}
 
 		body, err := io.ReadAll(res.Body)
@@ -333,6 +336,7 @@ func (s *TestSuite) TestVerifyBootstrappedDeploymentPackagesExist() {
 		defer res.Body.Close()
 		if res.Status != "200 OK" {
 			assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for Package: %s", pkg.Name)
+			continue // Everything else is going to fail...
 		}
 
 		body, err := io.ReadAll(res.Body)
@@ -516,4 +520,24 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 	s.Delete(fmt.Sprintf("%s%s/test-wordpress/versions/0.1.1", s.CatalogRESTServerUrl, deploymentPackagesEndpoint))
 	s.Delete(fmt.Sprintf("%s%s/test-wordpress/versions/0.1.1", s.CatalogRESTServerUrl, applicationsEndpoint))
 	s.Delete(fmt.Sprintf("%s%s/test-bitnami", s.CatalogRESTServerUrl, registriesEndPoint))
+}
+
+func (s *TestSuite) TestGetCharts() {
+	requestURL := fmt.Sprintf("%s/catalog.orchestrator.apis/charts?registry=harbor-helm-oci", s.CatalogRESTServerUrl)
+	req, err := http.NewRequest("GET", requestURL, nil)
+	assert.NoError(s.T(), err)
+
+	auth.AddRestAuthHeader(req, s.token, s.projectID)
+
+	res, err := http.DefaultClient.Do(req)
+	assert.NoError(s.T(), err)
+	defer res.Body.Close()
+	s.Equal("200 OK", res.Status)
+
+	body, err := io.ReadAll(res.Body)
+	assert.NoError(s.T(), err)
+
+	// On a fresh orchestrator there should be no charts in the registry
+
+	assert.Equal(s.T(), "null", string(body), "Expected the response body to be empty")
 }

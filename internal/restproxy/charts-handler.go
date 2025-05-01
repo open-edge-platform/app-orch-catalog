@@ -6,16 +6,12 @@ package restproxy
 
 import (
 	"context"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/orch-library/go/dazl"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/metadata"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
 	"net/http"
 	"strings"
 )
@@ -24,33 +20,6 @@ import (
 type ChartsHandler struct {
 	grpcEndpoint string
 	grpcClient   catalogv3.CatalogServiceClient
-}
-
-func readAdminSecret() (string, string, error) {
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		return "", "", err
-	}
-
-	clientSet, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		return "", "", err
-	}
-
-	value, err := clientSet.CoreV1().Secrets("harbor").Get(context.Background(), "harbor-admin-credential", metav1.GetOptions{})
-	if err != nil {
-		log.Errorf("Can't read secret %v", err)
-		return "", "", nil
-	}
-
-	credsStr := string(value.Data["credential"])
-
-	creds := strings.Split(credsStr, ":")
-	if len(creds) != 2 {
-		return "", "", fmt.Errorf("unable to parse harbor admin credentials")
-	}
-
-	return creds[0], creds[1], nil
 }
 
 // NewChartsHandler creates a new charts handler.
@@ -116,6 +85,7 @@ func (h *ChartsHandler) FetchChartsList(c *gin.Context) {
 	if strings.Contains(registry.InventoryUrl, "/api/v2.0/projects/") {
 		fetchOCIChartsList(c, registry, chartName)
 	} else {
-		fetchLegacyChartsList(c, registry, chartName)
+		log.Warnf("Registrry %s Not supported non-OCI registry inventory url %s: %v", registry.Name, registry.InventoryUrl)
+		c.AbortWithStatusJSON(http.StatusNotImplemented, gin.H{"message": "Not supported non-OCI registry inventory url"})
 	}
 }
