@@ -270,13 +270,13 @@ func (u *uploadSession) extractTarball(fileBytes []byte) (fileSet, error) {
 		// Check if the current file is the one we want to extract
 		if header.Typeflag == tar.TypeReg {
 			// Read the file content into a buffer
-			var buf strings.Builder
+			var buf bytes.Buffer
 			if _, err := io.CopyN(&buf, tarReader, MaxExtractedFileSize); err != nil && err != io.EOF {
 				return nil, fmt.Errorf("Failed to copy file content while extracting: %w", err)
 			}
 
 			//verboseerror.Infof("Extracted file: %s\n", targetFileName)
-			contents[header.Name] = []byte(buf.String())
+			contents[header.Name] = buf.Bytes()
 		}
 	}
 
