@@ -72,11 +72,7 @@ func (h *ChartsHandler) FetchChartsList(c *gin.Context) {
 	resp, err := h.grpcClient.GetRegistry(mdCtx, &catalogv3.GetRegistryRequest{RegistryName: registryName, ShowSensitiveInfo: true})
 	if err != nil {
 		log.Errorf("Unable to get registry: %+v", err)
-		err = c.AbortWithError(http.StatusInternalServerError, err)
-		if err != nil {
-			// Can't do anything about it, but log it
-			log.Errorf("Unable to abort with status: %+v", err)
-		}
+		_ = c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
