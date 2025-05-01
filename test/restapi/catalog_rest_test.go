@@ -7,14 +7,14 @@ package restapi
 import (
 	// Standard library imports
 	//"encoding/json"
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
+	"mime/multipart"
 	"net/http"
 	"os"
-	"bytes"
-	"mime/multipart"
-	"encoding/json"
 	//"net/http/httputil"
 
 	// Third-party imports
@@ -123,8 +123,6 @@ func (s *TestSuite) getDeploymentPackages() []DeploymentPackages {
 	}
 }
 
-/*
-
 func (s *TestSuite) TestListBootStrapExtensions() {
 	requestURL := fmt.Sprintf("%s%s", s.CatalogRESTServerUrl, applicationsEndpoint)
 	req, err := http.NewRequest("GET", requestURL, nil)
@@ -213,7 +211,7 @@ func (s *TestSuite) TestListBootStrapRegistries() {
 	defer res.Body.Close()
 
 	if res.Status != "200 OK" {
-	    s.Equal("200 OK", res.Status)
+		s.Equal("200 OK", res.Status)
 		return // Everything else is going to fail...
 	}
 
@@ -357,7 +355,6 @@ func (s *TestSuite) TestVerifyBootstrappedDeploymentPackagesExist() {
 		}
 	}
 }
-	*/
 
 func (s *TestSuite) Delete(url string) {
 	req, err := http.NewRequest("DELETE", url, nil)
@@ -377,7 +374,7 @@ func (s *TestSuite) TestUploadTarball() {
 
 	file, err := os.Open("testdata/wordpress.tar.gz")
 	assert.NoError(s.T(), err)
-    defer file.Close()
+	defer file.Close()
 
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
@@ -395,11 +392,11 @@ func (s *TestSuite) TestUploadTarball() {
 	auth.AddRestAuthHeader(req, s.token, s.projectID)
 
 	/*
-	dump, err := httputil.DumpRequestOut(req, true)
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Printf("%q", dump)
+		dump, err := httputil.DumpRequestOut(req, true)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("%q", dump)
 	*/
 
 	res, err := http.DefaultClient.Do(req)
