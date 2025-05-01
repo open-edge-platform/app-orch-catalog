@@ -13,13 +13,7 @@ import (
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"io"
 	"net/http"
-	"regexp"
 	"strings"
-)
-
-const (
-	// Registries with this value for inventory URL are allowed to use dynamically loaded admin credentials
-	dynamicAdminAuthDomain = `harbor-core.*\.svc\.cluster\.local`
 )
 
 func callHarborAPI(c *gin.Context, registry *catalogv3.Registry, inventoryURL string) ([]byte, bool) {
@@ -45,27 +39,12 @@ func callHarborAPI(c *gin.Context, registry *catalogv3.Registry, inventoryURL st
 		return nil, false
 	}
 
-	// Assume that credentials come from the registry entity by default
-	username := registry.Username
-	tokenOrPassword := registry.AuthToken
-
-	// If the inventoryURL matches a sanctioned domain, fetch the admin credentials dynamically
-	dynamicAdminAuthDomainRE := regexp.MustCompile(dynamicAdminAuthDomain)
-	if dynamicAdminAuthDomainRE.MatchString(inventoryURL) {
-		username, tokenOrPassword, err = readAdminSecret()
-		if err != nil {
-			log.Errorf("Unable to fetch admin secret: %+v", err)
-			_ = c.AbortWithError(http.StatusInternalServerError, err)
-			return nil, false
-		}
-	}
-
-	if username != "" {
+	if registry.Username != "" {
 		// If we have a username, inject it together with the password into the request as a basic authorization header
-		req.SetBasicAuth(username, tokenOrPassword)
-	} else if tokenOrPassword != "" {
+		req.SetBasicAuth(registry.Username, registry.AuthToken)
+	} else if registry.AuthToken != "" {
 		// Otherwise, if the registry specified just an auth token, inject it into the request as a bearer authorization header
-		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", tokenOrPassword))
+		req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", registry.AuthToken))
 	}
 
 	res, err := client.Do(req)
