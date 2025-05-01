@@ -26,6 +26,7 @@ path = [
     "scripts/extract-keycloak-config.sh",
     "app-orch-tutorials/developer-guide-tutorial/tutorial-web-ui/public/vercel.svg",
     "app-orch-tutorials/developer-guide-tutorial/tutorial-web-ui/app/favicon.ico",
+    "test/restapi/testdata/wordpress.tar.gz",
 ]
 precedence = "aggregate"
 SPDX-FileCopyrightText = "2025 Intel Corporation"

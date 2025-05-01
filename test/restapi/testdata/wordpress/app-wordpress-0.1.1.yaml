@@ -1,0 +1,18 @@
+# SPDX-FileCopyrightText: (C) 2023 Intel Corporation
+# SPDX-License-Identifier: LicenseRef-Intel
+---
+specSchema: "Application"
+schemaVersion: "0.1"
+$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+
+name: test-wordpress
+version: 0.1.1
+description: "Wordpress"
+
+helmRegistry: "test-bitnami"
+chartName: "wordpress"
+chartVersion: "19.4.3"
+
+profiles:
+  - name: "default"
+    valuesFileName: "values-wordpress-0.1.1.yaml"
