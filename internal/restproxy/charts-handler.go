@@ -116,6 +116,8 @@ func (h *ChartsHandler) FetchChartsList(c *gin.Context) {
 	if strings.Contains(registry.InventoryUrl, "/api/v2.0/projects/") {
 		fetchOCIChartsList(c, registry, chartName)
 	} else {
-		fetchLegacyChartsList(c, registry, chartName)
+		err = fmt.Errorf("Registry %s: non-OCI inventory retrieval is not supported", registry.Name)
+		log.Warnf("Not supported registry url %s: %v", registry.InventoryUrl, err)
+		c.AbortWithError(http.StatusNotImplemented, err)
 	}
 }
