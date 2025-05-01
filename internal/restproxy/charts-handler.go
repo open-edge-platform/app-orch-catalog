@@ -103,7 +103,11 @@ func (h *ChartsHandler) FetchChartsList(c *gin.Context) {
 	resp, err := h.grpcClient.GetRegistry(mdCtx, &catalogv3.GetRegistryRequest{RegistryName: registryName, ShowSensitiveInfo: true})
 	if err != nil {
 		log.Errorf("Unable to get registry: %+v", err)
-		_ = c.AbortWithError(http.StatusInternalServerError, err)
+		err = c.AbortWithError(http.StatusInternalServerError, err)
+		if (err != nil) {
+			// Can't do anything about it, but log it
+			log.Errorf("Unable to abort with status: %+v", err)
+		}
 		return
 	}
 
@@ -116,8 +120,7 @@ func (h *ChartsHandler) FetchChartsList(c *gin.Context) {
 	if strings.Contains(registry.InventoryUrl, "/api/v2.0/projects/") {
 		fetchOCIChartsList(c, registry, chartName)
 	} else {
-		err = fmt.Errorf("Registry %s: non-OCI inventory retrieval is not supported", registry.Name)
-		log.Warnf("Not supported registry url %s: %v", registry.InventoryUrl, err)
-		c.AbortWithError(http.StatusNotImplemented, err)
+		log.Warnf("Registrry %s Not supported non-OCI registry inventory url %s: %v", registry.Name, registry.InventoryUrl)
+		c.AbortWithStatusJSON(http.StatusNotImplemented, gin.H{"message": "Not supported non-OCI registry inventory url"})
 	}
 }
