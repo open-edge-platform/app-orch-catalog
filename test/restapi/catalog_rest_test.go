@@ -380,7 +380,6 @@ func (s *TestSuite) TestUploadTarball() {
 	part, _ := writer.CreateFormFile("files", "wordpress.tar.gz")
 	_, err = io.Copy(part, file)
 	assert.NoError(s.T(), err)
-	file.Close()
 	writer.Close()
 
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s%s", s.CatalogRESTServerUrl, uploadEndpoint), body)
@@ -459,7 +458,6 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 		part, _ := writer.CreateFormFile("files", fileName)
 		_, err = io.Copy(part, file)
 		assert.NoError(s.T(), err)
-		file.Close()
 	}
 
 	writer.Close()
