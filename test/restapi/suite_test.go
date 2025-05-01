@@ -8,6 +8,7 @@ package restapi
 import (
 	"context"
 	"fmt"
+	"os"
 	"os/exec"
 	"testing"
 
@@ -20,7 +21,6 @@ import (
 const (
 	RestAddress            = "app-orch-catalog-rest-proxy:8081/"
 	RestAddressPortForward = "127.0.0.1"
-	KeycloakServer         = "keycloak.kind.internal"
 
 	PortForwardServiceNamespace = "orch-app"
 	PortForwardService          = "svc/app-orch-catalog-rest-proxy"
@@ -32,6 +32,7 @@ const (
 // TestSuite is the basic test suite
 type TestSuite struct {
 	suite.Suite
+	orchDomain		     string
 	KeycloakServer       string
 	CatalogRESTServerUrl string
 	token                string
@@ -41,8 +42,15 @@ type TestSuite struct {
 
 // SetupSuite sets-up the integration tests for the Catalog basic test suite
 func (s *TestSuite) SetupSuite() {
-	s.KeycloakServer = KeycloakServer
 	s.CatalogRESTServerUrl = RestAddress
+
+	// To use the component-tests with a domain other than kind.internal, ensure
+	// the ORCH_DOMAIN environment variable is set.
+	s.orchDomain = os.Getenv("ORCH_DOMAIN")
+	if s.orchDomain == "" {
+		s.orchDomain = "kind.internal"
+	}
+	s.KeycloakServer = fmt.Sprintf("keycloak.%s", s.orchDomain)
 
 	var err error
 	s.token = auth.SetUpAccessToken(s.T(), s.KeycloakServer)
