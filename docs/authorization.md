@@ -15,15 +15,6 @@ Authorization depends on the Application Catalog being configured with an Identi
 the Authentication feature. Authentication is implemented as a gRPC interceptor that verifies the JWT token.
 The implementation of the gRPC interceptor is in the [Authentication gRPC Interceptor] package.
 
-## Deploying Locally
-
-For local deployment, this can be done by [deploying a local Keycloak](../deployments/keycloak-dev).
-Once available, the Application Catalog can be started with:
-
-```shell
-OIDC_SERVER=http://keycloak/realms/master make chart-install-kind
-```
-
 ## Coder Deployment
 
 [Keycloak] is already configured in this environment.
