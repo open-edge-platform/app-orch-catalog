@@ -26,33 +26,6 @@ type ChartsHandler struct {
 	grpcClient   catalogv3.CatalogServiceClient
 }
 
-func readAdminSecret() (string, string, error) {
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		return "", "", err
-	}
-
-	clientSet, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		return "", "", err
-	}
-
-	value, err := clientSet.CoreV1().Secrets("harbor").Get(context.Background(), "harbor-admin-credential", metav1.GetOptions{})
-	if err != nil {
-		log.Errorf("Can't read secret %v", err)
-		return "", "", nil
-	}
-
-	credsStr := string(value.Data["credential"])
-
-	creds := strings.Split(credsStr, ":")
-	if len(creds) != 2 {
-		return "", "", fmt.Errorf("unable to parse harbor admin credentials")
-	}
-
-	return creds[0], creds[1], nil
-}
-
 // NewChartsHandler creates a new charts handler.
 func NewChartsHandler(endpoint string, opts []grpc.DialOption) (*ChartsHandler, error) {
 	log.Infow("Creating ChartsHandler", dazl.String("grpcEndpoint", endpoint))
@@ -104,7 +77,7 @@ func (h *ChartsHandler) FetchChartsList(c *gin.Context) {
 	if err != nil {
 		log.Errorf("Unable to get registry: %+v", err)
 		err = c.AbortWithError(http.StatusInternalServerError, err)
-		if (err != nil) {
+		if err != nil {
 			// Can't do anything about it, but log it
 			log.Errorf("Unable to abort with status: %+v", err)
 		}
