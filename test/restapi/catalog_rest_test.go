@@ -6,7 +6,6 @@ package restapi
 
 import (
 	// Standard library imports
-	//"encoding/json"
 	"bytes"
 	"encoding/json"
 	"fmt"
@@ -15,7 +14,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
-	//"net/http/httputil"
 
 	// Third-party imports
 
@@ -391,19 +389,12 @@ func (s *TestSuite) TestUploadTarball() {
 
 	auth.AddRestAuthHeader(req, s.token, s.projectID)
 
-	/*
-		dump, err := httputil.DumpRequestOut(req, true)
-		if err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("%q", dump)
-	*/
-
 	res, err := http.DefaultClient.Do(req)
 	assert.NoError(s.T(), err)
 	defer res.Body.Close()
+	assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for upload")
 	if res.Status != "200 OK" {
-		assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for upload")
+		// print response message if something has gone wrong, for debugging
 		bodyBytes, err := io.ReadAll(res.Body)
 		assert.NoError(s.T(), err)
 		log.Printf("Response Body: %s", string(bodyBytes))
@@ -438,6 +429,8 @@ func (s *TestSuite) TestUploadTarball() {
 	assert.NoError(s.T(), err)
 	assert.Equal(s.T(), "test-wordpress", result.DeploymentPackage.Name, "Mismatch in the name of the deployment package")
 	assert.Equal(s.T(), "0.1.1", result.DeploymentPackage.Version, "Mismatch in the version of the deployment package")
+
+	// Note: Not verifying the application or registry, as the DP would fail without them
 
 	// Cleanup
 	s.Delete(fmt.Sprintf("%s%s/test-wordpress/versions/0.1.1", s.CatalogRESTServerUrl, deploymentPackagesEndpoint))
