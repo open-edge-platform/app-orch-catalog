@@ -20,7 +20,7 @@ import (
 const (
 	RestAddress            = "app-orch-catalog-rest-proxy:8081/"
 	RestAddressPortForward = "127.0.0.1"
-	KeycloakServer         = "keycloak.orch-10-114-181-127.espdqa.infra-host.com" //"keycloak.kind.internal"
+	KeycloakServer         = "keycloak.kind.internal"
 
 	PortForwardServiceNamespace = "orch-app"
 	PortForwardService          = "svc/app-orch-catalog-rest-proxy"
