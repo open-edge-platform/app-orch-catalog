@@ -161,11 +161,15 @@ func (irc *IgnoredResourceCreate) createSpec() (*IgnoredResource, *sqlgraph.Crea
 // IgnoredResourceCreateBulk is the builder for creating many IgnoredResource entities in bulk.
 type IgnoredResourceCreateBulk struct {
 	config
+	err      error
 	builders []*IgnoredResourceCreate
 }
 
 // Save creates the IgnoredResource entities in the database.
 func (ircb *IgnoredResourceCreateBulk) Save(ctx context.Context) ([]*IgnoredResource, error) {
+	if ircb.err != nil {
+		return nil, ircb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ircb.builders))
 	nodes := make([]*IgnoredResource, len(ircb.builders))
 	mutators := make([]Mutator, len(ircb.builders))

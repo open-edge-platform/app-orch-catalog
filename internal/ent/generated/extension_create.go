@@ -337,11 +337,15 @@ func (ec *ExtensionCreate) createSpec() (*Extension, *sqlgraph.CreateSpec) {
 // ExtensionCreateBulk is the builder for creating many Extension entities in bulk.
 type ExtensionCreateBulk struct {
 	config
+	err      error
 	builders []*ExtensionCreate
 }
 
 // Save creates the Extension entities in the database.
 func (ecb *ExtensionCreateBulk) Save(ctx context.Context) ([]*Extension, error) {
+	if ecb.err != nil {
+		return nil, ecb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ecb.builders))
 	nodes := make([]*Extension, len(ecb.builders))
 	mutators := make([]Mutator, len(ecb.builders))

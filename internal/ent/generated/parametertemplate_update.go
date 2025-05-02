@@ -35,6 +35,14 @@ func (ptu *ParameterTemplateUpdate) SetName(s string) *ParameterTemplateUpdate {
 	return ptu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ptu *ParameterTemplateUpdate) SetNillableName(s *string) *ParameterTemplateUpdate {
+	if s != nil {
+		ptu.SetName(*s)
+	}
+	return ptu
+}
+
 // SetDisplayName sets the "display_name" field.
 func (ptu *ParameterTemplateUpdate) SetDisplayName(s string) *ParameterTemplateUpdate {
 	ptu.mutation.SetDisplayName(s)
@@ -451,6 +459,14 @@ type ParameterTemplateUpdateOne struct {
 // SetName sets the "name" field.
 func (ptuo *ParameterTemplateUpdateOne) SetName(s string) *ParameterTemplateUpdateOne {
 	ptuo.mutation.SetName(s)
+	return ptuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ptuo *ParameterTemplateUpdateOne) SetNillableName(s *string) *ParameterTemplateUpdateOne {
+	if s != nil {
+		ptuo.SetName(*s)
+	}
 	return ptuo
 }
 

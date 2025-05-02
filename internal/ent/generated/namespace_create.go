@@ -162,11 +162,15 @@ func (nc *NamespaceCreate) createSpec() (*Namespace, *sqlgraph.CreateSpec) {
 // NamespaceCreateBulk is the builder for creating many Namespace entities in bulk.
 type NamespaceCreateBulk struct {
 	config
+	err      error
 	builders []*NamespaceCreate
 }
 
 // Save creates the Namespace entities in the database.
 func (ncb *NamespaceCreateBulk) Save(ctx context.Context) ([]*Namespace, error) {
+	if ncb.err != nil {
+		return nil, ncb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ncb.builders))
 	nodes := make([]*Namespace, len(ncb.builders))
 	mutators := make([]Mutator, len(ncb.builders))

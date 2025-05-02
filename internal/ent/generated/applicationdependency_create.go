@@ -180,11 +180,15 @@ func (adc *ApplicationDependencyCreate) createSpec() (*ApplicationDependency, *s
 // ApplicationDependencyCreateBulk is the builder for creating many ApplicationDependency entities in bulk.
 type ApplicationDependencyCreateBulk struct {
 	config
+	err      error
 	builders []*ApplicationDependencyCreate
 }
 
 // Save creates the ApplicationDependency entities in the database.
 func (adcb *ApplicationDependencyCreateBulk) Save(ctx context.Context) ([]*ApplicationDependency, error) {
+	if adcb.err != nil {
+		return nil, adcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(adcb.builders))
 	nodes := make([]*ApplicationDependency, len(adcb.builders))
 	mutators := make([]Mutator, len(adcb.builders))

@@ -35,6 +35,14 @@ func (nu *NamespaceUpdate) SetName(s string) *NamespaceUpdate {
 	return nu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (nu *NamespaceUpdate) SetNillableName(s *string) *NamespaceUpdate {
+	if s != nil {
+		nu.SetName(*s)
+	}
+	return nu
+}
+
 // SetDeploymentPackageFkID sets the "deployment_package_fk" edge to the DeploymentPackage entity by ID.
 func (nu *NamespaceUpdate) SetDeploymentPackageFkID(id uint64) *NamespaceUpdate {
 	nu.mutation.SetDeploymentPackageFkID(id)
@@ -240,6 +248,14 @@ type NamespaceUpdateOne struct {
 // SetName sets the "name" field.
 func (nuo *NamespaceUpdateOne) SetName(s string) *NamespaceUpdateOne {
 	nuo.mutation.SetName(s)
+	return nuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (nuo *NamespaceUpdateOne) SetNillableName(s *string) *NamespaceUpdateOne {
+	if s != nil {
+		nuo.SetName(*s)
+	}
 	return nuo
 }
 

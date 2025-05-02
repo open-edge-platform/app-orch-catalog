@@ -38,6 +38,14 @@ func (pu *ProfileUpdate) SetName(s string) *ProfileUpdate {
 	return pu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (pu *ProfileUpdate) SetNillableName(s *string) *ProfileUpdate {
+	if s != nil {
+		pu.SetName(*s)
+	}
+	return pu
+}
+
 // SetDisplayName sets the "display_name" field.
 func (pu *ProfileUpdate) SetDisplayName(s string) *ProfileUpdate {
 	pu.mutation.SetDisplayName(s)
@@ -107,6 +115,14 @@ func (pu *ProfileUpdate) SetUpdateTime(t time.Time) *ProfileUpdate {
 // SetChartValues sets the "chart_values" field.
 func (pu *ProfileUpdate) SetChartValues(s string) *ProfileUpdate {
 	pu.mutation.SetChartValues(s)
+	return pu
+}
+
+// SetNillableChartValues sets the "chart_values" field if the given value is not nil.
+func (pu *ProfileUpdate) SetNillableChartValues(s *string) *ProfileUpdate {
+	if s != nil {
+		pu.SetChartValues(*s)
+	}
 	return pu
 }
 
@@ -513,6 +529,14 @@ func (puo *ProfileUpdateOne) SetName(s string) *ProfileUpdateOne {
 	return puo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (puo *ProfileUpdateOne) SetNillableName(s *string) *ProfileUpdateOne {
+	if s != nil {
+		puo.SetName(*s)
+	}
+	return puo
+}
+
 // SetDisplayName sets the "display_name" field.
 func (puo *ProfileUpdateOne) SetDisplayName(s string) *ProfileUpdateOne {
 	puo.mutation.SetDisplayName(s)
@@ -582,6 +606,14 @@ func (puo *ProfileUpdateOne) SetUpdateTime(t time.Time) *ProfileUpdateOne {
 // SetChartValues sets the "chart_values" field.
 func (puo *ProfileUpdateOne) SetChartValues(s string) *ProfileUpdateOne {
 	puo.mutation.SetChartValues(s)
+	return puo
+}
+
+// SetNillableChartValues sets the "chart_values" field if the given value is not nil.
+func (puo *ProfileUpdateOne) SetNillableChartValues(s *string) *ProfileUpdateOne {
+	if s != nil {
+		puo.SetChartValues(*s)
+	}
 	return puo
 }
 

@@ -5,6 +5,6 @@ package runtime
 // The schema-stitching logic is generated in github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/runtime.go
 
 const (
-	Version = "v0.12.4-0.20230726082433-91c7fcc68504"           // Version of ent codegen.
-	Sum     = "h1:wUSznEj31LlsQdpc6OvMYNGqugF1s+tY/KpMZsSdonw=" // Sum of ent codegen.
+	Version = "v0.12.5"                                         // Version of ent codegen.
+	Sum     = "h1:KREM5E4CSoej4zeGa88Ou/gfturAnpUv0mzAjch1sj4=" // Sum of ent codegen.
 )
