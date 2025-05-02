@@ -272,11 +272,15 @@ func (dpc *DeploymentProfileCreate) createSpec() (*DeploymentProfile, *sqlgraph.
 // DeploymentProfileCreateBulk is the builder for creating many DeploymentProfile entities in bulk.
 type DeploymentProfileCreateBulk struct {
 	config
+	err      error
 	builders []*DeploymentProfileCreate
 }
 
 // Save creates the DeploymentProfile entities in the database.
 func (dpcb *DeploymentProfileCreateBulk) Save(ctx context.Context) ([]*DeploymentProfile, error) {
+	if dpcb.err != nil {
+		return nil, dpcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(dpcb.builders))
 	nodes := make([]*DeploymentProfile, len(dpcb.builders))
 	mutators := make([]Mutator, len(dpcb.builders))

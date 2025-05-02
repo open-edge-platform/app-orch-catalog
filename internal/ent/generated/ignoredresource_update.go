@@ -34,9 +34,25 @@ func (iru *IgnoredResourceUpdate) SetName(s string) *IgnoredResourceUpdate {
 	return iru
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (iru *IgnoredResourceUpdate) SetNillableName(s *string) *IgnoredResourceUpdate {
+	if s != nil {
+		iru.SetName(*s)
+	}
+	return iru
+}
+
 // SetKind sets the "kind" field.
 func (iru *IgnoredResourceUpdate) SetKind(s string) *IgnoredResourceUpdate {
 	iru.mutation.SetKind(s)
+	return iru
+}
+
+// SetNillableKind sets the "kind" field if the given value is not nil.
+func (iru *IgnoredResourceUpdate) SetNillableKind(s *string) *IgnoredResourceUpdate {
+	if s != nil {
+		iru.SetKind(*s)
+	}
 	return iru
 }
 
@@ -196,9 +212,25 @@ func (iruo *IgnoredResourceUpdateOne) SetName(s string) *IgnoredResourceUpdateOn
 	return iruo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (iruo *IgnoredResourceUpdateOne) SetNillableName(s *string) *IgnoredResourceUpdateOne {
+	if s != nil {
+		iruo.SetName(*s)
+	}
+	return iruo
+}
+
 // SetKind sets the "kind" field.
 func (iruo *IgnoredResourceUpdateOne) SetKind(s string) *IgnoredResourceUpdateOne {
 	iruo.mutation.SetKind(s)
+	return iruo
+}
+
+// SetNillableKind sets the "kind" field if the given value is not nil.
+func (iruo *IgnoredResourceUpdateOne) SetNillableKind(s *string) *IgnoredResourceUpdateOne {
+	if s != nil {
+		iruo.SetKind(*s)
+	}
 	return iruo
 }
 

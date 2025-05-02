@@ -162,11 +162,15 @@ func (anc *ApplicationNamespaceCreate) createSpec() (*ApplicationNamespace, *sql
 // ApplicationNamespaceCreateBulk is the builder for creating many ApplicationNamespace entities in bulk.
 type ApplicationNamespaceCreateBulk struct {
 	config
+	err      error
 	builders []*ApplicationNamespaceCreate
 }
 
 // Save creates the ApplicationNamespace entities in the database.
 func (ancb *ApplicationNamespaceCreateBulk) Save(ctx context.Context) ([]*ApplicationNamespace, error) {
+	if ancb.err != nil {
+		return nil, ancb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ancb.builders))
 	nodes := make([]*ApplicationNamespace, len(ancb.builders))
 	mutators := make([]Mutator, len(ancb.builders))

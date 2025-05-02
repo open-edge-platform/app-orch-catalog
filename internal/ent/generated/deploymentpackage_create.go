@@ -641,11 +641,15 @@ func (dpc *DeploymentPackageCreate) createSpec() (*DeploymentPackage, *sqlgraph.
 // DeploymentPackageCreateBulk is the builder for creating many DeploymentPackage entities in bulk.
 type DeploymentPackageCreateBulk struct {
 	config
+	err      error
 	builders []*DeploymentPackageCreate
 }
 
 // Save creates the DeploymentPackage entities in the database.
 func (dpcb *DeploymentPackageCreateBulk) Save(ctx context.Context) ([]*DeploymentPackage, error) {
+	if dpcb.err != nil {
+		return nil, dpcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(dpcb.builders))
 	nodes := make([]*DeploymentPackage, len(dpcb.builders))
 	mutators := make([]Mutator, len(dpcb.builders))
