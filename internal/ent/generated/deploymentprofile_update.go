@@ -36,6 +36,14 @@ func (dpu *DeploymentProfileUpdate) SetName(s string) *DeploymentProfileUpdate {
 	return dpu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (dpu *DeploymentProfileUpdate) SetNillableName(s *string) *DeploymentProfileUpdate {
+	if s != nil {
+		dpu.SetName(*s)
+	}
+	return dpu
+}
+
 // SetDisplayName sets the "display_name" field.
 func (dpu *DeploymentProfileUpdate) SetDisplayName(s string) *DeploymentProfileUpdate {
 	dpu.mutation.SetDisplayName(s)
@@ -337,6 +345,14 @@ type DeploymentProfileUpdateOne struct {
 // SetName sets the "name" field.
 func (dpuo *DeploymentProfileUpdateOne) SetName(s string) *DeploymentProfileUpdateOne {
 	dpuo.mutation.SetName(s)
+	return dpuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (dpuo *DeploymentProfileUpdateOne) SetNillableName(s *string) *DeploymentProfileUpdateOne {
+	if s != nil {
+		dpuo.SetName(*s)
+	}
 	return dpuo
 }
 

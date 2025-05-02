@@ -162,11 +162,15 @@ func (arc *ArtifactReferenceCreate) createSpec() (*ArtifactReference, *sqlgraph.
 // ArtifactReferenceCreateBulk is the builder for creating many ArtifactReference entities in bulk.
 type ArtifactReferenceCreateBulk struct {
 	config
+	err      error
 	builders []*ArtifactReferenceCreate
 }
 
 // Save creates the ArtifactReference entities in the database.
 func (arcb *ArtifactReferenceCreateBulk) Save(ctx context.Context) ([]*ArtifactReference, error) {
+	if arcb.err != nil {
+		return nil, arcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(arcb.builders))
 	nodes := make([]*ArtifactReference, len(arcb.builders))
 	mutators := make([]Mutator, len(arcb.builders))

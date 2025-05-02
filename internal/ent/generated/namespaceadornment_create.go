@@ -161,11 +161,15 @@ func (nac *NamespaceAdornmentCreate) createSpec() (*NamespaceAdornment, *sqlgrap
 // NamespaceAdornmentCreateBulk is the builder for creating many NamespaceAdornment entities in bulk.
 type NamespaceAdornmentCreateBulk struct {
 	config
+	err      error
 	builders []*NamespaceAdornmentCreate
 }
 
 // Save creates the NamespaceAdornment entities in the database.
 func (nacb *NamespaceAdornmentCreateBulk) Save(ctx context.Context) ([]*NamespaceAdornment, error) {
+	if nacb.err != nil {
+		return nil, nacb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(nacb.builders))
 	nodes := make([]*NamespaceAdornment, len(nacb.builders))
 	mutators := make([]Mutator, len(nacb.builders))

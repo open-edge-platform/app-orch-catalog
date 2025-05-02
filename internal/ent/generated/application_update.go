@@ -39,6 +39,14 @@ func (au *ApplicationUpdate) SetName(s string) *ApplicationUpdate {
 	return au
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (au *ApplicationUpdate) SetNillableName(s *string) *ApplicationUpdate {
+	if s != nil {
+		au.SetName(*s)
+	}
+	return au
+}
+
 // SetDisplayName sets the "display_name" field.
 func (au *ApplicationUpdate) SetDisplayName(s string) *ApplicationUpdate {
 	au.mutation.SetDisplayName(s)
@@ -125,15 +133,39 @@ func (au *ApplicationUpdate) SetVersion(s string) *ApplicationUpdate {
 	return au
 }
 
+// SetNillableVersion sets the "version" field if the given value is not nil.
+func (au *ApplicationUpdate) SetNillableVersion(s *string) *ApplicationUpdate {
+	if s != nil {
+		au.SetVersion(*s)
+	}
+	return au
+}
+
 // SetChartName sets the "chart_name" field.
 func (au *ApplicationUpdate) SetChartName(s string) *ApplicationUpdate {
 	au.mutation.SetChartName(s)
 	return au
 }
 
+// SetNillableChartName sets the "chart_name" field if the given value is not nil.
+func (au *ApplicationUpdate) SetNillableChartName(s *string) *ApplicationUpdate {
+	if s != nil {
+		au.SetChartName(*s)
+	}
+	return au
+}
+
 // SetChartVersion sets the "chart_version" field.
 func (au *ApplicationUpdate) SetChartVersion(s string) *ApplicationUpdate {
 	au.mutation.SetChartVersion(s)
+	return au
+}
+
+// SetNillableChartVersion sets the "chart_version" field if the given value is not nil.
+func (au *ApplicationUpdate) SetNillableChartVersion(s *string) *ApplicationUpdate {
+	if s != nil {
+		au.SetChartVersion(*s)
+	}
 	return au
 }
 
@@ -845,6 +877,14 @@ func (auo *ApplicationUpdateOne) SetName(s string) *ApplicationUpdateOne {
 	return auo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (auo *ApplicationUpdateOne) SetNillableName(s *string) *ApplicationUpdateOne {
+	if s != nil {
+		auo.SetName(*s)
+	}
+	return auo
+}
+
 // SetDisplayName sets the "display_name" field.
 func (auo *ApplicationUpdateOne) SetDisplayName(s string) *ApplicationUpdateOne {
 	auo.mutation.SetDisplayName(s)
@@ -931,15 +971,39 @@ func (auo *ApplicationUpdateOne) SetVersion(s string) *ApplicationUpdateOne {
 	return auo
 }
 
+// SetNillableVersion sets the "version" field if the given value is not nil.
+func (auo *ApplicationUpdateOne) SetNillableVersion(s *string) *ApplicationUpdateOne {
+	if s != nil {
+		auo.SetVersion(*s)
+	}
+	return auo
+}
+
 // SetChartName sets the "chart_name" field.
 func (auo *ApplicationUpdateOne) SetChartName(s string) *ApplicationUpdateOne {
 	auo.mutation.SetChartName(s)
 	return auo
 }
 
+// SetNillableChartName sets the "chart_name" field if the given value is not nil.
+func (auo *ApplicationUpdateOne) SetNillableChartName(s *string) *ApplicationUpdateOne {
+	if s != nil {
+		auo.SetChartName(*s)
+	}
+	return auo
+}
+
 // SetChartVersion sets the "chart_version" field.
 func (auo *ApplicationUpdateOne) SetChartVersion(s string) *ApplicationUpdateOne {
 	auo.mutation.SetChartVersion(s)
+	return auo
+}
+
+// SetNillableChartVersion sets the "chart_version" field if the given value is not nil.
+func (auo *ApplicationUpdateOne) SetNillableChartVersion(s *string) *ApplicationUpdateOne {
+	if s != nil {
+		auo.SetChartVersion(*s)
+	}
 	return auo
 }
 

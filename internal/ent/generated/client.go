@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"reflect"
 
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/migrate"
 
@@ -76,9 +77,7 @@ type Client struct {
 
 // NewClient creates a new client configured with the given options.
 func NewClient(opts ...Option) *Client {
-	cfg := config{log: log.Println, hooks: &hooks{}, inters: &inters{}}
-	cfg.options(opts...)
-	client := &Client{config: cfg}
+	client := &Client{config: newConfig(opts...)}
 	client.init()
 	return client
 }
@@ -121,6 +120,13 @@ type (
 	// Option function to configure the client.
 	Option func(*config)
 )
+
+// newConfig creates a new config for the client.
+func newConfig(opts ...Option) config {
+	cfg := config{log: log.Println, hooks: &hooks{}, inters: &inters{}}
+	cfg.options(opts...)
+	return cfg
+}
 
 // options applies the options on the config object.
 func (c *config) options(opts ...Option) {
@@ -363,6 +369,21 @@ func (c *ApplicationClient) Create() *ApplicationCreate {
 
 // CreateBulk returns a builder for creating a bulk of Application entities.
 func (c *ApplicationClient) CreateBulk(builders ...*ApplicationCreate) *ApplicationCreateBulk {
+	return &ApplicationCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ApplicationClient) MapCreateBulk(slice any, setFunc func(*ApplicationCreate, int)) *ApplicationCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ApplicationCreateBulk{err: fmt.Errorf("calling to ApplicationClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ApplicationCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &ApplicationCreateBulk{config: c.config, builders: builders}
 }
 
@@ -612,6 +633,21 @@ func (c *ApplicationDependencyClient) CreateBulk(builders ...*ApplicationDepende
 	return &ApplicationDependencyCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ApplicationDependencyClient) MapCreateBulk(slice any, setFunc func(*ApplicationDependencyCreate, int)) *ApplicationDependencyCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ApplicationDependencyCreateBulk{err: fmt.Errorf("calling to ApplicationDependencyClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ApplicationDependencyCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ApplicationDependencyCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for ApplicationDependency.
 func (c *ApplicationDependencyClient) Update() *ApplicationDependencyUpdate {
 	mutation := newApplicationDependencyMutation(c.config, OpUpdate)
@@ -778,6 +814,21 @@ func (c *ApplicationNamespaceClient) CreateBulk(builders ...*ApplicationNamespac
 	return &ApplicationNamespaceCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ApplicationNamespaceClient) MapCreateBulk(slice any, setFunc func(*ApplicationNamespaceCreate, int)) *ApplicationNamespaceCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ApplicationNamespaceCreateBulk{err: fmt.Errorf("calling to ApplicationNamespaceClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ApplicationNamespaceCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ApplicationNamespaceCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for ApplicationNamespace.
 func (c *ApplicationNamespaceClient) Update() *ApplicationNamespaceUpdate {
 	mutation := newApplicationNamespaceMutation(c.config, OpUpdate)
@@ -925,6 +976,21 @@ func (c *ArtifactClient) Create() *ArtifactCreate {
 
 // CreateBulk returns a builder for creating a bulk of Artifact entities.
 func (c *ArtifactClient) CreateBulk(builders ...*ArtifactCreate) *ArtifactCreateBulk {
+	return &ArtifactCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ArtifactClient) MapCreateBulk(slice any, setFunc func(*ArtifactCreate, int)) *ArtifactCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ArtifactCreateBulk{err: fmt.Errorf("calling to ArtifactClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ArtifactCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &ArtifactCreateBulk{config: c.config, builders: builders}
 }
 
@@ -1078,6 +1144,21 @@ func (c *ArtifactReferenceClient) CreateBulk(builders ...*ArtifactReferenceCreat
 	return &ArtifactReferenceCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ArtifactReferenceClient) MapCreateBulk(slice any, setFunc func(*ArtifactReferenceCreate, int)) *ArtifactReferenceCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ArtifactReferenceCreateBulk{err: fmt.Errorf("calling to ArtifactReferenceClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ArtifactReferenceCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ArtifactReferenceCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for ArtifactReference.
 func (c *ArtifactReferenceClient) Update() *ArtifactReferenceUpdate {
 	mutation := newArtifactReferenceMutation(c.config, OpUpdate)
@@ -1228,6 +1309,21 @@ func (c *CommonMixinClient) CreateBulk(builders ...*CommonMixinCreate) *CommonMi
 	return &CommonMixinCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CommonMixinClient) MapCreateBulk(slice any, setFunc func(*CommonMixinCreate, int)) *CommonMixinCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CommonMixinCreateBulk{err: fmt.Errorf("calling to CommonMixinClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CommonMixinCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CommonMixinCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for CommonMixin.
 func (c *CommonMixinClient) Update() *CommonMixinUpdate {
 	mutation := newCommonMixinMutation(c.config, OpUpdate)
@@ -1343,6 +1439,21 @@ func (c *DeploymentPackageClient) Create() *DeploymentPackageCreate {
 
 // CreateBulk returns a builder for creating a bulk of DeploymentPackage entities.
 func (c *DeploymentPackageClient) CreateBulk(builders ...*DeploymentPackageCreate) *DeploymentPackageCreateBulk {
+	return &DeploymentPackageCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *DeploymentPackageClient) MapCreateBulk(slice any, setFunc func(*DeploymentPackageCreate, int)) *DeploymentPackageCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &DeploymentPackageCreateBulk{err: fmt.Errorf("calling to DeploymentPackageClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*DeploymentPackageCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &DeploymentPackageCreateBulk{config: c.config, builders: builders}
 }
 
@@ -1624,6 +1735,21 @@ func (c *DeploymentProfileClient) CreateBulk(builders ...*DeploymentProfileCreat
 	return &DeploymentProfileCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *DeploymentProfileClient) MapCreateBulk(slice any, setFunc func(*DeploymentProfileCreate, int)) *DeploymentProfileCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &DeploymentProfileCreateBulk{err: fmt.Errorf("calling to DeploymentProfileClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*DeploymentProfileCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &DeploymentProfileCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for DeploymentProfile.
 func (c *DeploymentProfileClient) Update() *DeploymentProfileUpdate {
 	mutation := newDeploymentProfileMutation(c.config, OpUpdate)
@@ -1771,6 +1897,21 @@ func (c *DeploymentRequirementClient) Create() *DeploymentRequirementCreate {
 
 // CreateBulk returns a builder for creating a bulk of DeploymentRequirement entities.
 func (c *DeploymentRequirementClient) CreateBulk(builders ...*DeploymentRequirementCreate) *DeploymentRequirementCreateBulk {
+	return &DeploymentRequirementCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *DeploymentRequirementClient) MapCreateBulk(slice any, setFunc func(*DeploymentRequirementCreate, int)) *DeploymentRequirementCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &DeploymentRequirementCreateBulk{err: fmt.Errorf("calling to DeploymentRequirementClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*DeploymentRequirementCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &DeploymentRequirementCreateBulk{config: c.config, builders: builders}
 }
 
@@ -1940,6 +2081,21 @@ func (c *EndpointClient) CreateBulk(builders ...*EndpointCreate) *EndpointCreate
 	return &EndpointCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *EndpointClient) MapCreateBulk(slice any, setFunc func(*EndpointCreate, int)) *EndpointCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &EndpointCreateBulk{err: fmt.Errorf("calling to EndpointClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*EndpointCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &EndpointCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for Endpoint.
 func (c *EndpointClient) Update() *EndpointUpdate {
 	mutation := newEndpointMutation(c.config, OpUpdate)
@@ -2071,6 +2227,21 @@ func (c *ExtensionClient) Create() *ExtensionCreate {
 
 // CreateBulk returns a builder for creating a bulk of Extension entities.
 func (c *ExtensionClient) CreateBulk(builders ...*ExtensionCreate) *ExtensionCreateBulk {
+	return &ExtensionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ExtensionClient) MapCreateBulk(slice any, setFunc func(*ExtensionCreate, int)) *ExtensionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ExtensionCreateBulk{err: fmt.Errorf("calling to ExtensionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ExtensionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &ExtensionCreateBulk{config: c.config, builders: builders}
 }
 
@@ -2224,6 +2395,21 @@ func (c *IgnoredResourceClient) CreateBulk(builders ...*IgnoredResourceCreate) *
 	return &IgnoredResourceCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *IgnoredResourceClient) MapCreateBulk(slice any, setFunc func(*IgnoredResourceCreate, int)) *IgnoredResourceCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &IgnoredResourceCreateBulk{err: fmt.Errorf("calling to IgnoredResourceClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*IgnoredResourceCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &IgnoredResourceCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for IgnoredResource.
 func (c *IgnoredResourceClient) Update() *IgnoredResourceUpdate {
 	mutation := newIgnoredResourceMutation(c.config, OpUpdate)
@@ -2355,6 +2541,21 @@ func (c *NamespaceClient) Create() *NamespaceCreate {
 
 // CreateBulk returns a builder for creating a bulk of Namespace entities.
 func (c *NamespaceClient) CreateBulk(builders ...*NamespaceCreate) *NamespaceCreateBulk {
+	return &NamespaceCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *NamespaceClient) MapCreateBulk(slice any, setFunc func(*NamespaceCreate, int)) *NamespaceCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &NamespaceCreateBulk{err: fmt.Errorf("calling to NamespaceClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*NamespaceCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &NamespaceCreateBulk{config: c.config, builders: builders}
 }
 
@@ -2508,6 +2709,21 @@ func (c *NamespaceAdornmentClient) CreateBulk(builders ...*NamespaceAdornmentCre
 	return &NamespaceAdornmentCreateBulk{config: c.config, builders: builders}
 }
 
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *NamespaceAdornmentClient) MapCreateBulk(slice any, setFunc func(*NamespaceAdornmentCreate, int)) *NamespaceAdornmentCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &NamespaceAdornmentCreateBulk{err: fmt.Errorf("calling to NamespaceAdornmentClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*NamespaceAdornmentCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &NamespaceAdornmentCreateBulk{config: c.config, builders: builders}
+}
+
 // Update returns an update builder for NamespaceAdornment.
 func (c *NamespaceAdornmentClient) Update() *NamespaceAdornmentUpdate {
 	mutation := newNamespaceAdornmentMutation(c.config, OpUpdate)
@@ -2639,6 +2855,21 @@ func (c *ParameterTemplateClient) Create() *ParameterTemplateCreate {
 
 // CreateBulk returns a builder for creating a bulk of ParameterTemplate entities.
 func (c *ParameterTemplateClient) CreateBulk(builders ...*ParameterTemplateCreate) *ParameterTemplateCreateBulk {
+	return &ParameterTemplateCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ParameterTemplateClient) MapCreateBulk(slice any, setFunc func(*ParameterTemplateCreate, int)) *ParameterTemplateCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ParameterTemplateCreateBulk{err: fmt.Errorf("calling to ParameterTemplateClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ParameterTemplateCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &ParameterTemplateCreateBulk{config: c.config, builders: builders}
 }
 
@@ -2789,6 +3020,21 @@ func (c *ProfileClient) Create() *ProfileCreate {
 
 // CreateBulk returns a builder for creating a bulk of Profile entities.
 func (c *ProfileClient) CreateBulk(builders ...*ProfileCreate) *ProfileCreateBulk {
+	return &ProfileCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ProfileClient) MapCreateBulk(slice any, setFunc func(*ProfileCreate, int)) *ProfileCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ProfileCreateBulk{err: fmt.Errorf("calling to ProfileClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ProfileCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &ProfileCreateBulk{config: c.config, builders: builders}
 }
 
@@ -2971,6 +3217,21 @@ func (c *RegistryClient) Create() *RegistryCreate {
 
 // CreateBulk returns a builder for creating a bulk of Registry entities.
 func (c *RegistryClient) CreateBulk(builders ...*RegistryCreate) *RegistryCreateBulk {
+	return &RegistryCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *RegistryClient) MapCreateBulk(slice any, setFunc func(*RegistryCreate, int)) *RegistryCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &RegistryCreateBulk{err: fmt.Errorf("calling to RegistryClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*RegistryCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
 	return &RegistryCreateBulk{config: c.config, builders: builders}
 }
 

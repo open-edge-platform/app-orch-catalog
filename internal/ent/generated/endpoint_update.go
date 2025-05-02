@@ -34,9 +34,25 @@ func (eu *EndpointUpdate) SetServiceName(s string) *EndpointUpdate {
 	return eu
 }
 
+// SetNillableServiceName sets the "service_name" field if the given value is not nil.
+func (eu *EndpointUpdate) SetNillableServiceName(s *string) *EndpointUpdate {
+	if s != nil {
+		eu.SetServiceName(*s)
+	}
+	return eu
+}
+
 // SetExternalPath sets the "external_path" field.
 func (eu *EndpointUpdate) SetExternalPath(s string) *EndpointUpdate {
 	eu.mutation.SetExternalPath(s)
+	return eu
+}
+
+// SetNillableExternalPath sets the "external_path" field if the given value is not nil.
+func (eu *EndpointUpdate) SetNillableExternalPath(s *string) *EndpointUpdate {
+	if s != nil {
+		eu.SetExternalPath(*s)
+	}
 	return eu
 }
 
@@ -46,15 +62,39 @@ func (eu *EndpointUpdate) SetInternalPath(s string) *EndpointUpdate {
 	return eu
 }
 
+// SetNillableInternalPath sets the "internal_path" field if the given value is not nil.
+func (eu *EndpointUpdate) SetNillableInternalPath(s *string) *EndpointUpdate {
+	if s != nil {
+		eu.SetInternalPath(*s)
+	}
+	return eu
+}
+
 // SetScheme sets the "scheme" field.
 func (eu *EndpointUpdate) SetScheme(s string) *EndpointUpdate {
 	eu.mutation.SetScheme(s)
 	return eu
 }
 
+// SetNillableScheme sets the "scheme" field if the given value is not nil.
+func (eu *EndpointUpdate) SetNillableScheme(s *string) *EndpointUpdate {
+	if s != nil {
+		eu.SetScheme(*s)
+	}
+	return eu
+}
+
 // SetAuthType sets the "auth_type" field.
 func (eu *EndpointUpdate) SetAuthType(s string) *EndpointUpdate {
 	eu.mutation.SetAuthType(s)
+	return eu
+}
+
+// SetNillableAuthType sets the "auth_type" field if the given value is not nil.
+func (eu *EndpointUpdate) SetNillableAuthType(s *string) *EndpointUpdate {
+	if s != nil {
+		eu.SetAuthType(*s)
+	}
 	return eu
 }
 
@@ -223,9 +263,25 @@ func (euo *EndpointUpdateOne) SetServiceName(s string) *EndpointUpdateOne {
 	return euo
 }
 
+// SetNillableServiceName sets the "service_name" field if the given value is not nil.
+func (euo *EndpointUpdateOne) SetNillableServiceName(s *string) *EndpointUpdateOne {
+	if s != nil {
+		euo.SetServiceName(*s)
+	}
+	return euo
+}
+
 // SetExternalPath sets the "external_path" field.
 func (euo *EndpointUpdateOne) SetExternalPath(s string) *EndpointUpdateOne {
 	euo.mutation.SetExternalPath(s)
+	return euo
+}
+
+// SetNillableExternalPath sets the "external_path" field if the given value is not nil.
+func (euo *EndpointUpdateOne) SetNillableExternalPath(s *string) *EndpointUpdateOne {
+	if s != nil {
+		euo.SetExternalPath(*s)
+	}
 	return euo
 }
 
@@ -235,15 +291,39 @@ func (euo *EndpointUpdateOne) SetInternalPath(s string) *EndpointUpdateOne {
 	return euo
 }
 
+// SetNillableInternalPath sets the "internal_path" field if the given value is not nil.
+func (euo *EndpointUpdateOne) SetNillableInternalPath(s *string) *EndpointUpdateOne {
+	if s != nil {
+		euo.SetInternalPath(*s)
+	}
+	return euo
+}
+
 // SetScheme sets the "scheme" field.
 func (euo *EndpointUpdateOne) SetScheme(s string) *EndpointUpdateOne {
 	euo.mutation.SetScheme(s)
 	return euo
 }
 
+// SetNillableScheme sets the "scheme" field if the given value is not nil.
+func (euo *EndpointUpdateOne) SetNillableScheme(s *string) *EndpointUpdateOne {
+	if s != nil {
+		euo.SetScheme(*s)
+	}
+	return euo
+}
+
 // SetAuthType sets the "auth_type" field.
 func (euo *EndpointUpdateOne) SetAuthType(s string) *EndpointUpdateOne {
 	euo.mutation.SetAuthType(s)
+	return euo
+}
+
+// SetNillableAuthType sets the "auth_type" field if the given value is not nil.
+func (euo *EndpointUpdateOne) SetNillableAuthType(s *string) *EndpointUpdateOne {
+	if s != nil {
+		euo.SetAuthType(*s)
+	}
 	return euo
 }
 

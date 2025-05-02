@@ -383,9 +383,9 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "ignoredresource_name_kind_application_ignored_resources",
+				Name:    "ignoredresource_name_kind_namespace_application_ignored_resources",
 				Unique:  true,
-				Columns: []*schema.Column{IgnoredResourcesColumns[1], IgnoredResourcesColumns[2], IgnoredResourcesColumns[4]},
+				Columns: []*schema.Column{IgnoredResourcesColumns[1], IgnoredResourcesColumns[2], IgnoredResourcesColumns[3], IgnoredResourcesColumns[4]},
 			},
 		},
 	}

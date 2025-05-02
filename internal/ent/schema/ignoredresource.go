@@ -42,7 +42,7 @@ func (IgnoredResource) Edges() []ent.Edge {
 
 func (IgnoredResource) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("name", "kind").
+		index.Fields("name", "kind", "namespace").
 			Edges("application_fk").
 			Unique(),
 	}
