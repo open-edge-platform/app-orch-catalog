@@ -35,9 +35,25 @@ func (eu *ExtensionUpdate) SetName(s string) *ExtensionUpdate {
 	return eu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (eu *ExtensionUpdate) SetNillableName(s *string) *ExtensionUpdate {
+	if s != nil {
+		eu.SetName(*s)
+	}
+	return eu
+}
+
 // SetVersion sets the "version" field.
 func (eu *ExtensionUpdate) SetVersion(s string) *ExtensionUpdate {
 	eu.mutation.SetVersion(s)
+	return eu
+}
+
+// SetNillableVersion sets the "version" field if the given value is not nil.
+func (eu *ExtensionUpdate) SetNillableVersion(s *string) *ExtensionUpdate {
+	if s != nil {
+		eu.SetVersion(*s)
+	}
 	return eu
 }
 
@@ -486,9 +502,25 @@ func (euo *ExtensionUpdateOne) SetName(s string) *ExtensionUpdateOne {
 	return euo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (euo *ExtensionUpdateOne) SetNillableName(s *string) *ExtensionUpdateOne {
+	if s != nil {
+		euo.SetName(*s)
+	}
+	return euo
+}
+
 // SetVersion sets the "version" field.
 func (euo *ExtensionUpdateOne) SetVersion(s string) *ExtensionUpdateOne {
 	euo.mutation.SetVersion(s)
+	return euo
+}
+
+// SetNillableVersion sets the "version" field if the given value is not nil.
+func (euo *ExtensionUpdateOne) SetNillableVersion(s *string) *ExtensionUpdateOne {
+	if s != nil {
+		euo.SetVersion(*s)
+	}
 	return euo
 }
 

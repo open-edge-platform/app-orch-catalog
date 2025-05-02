@@ -42,6 +42,14 @@ func (dpu *DeploymentPackageUpdate) SetName(s string) *DeploymentPackageUpdate {
 	return dpu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (dpu *DeploymentPackageUpdate) SetNillableName(s *string) *DeploymentPackageUpdate {
+	if s != nil {
+		dpu.SetName(*s)
+	}
+	return dpu
+}
+
 // SetDisplayName sets the "display_name" field.
 func (dpu *DeploymentPackageUpdate) SetDisplayName(s string) *DeploymentPackageUpdate {
 	dpu.mutation.SetDisplayName(s)
@@ -125,6 +133,14 @@ func (dpu *DeploymentPackageUpdate) SetNillableProjectUUID(s *string) *Deploymen
 // SetVersion sets the "version" field.
 func (dpu *DeploymentPackageUpdate) SetVersion(s string) *DeploymentPackageUpdate {
 	dpu.mutation.SetVersion(s)
+	return dpu
+}
+
+// SetNillableVersion sets the "version" field if the given value is not nil.
+func (dpu *DeploymentPackageUpdate) SetNillableVersion(s *string) *DeploymentPackageUpdate {
+	if s != nil {
+		dpu.SetVersion(*s)
+	}
 	return dpu
 }
 
@@ -1121,6 +1137,14 @@ func (dpuo *DeploymentPackageUpdateOne) SetName(s string) *DeploymentPackageUpda
 	return dpuo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (dpuo *DeploymentPackageUpdateOne) SetNillableName(s *string) *DeploymentPackageUpdateOne {
+	if s != nil {
+		dpuo.SetName(*s)
+	}
+	return dpuo
+}
+
 // SetDisplayName sets the "display_name" field.
 func (dpuo *DeploymentPackageUpdateOne) SetDisplayName(s string) *DeploymentPackageUpdateOne {
 	dpuo.mutation.SetDisplayName(s)
@@ -1204,6 +1228,14 @@ func (dpuo *DeploymentPackageUpdateOne) SetNillableProjectUUID(s *string) *Deplo
 // SetVersion sets the "version" field.
 func (dpuo *DeploymentPackageUpdateOne) SetVersion(s string) *DeploymentPackageUpdateOne {
 	dpuo.mutation.SetVersion(s)
+	return dpuo
+}
+
+// SetNillableVersion sets the "version" field if the given value is not nil.
+func (dpuo *DeploymentPackageUpdateOne) SetNillableVersion(s *string) *DeploymentPackageUpdateOne {
+	if s != nil {
+		dpuo.SetVersion(*s)
+	}
 	return dpuo
 }
 

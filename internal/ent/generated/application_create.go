@@ -553,11 +553,15 @@ func (ac *ApplicationCreate) createSpec() (*Application, *sqlgraph.CreateSpec) {
 // ApplicationCreateBulk is the builder for creating many Application entities in bulk.
 type ApplicationCreateBulk struct {
 	config
+	err      error
 	builders []*ApplicationCreate
 }
 
 // Save creates the Application entities in the database.
 func (acb *ApplicationCreateBulk) Save(ctx context.Context) ([]*Application, error) {
+	if acb.err != nil {
+		return nil, acb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(acb.builders))
 	nodes := make([]*Application, len(acb.builders))
 	mutators := make([]Mutator, len(acb.builders))

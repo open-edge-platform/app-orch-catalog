@@ -35,6 +35,14 @@ func (aru *ArtifactReferenceUpdate) SetPurpose(s string) *ArtifactReferenceUpdat
 	return aru
 }
 
+// SetNillablePurpose sets the "purpose" field if the given value is not nil.
+func (aru *ArtifactReferenceUpdate) SetNillablePurpose(s *string) *ArtifactReferenceUpdate {
+	if s != nil {
+		aru.SetPurpose(*s)
+	}
+	return aru
+}
+
 // SetArtifactID sets the "artifact" edge to the Artifact entity by ID.
 func (aru *ArtifactReferenceUpdate) SetArtifactID(id uint64) *ArtifactReferenceUpdate {
 	aru.mutation.SetArtifactID(id)
@@ -208,6 +216,14 @@ type ArtifactReferenceUpdateOne struct {
 // SetPurpose sets the "purpose" field.
 func (aruo *ArtifactReferenceUpdateOne) SetPurpose(s string) *ArtifactReferenceUpdateOne {
 	aruo.mutation.SetPurpose(s)
+	return aruo
+}
+
+// SetNillablePurpose sets the "purpose" field if the given value is not nil.
+func (aruo *ArtifactReferenceUpdateOne) SetNillablePurpose(s *string) *ArtifactReferenceUpdateOne {
+	if s != nil {
+		aruo.SetPurpose(*s)
+	}
 	return aruo
 }
 

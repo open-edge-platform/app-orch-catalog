@@ -349,11 +349,15 @@ func (pc *ProfileCreate) createSpec() (*Profile, *sqlgraph.CreateSpec) {
 // ProfileCreateBulk is the builder for creating many Profile entities in bulk.
 type ProfileCreateBulk struct {
 	config
+	err      error
 	builders []*ProfileCreate
 }
 
 // Save creates the Profile entities in the database.
 func (pcb *ProfileCreateBulk) Save(ctx context.Context) ([]*Profile, error) {
+	if pcb.err != nil {
+		return nil, pcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(pcb.builders))
 	nodes := make([]*Profile, len(pcb.builders))
 	mutators := make([]Mutator, len(pcb.builders))

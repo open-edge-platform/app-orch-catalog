@@ -208,11 +208,15 @@ func (cmc *CommonMixinCreate) createSpec() (*CommonMixin, *sqlgraph.CreateSpec) 
 // CommonMixinCreateBulk is the builder for creating many CommonMixin entities in bulk.
 type CommonMixinCreateBulk struct {
 	config
+	err      error
 	builders []*CommonMixinCreate
 }
 
 // Save creates the CommonMixin entities in the database.
 func (cmcb *CommonMixinCreateBulk) Save(ctx context.Context) ([]*CommonMixin, error) {
+	if cmcb.err != nil {
+		return nil, cmcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(cmcb.builders))
 	nodes := make([]*CommonMixin, len(cmcb.builders))
 	mutators := make([]Mutator, len(cmcb.builders))

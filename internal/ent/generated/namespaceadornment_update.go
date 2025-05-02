@@ -34,9 +34,25 @@ func (nau *NamespaceAdornmentUpdate) SetType(s string) *NamespaceAdornmentUpdate
 	return nau
 }
 
+// SetNillableType sets the "type" field if the given value is not nil.
+func (nau *NamespaceAdornmentUpdate) SetNillableType(s *string) *NamespaceAdornmentUpdate {
+	if s != nil {
+		nau.SetType(*s)
+	}
+	return nau
+}
+
 // SetKey sets the "key" field.
 func (nau *NamespaceAdornmentUpdate) SetKey(s string) *NamespaceAdornmentUpdate {
 	nau.mutation.SetKey(s)
+	return nau
+}
+
+// SetNillableKey sets the "key" field if the given value is not nil.
+func (nau *NamespaceAdornmentUpdate) SetNillableKey(s *string) *NamespaceAdornmentUpdate {
+	if s != nil {
+		nau.SetKey(*s)
+	}
 	return nau
 }
 
@@ -196,9 +212,25 @@ func (nauo *NamespaceAdornmentUpdateOne) SetType(s string) *NamespaceAdornmentUp
 	return nauo
 }
 
+// SetNillableType sets the "type" field if the given value is not nil.
+func (nauo *NamespaceAdornmentUpdateOne) SetNillableType(s *string) *NamespaceAdornmentUpdateOne {
+	if s != nil {
+		nauo.SetType(*s)
+	}
+	return nauo
+}
+
 // SetKey sets the "key" field.
 func (nauo *NamespaceAdornmentUpdateOne) SetKey(s string) *NamespaceAdornmentUpdateOne {
 	nauo.mutation.SetKey(s)
+	return nauo
+}
+
+// SetNillableKey sets the "key" field if the given value is not nil.
+func (nauo *NamespaceAdornmentUpdateOne) SetNillableKey(s *string) *NamespaceAdornmentUpdateOne {
+	if s != nil {
+		nauo.SetKey(*s)
+	}
 	return nauo
 }
 

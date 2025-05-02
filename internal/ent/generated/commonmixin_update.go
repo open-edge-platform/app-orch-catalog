@@ -34,6 +34,14 @@ func (cmu *CommonMixinUpdate) SetName(s string) *CommonMixinUpdate {
 	return cmu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (cmu *CommonMixinUpdate) SetNillableName(s *string) *CommonMixinUpdate {
+	if s != nil {
+		cmu.SetName(*s)
+	}
+	return cmu
+}
+
 // SetDisplayName sets the "display_name" field.
 func (cmu *CommonMixinUpdate) SetDisplayName(s string) *CommonMixinUpdate {
 	cmu.mutation.SetDisplayName(s)
@@ -197,6 +205,14 @@ type CommonMixinUpdateOne struct {
 // SetName sets the "name" field.
 func (cmuo *CommonMixinUpdateOne) SetName(s string) *CommonMixinUpdateOne {
 	cmuo.mutation.SetName(s)
+	return cmuo
+}
+
+// SetNillableName sets the "name" field if the given value is not nil.
+func (cmuo *CommonMixinUpdateOne) SetNillableName(s *string) *CommonMixinUpdateOne {
+	if s != nil {
+		cmuo.SetName(*s)
+	}
 	return cmuo
 }
 

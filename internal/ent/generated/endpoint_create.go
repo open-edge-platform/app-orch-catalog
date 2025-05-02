@@ -200,11 +200,15 @@ func (ec *EndpointCreate) createSpec() (*Endpoint, *sqlgraph.CreateSpec) {
 // EndpointCreateBulk is the builder for creating many Endpoint entities in bulk.
 type EndpointCreateBulk struct {
 	config
+	err      error
 	builders []*EndpointCreate
 }
 
 // Save creates the Endpoint entities in the database.
 func (ecb *EndpointCreateBulk) Save(ctx context.Context) ([]*Endpoint, error) {
+	if ecb.err != nil {
+		return nil, ecb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ecb.builders))
 	nodes := make([]*Endpoint, len(ecb.builders))
 	mutators := make([]Mutator, len(ecb.builders))

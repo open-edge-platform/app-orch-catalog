@@ -345,11 +345,15 @@ func (rc *RegistryCreate) createSpec() (*Registry, *sqlgraph.CreateSpec) {
 // RegistryCreateBulk is the builder for creating many Registry entities in bulk.
 type RegistryCreateBulk struct {
 	config
+	err      error
 	builders []*RegistryCreate
 }
 
 // Save creates the Registry entities in the database.
 func (rcb *RegistryCreateBulk) Save(ctx context.Context) ([]*Registry, error) {
+	if rcb.err != nil {
+		return nil, rcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(rcb.builders))
 	nodes := make([]*Registry, len(rcb.builders))
 	mutators := make([]Mutator, len(rcb.builders))

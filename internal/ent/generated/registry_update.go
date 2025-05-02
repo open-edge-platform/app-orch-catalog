@@ -35,6 +35,14 @@ func (ru *RegistryUpdate) SetName(s string) *RegistryUpdate {
 	return ru
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ru *RegistryUpdate) SetNillableName(s *string) *RegistryUpdate {
+	if s != nil {
+		ru.SetName(*s)
+	}
+	return ru
+}
+
 // SetDisplayName sets the "display_name" field.
 func (ru *RegistryUpdate) SetDisplayName(s string) *RegistryUpdate {
 	ru.mutation.SetDisplayName(s)
@@ -138,6 +146,14 @@ func (ru *RegistryUpdate) ClearAuthToken() *RegistryUpdate {
 // SetType sets the "type" field.
 func (ru *RegistryUpdate) SetType(s string) *RegistryUpdate {
 	ru.mutation.SetType(s)
+	return ru
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (ru *RegistryUpdate) SetNillableType(s *string) *RegistryUpdate {
+	if s != nil {
+		ru.SetType(*s)
+	}
 	return ru
 }
 
@@ -441,6 +457,14 @@ func (ruo *RegistryUpdateOne) SetName(s string) *RegistryUpdateOne {
 	return ruo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ruo *RegistryUpdateOne) SetNillableName(s *string) *RegistryUpdateOne {
+	if s != nil {
+		ruo.SetName(*s)
+	}
+	return ruo
+}
+
 // SetDisplayName sets the "display_name" field.
 func (ruo *RegistryUpdateOne) SetDisplayName(s string) *RegistryUpdateOne {
 	ruo.mutation.SetDisplayName(s)
@@ -544,6 +568,14 @@ func (ruo *RegistryUpdateOne) ClearAuthToken() *RegistryUpdateOne {
 // SetType sets the "type" field.
 func (ruo *RegistryUpdateOne) SetType(s string) *RegistryUpdateOne {
 	ruo.mutation.SetType(s)
+	return ruo
+}
+
+// SetNillableType sets the "type" field if the given value is not nil.
+func (ruo *RegistryUpdateOne) SetNillableType(s *string) *RegistryUpdateOne {
+	if s != nil {
+		ruo.SetType(*s)
+	}
 	return ruo
 }
 

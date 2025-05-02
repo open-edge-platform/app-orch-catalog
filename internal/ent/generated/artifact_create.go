@@ -322,11 +322,15 @@ func (ac *ArtifactCreate) createSpec() (*Artifact, *sqlgraph.CreateSpec) {
 // ArtifactCreateBulk is the builder for creating many Artifact entities in bulk.
 type ArtifactCreateBulk struct {
 	config
+	err      error
 	builders []*ArtifactCreate
 }
 
 // Save creates the Artifact entities in the database.
 func (acb *ArtifactCreateBulk) Save(ctx context.Context) ([]*Artifact, error) {
+	if acb.err != nil {
+		return nil, acb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(acb.builders))
 	nodes := make([]*Artifact, len(acb.builders))
 	mutators := make([]Mutator, len(acb.builders))

@@ -35,6 +35,14 @@ func (anu *ApplicationNamespaceUpdate) SetNamespace(s string) *ApplicationNamesp
 	return anu
 }
 
+// SetNillableNamespace sets the "namespace" field if the given value is not nil.
+func (anu *ApplicationNamespaceUpdate) SetNillableNamespace(s *string) *ApplicationNamespaceUpdate {
+	if s != nil {
+		anu.SetNamespace(*s)
+	}
+	return anu
+}
+
 // SetDeploymentPackageFkID sets the "deployment_package_fk" edge to the DeploymentPackage entity by ID.
 func (anu *ApplicationNamespaceUpdate) SetDeploymentPackageFkID(id uint64) *ApplicationNamespaceUpdate {
 	anu.mutation.SetDeploymentPackageFkID(id)
@@ -208,6 +216,14 @@ type ApplicationNamespaceUpdateOne struct {
 // SetNamespace sets the "namespace" field.
 func (anuo *ApplicationNamespaceUpdateOne) SetNamespace(s string) *ApplicationNamespaceUpdateOne {
 	anuo.mutation.SetNamespace(s)
+	return anuo
+}
+
+// SetNillableNamespace sets the "namespace" field if the given value is not nil.
+func (anuo *ApplicationNamespaceUpdateOne) SetNillableNamespace(s *string) *ApplicationNamespaceUpdateOne {
+	if s != nil {
+		anuo.SetNamespace(*s)
+	}
 	return anuo
 }
 

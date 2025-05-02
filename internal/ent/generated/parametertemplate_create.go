@@ -297,11 +297,15 @@ func (ptc *ParameterTemplateCreate) createSpec() (*ParameterTemplate, *sqlgraph.
 // ParameterTemplateCreateBulk is the builder for creating many ParameterTemplate entities in bulk.
 type ParameterTemplateCreateBulk struct {
 	config
+	err      error
 	builders []*ParameterTemplateCreate
 }
 
 // Save creates the ParameterTemplate entities in the database.
 func (ptcb *ParameterTemplateCreateBulk) Save(ctx context.Context) ([]*ParameterTemplate, error) {
+	if ptcb.err != nil {
+		return nil, ptcb.err
+	}
 	specs := make([]*sqlgraph.CreateSpec, len(ptcb.builders))
 	nodes := make([]*ParameterTemplate, len(ptcb.builders))
 	mutators := make([]Mutator, len(ptcb.builders))

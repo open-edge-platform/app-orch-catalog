@@ -35,6 +35,14 @@ func (au *ArtifactUpdate) SetName(s string) *ArtifactUpdate {
 	return au
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (au *ArtifactUpdate) SetNillableName(s *string) *ArtifactUpdate {
+	if s != nil {
+		au.SetName(*s)
+	}
+	return au
+}
+
 // SetDisplayName sets the "display_name" field.
 func (au *ArtifactUpdate) SetDisplayName(s string) *ArtifactUpdate {
 	au.mutation.SetDisplayName(s)
@@ -118,6 +126,14 @@ func (au *ArtifactUpdate) SetNillableProjectUUID(s *string) *ArtifactUpdate {
 // SetMimeType sets the "mime_type" field.
 func (au *ArtifactUpdate) SetMimeType(s string) *ArtifactUpdate {
 	au.mutation.SetMimeType(s)
+	return au
+}
+
+// SetNillableMimeType sets the "mime_type" field if the given value is not nil.
+func (au *ArtifactUpdate) SetNillableMimeType(s *string) *ArtifactUpdate {
+	if s != nil {
+		au.SetMimeType(*s)
+	}
 	return au
 }
 
@@ -398,6 +414,14 @@ func (auo *ArtifactUpdateOne) SetName(s string) *ArtifactUpdateOne {
 	return auo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (auo *ArtifactUpdateOne) SetNillableName(s *string) *ArtifactUpdateOne {
+	if s != nil {
+		auo.SetName(*s)
+	}
+	return auo
+}
+
 // SetDisplayName sets the "display_name" field.
 func (auo *ArtifactUpdateOne) SetDisplayName(s string) *ArtifactUpdateOne {
 	auo.mutation.SetDisplayName(s)
@@ -481,6 +505,14 @@ func (auo *ArtifactUpdateOne) SetNillableProjectUUID(s *string) *ArtifactUpdateO
 // SetMimeType sets the "mime_type" field.
 func (auo *ArtifactUpdateOne) SetMimeType(s string) *ArtifactUpdateOne {
 	auo.mutation.SetMimeType(s)
+	return auo
+}
+
+// SetNillableMimeType sets the "mime_type" field if the given value is not nil.
+func (auo *ArtifactUpdateOne) SetNillableMimeType(s *string) *ArtifactUpdateOne {
+	if s != nil {
+		auo.SetMimeType(*s)
+	}
 	return auo
 }
 
