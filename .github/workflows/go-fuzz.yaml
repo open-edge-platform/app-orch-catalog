@@ -33,4 +33,3 @@ jobs:
       # Declare 4800 secs duration since schedule event will not pick up input values from workflow_dispatch
       fuzz_seconds: ${{ fromJSON(inputs.fuzz_seconds_catalog || 4800) }}
       test_data_dir: ./internal/northbound/testdata/fuzz
-    secrets: inherit

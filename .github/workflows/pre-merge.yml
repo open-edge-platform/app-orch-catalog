@@ -22,10 +22,10 @@ jobs:
         with:
           persist-credentials: false
       - name: "Verify Branch Name"
-        uses: open-edge-platform/orch-ci/verify-branch-name@4c94cdd01e58beab5f822f1eeb0439a523018a55 # v0.1.5
+        uses: open-edge-platform/orch-ci/verify-branch-name@31986a986cab0a87721ecb694388029e94e55ff7 # v0.1.8
   pre-merge-pipeline:
     needs: pre-checks
-    uses: open-edge-platform/orch-ci/.github/workflows/pre-merge.yml@4c94cdd01e58beab5f822f1eeb0439a523018a55 # v0.1.5
+    uses: open-edge-platform/orch-ci/.github/workflows/pre-merge.yml@31986a986cab0a87721ecb694388029e94e55ff7 # v0.1.8
     with:
       bootstrap_tools: "go,gotools,golang-lint,nodejs,buf,hadolint,opa"
       run_version_check: true
@@ -37,21 +37,20 @@ jobs:
       run_docker_build: true
       run_artifact: false
       project_folder: ${{ matrix.project_folder }}
-    secrets: inherit
   final-check:
     runs-on: ubuntu-latest
     if: ${{ always() }}
     needs: [pre-merge-pipeline]
     steps:
       - name: Final Status Check
+        env:
+          PRE_MERGE_PIPELINE_RESULT: ${{ needs.pre-merge-pipeline.result }}
         run: |
-          pre_merge_pipeline_result="${{ needs.pre-merge-pipeline.result }}"
-          
-          echo "Pre-merge pipeline result: $pre_merge_pipeline_result"
+          echo "Pre-merge pipeline result: $PRE_MERGE_PIPELINE_RESULT"
 
-          if [ "$pre_merge_pipeline_result" == "success" ] || [ "$pre_merge_pipeline_result" == "skipped" ]; then
+          if [ "$PRE_MERGE_PIPELINE_RESULT" == "success" ] || [ "$PRE_MERGE_PIPELINE_RESULT" == "skipped" ]; then
             echo "Pre-merge check passed successfully."
           else
             echo "Pre-merge checks failed. PR can't get merged"
             exit 1
-          fi
+          fi 
