@@ -32,7 +32,7 @@ const (
 // TestSuite is the basic test suite
 type TestSuite struct {
 	suite.Suite
-	orchDomain		     string
+	orchDomain           string
 	KeycloakServer       string
 	CatalogRESTServerUrl string
 	token                string
@@ -45,14 +45,14 @@ func (s *TestSuite) SetupSuite() {
 	s.CatalogRESTServerUrl = RestAddress
 
 	// To use the component-tests with a domain other than kind.internal, ensure
-	// the ORCH_DOMAIN environment variable is set.
+	// the ORCH_DOMAIN and AUTO_CERT environment variables are set.
+	autoCert, err := strconv.ParseBool(os.Getenv("AUTO_CERT"))
 	s.orchDomain = os.Getenv("ORCH_DOMAIN")
-	if s.orchDomain == "" {
+	if err != nil || !autoCert || s.orchDomain == "" {
 		s.orchDomain = "kind.internal"
 	}
 	s.KeycloakServer = fmt.Sprintf("keycloak.%s", s.orchDomain)
 
-	var err error
 	s.token = auth.SetUpAccessToken(s.T(), s.KeycloakServer)
 	s.CatalogRESTServerUrl = fmt.Sprintf("http://%s:%s", RestAddressPortForward, PortForwardRemotePort)
 	s.projectID, err = auth.GetProjectId(context.TODO())
