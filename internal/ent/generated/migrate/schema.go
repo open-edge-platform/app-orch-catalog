@@ -365,7 +365,7 @@ var (
 		{Name: "id", Type: field.TypeUint64, Increment: true},
 		{Name: "name", Type: field.TypeString},
 		{Name: "kind", Type: field.TypeString},
-		{Name: "namespace", Type: field.TypeString, Nullable: true},
+		{Name: "namespace", Type: field.TypeString},
 		{Name: "application_ignored_resources", Type: field.TypeUint64},
 	}
 	// IgnoredResourcesTable holds the schema information for the "ignored_resources" table.

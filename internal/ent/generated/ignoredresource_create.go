@@ -38,14 +38,6 @@ func (irc *IgnoredResourceCreate) SetNamespace(s string) *IgnoredResourceCreate 
 	return irc
 }
 
-// SetNillableNamespace sets the "namespace" field if the given value is not nil.
-func (irc *IgnoredResourceCreate) SetNillableNamespace(s *string) *IgnoredResourceCreate {
-	if s != nil {
-		irc.SetNamespace(*s)
-	}
-	return irc
-}
-
 // SetApplicationFkID sets the "application_fk" edge to the Application entity by ID.
 func (irc *IgnoredResourceCreate) SetApplicationFkID(id uint64) *IgnoredResourceCreate {
 	irc.mutation.SetApplicationFkID(id)
@@ -96,6 +88,9 @@ func (irc *IgnoredResourceCreate) check() error {
 	}
 	if _, ok := irc.mutation.Kind(); !ok {
 		return &ValidationError{Name: "kind", err: errors.New(`generated: missing required field "IgnoredResource.kind"`)}
+	}
+	if _, ok := irc.mutation.Namespace(); !ok {
+		return &ValidationError{Name: "namespace", err: errors.New(`generated: missing required field "IgnoredResource.namespace"`)}
 	}
 	if _, ok := irc.mutation.ApplicationFkID(); !ok {
 		return &ValidationError{Name: "application_fk", err: errors.New(`generated: missing required edge "IgnoredResource.application_fk"`)}

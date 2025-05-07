@@ -70,12 +70,6 @@ func (iru *IgnoredResourceUpdate) SetNillableNamespace(s *string) *IgnoredResour
 	return iru
 }
 
-// ClearNamespace clears the value of the "namespace" field.
-func (iru *IgnoredResourceUpdate) ClearNamespace() *IgnoredResourceUpdate {
-	iru.mutation.ClearNamespace()
-	return iru
-}
-
 // SetApplicationFkID sets the "application_fk" edge to the Application entity by ID.
 func (iru *IgnoredResourceUpdate) SetApplicationFkID(id uint64) *IgnoredResourceUpdate {
 	iru.mutation.SetApplicationFkID(id)
@@ -153,9 +147,6 @@ func (iru *IgnoredResourceUpdate) sqlSave(ctx context.Context) (n int, err error
 	}
 	if value, ok := iru.mutation.Namespace(); ok {
 		_spec.SetField(ignoredresource.FieldNamespace, field.TypeString, value)
-	}
-	if iru.mutation.NamespaceCleared() {
-		_spec.ClearField(ignoredresource.FieldNamespace, field.TypeString)
 	}
 	if iru.mutation.ApplicationFkCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -245,12 +236,6 @@ func (iruo *IgnoredResourceUpdateOne) SetNillableNamespace(s *string) *IgnoredRe
 	if s != nil {
 		iruo.SetNamespace(*s)
 	}
-	return iruo
-}
-
-// ClearNamespace clears the value of the "namespace" field.
-func (iruo *IgnoredResourceUpdateOne) ClearNamespace() *IgnoredResourceUpdateOne {
-	iruo.mutation.ClearNamespace()
 	return iruo
 }
 
@@ -361,9 +346,6 @@ func (iruo *IgnoredResourceUpdateOne) sqlSave(ctx context.Context) (_node *Ignor
 	}
 	if value, ok := iruo.mutation.Namespace(); ok {
 		_spec.SetField(ignoredresource.FieldNamespace, field.TypeString, value)
-	}
-	if iruo.mutation.NamespaceCleared() {
-		_spec.ClearField(ignoredresource.FieldNamespace, field.TypeString)
 	}
 	if iruo.mutation.ApplicationFkCleared() {
 		edge := &sqlgraph.EdgeSpec{

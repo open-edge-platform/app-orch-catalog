@@ -253,16 +253,6 @@ func NamespaceHasSuffix(v string) predicate.IgnoredResource {
 	return predicate.IgnoredResource(sql.FieldHasSuffix(FieldNamespace, v))
 }
 
-// NamespaceIsNil applies the IsNil predicate on the "namespace" field.
-func NamespaceIsNil() predicate.IgnoredResource {
-	return predicate.IgnoredResource(sql.FieldIsNull(FieldNamespace))
-}
-
-// NamespaceNotNil applies the NotNil predicate on the "namespace" field.
-func NamespaceNotNil() predicate.IgnoredResource {
-	return predicate.IgnoredResource(sql.FieldNotNull(FieldNamespace))
-}
-
 // NamespaceEqualFold applies the EqualFold predicate on the "namespace" field.
 func NamespaceEqualFold(v string) predicate.IgnoredResource {
 	return predicate.IgnoredResource(sql.FieldEqualFold(FieldNamespace, v))

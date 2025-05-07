@@ -24,7 +24,6 @@ func (IgnoredResource) Fields() []ent.Field {
 		field.String("kind").
 			Comment("Ignored resource kind."),
 		field.String("namespace").
-			Optional().
 			Comment("Ignored resource namespace."),
 	}
 }
