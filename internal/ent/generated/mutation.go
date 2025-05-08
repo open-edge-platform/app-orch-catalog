@@ -9833,22 +9833,9 @@ func (m *IgnoredResourceMutation) OldNamespace(ctx context.Context) (v string, e
 	return oldValue.Namespace, nil
 }
 
-// ClearNamespace clears the value of the "namespace" field.
-func (m *IgnoredResourceMutation) ClearNamespace() {
-	m.namespace = nil
-	m.clearedFields[ignoredresource.FieldNamespace] = struct{}{}
-}
-
-// NamespaceCleared returns if the "namespace" field was cleared in this mutation.
-func (m *IgnoredResourceMutation) NamespaceCleared() bool {
-	_, ok := m.clearedFields[ignoredresource.FieldNamespace]
-	return ok
-}
-
 // ResetNamespace resets all changes to the "namespace" field.
 func (m *IgnoredResourceMutation) ResetNamespace() {
 	m.namespace = nil
-	delete(m.clearedFields, ignoredresource.FieldNamespace)
 }
 
 // SetApplicationFkID sets the "application_fk" edge to the Application entity by id.
@@ -10022,11 +10009,7 @@ func (m *IgnoredResourceMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *IgnoredResourceMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(ignoredresource.FieldNamespace) {
-		fields = append(fields, ignoredresource.FieldNamespace)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -10039,11 +10022,6 @@ func (m *IgnoredResourceMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *IgnoredResourceMutation) ClearField(name string) error {
-	switch name {
-	case ignoredresource.FieldNamespace:
-		m.ClearNamespace()
-		return nil
-	}
 	return fmt.Errorf("unknown IgnoredResource nullable field %s", name)
 }
 

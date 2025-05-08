@@ -830,7 +830,9 @@ func (s *NorthBoundTestSuite) TestUpdateApplicationIgnoredResourcesChanged() {
 
 	// Update just the ignored resources
 	app.IgnoredResources = []*catalogv3.ResourceReference{
-		{Name: "foo", Kind: "ConfigMap"}, {Name: "bar", Kind: "SomeKind", Namespace: "ns"},
+		{Name: "foo", Kind: "ConfigMap"},
+		{Name: "bar", Kind: "SomeKind", Namespace: "ns"},
+		{Name: "bar", Kind: "SomeKind", Namespace: "other-ns"},
 	}
 	_, err = s.client.UpdateApplication(s.ProjectID(footen), &catalogv3.UpdateApplicationRequest{
 		ApplicationName: "foo",
@@ -845,7 +847,7 @@ func (s *NorthBoundTestSuite) TestUpdateApplicationIgnoredResourcesChanged() {
 	s.validateResponse(err, resp)
 	s.validateApp(resp.Application, "foo", "v0.1.0", "new display name", "new description",
 		2, "p2", "chart-changed", "v0.1.0", fooreg)
-	s.Len(resp.Application.IgnoredResources, 2)
+	s.Len(resp.Application.IgnoredResources, 3)
 	s.True(resp.Application.IgnoredResources[0].Namespace == "ns" || resp.Application.IgnoredResources[1].Namespace == "ns")
 }
 
