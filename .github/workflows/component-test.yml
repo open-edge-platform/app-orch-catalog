@@ -160,13 +160,17 @@ jobs:
         run: |
           make component-tests
           echo "Component tests done!"
-
-      - name: Upload Test Report
-        if: always()
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+      - name: Report
+        uses: becheran/go-testreport@main
         with:
-          name: test-report
-          path: app-orch-catalog/test/test-report.html
+          input: app-orch-catalog/test/test-report.json
+
+      #- name: Upload Test Report
+      #  if: always()
+      #  uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+      #  with:
+      #    name: test-report
+      #    path: app-orch-catalog/test/test-report.html
 
       - name: Get diagnostic information
         if: always()
