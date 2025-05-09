@@ -10,6 +10,7 @@ export CGO_ENABLED=1
 export GO111MODULE=on
 GOCMD := GOPRIVATE="github.com/intel*/*" go
 
+GOTESTREPORT := $(shell which go-test-report || echo "")
 
 all: component-tests
 
@@ -17,7 +18,15 @@ mod-update: # @HELP update Go modules
 	$(GOCMD) mod tidy
 	$(GOCMD) mod vendor
 
+install-go-test-report: # @HELP install go-test-report if not already installed
+	@if [ -z "$(GOTESTREPORT)" ]; then \
+		echo "Installing go-test-report..."; \
+		go install github.com/vakenbolt/go-test-report@latest; \
+	else \
+		echo "go-test-report is already installed"; \
+	fi
 
 .PHONY: component-tests
-component-tests:
-	go test -v -count=1 ./restapi/...
+component-tests: install-go-test-report
+	go test -v -count=1 ./restapi/... | go-test-report -o test-report.html
+
