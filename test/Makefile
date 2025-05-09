@@ -22,12 +22,14 @@ install-go-test-report: # @HELP install go-test-report if not already installed
 	@if [ -z "$(GOTESTREPORT)" ]; then \
 		echo "Installing go-test-report..."; \
 		go install github.com/vakenbolt/go-test-report@latest; \
-		export PATH=$(GOPATH)/bin:$PATH; \
+		export PATH=$(shell go env GOPATH)/bin:$$PATH; \
+		hash go-test-report 2>/dev/null || { echo "go-test-report installation failed"; exit 1; }; \
 	else \
 		echo "go-test-report is already installed"; \
 	fi
 
 .PHONY: component-tests
 component-tests: install-go-test-report
-	go test -v -count=1 ./restapi/... | go-test-report -o test-report.html
+	@echo "Running component tests..."
+	$(GOCMD) test -v -count=1 ./restapi/... | $(shell go env GOPATH)/bin/go-test-report -o test-report.html
 
