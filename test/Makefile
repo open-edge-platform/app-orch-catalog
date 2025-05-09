@@ -29,5 +29,5 @@ install-go-test-report: # @HELP install go-test-report if not already installed
 .PHONY: component-tests
 component-tests: install-go-test-report
 	@echo "Running component tests..."
-	$(GOCMD) test -v -count=1 ./restapi/... | tee test-output.txt
-	$(shell go env GOPATH)/bin/go-test-report -o test-report.html < test-output.txt
+	$(GOCMD) test -json -v -count=1  ./restapi/... | $(shell go env GOPATH)/bin/go-test-report -o test-report.html
+
