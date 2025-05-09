@@ -22,6 +22,7 @@ install-go-test-report: # @HELP install go-test-report if not already installed
 	@if [ -z "$(GOTESTREPORT)" ]; then \
 		echo "Installing go-test-report..."; \
 		go install github.com/vakenbolt/go-test-report@latest; \
+		export PATH=$(GOPATH)/bin:$PATH; \
 	else \
 		echo "go-test-report is already installed"; \
 	fi
