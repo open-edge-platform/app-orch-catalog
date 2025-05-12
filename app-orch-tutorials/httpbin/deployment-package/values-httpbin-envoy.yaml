@@ -7,7 +7,7 @@ service:
   # -- Service type
   type: ClusterIP
   # -- Service port
-  port: 80
+  port: 8080
 
   # -- Service annotations
   annotations:
