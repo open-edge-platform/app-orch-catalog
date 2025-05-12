@@ -11,7 +11,7 @@ service:
 
   # -- Service annotations
   annotations:
-    service-proxy.app.orchestrator.io/ports: "80"
+    service-proxy.app.orchestrator.io/ports: "8080"
 
 envoy:
   enabled: false
