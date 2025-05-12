@@ -164,14 +164,14 @@ jobs:
         uses: becheran/go-testreport@main
         with:
           input: app-orch-catalog/test/test-report.json
-          output: app-orch-catalog/test/test-report.html
+          output: app-orch-catalog/test/${{ github.event_name }}-${{ github.event.number }}-test-report.html
 
       - name: Upload Test Report
         if: always()
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
         with:
           name: test-report
-          path: app-orch-catalog/test/test-report.html
+          path: app-orch-catalog/test/${{ github.event_name }}-${{ github.event.number }}-test-report.html
 
       - name: Get diagnostic information
         if: always()
