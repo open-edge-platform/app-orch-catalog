@@ -56,6 +56,12 @@ jobs:
       - name: Setup asdf and install dependencies
         uses: open-edge-platform/orch-utils/.github/actions/setup-asdf@ef4477dd6974c58a987f646eff1bc81c485c9c9a
 
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: 1.24
+
+
       - name: Checkout app-orch-catalog repository
         uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
         with:
@@ -149,9 +155,23 @@ jobs:
 
       - name: Run Catalog Component Tests
         working-directory: app-orch-catalog/test
+        env:
+          PATH: ${{ env.PATH }}:${{ env.GOPATH }}/bin
         run: |
           make component-tests
-          echo "Component tests done!"  
+          echo "Component tests done!"
+      - name: Report
+        uses: becheran/go-testreport@main
+        with:
+          input: app-orch-catalog/test/test-report.json
+          output: app-orch-catalog/test/${{ github.event_name }}-${{ github.event.number }}-test-report.html
+
+      - name: Upload Test Report
+        if: always()
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: test-report
+          path: app-orch-catalog/test/${{ github.event_name }}-${{ github.event.number }}-test-report.html
 
       - name: Get diagnostic information
         if: always()
@@ -170,4 +190,4 @@ jobs:
             argo-diag.txt
             pods-describe.txt
             pods-list.txt
-            argocd-applications.yaml    
+            argocd-applications.yaml  
