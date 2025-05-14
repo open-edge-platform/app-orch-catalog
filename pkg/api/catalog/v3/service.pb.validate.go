@@ -419,6 +419,282 @@ var _ interface {
 	ErrorName() string
 } = UploadMultipleCatalogEntitiesResponseValidationError{}
 
+// Validate checks the field values on ImportRequest with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *ImportRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ImportRequest with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in ImportRequestMultiError, or
+// nil if none found.
+func (m *ImportRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ImportRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if l := utf8.RuneCountInString(m.GetUrl()); l < 0 || l > 1000 {
+		err := ImportRequestValidationError{
+			field:  "Url",
+			reason: "value length must be between 0 and 1000 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if l := utf8.RuneCountInString(m.GetUsername()); l < 0 || l > 1000 {
+		err := ImportRequestValidationError{
+			field:  "Username",
+			reason: "value length must be between 0 and 1000 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if !_ImportRequest_Username_Pattern.MatchString(m.GetUsername()) {
+		err := ImportRequestValidationError{
+			field:  "Username",
+			reason: "value does not match regex pattern \"^\\\\PC*$\"",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if l := utf8.RuneCountInString(m.GetAuthToken()); l < 0 || l > 4500 {
+		err := ImportRequestValidationError{
+			field:  "AuthToken",
+			reason: "value length must be between 0 and 4500 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if !_ImportRequest_AuthToken_Pattern.MatchString(m.GetAuthToken()) {
+		err := ImportRequestValidationError{
+			field:  "AuthToken",
+			reason: "value does not match regex pattern \"^\\\\PC*$\"",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	if l := utf8.RuneCountInString(m.GetChartValues()); l < 0 || l > 4000000 {
+		err := ImportRequestValidationError{
+			field:  "ChartValues",
+			reason: "value length must be between 0 and 4000000 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	// no validation rules for IncludeAuth
+
+	// no validation rules for GenerateDefaultValues
+
+	// no validation rules for GenerateDefaultParameters
+
+	if len(errors) > 0 {
+		return ImportRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ImportRequestMultiError is an error wrapping multiple validation errors
+// returned by ImportRequest.ValidateAll() if the designated constraints
+// aren't met.
+type ImportRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ImportRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ImportRequestMultiError) AllErrors() []error { return m }
+
+// ImportRequestValidationError is the validation error returned by
+// ImportRequest.Validate if the designated constraints aren't met.
+type ImportRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ImportRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ImportRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ImportRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ImportRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ImportRequestValidationError) ErrorName() string { return "ImportRequestValidationError" }
+
+// Error satisfies the builtin error interface
+func (e ImportRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sImportRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ImportRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ImportRequestValidationError{}
+
+var _ImportRequest_Username_Pattern = regexp.MustCompile("^\\PC*$")
+
+var _ImportRequest_AuthToken_Pattern = regexp.MustCompile("^\\PC*$")
+
+// Validate checks the field values on ImportResponse with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *ImportResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ImportResponse with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in ImportResponseMultiError,
+// or nil if none found.
+func (m *ImportResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ImportResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return ImportResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ImportResponseMultiError is an error wrapping multiple validation errors
+// returned by ImportResponse.ValidateAll() if the designated constraints
+// aren't met.
+type ImportResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ImportResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ImportResponseMultiError) AllErrors() []error { return m }
+
+// ImportResponseValidationError is the validation error returned by
+// ImportResponse.Validate if the designated constraints aren't met.
+type ImportResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ImportResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ImportResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ImportResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ImportResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ImportResponseValidationError) ErrorName() string { return "ImportResponseValidationError" }
+
+// Error satisfies the builtin error interface
+func (e ImportResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sImportResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ImportResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ImportResponseValidationError{}
+
 // Validate checks the field values on CreateRegistryRequest with the rules
 // defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.

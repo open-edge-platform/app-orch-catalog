@@ -61,6 +61,8 @@
   - [GetDeploymentPackageVersionsResponse](#catalog-v3-GetDeploymentPackageVersionsResponse)
   - [GetRegistryRequest](#catalog-v3-GetRegistryRequest)
   - [GetRegistryResponse](#catalog-v3-GetRegistryResponse)
+  - [ImportRequest](#catalog-v3-ImportRequest)
+  - [ImportResponse](#catalog-v3-ImportResponse)
   - [ListApplicationsRequest](#catalog-v3-ListApplicationsRequest)
   - [ListApplicationsResponse](#catalog-v3-ListApplicationsResponse)
   - [ListArtifactsRequest](#catalog-v3-ListArtifactsRequest)
@@ -722,6 +724,30 @@ Response message for the GetRegistry method.
 | ----- | ---- | ----- | ----------- |
 | registry | [Registry](#catalog-v3-Registry) |  |  |
 
+<a name="catalog-v3-ImportRequest"></a>
+
+### ImportRequest
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| url | [string](#string) |  | Required URL of Helm Chart to import |
+| username | [string](#string) |  | Optional username for downloading from the URL |
+| auth_token | [string](#string) |  | Optional authentication token or password for downloading from the URL |
+| chart_values | [string](#string) |  | Optional raw byte value containing the chart values as raw YAML bytes. |
+| include_auth | [bool](#bool) |  | If true and a username/auth_token is specified then they will be included in the generated Registry object. |
+| generate_default_values | [bool](#bool) |  | If true and chart_values is not set, then the values.yaml will be extracted and used to generate default profile values. |
+| generate_default_parameters | [bool](#bool) |  | Generates default parameters from the values, from chart_values or from generate_default_values as appropriate. |
+
+<a name="catalog-v3-ImportResponse"></a>
+
+### ImportResponse
+
+Response message for the Import method
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| error_messages | [string](#string) | repeated | Any error messages encountered either during chart parsing or entity creation or update. |
+
 <a name="catalog-v3-ListApplicationsRequest"></a>
 
 ### ListApplicationsRequest
@@ -1038,6 +1064,7 @@ The API provides Create, Get, List, Update, Delete, and Watch operations for eac
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | UploadCatalogEntities | [UploadCatalogEntitiesRequest](#catalog-v3-UploadCatalogEntitiesRequest) | [UploadCatalogEntitiesResponse](#catalog-v3-UploadCatalogEntitiesResponse) | Allows uploading of a YAML file containing various application catalog entities. Multiple RPC invocations tagged with the same upload session ID can be used to upload multiple files and to create or update several catalog entities as a single transaction. |
+| Import | [ImportRequest](#catalog-v3-ImportRequest) | [ImportResponse](#catalog-v3-ImportResponse) | Allows importing a deployment package from a Helm Chart. This is done as a single invocation with the URL of the asset to be imported. |
 | CreateRegistry | [CreateRegistryRequest](#catalog-v3-CreateRegistryRequest) | [CreateRegistryResponse](#catalog-v3-CreateRegistryResponse) | Creates a new registry. |
 | ListRegistries | [ListRegistriesRequest](#catalog-v3-ListRegistriesRequest) | [ListRegistriesResponse](#catalog-v3-ListRegistriesResponse) | Gets a list of registries. |
 | GetRegistry | [GetRegistryRequest](#catalog-v3-GetRegistryRequest) | [GetRegistryResponse](#catalog-v3-GetRegistryResponse) | Gets a specific registry. |
