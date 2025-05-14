@@ -43,6 +43,15 @@ service CatalogService {
     };
   }
 
+  // Allows importing a deployment package from a Helm Chart. This is done as a single invocation with the URL
+  // of the asset to be imported.
+  rpc Import(ImportRequest) returns (ImportResponse) {
+    option (google.api.http) = {
+      post: "/catalog.orchestrator.apis/v3/uploads"
+      body: "upload"
+    };
+  }
+
   // === Registry ===
 
   // Creates a new registry.
@@ -214,6 +223,60 @@ message UploadCatalogEntitiesResponse {
 // Response message when multiple files are uploaded at the same time through rest-proxy.
 message UploadMultipleCatalogEntitiesResponse {
   repeated UploadCatalogEntitiesResponse responses = 1 [(google.api.field_behavior) = REQUIRED];
+}
+
+// === Import Messages ===
+
+message ImportRequest {
+  // Optional URL of the API for accessing inventory of artifacts hosted by the registry.
+  string url = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (validate.rules).string = {
+      min_len: 0
+      max_len: 1000
+    }
+  ];
+
+  // Optional username for downloading from the URL
+  string username = 2 [(validate.rules).string = {
+    min_len: 0
+    max_len: 1000
+    pattern: "^\\PC*$"
+  }];
+
+  // Optional authentication token or password for downloading from the URL
+  string auth_token = 3 [(validate.rules).string = {
+    min_len: 0
+    max_len: 4500
+    pattern: "^\\PC*$"
+  }];
+
+  // Raw byte value containing the chart values as raw YAML bytes.
+  string chart_values = 4 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0
+      max_len: 4000000
+    }
+  ];
+
+  // If true and a username/auth_token is specified then they will be included
+  // in the generated Registry object.
+  bool include_auth = 7 [(google.api.field_behavior) = OPTIONAL];
+
+  // If true chart_values is not set, then the values.yaml will be extracted and
+  // used to generate default profile values.
+  bool generate_default_values = 8 [(google.api.field_behavior) = OPTIONAL];
+
+  // Generates default parameters from the values in chart_values (or if generate_default_values
+  // is used, from the values obtained from the chart)
+  bool generate_default_parameters = 9 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// Response message for the Import method
+message ImportResponse {
+  // Any error messages encountered either during chart parsing or entity creation or update.
+  repeated string error_messages = 3;
 }
 
 // === Registry Messages ===
