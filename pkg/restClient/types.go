@@ -334,6 +334,12 @@ type GetRegistryResponse struct {
 	Registry Registry `json:"registry"`
 }
 
+// ImportResponse Response message for the Import method
+type ImportResponse struct {
+	// ErrorMessages Any error messages encountered either during chart parsing or entity creation or update.
+	ErrorMessages *[]string `json:"errorMessages,omitempty"`
+}
+
 // ListApplicationsResponse Response message for the ListApplications method.
 type ListApplicationsResponse struct {
 	// Applications A list of applications.
@@ -582,6 +588,30 @@ type CatalogServiceListDeploymentPackagesParams struct {
 
 // CatalogServiceListDeploymentPackagesParamsKinds defines parameters for CatalogServiceListDeploymentPackages.
 type CatalogServiceListDeploymentPackagesParamsKinds string
+
+// CatalogServiceImportParams defines parameters for CatalogServiceImport.
+type CatalogServiceImportParams struct {
+	// Url Required URL of Helm Chart to import
+	Url *string `form:"url,omitempty" json:"url,omitempty"`
+
+	// Username Optional username for downloading from the URL
+	Username *string `form:"username,omitempty" json:"username,omitempty"`
+
+	// AuthToken Optional authentication token or password for downloading from the URL
+	AuthToken *string `form:"authToken,omitempty" json:"authToken,omitempty"`
+
+	// ChartValues Optional raw byte value containing the chart values as raw YAML bytes.
+	ChartValues *string `form:"chartValues,omitempty" json:"chartValues,omitempty"`
+
+	// IncludeAuth If true and a username/auth_token is specified then they will be included in the generated Registry object.
+	IncludeAuth *bool `form:"includeAuth,omitempty" json:"includeAuth,omitempty"`
+
+	// GenerateDefaultValues If true and chart_values is not set, then the values.yaml will be extracted and used to generate default profile values.
+	GenerateDefaultValues *bool `form:"generateDefaultValues,omitempty" json:"generateDefaultValues,omitempty"`
+
+	// GenerateDefaultParameters Generates default parameters from the values, from chart_values or from generate_default_values as appropriate.
+	GenerateDefaultParameters *bool `form:"generateDefaultParameters,omitempty" json:"generateDefaultParameters,omitempty"`
+}
 
 // CatalogServiceListRegistriesParams defines parameters for CatalogServiceListRegistries.
 type CatalogServiceListRegistriesParams struct {

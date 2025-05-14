@@ -27,6 +27,9 @@ type CatalogServiceClient interface {
 	// tagged with the same upload session ID can be used to upload multiple files and to create or update several
 	// catalog entities as a single transaction.
 	UploadCatalogEntities(ctx context.Context, in *UploadCatalogEntitiesRequest, opts ...grpc.CallOption) (*UploadCatalogEntitiesResponse, error)
+	// Allows importing a deployment package from a Helm Chart. This is done as a single invocation with the URL
+	// of the asset to be imported.
+	Import(ctx context.Context, in *ImportRequest, opts ...grpc.CallOption) (*ImportResponse, error)
 	// Creates a new registry.
 	CreateRegistry(ctx context.Context, in *CreateRegistryRequest, opts ...grpc.CallOption) (*CreateRegistryResponse, error)
 	// Gets a list of registries.
@@ -94,6 +97,15 @@ func NewCatalogServiceClient(cc grpc.ClientConnInterface) CatalogServiceClient {
 func (c *catalogServiceClient) UploadCatalogEntities(ctx context.Context, in *UploadCatalogEntitiesRequest, opts ...grpc.CallOption) (*UploadCatalogEntitiesResponse, error) {
 	out := new(UploadCatalogEntitiesResponse)
 	err := c.cc.Invoke(ctx, "/catalog.v3.CatalogService/UploadCatalogEntities", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *catalogServiceClient) Import(ctx context.Context, in *ImportRequest, opts ...grpc.CallOption) (*ImportResponse, error) {
+	out := new(ImportResponse)
+	err := c.cc.Invoke(ctx, "/catalog.v3.CatalogService/Import", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -443,6 +455,9 @@ type CatalogServiceServer interface {
 	// tagged with the same upload session ID can be used to upload multiple files and to create or update several
 	// catalog entities as a single transaction.
 	UploadCatalogEntities(context.Context, *UploadCatalogEntitiesRequest) (*UploadCatalogEntitiesResponse, error)
+	// Allows importing a deployment package from a Helm Chart. This is done as a single invocation with the URL
+	// of the asset to be imported.
+	Import(context.Context, *ImportRequest) (*ImportResponse, error)
 	// Creates a new registry.
 	CreateRegistry(context.Context, *CreateRegistryRequest) (*CreateRegistryResponse, error)
 	// Gets a list of registries.
@@ -505,6 +520,9 @@ type UnimplementedCatalogServiceServer struct {
 
 func (UnimplementedCatalogServiceServer) UploadCatalogEntities(context.Context, *UploadCatalogEntitiesRequest) (*UploadCatalogEntitiesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadCatalogEntities not implemented")
+}
+func (UnimplementedCatalogServiceServer) Import(context.Context, *ImportRequest) (*ImportResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Import not implemented")
 }
 func (UnimplementedCatalogServiceServer) CreateRegistry(context.Context, *CreateRegistryRequest) (*CreateRegistryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateRegistry not implemented")
@@ -613,6 +631,24 @@ func _CatalogService_UploadCatalogEntities_Handler(srv interface{}, ctx context.
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CatalogServiceServer).UploadCatalogEntities(ctx, req.(*UploadCatalogEntitiesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CatalogService_Import_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ImportRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CatalogServiceServer).Import(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/catalog.v3.CatalogService/Import",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CatalogServiceServer).Import(ctx, req.(*ImportRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1125,6 +1161,10 @@ var CatalogService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UploadCatalogEntities",
 			Handler:    _CatalogService_UploadCatalogEntities_Handler,
+		},
+		{
+			MethodName: "Import",
+			Handler:    _CatalogService_Import_Handler,
 		},
 		{
 			MethodName: "CreateRegistry",

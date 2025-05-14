@@ -239,6 +239,7 @@ customise-openapi: ## Customize Openapi Spec after generation
 	@# TODO: Replace the following remedy with yq-based one; both of the previous yq commands wrongly inject "get: null" for the upload path.
 	@echo "openapi.yaml removing upload path get"
 	@grep -v ' get: null' api/spec/openapi.yaml > api/spec/openapi.yaml.aux; mv api/spec/openapi.yaml.aux api/spec/openapi.yaml
+	@grep -v ' get: {}' api/spec/openapi.yaml > api/spec/openapi.yaml.aux; mv api/spec/openapi.yaml.aux api/spec/openapi.yaml
 
 .PHONY: openapi-spec-validate
 openapi-spec-validate: $(VENV_NAME) ## Install openapi-spec-validator
