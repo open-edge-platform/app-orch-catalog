@@ -164,6 +164,9 @@ func GetHelmCommands(r *yamlreader.YamlReader, dp *catalogv3.DeploymentPackage, 
 		for _, param := range namedParams {
 			helmCmd += fmt.Sprintf(" --set %s=\"%s\"", param.name, param.value)
 		}
+		if namespace != "default" {
+			cmds = append(cmds, fmt.Sprintf("kubectl create namespace %s || true", namespace))
+		}
 		cmds = append(cmds, helmCmd)
 	}
 
