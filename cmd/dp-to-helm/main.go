@@ -10,9 +10,12 @@ import (
 	"github.com/open-edge-platform/app-orch-catalog/internal/yamlreader"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 var (
+	profile       string
+	listProfiles  bool
 	rootCmd = &cobra.Command{
 		Use:   "dp-to-helm <dir>",
 		Short: "Convert a Deployment Package to a Helm install command",
@@ -56,22 +59,26 @@ func FindAppProfile(app *catalogv3.Application, name string) (*catalogv3.Profile
 	return nil, fmt.Errorf("application profile %s not found", name)
 }
 
-func PrintDPHelmCommands(r *yamlreader.YamlReader, dp *catalogv3.DeploymentPackage) error {
-	profileName := dp.DefaultProfileName
+func GetHelmCommands(r *yamlreader.YamlReader, dp *catalogv3.DeploymentPackage, profileName string) ([]string, error) {
+	if profileName == "" {
+		profileName = dp.DefaultProfileName
+	}
 	profile, err := FindDeploymentProfile(dp, profileName)
 	if err != nil {
-		return err
+		return nil, err
 	}
+
 	fmt.Printf("# using deployment package profile: %s\n", profileName)
+
 	cmds := make([]string, 0)
 	for _, app := range dp.ApplicationReferences {
 		app, err := FindApp(r, app.Name, app.Version)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		reg, err := FindRegistry(r, app.HelmRegistryName)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		var namespace string
 		namespace, okay := dp.DefaultNamespaces[app.Name]
@@ -81,59 +88,73 @@ func PrintDPHelmCommands(r *yamlreader.YamlReader, dp *catalogv3.DeploymentPacka
 		appProfileName := profile.ApplicationProfiles[app.Name]
 		appProfile, err := FindAppProfile(app, appProfileName)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		_ = appProfile
 		valuesFileName := fmt.Sprintf("%s-%s.yaml", app.Name, profileName)
+		err = os.WriteFile(valuesFileName, []byte(appProfile.ChartValues), 0644)
+		if err != nil {
+			return nil, fmt.Errorf("failed to write to values file %s: %v", valuesFileName, err)
+		}
 		fmt.Printf("# created values file %s for app %s profile %s\n", valuesFileName, app.Name, appProfileName)
 		url := fmt.Sprintf("%s/%s", reg.RootUrl, app.ChartName)
-		helmCmd := fmt.Sprintf("helm install %s %s --version %s --namespace %s -f %s", dp.Name, url, app.ChartVersion, namespace, valuesFileName)
+		helmCmd := fmt.Sprintf("helm install %s %s --version %s --namespace %s -f %s", app.Name, url, app.ChartVersion, namespace, valuesFileName)
 		cmds = append(cmds, helmCmd)
 	}
-	for _, cmd := range cmds {
-		fmt.Println(cmd)
-	}
-	return nil
+
+	return cmds, nil
 }
 
 func mainCommand(cmd *cobra.Command, args []string) {
 	if len(args) != 1 {
 		err := cmd.Usage()
 		verboseerror.FatalErrCheck(err, "Failed to print usage: %v", err)
-		return
 	}
 
 	dir := args[0]
 
 	r := &yamlreader.YamlReader{}
 	fileSet, err := r.ReadYamlFilesFromDir(dir)
-	if err != nil {
-		verboseerror.FatalErrCheck(err, "Failed to read YAML files from directory: %v", err)
-		return
-	}
+	verboseerror.FatalErrCheck(err, "Failed to read YAML files from directory: %v", err)
+
 	fileSets, err := r.ExpandFileSet(fileSet)
-	if err != nil {
-		verboseerror.FatalErrCheck(err, "Failed to expand file set: %v", err)
-		return
-	}
+	verboseerror.FatalErrCheck(err, "Failed to expand file set: %v", err)
+
 	for _, fileSet := range fileSets {
 		err := r.ProcessFiles(fileSet)
-		if err != nil {
-			verboseerror.FatalErrCheck(err, "Failed to load YAML specs: %v", err)
-			return
-		}
+		verboseerror.FatalErrCheck(err, "Failed to load YAML specs: %v", err)
 	}
+
+	if len(r.DeploymentPackages) == 0 {
+		verboseerror.FatalErrCheck(fmt.Errorf("multiple deployment packages found"), "Make sure there is a deployment package in the directory")
+	}
+
+	if len(r.DeploymentPackages) > 1 {
+		verboseerror.FatalErrCheck(fmt.Errorf("multiple deployment packages found"), "Please use only one deployment paackage")
+	}
+
+	if listProfiles {
+		for _, dp := range r.DeploymentPackages {
+			for _, profile := range dp.Profiles {
+				fmt.Printf("%s\n", profile.Name)
+			}
+		}
+		return
+	}
+
 	for _, dp := range r.DeploymentPackages {
-		err := PrintDPHelmCommands(r, dp)
-		if err != nil {
-			verboseerror.FatalErrCheck(err, "Failed to print helm commands: %v", err)
-			return
+		cmds, err := GetHelmCommands(r, dp, profile)
+		verboseerror.FatalErrCheck(err, "Failed to print helm commands: %v", err)
+		for _, cmd := range cmds {
+			fmt.Printf("%s\n", cmd)
 		}
 	}
 }
 
 func main() {
 	rootCmd.PersistentFlags().BoolVarP(&verboseerror.Quiet, "quiet", "q", false, "enable quiet mode, suppressing info level messages")
+	rootCmd.PersistentFlags().BoolVarP(&listProfiles, "listprofiles", "L", false, "List the available deployment package profiles")
+	rootCmd.PersistentFlags().StringVarP(&profile, "profile", "p", "", "set which deployment package profile to use")
 	rootCmd.Run = mainCommand
 
 	err := rootCmd.Execute()
