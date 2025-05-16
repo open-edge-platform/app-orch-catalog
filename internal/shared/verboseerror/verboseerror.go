@@ -36,11 +36,8 @@ func Fatalf(format string, args ...interface{}) {
 // FatalErrCheck checks the error and prints a formatted message to stderr if the
 // error is not nil. It then prints the error and exits.
 
-func FatalErrCheck(err error, format string, args ...interface{}) {
+func FatalErrCheck(err error) {
 	if err != nil {
-		if format != "" {
-			fmt.Fprintf(os.Stderr, format, args...)
-		}
 		PrintVerboseError(err)
 		os.Exit(1)
 	}
@@ -75,5 +72,5 @@ func WriteErrorTemplate(templateName string, templateContents string, wr io.Writ
 	err := template.Must(template.New(templateName).Parse(templateContents)).Execute(wr, e)
 
 	/* if we failed to render the template, then fatal exit */
-	FatalErrCheck(err, "Failed to render error template: %v", err)
+	FatalErrCheck(fmt.Errorf("Failed to render error template: %v", err))
 }
