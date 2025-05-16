@@ -11,11 +11,21 @@ import (
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/spf13/cobra"
 	"os"
+	"bufio"
+	"strings"
 )
+
+type Param struct {
+	name string
+	value string
+}
 
 var (
 	profile       string
 	listProfiles  bool
+	allParams	 bool
+	rawOverrides 	 []string
+	Overrides map[string]string
 	rootCmd = &cobra.Command{
 		Use:   "dp-to-helm <dir>",
 		Short: "Convert a Deployment Package to a Helm install command",
@@ -59,6 +69,55 @@ func FindAppProfile(app *catalogv3.Application, name string) (*catalogv3.Profile
 	return nil, fmt.Errorf("application profile %s not found", name)
 }
 
+func ApplyParameters(appProfile *catalogv3.Profile) ([]Param, error) {
+	namedParams := make([]Param, 0)
+	for _, param := range appProfile.ParameterTemplates {
+		// if param was overridden on the command line, use that value
+		override, ok := Overrides[param.Name]
+		if ok {
+			namedParam := Param{
+				name:  param.Name,
+				value: override,
+			}
+			namedParams = append(namedParams, namedParam)
+			continue
+		}
+
+		// Mandatory parameters only, unless the user asked for everything
+		if !param.Mandatory && !allParams {
+			continue
+		}
+
+		for {
+			if param.Mandatory {
+				fmt.Printf("(mandatory) ")
+			}
+			fmt.Printf("Parameter %s [%s]: ", param.Name, param.Default)
+			reader := bufio.NewReader(os.Stdin)
+			value, err := reader.ReadString('\n')
+			if err != nil {
+			    fmt.Printf("failed to read parameter %s: %v\n", param.Name, err)
+				continue
+			}
+			value = value[:len(value)-1] // Trim the newline character
+			if value == "" {
+				value = param.Default
+			}
+			if value == "" && param.Mandatory {
+				fmt.Printf("Parameter %s is mandatory, please provide a value\n", param.Name)
+				continue
+			}
+			namedParam := Param{
+				name:  param.Name,
+				value: value,
+			}
+			namedParams = append(namedParams, namedParam)
+			break
+		}
+	}
+	return namedParams, nil
+}
+
 func GetHelmCommands(r *yamlreader.YamlReader, dp *catalogv3.DeploymentPackage, profileName string) ([]string, error) {
 	if profileName == "" {
 		profileName = dp.DefaultProfileName
@@ -90,7 +149,10 @@ func GetHelmCommands(r *yamlreader.YamlReader, dp *catalogv3.DeploymentPackage, 
 		if err != nil {
 			return nil, err
 		}
-		_ = appProfile
+		namedParams, err := ApplyParameters(appProfile)
+		if err != nil {
+			return nil, err
+		}
 		valuesFileName := fmt.Sprintf("%s-%s.yaml", app.Name, profileName)
 		err = os.WriteFile(valuesFileName, []byte(appProfile.ChartValues), 0644)
 		if err != nil {
@@ -99,6 +161,9 @@ func GetHelmCommands(r *yamlreader.YamlReader, dp *catalogv3.DeploymentPackage, 
 		fmt.Printf("# created values file %s for app %s profile %s\n", valuesFileName, app.Name, appProfileName)
 		url := fmt.Sprintf("%s/%s", reg.RootUrl, app.ChartName)
 		helmCmd := fmt.Sprintf("helm install %s %s --version %s --namespace %s -f %s", app.Name, url, app.ChartVersion, namespace, valuesFileName)
+		for _, param := range namedParams {
+			helmCmd += fmt.Sprintf(" --set %s=\"%s\"", param.name, param.value)
+		}
 		cmds = append(cmds, helmCmd)
 	}
 
@@ -106,31 +171,45 @@ func GetHelmCommands(r *yamlreader.YamlReader, dp *catalogv3.DeploymentPackage, 
 }
 
 func mainCommand(cmd *cobra.Command, args []string) {
+	Overrides = make(map[string]string)
+    for _, override := range rawOverrides {
+		parts := strings.Split(override, "=")
+		if len(parts) != 2 {
+			verboseerror.FatalErrCheck(fmt.Errorf("invalid --set override format: %s, expected <key>=<value>", override))
+		}
+		name := strings.TrimSpace(parts[0])
+		value := strings.TrimSpace(parts[1])
+		if name == "" || value == "" {
+			verboseerror.FatalErrCheck(fmt.Errorf("invalid --set override format: %s, expected <key>=<value>", override))
+		}
+		Overrides[name] = value
+	}
+
 	if len(args) != 1 {
 		err := cmd.Usage()
-		verboseerror.FatalErrCheck(err, "Failed to print usage: %v", err)
+		verboseerror.FatalErrCheck(err)
 	}
 
 	dir := args[0]
 
 	r := &yamlreader.YamlReader{}
 	fileSet, err := r.ReadYamlFilesFromDir(dir)
-	verboseerror.FatalErrCheck(err, "Failed to read YAML files from directory: %v", err)
+	verboseerror.FatalErrCheck(err)
 
 	fileSets, err := r.ExpandFileSet(fileSet)
-	verboseerror.FatalErrCheck(err, "Failed to expand file set: %v", err)
+	verboseerror.FatalErrCheck(err)
 
 	for _, fileSet := range fileSets {
 		err := r.ProcessFiles(fileSet)
-		verboseerror.FatalErrCheck(err, "Failed to load YAML specs: %v", err)
+		verboseerror.FatalErrCheck(err)
 	}
 
 	if len(r.DeploymentPackages) == 0 {
-		verboseerror.FatalErrCheck(fmt.Errorf("multiple deployment packages found"), "Make sure there is a deployment package in the directory")
+		verboseerror.FatalErrCheck(fmt.Errorf("no deployment packages found"))
 	}
 
 	if len(r.DeploymentPackages) > 1 {
-		verboseerror.FatalErrCheck(fmt.Errorf("multiple deployment packages found"), "Please use only one deployment paackage")
+		verboseerror.FatalErrCheck(fmt.Errorf("multiple deployment packages found"))
 	}
 
 	if listProfiles {
@@ -144,7 +223,7 @@ func mainCommand(cmd *cobra.Command, args []string) {
 
 	for _, dp := range r.DeploymentPackages {
 		cmds, err := GetHelmCommands(r, dp, profile)
-		verboseerror.FatalErrCheck(err, "Failed to print helm commands: %v", err)
+		verboseerror.FatalErrCheck(err)
 		for _, cmd := range cmds {
 			fmt.Printf("%s\n", cmd)
 		}
@@ -154,9 +233,11 @@ func mainCommand(cmd *cobra.Command, args []string) {
 func main() {
 	rootCmd.PersistentFlags().BoolVarP(&verboseerror.Quiet, "quiet", "q", false, "enable quiet mode, suppressing info level messages")
 	rootCmd.PersistentFlags().BoolVarP(&listProfiles, "listprofiles", "L", false, "List the available deployment package profiles")
+	rootCmd.PersistentFlags().BoolVarP(&allParams, "allparams", "A", false, "Ask for all parameters, not just mandatory ones")
 	rootCmd.PersistentFlags().StringVarP(&profile, "profile", "p", "", "set which deployment package profile to use")
+	rootCmd.PersistentFlags().StringArrayVarP(&rawOverrides, "set", "S", nil, "Set a parameter values using <key>=<value> format")
 	rootCmd.Run = mainCommand
 
 	err := rootCmd.Execute()
-	verboseerror.FatalErrCheck(err, "Failed to execute root command: %v", err)
+	verboseerror.FatalErrCheck(err)
 }
