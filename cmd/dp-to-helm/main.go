@@ -6,14 +6,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/open-edge-platform/app-orch-catalog/internal/yamlreader"
 	"github.com/open-edge-platform/app-orch-catalog/internal/shared/verboseerror"
-	"github.com/spf13/cobra"
+	"github.com/open-edge-platform/app-orch-catalog/internal/yamlreader"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
+	"github.com/spf13/cobra"
 )
 
 var (
-	rootCmd     = &cobra.Command{
+	rootCmd = &cobra.Command{
 		Use:   "dp-to-helm <dir>",
 		Short: "Convert a Deployment Package to a Helm install command",
 		Long:  "This tool takes a deployment package and outputs the equivalent helm install command",
@@ -57,43 +57,43 @@ func FindAppProfile(app *catalogv3.Application, name string) (*catalogv3.Profile
 }
 
 func PrintDPHelmCommands(r *yamlreader.YamlReader, dp *catalogv3.DeploymentPackage) error {
-    profileName := dp.DefaultProfileName
+	profileName := dp.DefaultProfileName
 	profile, err := FindDeploymentProfile(dp, profileName)
 	if err != nil {
 		return err
 	}
-    fmt.Printf("# using deployment package profile: %s\n", profileName)
-	cmds := make([]string,0)
-   for _, app := range dp.ApplicationReferences {
-       app, err := FindApp(r, app.Name, app.Version)
-	   if err != nil {
-		   return err
-	   }
-	   reg, err := FindRegistry(r, app.HelmRegistryName)
-	   if err != nil {
-		   return err
-	   }
-	   var namespace string
-	   namespace, okay := dp.DefaultNamespaces[app.Name]
-	   if !okay {
-		   namespace = "default"
-	   }
-	   appProfileName := profile.ApplicationProfiles[app.Name]
-	   appProfile, err := FindAppProfile(app, appProfileName)
-	   if err != nil {
-		   return err
-	   }
-	   _ = appProfile
-	   valuesFileName := fmt.Sprintf("%s-%s.yaml", app.Name, profileName)
-	   fmt.Printf("# created values file %s for app %s profile %s\n", valuesFileName, app.Name, appProfileName)
-	   url := fmt.Sprintf("%s/%s", reg.RootUrl, app.ChartName)
-	   helmCmd := fmt.Sprintf("helm install %s %s --version %s --namespace %s -f %s", dp.Name, url, app.ChartVersion, namespace, valuesFileName)
-	   cmds = append(cmds, helmCmd)
-   }
-   for _, cmd := range cmds {
-	   fmt.Println(cmd)
-   }
-   return nil
+	fmt.Printf("# using deployment package profile: %s\n", profileName)
+	cmds := make([]string, 0)
+	for _, app := range dp.ApplicationReferences {
+		app, err := FindApp(r, app.Name, app.Version)
+		if err != nil {
+			return err
+		}
+		reg, err := FindRegistry(r, app.HelmRegistryName)
+		if err != nil {
+			return err
+		}
+		var namespace string
+		namespace, okay := dp.DefaultNamespaces[app.Name]
+		if !okay {
+			namespace = "default"
+		}
+		appProfileName := profile.ApplicationProfiles[app.Name]
+		appProfile, err := FindAppProfile(app, appProfileName)
+		if err != nil {
+			return err
+		}
+		_ = appProfile
+		valuesFileName := fmt.Sprintf("%s-%s.yaml", app.Name, profileName)
+		fmt.Printf("# created values file %s for app %s profile %s\n", valuesFileName, app.Name, appProfileName)
+		url := fmt.Sprintf("%s/%s", reg.RootUrl, app.ChartName)
+		helmCmd := fmt.Sprintf("helm install %s %s --version %s --namespace %s -f %s", dp.Name, url, app.ChartVersion, namespace, valuesFileName)
+		cmds = append(cmds, helmCmd)
+	}
+	for _, cmd := range cmds {
+		fmt.Println(cmd)
+	}
+	return nil
 }
 
 func mainCommand(cmd *cobra.Command, args []string) {
