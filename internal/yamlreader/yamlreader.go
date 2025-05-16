@@ -10,7 +10,6 @@ import (
 	"compress/gzip"
 	b64 "encoding/base64"
 	"errors"
-	"path/filepath"
 	"fmt"
 	nberrors "github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/schema/upload"
@@ -18,29 +17,30 @@ import (
 	"io"
 	"os"
 	"path"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strings"
 
-	"github.com/open-edge-platform/orch-library/go/dazl"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/malware"
+	"github.com/open-edge-platform/orch-library/go/dazl"
 	yaml "gopkg.in/yaml.v3"
 )
 
 const (
 	MaxExtractedFileSize = 10 * 1024 * 1024 // to limit the size of extracted files and mitigate decompression bomb lint message
-	kindNormal    = "normal"
-	kindAddon     = "addon"
-	kindExtension = "extension"
-	helmType  = "HELM"
+	kindNormal           = "normal"
+	kindAddon            = "addon"
+	kindExtension        = "extension"
+	helmType             = "HELM"
 )
 
 type YamlReader struct {
-	Applications		[]*catalogv3.Application
-	DeploymentPackages 	[]*catalogv3.DeploymentPackage
-	Artifacts			[]*catalogv3.Artifact
-	Registries			[]*catalogv3.Registry
+	Applications       []*catalogv3.Application
+	DeploymentPackages []*catalogv3.DeploymentPackage
+	Artifacts          []*catalogv3.Artifact
+	Registries         []*catalogv3.Registry
 }
 
 // fileSet is a map of file names to their contents. It is a set of files that should be evaluated
@@ -52,11 +52,11 @@ var log dazl.Logger
 func kindFromDB(kind string) catalogv3.Kind {
 	switch kind {
 	case kindNormal:
-			return catalogv3.Kind_KIND_NORMAL
+		return catalogv3.Kind_KIND_NORMAL
 	case kindAddon:
-			return catalogv3.Kind_KIND_ADDON
+		return catalogv3.Kind_KIND_ADDON
 	case kindExtension:
-			return catalogv3.Kind_KIND_EXTENSION
+		return catalogv3.Kind_KIND_EXTENSION
 	}
 	return catalogv3.Kind_KIND_NORMAL
 }
@@ -131,7 +131,6 @@ func (u *YamlReader) ProcessFiles(files fileSet) error {
 			return nberrors.NewInvalidArgument(nberrors.WithError(err), nberrors.WithMessage("uploaded file %s: %v", d.FileName, err))
 		}
 	}
-
 
 	return nil
 }
