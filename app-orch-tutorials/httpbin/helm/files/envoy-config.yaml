@@ -42,7 +42,7 @@ static_resources:
                           connect-src 'self';
                           default-src 'self';
                           form-action 'self';
-                          frame-ancestors 'self';
+                          frame-ancestors 'none';
                           frame-src 'self';
                           img-src 'self' camo.githubusercontent.com data:;
                           object-src 'none';
