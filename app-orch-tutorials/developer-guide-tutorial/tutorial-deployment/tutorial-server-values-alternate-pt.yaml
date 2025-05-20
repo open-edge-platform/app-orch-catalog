@@ -8,7 +8,7 @@ tutorialServer:
   greeting: "Deployed by Application Orchestration (alternate-pt)"
   initialCount: 0
 image:
-  #  Please update with your CLUSTER_FQDN and your ORG and PROJECT names
-  repository: registry-oci.<CLUSTER_FQDN>/catalog-apps-<ORG>-<PROJECT>/tutorial-server-image
+  #  Will update with your CLUSTER_FQDN and your ORG and PROJECT names
+  repository: %ImageRegistryURL%/%RegistryProjectName%/tutorial-server-image
 imagePullSecrets:
   - name: "%GeneratedDockerCredential%"
