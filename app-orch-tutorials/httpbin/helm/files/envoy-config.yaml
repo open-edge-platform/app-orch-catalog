@@ -51,7 +51,7 @@ static_resources:
                           upgrade-insecure-requests;
                     - header:
                         key: "Cross-Origin-Embedder-Policy"
-                        value: "unsafe-none"
+                        value: "require-corp"
                     - header:
                         key: "Cross-Origin-Opener-Policy"
                         value: "same-origin"

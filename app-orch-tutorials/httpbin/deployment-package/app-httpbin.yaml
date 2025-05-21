@@ -6,13 +6,13 @@ schemaVersion: "0.1"
 $schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
 
 name: httpbin
-version: 0.1.6
+version: 0.1.7
 description: "Helm chart to install httpbingo.org on Kubernetes."
 displayName: "HttpBin Go"
 
 helmRegistry: "harbor-helm-oci"
 chartName: "httpbin"
-chartVersion: "0.1.6"
+chartVersion: "0.1.7"
 
 profiles:
   - name: "without-envoy"

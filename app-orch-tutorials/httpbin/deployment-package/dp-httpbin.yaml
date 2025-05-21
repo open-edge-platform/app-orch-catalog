@@ -8,11 +8,11 @@ $schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
 name: httpbin
 displayName: "HttpBin"
 description: "DP to install httpbingo.org on Kubernetes"
-version: "2.3.3"
+version: "2.3.4"
 
 applications:
   - name: httpbin
-    version: 0.1.6
+    version: 0.1.7
 
 deploymentProfiles:
   - name: default
