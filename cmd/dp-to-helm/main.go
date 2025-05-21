@@ -191,6 +191,7 @@ func mainCommand(cmd *cobra.Command, args []string) {
 	if len(args) != 1 {
 		err := cmd.Usage()
 		verboseerror.FatalErrCheck(err)
+		return
 	}
 
 	dir := args[0]
