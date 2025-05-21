@@ -5,35 +5,56 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/open-edge-platform/app-orch-catalog/internal/shared/verboseerror"
 	"github.com/open-edge-platform/app-orch-catalog/internal/yamlreader"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/spf13/cobra"
-	"os"
-	"bufio"
-	"strings"
 )
 
 type Param struct {
-	name string
+	name  string
 	value string
 }
 
 var (
-	profile       string
-	listProfiles  bool
-	allParams	 bool
-	rawOverrides 	 []string
-	Overrides map[string]string
-	rootCmd = &cobra.Command{
+	profile      string
+	listProfiles bool
+	allParams    bool
+	rawOverrides []string
+	rootCmd      = &cobra.Command{
 		Use:   "dp-to-helm <dir>",
 		Short: "Convert a Deployment Package to a Helm install command",
 		Long:  "This tool takes a deployment package and outputs the equivalent helm install command",
 	}
 )
 
-func FindApp(r *yamlreader.YamlReader, name, version string) (*catalogv3.Application, error) {
+type DpToHelm struct {
+	yamlreader.YamlReader
+	overrides map[string]string
+}
+
+func (r *DpToHelm) SetOverrides(rawOverrides []string) {
+	r.overrides = make(map[string]string)
+	for _, override := range rawOverrides {
+		parts := strings.Split(override, "=")
+		if len(parts) != 2 {
+			verboseerror.FatalErrCheck(fmt.Errorf("invalid --set override format: %s, expected <key>=<value>", override))
+		}
+		name := strings.TrimSpace(parts[0])
+		value := strings.TrimSpace(parts[1])
+		if name == "" || value == "" {
+			verboseerror.FatalErrCheck(fmt.Errorf("invalid --set override format: %s, expected <key>=<value>", override))
+		}
+		r.overrides[name] = value
+	}
+}
+
+func (r *DpToHelm) FindApp(name, version string) (*catalogv3.Application, error) {
 	for _, app := range r.Applications {
 		if app.Name == name && app.Version == version {
 			return app, nil
@@ -42,7 +63,7 @@ func FindApp(r *yamlreader.YamlReader, name, version string) (*catalogv3.Applica
 	return nil, fmt.Errorf("application %s with version %s not found", name, version)
 }
 
-func FindRegistry(r *yamlreader.YamlReader, name string) (*catalogv3.Registry, error) {
+func (r *DpToHelm) FindRegistry(name string) (*catalogv3.Registry, error) {
 	for _, reg := range r.Registries {
 		if reg.Name == name {
 			return reg, nil
@@ -51,7 +72,7 @@ func FindRegistry(r *yamlreader.YamlReader, name string) (*catalogv3.Registry, e
 	return nil, fmt.Errorf("registry %s not found", name)
 }
 
-func FindDeploymentProfile(dp *catalogv3.DeploymentPackage, name string) (*catalogv3.DeploymentProfile, error) {
+func (r *DpToHelm) FindDeploymentProfile(dp *catalogv3.DeploymentPackage, name string) (*catalogv3.DeploymentProfile, error) {
 	for _, profile := range dp.Profiles {
 		if profile.Name == name {
 			return profile, nil
@@ -60,7 +81,7 @@ func FindDeploymentProfile(dp *catalogv3.DeploymentPackage, name string) (*catal
 	return nil, fmt.Errorf("deployment profile %s not found", name)
 }
 
-func FindAppProfile(app *catalogv3.Application, name string) (*catalogv3.Profile, error) {
+func (r *DpToHelm) FindAppProfile(app *catalogv3.Application, name string) (*catalogv3.Profile, error) {
 	for _, appProfile := range app.Profiles {
 		if appProfile.Name == name {
 			return appProfile, nil
@@ -69,11 +90,11 @@ func FindAppProfile(app *catalogv3.Application, name string) (*catalogv3.Profile
 	return nil, fmt.Errorf("application profile %s not found", name)
 }
 
-func ApplyParameters(appProfile *catalogv3.Profile) ([]Param, error) {
+func (r *DpToHelm) ApplyParameters(appProfile *catalogv3.Profile, allParams bool) ([]Param, error) {
 	namedParams := make([]Param, 0)
 	for _, param := range appProfile.ParameterTemplates {
 		// if param was overridden on the command line, use that value
-		override, ok := Overrides[param.Name]
+		override, ok := r.overrides[param.Name]
 		if ok {
 			namedParam := Param{
 				name:  param.Name,
@@ -96,7 +117,7 @@ func ApplyParameters(appProfile *catalogv3.Profile) ([]Param, error) {
 			reader := bufio.NewReader(os.Stdin)
 			value, err := reader.ReadString('\n')
 			if err != nil {
-			    fmt.Printf("failed to read parameter %s: %v\n", param.Name, err)
+				fmt.Printf("failed to read parameter %s: %v\n", param.Name, err)
 				continue
 			}
 			value = value[:len(value)-1] // Trim the newline character
@@ -118,11 +139,11 @@ func ApplyParameters(appProfile *catalogv3.Profile) ([]Param, error) {
 	return namedParams, nil
 }
 
-func GetHelmCommands(r *yamlreader.YamlReader, dp *catalogv3.DeploymentPackage, profileName string) ([]string, error) {
+func (r *DpToHelm) GetHelmCommands(dp *catalogv3.DeploymentPackage, profileName string, allParams bool) ([]string, error) {
 	if profileName == "" {
 		profileName = dp.DefaultProfileName
 	}
-	profile, err := FindDeploymentProfile(dp, profileName)
+	profile, err := r.FindDeploymentProfile(dp, profileName)
 	if err != nil {
 		return nil, err
 	}
@@ -131,11 +152,11 @@ func GetHelmCommands(r *yamlreader.YamlReader, dp *catalogv3.DeploymentPackage, 
 
 	cmds := make([]string, 0)
 	for _, app := range dp.ApplicationReferences {
-		app, err := FindApp(r, app.Name, app.Version)
+		app, err := r.FindApp(app.Name, app.Version)
 		if err != nil {
 			return nil, err
 		}
-		reg, err := FindRegistry(r, app.HelmRegistryName)
+		reg, err := r.FindRegistry(app.HelmRegistryName)
 		if err != nil {
 			return nil, err
 		}
@@ -145,11 +166,11 @@ func GetHelmCommands(r *yamlreader.YamlReader, dp *catalogv3.DeploymentPackage, 
 			namespace = "default"
 		}
 		appProfileName := profile.ApplicationProfiles[app.Name]
-		appProfile, err := FindAppProfile(app, appProfileName)
+		appProfile, err := r.FindAppProfile(app, appProfileName)
 		if err != nil {
 			return nil, err
 		}
-		namedParams, err := ApplyParameters(appProfile)
+		namedParams, err := r.ApplyParameters(appProfile, allParams)
 		if err != nil {
 			return nil, err
 		}
@@ -174,20 +195,6 @@ func GetHelmCommands(r *yamlreader.YamlReader, dp *catalogv3.DeploymentPackage, 
 }
 
 func mainCommand(cmd *cobra.Command, args []string) {
-	Overrides = make(map[string]string)
-    for _, override := range rawOverrides {
-		parts := strings.Split(override, "=")
-		if len(parts) != 2 {
-			verboseerror.FatalErrCheck(fmt.Errorf("invalid --set override format: %s, expected <key>=<value>", override))
-		}
-		name := strings.TrimSpace(parts[0])
-		value := strings.TrimSpace(parts[1])
-		if name == "" || value == "" {
-			verboseerror.FatalErrCheck(fmt.Errorf("invalid --set override format: %s, expected <key>=<value>", override))
-		}
-		Overrides[name] = value
-	}
-
 	if len(args) != 1 {
 		err := cmd.Usage()
 		verboseerror.FatalErrCheck(err)
@@ -196,7 +203,10 @@ func mainCommand(cmd *cobra.Command, args []string) {
 
 	dir := args[0]
 
-	r := &yamlreader.YamlReader{}
+	r := &DpToHelm{}
+
+	r.SetOverrides(rawOverrides)
+
 	fileSet, err := r.ReadYamlFilesFromDir(dir)
 	verboseerror.FatalErrCheck(err)
 
@@ -226,7 +236,7 @@ func mainCommand(cmd *cobra.Command, args []string) {
 	}
 
 	for _, dp := range r.DeploymentPackages {
-		cmds, err := GetHelmCommands(r, dp, profile)
+		cmds, err := r.GetHelmCommands(dp, profile, allParams)
 		verboseerror.FatalErrCheck(err)
 		for _, cmd := range cmds {
 			fmt.Printf("%s\n", cmd)
