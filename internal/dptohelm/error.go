@@ -187,3 +187,42 @@ Package in it. There should be only one Deployment Package in the directory.
 func (e *DirectoryError) Unwrap() error {
 	return e.Err
 }
+
+// InputError is an error that occurs while reading input files
+
+type InputError struct {
+	InputFile string
+	Msg       string
+	Err       error
+}
+
+func (e *InputError) Error() string {
+	msg := fmt.Sprintf("%s while reading %s", e.Msg, e.InputFile)
+	if e.Err != nil {
+		msg = fmt.Sprintf("%s: %v", msg, e.Err)
+	}
+	return msg
+}
+
+func (e *InputError) Verbose(wr io.Writer) {
+	errTemplate := `------------------------------------------------------------
+A critical error was encountered
+------------------------------------------------------------
+{{ if .Msg -}}
+Message:       {{.Msg}}
+{{end -}}
+{{- if .InputFile -}}
+File:          {{.InputFile}}
+{{end -}}
+{{- if .Err -}}
+Wrapped Error: {{.Err}}
+{{end}}
+Recommendation: Please check that the files that you have specified exist and
+are readable by the current user.
+`
+	verboseerror.WriteErrorTemplate("InputError", errTemplate, wr, e)
+}
+
+func (e *InputError) Unwrap() error {
+	return e.Err
+}

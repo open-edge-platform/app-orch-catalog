@@ -12,6 +12,7 @@ import (
 
 	"github.com/open-edge-platform/app-orch-catalog/internal/yamlreader"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
+	"github.com/open-edge-platform/app-orch-catalog/pkg/schema/upload"
 )
 
 type Param struct {
@@ -21,7 +22,61 @@ type Param struct {
 
 type DpToHelm struct {
 	yamlreader.YamlReader
-	overrides map[string]string
+	Applications       []*catalogv3.Application
+	DeploymentPackages []*catalogv3.DeploymentPackage
+	Registries         []*catalogv3.Registry
+	overrides          map[string]string
+}
+
+// ProcessFiles processes the given FileSet, loading its YAML files and
+// adding the resulting objects to the YamlReader object.
+
+func (u *DpToHelm) ProcessFiles(files yamlreader.FileSet) error {
+	// Process each FileSet, load its yaml, sort, and add to the catalog.
+
+	orderedSpecs, err := u.LoadYamlSpecs(files)
+	if err != nil {
+		return err
+	}
+
+	for _, d := range orderedSpecs {
+		switch d.SpecSchema {
+		case upload.DeploymentPackageType:
+			dp, err := u.ReadDeploymentPackage(d)
+			if err != nil {
+				return err
+			}
+			u.DeploymentPackages = append(u.DeploymentPackages, dp)
+		case upload.DeploymentPackageLegacyType:
+			dp, err := u.ReadDeploymentPackage(d)
+			if err != nil {
+				return err
+			}
+			u.DeploymentPackages = append(u.DeploymentPackages, dp)
+		case upload.ApplicationType:
+			app, err := u.ReadApplication(d, files) // application uses the FileSet to lookup profiles
+			if err != nil {
+				return err
+			}
+			u.Applications = append(u.Applications, app)
+		case upload.RegistryType:
+			reg, err := u.ReadRegistry(d)
+			if err != nil {
+				return err
+			}
+			u.Registries = append(u.Registries, reg)
+		case upload.ArtifactType:
+			_, err = u.ReadArtifact(d)
+			if err != nil {
+				return err
+			}
+			// we don't use these for anything
+		default:
+			return &InputError{Msg: fmt.Sprintf("unhandled type %s", d.SpecSchema), InputFile: d.FileName}
+		}
+	}
+
+	return nil
 }
 
 func (r *DpToHelm) SetOverrides(rawOverrides []string) error {

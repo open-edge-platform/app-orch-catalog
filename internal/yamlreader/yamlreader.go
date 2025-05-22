@@ -11,9 +11,6 @@ import (
 	b64 "encoding/base64"
 	"errors"
 	"fmt"
-	nberrors "github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
-	"github.com/open-edge-platform/app-orch-catalog/pkg/schema/upload"
-	"github.com/open-edge-platform/app-orch-catalog/pkg/schema/validator"
 	"io"
 	"os"
 	"path"
@@ -21,6 +18,10 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+
+	nberrors "github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
+	"github.com/open-edge-platform/app-orch-catalog/pkg/schema/upload"
+	"github.com/open-edge-platform/app-orch-catalog/pkg/schema/validator"
 
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/malware"
@@ -37,15 +38,11 @@ const (
 )
 
 type YamlReader struct {
-	Applications       []*catalogv3.Application
-	DeploymentPackages []*catalogv3.DeploymentPackage
-	Artifacts          []*catalogv3.Artifact
-	Registries         []*catalogv3.Registry
 }
 
-// fileSet is a map of file names to their contents. It is a set of files that should be evaluated
+// FileSet is a map of file names to their contents. It is a set of files that should be evaluated
 // together. For example, it may contain applications and their profiles.
-type fileSet map[string][]byte
+type FileSet map[string][]byte
 
 var log dazl.Logger
 
@@ -61,8 +58,8 @@ func kindFromDB(kind string) catalogv3.Kind {
 	return catalogv3.Kind_KIND_NORMAL
 }
 
-func (u *YamlReader) ReadYamlFilesFromDir(dir string) (fileSet, error) {
-	files := make(fileSet)
+func (u *YamlReader) ReadYamlFilesFromDir(dir string) (FileSet, error) {
+	files := make(FileSet)
 
 	info, err := os.Stat(dir)
 	if os.IsNotExist(err) {
@@ -104,37 +101,6 @@ func (u *YamlReader) ReadYamlFilesFromDir(dir string) (fileSet, error) {
 	return files, nil
 }
 
-func (u *YamlReader) ProcessFiles(files fileSet) error {
-	// Process each fileset, load its yaml, sort, and add to the catalog.
-
-	orderedSpecs, err := u.loadYamlSpecs(files)
-	if err != nil {
-		return err
-	}
-
-	for _, d := range orderedSpecs {
-		switch d.SpecSchema {
-		case upload.DeploymentPackageType:
-			err = u.readDeploymentPackage(d)
-		case upload.DeploymentPackageLegacyType:
-			err = u.readDeploymentPackage(d)
-		case upload.ApplicationType:
-			err = u.readApplication(d, files) // application uses the fileSet to lookup profiles
-		case upload.RegistryType:
-			err = u.readRegistry(d)
-		case upload.ArtifactType:
-			err = u.readArtifact(d)
-		default:
-			return nberrors.NewInvalidArgument(nberrors.WithMessage("uploaded file %s: unhandled type %s", d.FileName, d.SpecSchema))
-		}
-		if err != nil {
-			return nberrors.NewInvalidArgument(nberrors.WithError(err), nberrors.WithMessage("uploaded file %s: %v", d.FileName, err))
-		}
-	}
-
-	return nil
-}
-
 // shouldValidateYAMLSchema determines if the schema checker should run on the given
 // artifact. If the YAML can be unmarshaled or contains the schema directive,
 // it should be validated. Values files containing {{ }} markers should
@@ -152,8 +118,8 @@ func shouldValidateYAMLSchema(fileBytes []byte) bool {
 	return true
 }
 
-func (u *YamlReader) extractTarball(fileBytes []byte) (fileSet, error) {
-	contents := make(fileSet, 0)
+func (u *YamlReader) extractTarball(fileBytes []byte) (FileSet, error) {
+	contents := make(FileSet, 0)
 
 	// Convert fileBytes into an io.Reader
 	reader := bytes.NewReader(fileBytes)
@@ -194,38 +160,37 @@ func (u *YamlReader) extractTarball(fileBytes []byte) (fileSet, error) {
 	return contents, nil
 }
 
-// loadYamlSpecs loads the contents of the specified uploads and returns them as an ordered
-// collection of YamlSpecs
-func (u *YamlReader) ExpandFileSet(srcFiles fileSet) ([]fileSet, error) {
-	var fileSets []fileSet
+// ExpandFileSet deals with tarballs that might be part of the original fileset.
+func (u *YamlReader) ExpandFileSet(srcFiles FileSet) ([]FileSet, error) {
+	var FileSets []FileSet
 
-	baseFileSet := make(fileSet, 0)
+	baseFileSet := make(FileSet, 0)
 
 	for fileName, fileContents := range srcFiles {
 		if strings.HasSuffix(fileName, ".tgz") || strings.HasSuffix(fileName, ".tar.gz") {
-			// The file is a tarvball. Extract the individual files from it and add them to a fileset
+			// The file is a tarvball. Extract the individual files from it and add them to a FileSet
 			extractedFileSet, err := u.extractTarball(fileContents)
 			if err != nil {
 				return nil, fmt.Errorf("failed to extract tarball %s: %w", fileName, err)
 			}
-			fileSets = append(fileSets, extractedFileSet)
+			FileSets = append(FileSets, extractedFileSet)
 		} else {
-			// The file is a single YAML file. Add it to the base fileset
+			// The file is a single YAML file. Add it to the base FileSet
 			baseFileSet[fileName] = fileContents
 		}
 	}
 
 	if len(baseFileSet) > 0 {
 		// If we have a base file set, add it to the list of file sets
-		fileSets = append(fileSets, baseFileSet)
+		FileSets = append(FileSets, baseFileSet)
 	}
 
 	// We will validate the yaml contents inside of loadYamlSpecs()
 
-	return fileSets, nil
+	return FileSets, nil
 }
 
-func (u *YamlReader) loadYamlSpecs(files fileSet) (upload.YamlSpecs, error) {
+func (u *YamlReader) LoadYamlSpecs(files FileSet) (upload.YamlSpecs, error) {
 	orderedSpecs := make(upload.YamlSpecs, 0)
 
 	for fileName, fileBytes := range files {
@@ -272,7 +237,7 @@ func valueOrDefault(val string, def string) string {
 	return val
 }
 
-func (u *YamlReader) readRegistry(d upload.YamlSpec) error {
+func (u *YamlReader) ReadRegistry(d upload.YamlSpec) (*catalogv3.Registry, error) {
 	reg := &catalogv3.Registry{
 		Name:         d.Name,
 		DisplayName:  d.DisplayName,
@@ -286,14 +251,13 @@ func (u *YamlReader) readRegistry(d upload.YamlSpec) error {
 		Cacerts:      d.CACerts,
 	}
 
-	u.Registries = append(u.Registries, reg)
-	return nil
+	return reg, nil
 }
 
-func (u *YamlReader) readArtifact(d upload.YamlSpec) error {
+func (u *YamlReader) ReadArtifact(d upload.YamlSpec) (*catalogv3.Artifact, error) {
 	artifactBinary, err := b64.StdEncoding.DecodeString(d.Artifact)
 	if err != nil {
-		return nberrors.NewInvalidArgument(
+		return nil, nberrors.NewInvalidArgument(
 			nberrors.WithResourceType(nberrors.ArtifactType),
 			nberrors.WithMessage("error decoding base64 from file %s %v", d.FileName, err))
 	}
@@ -305,12 +269,12 @@ func (u *YamlReader) readArtifact(d upload.YamlSpec) error {
 				log.Warn("Malware scanner is not available. Skipping scan due to permissive mode.")
 			} else {
 				log.Warn("Malware scanner returned error %s", err)
-				return nberrors.NewUnavailable(
+				return nil, nberrors.NewUnavailable(
 					nberrors.WithResourceType(nberrors.ArtifactType),
 					nberrors.WithMessage("malware scanner configured but not available"))
 			}
 		} else if !okay {
-			return nberrors.NewInvalidArgument(
+			return nil, nberrors.NewInvalidArgument(
 				nberrors.WithResourceType(nberrors.ArtifactType),
 				nberrors.WithMessage("malware detected: %s", res))
 		}
@@ -324,11 +288,10 @@ func (u *YamlReader) readArtifact(d upload.YamlSpec) error {
 		Artifact:    artifactBinary,
 	}
 
-	u.Artifacts = append(u.Artifacts, art)
-	return nil
+	return art, nil
 }
 
-func (u *YamlReader) readApplication(d upload.YamlSpec, f fileSet) error {
+func (u *YamlReader) ReadApplication(d upload.YamlSpec, f FileSet) (*catalogv3.Application, error) {
 	app := &catalogv3.Application{
 		Name:               d.Name,
 		Version:            d.Version,
@@ -348,7 +311,7 @@ func (u *YamlReader) readApplication(d upload.YamlSpec, f fileSet) error {
 		for _, p := range d.Profiles {
 			prof, err := u.readProfile(d.FileName, p, f)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			app.Profiles = append(app.Profiles, prof)
 		}
@@ -367,11 +330,10 @@ func (u *YamlReader) readApplication(d upload.YamlSpec, f fileSet) error {
 		}
 	}
 
-	u.Applications = append(u.Applications, app)
-	return nil
+	return app, nil
 }
 
-func (u *YamlReader) readProfile(appFileName string, p upload.Profile, f fileSet) (*catalogv3.Profile, error) {
+func (u *YamlReader) readProfile(appFileName string, p upload.Profile, f FileSet) (*catalogv3.Profile, error) {
 	fileBytes, ok := f[p.ValuesFileName]
 	if !ok {
 		fileBytes, ok = f[fmt.Sprintf("%s/%s", path.Dir(appFileName), p.ValuesFileName)]
@@ -417,7 +379,7 @@ func (u *YamlReader) readProfile(appFileName string, p upload.Profile, f fileSet
 	}, nil
 }
 
-func (u *YamlReader) readDeploymentPackage(d upload.YamlSpec) error {
+func (u *YamlReader) ReadDeploymentPackage(d upload.YamlSpec) (*catalogv3.DeploymentPackage, error) {
 	pkg := &catalogv3.DeploymentPackage{
 		Name:                    d.Name,
 		DisplayName:             d.DisplayName,
@@ -526,8 +488,7 @@ func (u *YamlReader) readDeploymentPackage(d upload.YamlSpec) error {
 	pkg.IsDeployed = d.IsDeployed
 	pkg.ForbidsMultipleDeployments = d.ForbidsMultipleDeployments
 
-	u.DeploymentPackages = append(u.DeploymentPackages, pkg)
-	return nil
+	return pkg, nil
 }
 
 func (u *YamlReader) deploymentProfile(deploymentProfile upload.DeploymentProfile) *catalogv3.DeploymentProfile {
