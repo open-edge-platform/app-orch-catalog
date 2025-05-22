@@ -31,56 +31,56 @@ type DpToHelm struct {
 // ProcessFiles processes the given FileSet, loading its YAML files and
 // adding the resulting objects to the YamlReader object.
 
-func (u *DpToHelm) ProcessFiles(files yamlreader.FileSet) error {
+func (d *DpToHelm) ProcessFiles(files yamlreader.FileSet) error {
 	// Process each FileSet, load its yaml, sort, and add to the catalog.
 
-	orderedSpecs, err := u.LoadYamlSpecs(files)
+	orderedSpecs, err := d.LoadYamlSpecs(files)
 	if err != nil {
 		return err
 	}
 
-	for _, d := range orderedSpecs {
-		switch d.SpecSchema {
+	for _, spec := range orderedSpecs {
+		switch spec.SpecSchema {
 		case upload.DeploymentPackageType:
-			dp, err := u.ReadDeploymentPackage(d)
+			dp, err := d.ReadDeploymentPackage(spec)
 			if err != nil {
 				return err
 			}
-			u.DeploymentPackages = append(u.DeploymentPackages, dp)
+			d.DeploymentPackages = append(d.DeploymentPackages, dp)
 		case upload.DeploymentPackageLegacyType:
-			dp, err := u.ReadDeploymentPackage(d)
+			dp, err := d.ReadDeploymentPackage(spec)
 			if err != nil {
 				return err
 			}
-			u.DeploymentPackages = append(u.DeploymentPackages, dp)
+			d.DeploymentPackages = append(d.DeploymentPackages, dp)
 		case upload.ApplicationType:
-			app, err := u.ReadApplication(d, files) // application uses the FileSet to lookup profiles
+			app, err := d.ReadApplication(spec, files) // application uses the FileSet to lookup profiles
 			if err != nil {
 				return err
 			}
-			u.Applications = append(u.Applications, app)
+			d.Applications = append(d.Applications, app)
 		case upload.RegistryType:
-			reg, err := u.ReadRegistry(d)
+			reg, err := d.ReadRegistry(spec)
 			if err != nil {
 				return err
 			}
-			u.Registries = append(u.Registries, reg)
+			d.Registries = append(d.Registries, reg)
 		case upload.ArtifactType:
-			_, err = u.ReadArtifact(d)
+			_, err = d.ReadArtifact(spec)
 			if err != nil {
 				return err
 			}
 			// we don't use these for anything
 		default:
-			return &InputError{Msg: fmt.Sprintf("unhandled type %s", d.SpecSchema), InputFile: d.FileName}
+			return &InputError{Msg: fmt.Sprintf("unhandled type %s", spec.SpecSchema), InputFile: spec.FileName}
 		}
 	}
 
 	return nil
 }
 
-func (r *DpToHelm) SetOverrides(rawOverrides []string) error {
-	r.overrides = make(map[string]string)
+func (d *DpToHelm) SetOverrides(rawOverrides []string) error {
+	d.overrides = make(map[string]string)
 	for _, override := range rawOverrides {
 		parts := strings.Split(override, "=")
 		if len(parts) != 2 {
@@ -91,13 +91,13 @@ func (r *DpToHelm) SetOverrides(rawOverrides []string) error {
 		if name == "" || value == "" {
 			return &UsageError{Input: override, Msg: "invalid --set override format, expected <key>=<value>"}
 		}
-		r.overrides[name] = value
+		d.overrides[name] = value
 	}
 	return nil
 }
 
-func (r *DpToHelm) FindApp(name, version string) (*catalogv3.Application, error) {
-	for _, app := range r.Applications {
+func (d *DpToHelm) FindApp(name, version string) (*catalogv3.Application, error) {
+	for _, app := range d.Applications {
 		if app.Name == name && app.Version == version {
 			return app, nil
 		}
@@ -105,8 +105,8 @@ func (r *DpToHelm) FindApp(name, version string) (*catalogv3.Application, error)
 	return nil, &NotFoundError{Msg: "Not Found", ObjectKind: "application", ObjectName: name, ObjectVersion: version}
 }
 
-func (r *DpToHelm) FindRegistry(name string) (*catalogv3.Registry, error) {
-	for _, reg := range r.Registries {
+func (d *DpToHelm) FindRegistry(name string) (*catalogv3.Registry, error) {
+	for _, reg := range d.Registries {
 		if reg.Name == name {
 			return reg, nil
 		}
@@ -114,7 +114,7 @@ func (r *DpToHelm) FindRegistry(name string) (*catalogv3.Registry, error) {
 	return nil, &NotFoundError{Msg: "Not Found", ObjectKind: "registry", ObjectName: name}
 }
 
-func (r *DpToHelm) FindDeploymentProfile(dp *catalogv3.DeploymentPackage, name string) (*catalogv3.DeploymentProfile, error) {
+func (d *DpToHelm) FindDeploymentProfile(dp *catalogv3.DeploymentPackage, name string) (*catalogv3.DeploymentProfile, error) {
 	for _, profile := range dp.Profiles {
 		if profile.Name == name {
 			return profile, nil
@@ -123,7 +123,7 @@ func (r *DpToHelm) FindDeploymentProfile(dp *catalogv3.DeploymentPackage, name s
 	return nil, &NotFoundError{Msg: "Not Found", ObjectKind: "deployment profile", ObjectName: name}
 }
 
-func (r *DpToHelm) FindAppProfile(app *catalogv3.Application, name string) (*catalogv3.Profile, error) {
+func (d *DpToHelm) FindAppProfile(app *catalogv3.Application, name string) (*catalogv3.Profile, error) {
 	for _, appProfile := range app.Profiles {
 		if appProfile.Name == name {
 			return appProfile, nil
@@ -132,11 +132,11 @@ func (r *DpToHelm) FindAppProfile(app *catalogv3.Application, name string) (*cat
 	return nil, &NotFoundError{Msg: "Not Found", ObjectKind: "application profile", ObjectName: name, ApplicationName: app.Name}
 }
 
-func (r *DpToHelm) ApplyParameters(appProfile *catalogv3.Profile, allParams bool) ([]Param, error) {
+func (d *DpToHelm) ApplyParameters(appProfile *catalogv3.Profile, allParams bool) ([]Param, error) {
 	namedParams := make([]Param, 0)
 	for _, param := range appProfile.ParameterTemplates {
 		// if param was overridden on the command line, use that value
-		override, ok := r.overrides[param.Name]
+		override, ok := d.overrides[param.Name]
 		if ok {
 			namedParam := Param{
 				name:  param.Name,
@@ -181,11 +181,11 @@ func (r *DpToHelm) ApplyParameters(appProfile *catalogv3.Profile, allParams bool
 	return namedParams, nil
 }
 
-func (r *DpToHelm) GetHelmCommands(dp *catalogv3.DeploymentPackage, profileName string, allParams bool) ([]string, error) {
+func (d *DpToHelm) GetHelmCommands(dp *catalogv3.DeploymentPackage, profileName string, allParams bool) ([]string, error) {
 	if profileName == "" {
 		profileName = dp.DefaultProfileName
 	}
-	profile, err := r.FindDeploymentProfile(dp, profileName)
+	profile, err := d.FindDeploymentProfile(dp, profileName)
 	if err != nil {
 		return nil, err
 	}
@@ -194,11 +194,11 @@ func (r *DpToHelm) GetHelmCommands(dp *catalogv3.DeploymentPackage, profileName 
 
 	cmds := make([]string, 0)
 	for _, app := range dp.ApplicationReferences {
-		app, err := r.FindApp(app.Name, app.Version)
+		app, err := d.FindApp(app.Name, app.Version)
 		if err != nil {
 			return nil, err
 		}
-		reg, err := r.FindRegistry(app.HelmRegistryName)
+		reg, err := d.FindRegistry(app.HelmRegistryName)
 		if err != nil {
 			return nil, err
 		}
@@ -208,16 +208,16 @@ func (r *DpToHelm) GetHelmCommands(dp *catalogv3.DeploymentPackage, profileName 
 			namespace = "default"
 		}
 		appProfileName := profile.ApplicationProfiles[app.Name]
-		appProfile, err := r.FindAppProfile(app, appProfileName)
+		appProfile, err := d.FindAppProfile(app, appProfileName)
 		if err != nil {
 			return nil, err
 		}
-		namedParams, err := r.ApplyParameters(appProfile, allParams)
+		namedParams, err := d.ApplyParameters(appProfile, allParams)
 		if err != nil {
 			return nil, err
 		}
 		valuesFileName := fmt.Sprintf("%s-%s.yaml", app.Name, profileName)
-		err = os.WriteFile(valuesFileName, []byte(appProfile.ChartValues), 0644)
+		err = os.WriteFile(valuesFileName, []byte(appProfile.ChartValues), 0600)
 		if err != nil {
 			return nil, &OutputError{Msg: "failed to write values file", OutputFile: valuesFileName, Err: err}
 		}

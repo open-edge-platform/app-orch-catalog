@@ -191,7 +191,7 @@ func (u *uploadSession) processUploadSession(ctx context.Context, tx *generated.
 	// fileSet independently.
 
 	for _, fileSet := range fileSets {
-		err := u.ProcessFiles(fileSet, ctx, tx)
+		err := u.ProcessFiles(ctx, fileSet, tx)
 		if err != nil {
 			return err
 		}
@@ -200,7 +200,7 @@ func (u *uploadSession) processUploadSession(ctx context.Context, tx *generated.
 	return nil
 }
 
-func (u *uploadSession) ProcessFiles(files yamlreader.FileSet, ctx context.Context, tx *generated.Tx) error {
+func (u *uploadSession) ProcessFiles(ctx context.Context, files yamlreader.FileSet, tx *generated.Tx) error {
 	// Process each FileSet, load its yaml, sort, and add to the catalog.
 
 	orderedSpecs, err := u.LoadYamlSpecs(files)
@@ -211,28 +211,33 @@ func (u *uploadSession) ProcessFiles(files yamlreader.FileSet, ctx context.Conte
 	for _, d := range orderedSpecs {
 		switch d.SpecSchema {
 		case upload.DeploymentPackageType:
-			dp, err := u.ReadDeploymentPackage(d)
-			if err != nil {
+			var dp *catalogv3.DeploymentPackage
+			dp, err = u.ReadDeploymentPackage(d)
+			if err == nil {
 				err = u.loadDeploymentPackage(ctx, tx, dp)
 			}
 		case upload.DeploymentPackageLegacyType:
-			dp, err := u.ReadDeploymentPackage(d)
-			if err != nil {
+			var dp *catalogv3.DeploymentPackage
+			dp, err = u.ReadDeploymentPackage(d)
+			if err == nil {
 				err = u.loadDeploymentPackage(ctx, tx, dp)
 			}
 		case upload.ApplicationType:
-			app, err := u.ReadApplication(d, files) // application uses the FileSet to lookup profiles
-			if err != nil {
-				err = u.loadApplication(ctx, tx, app, files)
+			var app *catalogv3.Application
+			app, err = u.ReadApplication(d, files) // application uses the FileSet to lookup profiles
+			if err == nil {
+				err = u.loadApplication(ctx, tx, app)
 			}
 		case upload.RegistryType:
-			reg, err := u.ReadRegistry(d)
-			if err != nil {
+			var reg *catalogv3.Registry
+			reg, err = u.ReadRegistry(d)
+			if err == nil {
 				err = u.loadRegistry(ctx, tx, reg)
 			}
 		case upload.ArtifactType:
-			art, err := u.ReadArtifact(d)
-			if err != nil {
+			var art *catalogv3.Artifact
+			art, err = u.ReadArtifact(d)
+			if err == nil {
 				err = u.loadArtifact(ctx, tx, art)
 			}
 		default:
@@ -264,7 +269,7 @@ func (u *uploadSession) loadArtifact(ctx context.Context, tx *generated.Tx, art 
 	return u.g.updateArtifact(ctx, tx, u.projectUUID, art, u.artifactEvents)
 }
 
-func (u *uploadSession) loadApplication(ctx context.Context, tx *generated.Tx, app *catalogv3.Application, f yamlreader.FileSet) error {
+func (u *uploadSession) loadApplication(ctx context.Context, tx *generated.Tx, app *catalogv3.Application) error {
 	_, err := tx.Application.Query().Where(application.ProjectUUID(u.projectUUID), application.Name(app.Name), application.Version(app.Version)).First(ctx)
 	if err != nil {
 		_, err = u.g.createApplication(ctx, tx, u.projectUUID, app, u.applicationEvents)

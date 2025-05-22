@@ -12,11 +12,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type Param struct {
-	name  string
-	value string
-}
-
 var (
 	profile      string
 	listProfiles bool
@@ -40,7 +35,8 @@ func mainCommand(cmd *cobra.Command, args []string) {
 
 	r := &dptohelm.DpToHelm{}
 
-	r.SetOverrides(rawOverrides)
+	err := r.SetOverrides(rawOverrides)
+	verboseerror.FatalErrCheck(err)
 
 	fileSet, err := r.ReadYamlFilesFromDir(dir)
 	verboseerror.FatalErrCheck(err)
