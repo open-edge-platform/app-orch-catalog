@@ -60,7 +60,7 @@ type YamlReader struct {
 // together. For example, it may contain applications and their profiles.
 type FileSet map[string][]byte
 
-var log dazl.Logger
+var log = dazl.GetPackageLogger()
 
 // KindFromDB takes a kind string and returns the enum from the protobuf
 func kindFromDB(kind string) catalogv3.Kind {
