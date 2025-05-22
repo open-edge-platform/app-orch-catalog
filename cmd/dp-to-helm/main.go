@@ -4,6 +4,9 @@
 
 package main
 
+// dp-to-helm is a tool that takes a deployment package as input and emits the set of "helm install"
+// commands that would be used to install the deployment package without using the orchestrator.
+
 import (
 	"fmt"
 
