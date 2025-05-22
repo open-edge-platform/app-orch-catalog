@@ -37,6 +37,22 @@ const (
 	helmType             = "HELM"
 )
 
+/* YamlReader is for reading YAML files
+ *
+ * For reading from a directory on disk:
+ *   reader := YamlReader{}
+ *   files, _ := reader.ReadYamlFilesFromDir("/path/to/dir")
+ *   fileSet, _ := reader.ExpandFileSet(files)
+ *   specs, _ := reader.LoadYamlSpecs(fileSet)
+ *   for _, spec := range specs {
+ *       process each spec, calling readArtifact, readApplication, etc.
+ *   }
+ *
+ * Alternatively, the initial fileset can be passed directly to ExpandFileSet()
+ * and the call to ReadFilesFromDir() can be omitted. This is used in the catalog
+ * uploader.
+ */
+
 type YamlReader struct {
 }
 
