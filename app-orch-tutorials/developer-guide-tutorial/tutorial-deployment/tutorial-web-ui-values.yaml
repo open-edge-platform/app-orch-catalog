@@ -6,7 +6,7 @@
 fullnameOverride: tutorial-web-ui
 image:
   #  Will update with your CLUSTER_FQDN and your ORG and PROJECT names
-  repository: %ImageRegistryURL%/%RegistryProjectName%/tutorial-web-ui-image
+  repository: %ImageRegistryURL%/tutorial-web-ui-image
 imagePullSecrets:
   - name: "%GeneratedDockerCredential%"
 service:
