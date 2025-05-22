@@ -62,6 +62,7 @@ type FileSet map[string][]byte
 
 var log dazl.Logger
 
+// KindFromDB takes a kind string and returns the enum from the protobuf
 func kindFromDB(kind string) catalogv3.Kind {
 	switch kind {
 	case kindNormal:
@@ -74,6 +75,7 @@ func kindFromDB(kind string) catalogv3.Kind {
 	return catalogv3.Kind_KIND_NORMAL
 }
 
+// ReadYamlFilesFromDir reads a directly and return a FileSet of all the YAML files
 func (u *YamlReader) ReadYamlFilesFromDir(dir string) (FileSet, error) {
 	files := make(FileSet)
 
@@ -134,6 +136,7 @@ func shouldValidateYAMLSchema(fileBytes []byte) bool {
 	return true
 }
 
+// extractTarball extracts a tarball and returns a FileSet of the files inside it.
 func (u *YamlReader) extractTarball(fileBytes []byte) (FileSet, error) {
 	contents := make(FileSet, 0)
 
@@ -176,7 +179,11 @@ func (u *YamlReader) extractTarball(fileBytes []byte) (FileSet, error) {
 	return contents, nil
 }
 
-// ExpandFileSet deals with tarballs that might be part of the original fileset.
+// ExpandFileSet takes a FileSet and returns a set of FileSets.
+// If srcFiles contains tarballs, then they are expanded into individual FileSets.
+// Thus, the return value of ExpandFileSets() is a list of FileSets
+//   - one for each taball
+//   - one for the set of raw yaml files that are not part of a tarball.
 func (u *YamlReader) ExpandFileSet(srcFiles FileSet) ([]FileSet, error) {
 	var FileSets []FileSet
 
@@ -206,6 +213,7 @@ func (u *YamlReader) ExpandFileSet(srcFiles FileSet) ([]FileSet, error) {
 	return FileSets, nil
 }
 
+// LoadYamlSpecs processes each file in a fileset and parses and validates the YAML.
 func (u *YamlReader) LoadYamlSpecs(files FileSet) (upload.YamlSpecs, error) {
 	orderedSpecs := make(upload.YamlSpecs, 0)
 
@@ -253,6 +261,7 @@ func valueOrDefault(val string, def string) string {
 	return val
 }
 
+// ReadRegistry converts an upload.YamlSpec into a Registry object.
 func (u *YamlReader) ReadRegistry(d upload.YamlSpec) (*catalogv3.Registry, error) {
 	reg := &catalogv3.Registry{
 		Name:         d.Name,
@@ -270,6 +279,7 @@ func (u *YamlReader) ReadRegistry(d upload.YamlSpec) (*catalogv3.Registry, error
 	return reg, nil
 }
 
+// ReadArtifact converts an upload.YamlSpec into an Artifact object.
 func (u *YamlReader) ReadArtifact(d upload.YamlSpec) (*catalogv3.Artifact, error) {
 	artifactBinary, err := b64.StdEncoding.DecodeString(d.Artifact)
 	if err != nil {
@@ -307,6 +317,7 @@ func (u *YamlReader) ReadArtifact(d upload.YamlSpec) (*catalogv3.Artifact, error
 	return art, nil
 }
 
+// ReadApplication converts an upload.YamlSpec into an Application object.
 func (u *YamlReader) ReadApplication(d upload.YamlSpec, f FileSet) (*catalogv3.Application, error) {
 	app := &catalogv3.Application{
 		Name:               d.Name,
@@ -349,6 +360,7 @@ func (u *YamlReader) ReadApplication(d upload.YamlSpec, f FileSet) (*catalogv3.A
 	return app, nil
 }
 
+// ReadProfile converts an upload.Profile into a Profile object.
 func (u *YamlReader) readProfile(appFileName string, p upload.Profile, f FileSet) (*catalogv3.Profile, error) {
 	fileBytes, ok := f[p.ValuesFileName]
 	if !ok {
@@ -395,6 +407,7 @@ func (u *YamlReader) readProfile(appFileName string, p upload.Profile, f FileSet
 	}, nil
 }
 
+// ReadDeploymentPackage converts an upload.YamlSpec into a DeploymentPackage object.
 func (u *YamlReader) ReadDeploymentPackage(d upload.YamlSpec) (*catalogv3.DeploymentPackage, error) {
 	pkg := &catalogv3.DeploymentPackage{
 		Name:                    d.Name,
@@ -507,6 +520,7 @@ func (u *YamlReader) ReadDeploymentPackage(d upload.YamlSpec) (*catalogv3.Deploy
 	return pkg, nil
 }
 
+// deploymentProfile converts an upload.DeploymentProfile into a DeploymentProfile object.
 func (u *YamlReader) deploymentProfile(deploymentProfile upload.DeploymentProfile) *catalogv3.DeploymentProfile {
 	prof := &catalogv3.DeploymentProfile{
 		Name:                deploymentProfile.Name,
