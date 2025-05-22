@@ -54,11 +54,11 @@ func mainCommand(cmd *cobra.Command, args []string) {
 	}
 
 	if len(r.DeploymentPackages) == 0 {
-		verboseerror.FatalErrCheck(fmt.Errorf("no deployment packages found"))
+		verboseerror.FatalErrCheck(&dptohelm.DirectoryError{Msg: "no deployment packages found", InputDir: dir})
 	}
 
 	if len(r.DeploymentPackages) > 1 {
-		verboseerror.FatalErrCheck(fmt.Errorf("multiple deployment packages found"))
+		verboseerror.FatalErrCheck(&dptohelm.DirectoryError{Msg: "more than one deployment package found", InputDir: dir})
 	}
 
 	if listProfiles {

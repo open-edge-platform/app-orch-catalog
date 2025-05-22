@@ -10,7 +10,6 @@ import (
 	"os"
 	"strings"
 
-	"github.com/open-edge-platform/app-orch-catalog/internal/shared/verboseerror"
 	"github.com/open-edge-platform/app-orch-catalog/internal/yamlreader"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 )
@@ -25,20 +24,21 @@ type DpToHelm struct {
 	overrides map[string]string
 }
 
-func (r *DpToHelm) SetOverrides(rawOverrides []string) {
+func (r *DpToHelm) SetOverrides(rawOverrides []string) error {
 	r.overrides = make(map[string]string)
 	for _, override := range rawOverrides {
 		parts := strings.Split(override, "=")
 		if len(parts) != 2 {
-			verboseerror.FatalErrCheck(fmt.Errorf("invalid --set override format: %s, expected <key>=<value>", override))
+			return &UsageError{Input: override, Msg: "invalid --set override format, expected <key>=<value>"}
 		}
 		name := strings.TrimSpace(parts[0])
 		value := strings.TrimSpace(parts[1])
 		if name == "" || value == "" {
-			verboseerror.FatalErrCheck(fmt.Errorf("invalid --set override format: %s, expected <key>=<value>", override))
+			return &UsageError{Input: override, Msg: "invalid --set override format, expected <key>=<value>"}
 		}
 		r.overrides[name] = value
 	}
+	return nil
 }
 
 func (r *DpToHelm) FindApp(name, version string) (*catalogv3.Application, error) {
@@ -47,7 +47,7 @@ func (r *DpToHelm) FindApp(name, version string) (*catalogv3.Application, error)
 			return app, nil
 		}
 	}
-	return nil, fmt.Errorf("application %s with version %s not found", name, version)
+	return nil, &NotFoundError{Msg: "Not Found", ObjectKind: "application", ObjectName: name, ObjectVersion: version}
 }
 
 func (r *DpToHelm) FindRegistry(name string) (*catalogv3.Registry, error) {
@@ -56,7 +56,7 @@ func (r *DpToHelm) FindRegistry(name string) (*catalogv3.Registry, error) {
 			return reg, nil
 		}
 	}
-	return nil, fmt.Errorf("registry %s not found", name)
+	return nil, &NotFoundError{Msg: "Not Found", ObjectKind: "registry", ObjectName: name}
 }
 
 func (r *DpToHelm) FindDeploymentProfile(dp *catalogv3.DeploymentPackage, name string) (*catalogv3.DeploymentProfile, error) {
@@ -65,7 +65,7 @@ func (r *DpToHelm) FindDeploymentProfile(dp *catalogv3.DeploymentPackage, name s
 			return profile, nil
 		}
 	}
-	return nil, fmt.Errorf("deployment profile %s not found", name)
+	return nil, &NotFoundError{Msg: "Not Found", ObjectKind: "deployment profile", ObjectName: name}
 }
 
 func (r *DpToHelm) FindAppProfile(app *catalogv3.Application, name string) (*catalogv3.Profile, error) {
@@ -74,7 +74,7 @@ func (r *DpToHelm) FindAppProfile(app *catalogv3.Application, name string) (*cat
 			return appProfile, nil
 		}
 	}
-	return nil, fmt.Errorf("application profile %s not found", name)
+	return nil, &NotFoundError{Msg: "Not Found", ObjectKind: "application profile", ObjectName: name, ApplicationName: app.Name}
 }
 
 func (r *DpToHelm) ApplyParameters(appProfile *catalogv3.Profile, allParams bool) ([]Param, error) {
@@ -164,7 +164,7 @@ func (r *DpToHelm) GetHelmCommands(dp *catalogv3.DeploymentPackage, profileName 
 		valuesFileName := fmt.Sprintf("%s-%s.yaml", app.Name, profileName)
 		err = os.WriteFile(valuesFileName, []byte(appProfile.ChartValues), 0644)
 		if err != nil {
-			return nil, fmt.Errorf("failed to write to values file %s: %v", valuesFileName, err)
+			return nil, &OutputError{Msg: "failed to write values file", OutputFile: valuesFileName, Err: err}
 		}
 		fmt.Printf("# created values file %s for app %s profile %s\n", valuesFileName, app.Name, appProfileName)
 		url := fmt.Sprintf("%s/%s", reg.RootUrl, app.ChartName)
