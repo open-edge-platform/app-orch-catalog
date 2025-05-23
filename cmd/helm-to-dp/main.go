@@ -31,7 +31,7 @@ from the Helm chart and store that package in an output directory`,
 func mainCommand(cmd *cobra.Command, args []string) {
 	if len(args) != 1 {
 		err := cmd.Usage()
-		verboseerror.FatalErrCheck(err, "Failed to print usage: %v", err)
+		verboseerror.FatalErrCheck(err)
 		return
 	}
 
@@ -43,10 +43,10 @@ func mainCommand(cmd *cobra.Command, args []string) {
 	url := args[0]
 
 	helm, err := helm.FetchHelmChartOCI(url, username, password)
-	verboseerror.FatalErrCheck(err, "Failed to fetch Helm chart: %v", err)
+	verboseerror.FatalErrCheck(err)
 
 	err = dp.GenerateDeploymentPackage(helm, valuesFile, outputDir, namespace, includeAuth)
-	verboseerror.FatalErrCheck(err, "Failed to generate Deployment Package: %v", err)
+	verboseerror.FatalErrCheck(err)
 }
 
 func main() {
@@ -60,5 +60,5 @@ func main() {
 	rootCmd.Run = mainCommand
 
 	err := rootCmd.Execute()
-	verboseerror.FatalErrCheck(err, "Failed to execute root command: %v", err)
+	verboseerror.FatalErrCheck(err)
 }

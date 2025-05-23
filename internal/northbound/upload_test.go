@@ -6,12 +6,13 @@ package northbound
 
 import (
 	"context"
+	"os"
+	"time"
+
 	internaltesting "github.com/open-edge-platform/app-orch-catalog/internal/testing"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/malware"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/schema/upload"
-	"os"
-	"time"
 )
 
 func (s *NorthBoundTestSuite) getUpload(fileName string) *catalogv3.Upload {
@@ -325,7 +326,8 @@ func (s *NorthBoundTestSuite) TestArtifactMalwareScanError() {
 	defer func() {
 		malware.DefaultScanner = nil
 	}()
-	s.Error(u.loadArtifact(s.ctx, nil, d))
+	_, err := u.ReadArtifact(d)
+	s.Error(err)
 }
 
 func (s *NorthBoundTestSuite) TestUploadBadBase64() {
