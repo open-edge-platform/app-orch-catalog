@@ -11,8 +11,6 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-const ()
-
 // TestSuite is the basic test suite
 type TestSuite struct {
 	suite.Suite
