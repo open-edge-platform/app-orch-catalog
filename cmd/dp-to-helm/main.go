@@ -17,6 +17,7 @@ import (
 
 var (
 	profile      string
+	outputDir    string
 	listProfiles bool
 	allParams    bool
 	rawOverrides []string
@@ -70,7 +71,7 @@ func mainCommand(cmd *cobra.Command, args []string) {
 	}
 
 	for _, dp := range r.DeploymentPackages {
-		cmds, err := r.GetHelmCommands(dp, profile, allParams)
+		cmds, err := r.GetHelmCommands(dp, profile, allParams, outputDir)
 		verboseerror.FatalErrCheck(err)
 		for _, cmd := range cmds {
 			fmt.Printf("%s\n", cmd)
@@ -82,6 +83,7 @@ func main() {
 	rootCmd.PersistentFlags().BoolVarP(&verboseerror.Quiet, "quiet", "q", false, "enable quiet mode, suppressing info level messages")
 	rootCmd.PersistentFlags().BoolVarP(&listProfiles, "listprofiles", "L", false, "List the available deployment package profiles")
 	rootCmd.PersistentFlags().BoolVarP(&allParams, "allparams", "A", false, "Ask for all parameters, not just mandatory ones")
+	rootCmd.PersistentFlags().StringVarP(&outputDir, "outputdir", "o", "output", "set output directory for generated files")
 	rootCmd.PersistentFlags().StringVarP(&profile, "profile", "p", "", "set which deployment package profile to use")
 	rootCmd.PersistentFlags().StringArrayVarP(&rawOverrides, "set", "S", nil, "Set a parameter values using <key>=<value> format")
 	rootCmd.Run = mainCommand

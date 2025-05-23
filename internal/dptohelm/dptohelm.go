@@ -181,13 +181,20 @@ func (d *DpToHelm) ApplyParameters(appProfile *catalogv3.Profile, allParams bool
 	return namedParams, nil
 }
 
-func (d *DpToHelm) GetHelmCommands(dp *catalogv3.DeploymentPackage, profileName string, allParams bool) ([]string, error) {
+func (d *DpToHelm) GetHelmCommands(dp *catalogv3.DeploymentPackage, profileName string, allParams bool, outputDir string) ([]string, error) {
 	if profileName == "" {
 		profileName = dp.DefaultProfileName
 	}
 	profile, err := d.FindDeploymentProfile(dp, profileName)
 	if err != nil {
 		return nil, err
+	}
+
+	if _, err := os.Stat(outputDir); os.IsNotExist(err) {
+		err = os.MkdirAll(outputDir, 0755)
+		if err != nil {
+			return nil, &OutputError{Msg: "failed to create output directory", OutputFile: outputDir, Err: err}
+		}
 	}
 
 	fmt.Printf("# using deployment package profile: %s\n", profileName)
@@ -216,7 +223,7 @@ func (d *DpToHelm) GetHelmCommands(dp *catalogv3.DeploymentPackage, profileName 
 		if err != nil {
 			return nil, err
 		}
-		valuesFileName := fmt.Sprintf("%s-%s.yaml", app.Name, profileName)
+		valuesFileName := fmt.Sprintf("%s/%s-%s.yaml", outputDir, app.Name, profileName)
 		err = os.WriteFile(valuesFileName, []byte(appProfile.ChartValues), 0600)
 		if err != nil {
 			return nil, &OutputError{Msg: "failed to write values file", OutputFile: valuesFileName, Err: err}
