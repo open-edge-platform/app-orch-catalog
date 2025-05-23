@@ -14,7 +14,7 @@ applications:
   - name: one
     version: 0.1.1
   - name: two
-    version: 0.1.1    
+    version: 0.1.1
 
 deploymentProfiles:
   - name: "default"
@@ -22,16 +22,16 @@ deploymentProfiles:
       - application: "one"
         profile: "default"
       - application: "two"
-        profile: "default"        
+        profile: "default"
   - name: "a"
     applicationProfiles:
       - application: "one"
         profile: "a"
       - application: "twp"
-        profile: "a"        
+        profile: "a"
   - name: "a"
     applicationProfiles:
       - application: "one"
         profile: "a"
       - application: "two"
-        profile: "a"        
+        profile: "a"
