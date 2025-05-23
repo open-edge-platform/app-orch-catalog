@@ -1,0 +1,53 @@
+# SPDX-FileCopyrightText: (C) 2025-present Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
+---
+specSchema: "Application"
+schemaVersion: "0.1"
+$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+
+name: two
+version: 0.1.1
+description: "application number one"
+
+helmRegistry: "two"
+chartName: "two"
+chartVersion: "2.3.4-alpga"
+
+profiles:
+  - name: "default"
+    valuesFileName: "values-two-default.yaml"
+    parameterTemplates:
+      - name: "username"
+        displayName: "user name"
+        type: string
+        default: "foo"
+      - name: "password"
+        displayName: "user name"
+        type: string
+        mandatory: true
+        secret: true
+  - name: "a"
+    valuesFileName: "values-two-a.yaml"
+    parameterTemplates:
+      - name: "username"
+        displayName: "user name"
+        type: string
+        default: "foo"
+      - name: "password"
+        displayName: "user name"
+        type: string
+        mandatory: true
+        secret: true
+  - name: "b"
+    valuesFileName: "values-two-b.yaml"
+    parameterTemplates:
+      - name: "username"
+        displayName: "user name"
+        type: string
+        default: "foo"
+      - name: "password"
+        displayName: "user name"
+        type: string
+        mandatory: true
+        secret: true

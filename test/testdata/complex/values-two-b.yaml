@@ -1,0 +1,6 @@
+# SPDX-FileCopyrightText: (C) 2025-present Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+---
+profile: b
+username: foo
+password: bar

@@ -375,7 +375,7 @@ func (s *TestSuite) Delete(url string) {
 
 func (s *TestSuite) TestUploadTarball() {
 
-	file, err := os.Open("testdata/wordpress.tar.gz")
+	file, err := os.Open("../testdata/wordpress.tar.gz")
 	assert.NoError(s.T(), err)
 	defer file.Close()
 
@@ -446,10 +446,10 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
-	pathNames := []string{"testdata/wordpress/app-wordpress-0.1.1.yaml",
-		"testdata/wordpress/dp-wordpress-0.1.1.yaml",
-		"testdata/wordpress/registry-bitnami.yaml",
-		"testdata/wordpress/values-wordpress-0.1.1.yaml",
+	pathNames := []string{"../testdata/wordpress/app-wordpress-0.1.1.yaml",
+		"../testdata/wordpress/dp-wordpress-0.1.1.yaml",
+		"../testdata/wordpress/registry-bitnami.yaml",
+		"../testdata/wordpress/values-wordpress-0.1.1.yaml",
 	}
 
 	for _, pathName := range pathNames {
