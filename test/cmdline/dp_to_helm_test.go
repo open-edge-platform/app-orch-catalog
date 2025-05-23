@@ -58,7 +58,6 @@ func (s *TestSuite) TestDpToHelmGoodPackage() {
 
 	expected := fmt.Sprintf("helm install test-wordpress https://charts.bitnami.com/bitnami/wordpress --version 19.4.3 --namespace default -f %s/test-wordpress-testing.yaml", tempDir)
 	s.Contains(stdout, expected, "Expected stdout to contain helm install command")
-
 }
 
 func (s *TestSuite) TestDpToHelmBadPackageMissingAppName() {
@@ -66,4 +65,20 @@ func (s *TestSuite) TestDpToHelmBadPackageMissingAppName() {
 	s.Error(err, "Expected no error when running catalog-schema on a good package")
 	s.Equal("", stdout, "Expected no stdout output when running catalog-schema on a good package")
 	s.Contains(stderr, "InvalidArgument", "Expected stdout to contain 'InvalidArgument' when running catalog-schema on a bad package")
+}
+
+func (s *TestSuite) TestDpToHelmComplexPackage() {
+	tempDir, err := os.MkdirTemp("", "catalog_test_*")
+	s.Require().NoError(err)
+	defer os.RemoveAll(tempDir)
+
+	stdout, stderr, err := s.runDpToHelm(complexDir, "-o", tempDir, "--set", "password=1234")
+	s.NoError(err, "Expected no error when running catalog-schema on a good package")
+	s.Equal("", stderr, "Expected no error output when running catalog-schema on a good package")
+
+	expected_one := fmt.Sprintf("helm install one https://charts.bitnami.com/bitnami/one --version 19.4.3 --namespace default -f %s/one-default.yaml", tempDir)
+	s.Contains(stdout, expected_one, "Expected stdout to contain helm install command")
+
+	expected_two := fmt.Sprintf("helm install two https://charts.some-other-registry.com/charts/two --version 2.3.4-alpga --namespace default -f %s/two-default.yaml --set password=\"1234\"", tempDir)
+	s.Contains(stdout, expected_two, "Expected stdout to contain helm install command")
 }
