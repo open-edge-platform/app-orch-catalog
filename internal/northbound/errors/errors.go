@@ -5,14 +5,15 @@
 package errors
 
 import (
-	"github.com/open-edge-platform/orch-library/go/dazl"
 	"strings"
+
+	"github.com/open-edge-platform/orch-library/go/dazl"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-var log dazl.Logger
+var log = dazl.GetPackageLogger()
 
 type Options struct {
 	Code            codes.Code
