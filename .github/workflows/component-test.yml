@@ -129,6 +129,11 @@ jobs:
           echo "Project uID:"
           kubectl get projects.project -o json | jq -r ".items[0].status.projectStatus.uID"
 
+      - name: Build binaries
+        working-directory: app-orch-catalog
+        run: |
+          make build
+
       - name: Redeploy and Rebuild app-orch-catalog
         working-directory: app-orch-catalog
         run: |
