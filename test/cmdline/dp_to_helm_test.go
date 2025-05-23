@@ -56,6 +56,9 @@ func (s *TestSuite) TestDpToHelmGoodPackage() {
 	s.NoError(err, "Expected no error when running catalog-schema on a good package")
 	s.Equal("", stderr, "Expected no error output when running catalog-schema on a good package")
 
+	_, err = os.Stat(fmt.Sprintf("%s/test-wordpress-testing.yaml", tempDir))
+	s.NoError(err, "Expected test-wordpress-testing.yaml to exist")
+
 	expected := fmt.Sprintf("helm install test-wordpress https://charts.bitnami.com/bitnami/wordpress --version 19.4.3 --namespace default -f %s/test-wordpress-testing.yaml", tempDir)
 	s.Contains(stdout, expected, "Expected stdout to contain helm install command")
 }
@@ -75,6 +78,12 @@ func (s *TestSuite) TestDpToHelmComplexPackage() {
 	stdout, stderr, err := s.runDpToHelm(complexDir, "-o", tempDir, "--set", "password=1234")
 	s.NoError(err, "Expected no error when running catalog-schema on a good package")
 	s.Equal("", stderr, "Expected no error output when running catalog-schema on a good package")
+
+	_, err = os.Stat(fmt.Sprintf("%s/one-default.yaml", tempDir))
+	s.NoError(err, "Expected one-default.yaml to exist")
+
+	_, err = os.Stat(fmt.Sprintf("%s/two-default.yaml", tempDir))
+	s.NoError(err, "Expected two-default.yaml to exist")
 
 	expected_one := fmt.Sprintf("helm install one https://charts.bitnami.com/bitnami/one --version 19.4.3 --namespace default -f %s/one-default.yaml", tempDir)
 	s.Contains(stdout, expected_one, "Expected stdout to contain helm install command")
