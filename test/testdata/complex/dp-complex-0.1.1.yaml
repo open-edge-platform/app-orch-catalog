@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: (C) 2025-present Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+---
+specSchema: "DeploymentPackage"
+schemaVersion: "0.1"
+$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+
+name: "complex"
+displayName: "My Wordpress Blog"
+description: "complex deployment package"
+version: "0.1.1"
+
+applications:
+  - name: one
+    version: 0.1.1
+  - name: two
+    version: 0.1.1    
+
+deploymentProfiles:
+  - name: "default"
+    applicationProfiles:
+      - application: "one"
+        profile: "default"
+      - application: "two"
+        profile: "default"        
+  - name: "a"
+    applicationProfiles:
+      - application: "one"
+        profile: "a"
+      - application: "twp"
+        profile: "a"        
+  - name: "a"
+    applicationProfiles:
+      - application: "one"
+        profile: "a"
+      - application: "two"
+        profile: "a"        

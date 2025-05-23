@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: (C) 2025-present Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+---
+specSchema: "Registry"
+schemaVersion: "0.1"
+$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
+
+name: "two"
+description: "Some other registry"
+type: "HELM"
+
+rootUrl: "https://charts.some-other-registry.com/charts"
