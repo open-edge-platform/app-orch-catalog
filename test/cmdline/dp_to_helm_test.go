@@ -85,9 +85,9 @@ func (s *TestSuite) TestDpToHelmComplexPackage() {
 	_, err = os.Stat(fmt.Sprintf("%s/two-default.yaml", tempDir))
 	s.NoError(err, "Expected two-default.yaml to exist")
 
-	expected_one := fmt.Sprintf("helm install one https://charts.bitnami.com/bitnami/one --version 19.4.3 --namespace default -f %s/one-default.yaml", tempDir)
-	s.Contains(stdout, expected_one, "Expected stdout to contain helm install command")
+	expectedOne := fmt.Sprintf("helm install one https://charts.bitnami.com/bitnami/one --version 19.4.3 --namespace default -f %s/one-default.yaml", tempDir)
+	s.Contains(stdout, expectedOne, "Expected stdout to contain helm install command")
 
-	expected_two := fmt.Sprintf("helm install two https://charts.some-other-registry.com/charts/two --version 2.3.4-alpga --namespace default -f %s/two-default.yaml --set password=\"1234\"", tempDir)
-	s.Contains(stdout, expected_two, "Expected stdout to contain helm install command")
+	expectedTwo := fmt.Sprintf("helm install two https://charts.some-other-registry.com/charts/two --version 2.3.4-alpga --namespace default -f %s/two-default.yaml --set password=\"1234\"", tempDir)
+	s.Contains(stdout, expectedTwo, "Expected stdout to contain helm install command")
 }
