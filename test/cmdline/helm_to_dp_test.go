@@ -21,7 +21,7 @@ import (
 	"github.com/open-edge-platform/app-orch-catalog/pkg/schema/upload"
 )
 
-// We use the Geti heml chart for testing purposes as it is located at ghcr.io and is a know valid OCI Helm chart.
+// We use the Geti helm chart for testing purposes as it is located at ghcr.io and is a know valid OCI Helm chart.
 
 const (
 	helmToDpTool  = "../../build/_output/helm-to-dp"
@@ -104,6 +104,8 @@ func (s *TestSuite) TestHelmToDpGoodURL() {
 	_, stderr, err := s.runHelmToDp(getiHelmChart, "-o", tempDir)
 	s.NoError(err, "Expected no error when running catalog-schema on a good package")
 	s.Equal("", stderr, "Expected no error output when running catalog-schema on a good package")
+
+	// Now load a deployment package from the temp directory and verify it is correct.
 
 	dp, app, reg := s.LoadDeploymentPackage(tempDir)
 	s.Require().NotNil(dp, "Expected Deployment Package to be loaded")
