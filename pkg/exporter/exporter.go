@@ -9,9 +9,8 @@ import (
 	"fmt"
 	"os"
 
+	restclient "github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/schema/upload"
-
-	restclient "github.com/open-edge-platform/cli/pkg/rest/catalog"
 	"gopkg.in/yaml.v3"
 )
 
@@ -51,39 +50,82 @@ func saveSpec(spec *upload.YamlSpec, fileName string) error {
 	return os.WriteFile(fileName, data, permissions)
 }
 
-func (e *Exporter) exportRegistry(reg restclient.Registry, fileName string) error {
+func nullBlank(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}
+
+func nullFalse(b *bool) bool {
+	if b == nil {
+		return false
+	}
+	return *b
+}
+
+func (e *Exporter) ExportRegistry(reg restclient.Registry, fileName string) error {
 	spec := &upload.YamlSpec{
 		SpecSchema:    upload.RegistryType,
 		SchemaVersion: schemaVersion,
 		Name:          reg.Name,
-		DisplayName:   *reg.DisplayName,
-		Description:   *reg.Description,
+		DisplayName:   nullBlank(reg.DisplayName),
+		Description:   nullBlank(reg.Description),
 		RootURL:       reg.RootUrl,
-		UserName:      *reg.Username,
-		AuthToken:     *reg.AuthToken,
-		CACerts:       *reg.Cacerts,
+		UserName:      nullBlank(reg.Username),
+		AuthToken:     nullBlank(reg.AuthToken),
+		CACerts:       nullBlank(reg.Cacerts),
 		Type:          reg.Type,
 	}
+
+	/*
+		if reg.DisplayName != nil {
+			spec.DisplayName = *reg.DisplayName
+		}
+		if reg.Description != nil {
+			spec.Description = *reg.Description
+		}
+		if reg.Username != nil {
+			spec.UserName = *reg.Username
+		}
+		if reg.AuthToken != nil {
+			spec.AuthToken = *reg.AuthToken
+		}
+		if reg.Cacerts != nil {
+			spec.CACerts = *reg.Cacerts
+		}
+	*/
+
 	return saveSpec(spec, fileName)
 }
 
-func (e *Exporter) exportArtifacts(art restclient.Artifact, fileName string) error {
+func (e *Exporter) ExportArtifact(art restclient.Artifact, fileName string) error {
 	e.LogChange("Exporting artifact %s\n", art.Name)
 	spec := &upload.YamlSpec{
 		SpecSchema:    upload.ArtifactType,
 		SchemaVersion: schemaVersion,
 		Name:          art.Name,
-		DisplayName:   *art.DisplayName,
-		Description:   *art.Description,
+		DisplayName:   nullBlank(art.DisplayName),
+		Description:   nullBlank(art.Description),
 		MimeType:      art.MimeType,
 		Artifact:      b64.StdEncoding.EncodeToString(art.Artifact),
 	}
+
+	/*
+		if art.DisplayName != nil {
+			spec.DisplayName = *art.DisplayName
+		}
+		if art.Description != nil {
+			spec.Description = *art.Description
+		}
+	*/
+
 	return saveSpec(spec, fileName)
 }
 
-func (e *Exporter) exportApplications(app restclient.Application, fileName string) error {
+func (e *Exporter) ExportApplication(app restclient.Application, fileName string, profilePath string) error {
 	e.LogChange("Exporting application %s\n", app.Name)
-	profiles, err := e.exportProfiles(path, app)
+	profiles, err := e.exportProfiles(profilePath, app)
 	ignoredResources := e.exportIgnoredResources(app)
 	if err != nil {
 		return err
@@ -93,16 +135,32 @@ func (e *Exporter) exportApplications(app restclient.Application, fileName strin
 		SchemaVersion:    schemaVersion,
 		Name:             app.Name,
 		Version:          app.Version,
-		DisplayName:      *app.DisplayName,
-		Description:      *app.Description,
+		DisplayName:      nullBlank(app.DisplayName),
+		Description:      nullBlank(app.Description),
 		HelmRegistry:     app.HelmRegistryName,
-		ImageRegistry:    *app.ImageRegistryName,
+		ImageRegistry:    nullBlank(app.ImageRegistryName),
 		ChartName:        app.ChartName,
 		ChartVersion:     app.ChartVersion,
 		Profiles:         profiles,
-		DefaultProfile:   *app.DefaultProfileName,
+		DefaultProfile:   nullBlank(app.DefaultProfileName),
 		IgnoredResources: ignoredResources,
 	}
+
+	/*
+		if app.DisplayName != nil {
+			spec.DisplayName = *app.DisplayName
+		}
+		if app.Description != nil {
+			spec.Description = *app.Description
+		}
+		if app.ImageRegistryName != nil {
+			spec.ImageRegistry = *app.ImageRegistryName
+		}
+		if app.DefaultProfileName != nil {
+			spec.DefaultProfile = *app.DefaultProfileName
+		}
+	*/
+
 	return saveSpec(spec, fileName)
 }
 
@@ -113,14 +171,25 @@ func (e *Exporter) exportProfiles(path string, app restclient.Application) ([]up
 		if err != nil {
 			return nil, err
 		}
-		profiles = append(profiles, upload.Profile{
+		spec := upload.Profile{
 			Name:                   p.Name,
-			DisplayName:            *p.DisplayName,
-			Description:            *p.Description,
+			DisplayName:            nullBlank(p.DisplayName),
+			Description:            nullBlank(p.Description),
 			ValuesFileName:         fileName,
 			DeploymentRequirements: e.exportDeploymentRequirements(p),
 			ParameterTemplates:     e.exportParameterTemplates(p),
-		})
+		}
+
+		/*
+			if p.DisplayName != nil {
+				spec.DisplayName = *p.DisplayName
+			}
+			if p.Description != nil {
+				spec.Description = *p.Description
+			}
+		*/
+
+		profiles = append(profiles, spec)
 	}
 	return profiles, nil
 }
@@ -136,6 +205,9 @@ func (e *Exporter) exportProfile(path string, app restclient.Application, p rest
 }
 
 func (e *Exporter) exportIgnoredResources(app restclient.Application) []upload.ResourceReference {
+	if app.IgnoredResources == nil {
+		return []upload.ResourceReference{}
+	}
 	resources := make([]upload.ResourceReference, 0, len(*app.IgnoredResources))
 	for _, r := range *app.IgnoredResources {
 		namespace := ""
@@ -148,6 +220,9 @@ func (e *Exporter) exportIgnoredResources(app restclient.Application) []upload.R
 }
 
 func (e *Exporter) exportDeploymentRequirements(p restclient.Profile) []upload.DeploymentRequirement {
+	if p.DeploymentRequirement == nil {
+		return []upload.DeploymentRequirement{}
+	}
 	requirements := make([]upload.DeploymentRequirement, 0, len(*p.DeploymentRequirement))
 	for _, dr := range requirements {
 		requirements = append(requirements, upload.DeploymentRequirement{
@@ -161,6 +236,9 @@ func (e *Exporter) exportDeploymentRequirements(p restclient.Profile) []upload.D
 }
 
 func (e *Exporter) exportParameterTemplates(p restclient.Profile) []upload.ParameterTemplate {
+	if p.ParameterTemplates == nil {
+		return []upload.ParameterTemplate{}
+	}
 	templates := make([]upload.ParameterTemplate, 0, len(*p.ParameterTemplates))
 	for _, pt := range templates {
 		templates = append(templates, upload.ParameterTemplate{
@@ -226,7 +304,7 @@ func (e *Exporter) exportExtension(ext restclient.APIExtension) upload.APIExtens
 	return extension
 }
 
-func (e *Exporter) exportDeploymentPackages(pkg restclient.DeploymentPackage, fileName string) error {
+func (e *Exporter) ExportDeploymentPackage(pkg restclient.DeploymentPackage, fileName string) error {
 
 	e.LogChange("Exporting deployment package %s\n", pkg.Name)
 	spec := &upload.YamlSpec{
@@ -234,15 +312,15 @@ func (e *Exporter) exportDeploymentPackages(pkg restclient.DeploymentPackage, fi
 		SchemaVersion:              schemaVersion,
 		Name:                       pkg.Name,
 		Version:                    pkg.Version,
-		DisplayName:                *pkg.DisplayName,
-		Description:                *pkg.Description,
+		DisplayName:                nullBlank(pkg.DisplayName),
+		Description:                nullBlank(pkg.Description),
 		Applications:               e.exportApplicationReferences(pkg),
 		ApplicationDependencies:    e.exportApplicationDependencies(pkg),
 		DeploymentProfiles:         e.exportDeploymentProfiles(pkg),
-		DefaultProfile:             *pkg.DefaultProfileName,
-		IsDeployed:                 *pkg.IsDeployed,
-		IsVisible:                  *pkg.IsVisible,
-		ForbidsMultipleDeployments: *pkg.ForbidsMultipleDeployments,
+		DefaultProfile:             nullBlank(pkg.DefaultProfileName),
+		IsDeployed:                 nullFalse(pkg.IsDeployed),
+		IsVisible:                  nullFalse(pkg.IsVisible),
+		ForbidsMultipleDeployments: nullFalse(pkg.ForbidsMultipleDeployments),
 		Extensions:                 e.exportExtensions(pkg.Extensions),
 		DefaultNamespaces:          e.exportDefaultNamespaces(pkg.DefaultNamespaces),
 		Namespaces:                 e.exportNamespaces(pkg.Namespaces),
@@ -259,8 +337,8 @@ func (e *Exporter) exportDeploymentProfiles(app restclient.DeploymentPackage) []
 		}
 		profiles = append(profiles, upload.DeploymentProfile{
 			Name:                p.Name,
-			DisplayName:         *p.DisplayName,
-			Description:         *p.Description,
+			DisplayName:         nullBlank(p.DisplayName),
+			Description:         nullBlank(p.Description),
 			ApplicationProfiles: appProfiles,
 		})
 	}
@@ -279,6 +357,9 @@ func (e *Exporter) exportApplicationReferences(pkg restclient.DeploymentPackage)
 }
 
 func (e *Exporter) exportApplicationDependencies(pkg restclient.DeploymentPackage) []upload.ApplicationDependency {
+	if pkg.ApplicationDependencies == nil {
+		return []upload.ApplicationDependency{}
+	}
 	appdeps := make([]upload.ApplicationDependency, 0, len(*pkg.ApplicationDependencies))
 	for _, dep := range *pkg.ApplicationDependencies {
 		appdeps = append(appdeps, upload.ApplicationDependency{
