@@ -9,6 +9,6 @@ tutorialServer:
   initialCount: 0
 image:
   #  Will update with your CLUSTER_FQDN and your ORG and PROJECT names
-  repository: %ImageRegistryURL%/tutorial-server-image
+  repository: "%ImageRegistryURL%/tutorial-server-image"
 imagePullSecrets:
   - name: "%GeneratedDockerCredential%"
