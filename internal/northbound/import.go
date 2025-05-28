@@ -17,6 +17,7 @@ package northbound
 import (
 	"context"
 
+	"github.com/open-edge-platform/app-orch-catalog/internal/dp"
 	"github.com/open-edge-platform/app-orch-catalog/internal/helm"
 	nberrors "github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
@@ -43,6 +44,8 @@ func (g *Server) Import(ctx context.Context, req *catalogv3.ImportRequest) (*cat
 		return nil, nberrors.NewInvalidArgument(
 			nberrors.WithMessage(err.Error()))
 	}
+
+	_, pkg, app, reg, err := dp.GenerateDeploymentPackageResources(helm, req.ChartValues, req.Namespace, req.IncludeAuth)
 
 	_ = helm
 

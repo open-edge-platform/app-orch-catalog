@@ -36,7 +36,7 @@ func appendHeader(yaml []byte, kind string) []byte {
 }
 */
 
-func GenerateDeploymentPackageResources(helm helm.HelmInfo, valuesFile string, outputDir string, namespace string, includeAuth bool) (string, *restclient.DeploymentPackage, *restclient.Application, *restclient.Registry, error) {
+func GenerateDeploymentPackageResources(helm helm.HelmInfo, valuesFile string, namespace string, includeAuth bool) (string, *restclient.DeploymentPackage, *restclient.Application, *restclient.Registry, error) {
 	name := helm.Name
 	if len(name) > 30 {
 		newName := name[:25]
@@ -137,7 +137,7 @@ func GenerateDeploymentPackage(helm helm.HelmInfo, valuesFile string, outputDir 
 		return &OutputError{Helm: helm, OutputDir: outputDir, Msg: "Failed to create output directory", Err: err}
 	}
 
-	name, dp, app, registry, err := GenerateDeploymentPackageResources(helm, valuesFile, outputDir, namespace, includeAuth)
+	name, dp, app, registry, err := GenerateDeploymentPackageResources(helm, valuesFile, namespace, includeAuth)
 	if err != nil {
 		return err
 	}
