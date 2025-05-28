@@ -8,7 +8,7 @@ schemaVersion: "0.1"
 $schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
 
 name: tutorial-server
-version: "0.1.0"
+version: "0.1.1"
 description: "Tutorial Server"
 
 imageRegistry: "harbor-docker-oci"
@@ -24,11 +24,11 @@ profiles:
   - name: "alternate-pt"
     valuesFileName: "tutorial-server-values-alternate-pt.yaml"
     parameterTemplates:
-      - name: "greeting"
+      - name: "tutorialServer.greeting"
         displayName: Greeting message
         default: "Deployed by Application Orchestration (pt)"
         type: string
-      - name: "initialCount"
+      - name: "tutorialServer.initialCount"
         displayName: Initial count
         default: "0"
         type: string
