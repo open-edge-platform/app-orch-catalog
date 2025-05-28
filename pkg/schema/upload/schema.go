@@ -136,7 +136,7 @@ type YamlSpec struct {
 	DisplayName                string                  `yaml:"displayName,omitempty"`
 	Version                    string                  `yaml:"version,omitempty"`
 	Kind                       string                  `yaml:"kind,omitempty"`
-	Description                string                  `yaml:"description,omitempty"`
+	Description                string                  `yaml:"description"` // Note: should be optional, but a bug in upload API requires it to be present
 	HelmRegistry               string                  `yaml:"helmRegistry,omitempty"`
 	Type                       string                  `yaml:"type,omitempty"`
 	ChartName                  string                  `yaml:"chartName,omitempty"`
