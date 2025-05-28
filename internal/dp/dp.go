@@ -36,7 +36,7 @@ func appendHeader(yaml []byte, kind string) []byte {
 }
 */
 
-func GenerateDeploymentPackageResources(helm helm.HelmInfo, valuesFile string, namespace string, includeAuth bool) (string, *catalogv3.DeploymentPackage, *catalogv3.Application, *catalogv3.Registry, error) {
+func GenerateDeploymentPackageResources(helm helm.HelmInfo, values string, namespace string, includeAuth bool) (string, *catalogv3.DeploymentPackage, *catalogv3.Application, *catalogv3.Registry, error) {
 	name := helm.Name
 	if len(name) > 30 {
 		newName := name[:25]
@@ -48,25 +48,14 @@ func GenerateDeploymentPackageResources(helm helm.HelmInfo, valuesFile string, n
 		name = newName
 	}
 
-	registryName := name + "-registry"
-
-	var values string
-	if valuesFile != "" {
-		content, err := os.ReadFile(valuesFile)
-		if err != nil {
-			return "", nil, nil, nil, &InputError{Helm: helm, InputFile: valuesFile, Msg: "Failed to read values file", Err: err}
-		}
-
-		var yamlContent map[string]interface{}
-		err = yaml.Unmarshal(content, &yamlContent)
-		if err != nil {
-			return "", nil, nil, nil, &InputError{Helm: helm, InputFile: valuesFile, Msg: "Invalid YAML content in values file", Err: err}
-		}
-
-		values = string(content)
-	} else {
-		values = "# this file intentionally left blank\n"
+	// Ensure values contains yaml
+	var yamlContent map[string]interface{}
+	err := yaml.Unmarshal([]byte(values), &yamlContent)
+	if err != nil {
+		return "", nil, nil, nil, &InputError{Helm: helm, Msg: "Invalid YAML content in values file", Err: err}
 	}
+
+	registryName := name + "-registry"
 
 	app := &catalogv3.Application{
 		Name:             name,
@@ -95,7 +84,7 @@ func GenerateDeploymentPackageResources(helm helm.HelmInfo, valuesFile string, n
 		Profiles: []*catalogv3.DeploymentProfile{
 			{
 				Name:                "default",
-				ApplicationProfiles: map[string]string{"default": name},
+				ApplicationProfiles: map[string]string{name: "default"},
 			},
 		},
 	}
@@ -137,7 +126,19 @@ func GenerateDeploymentPackage(helm helm.HelmInfo, valuesFile string, outputDir 
 		return &OutputError{Helm: helm, OutputDir: outputDir, Msg: "Failed to create output directory", Err: err}
 	}
 
-	name, dp, app, registry, err := GenerateDeploymentPackageResources(helm, valuesFile, namespace, includeAuth)
+	var values string
+	if valuesFile != "" {
+		content, err := os.ReadFile(valuesFile)
+		if err != nil {
+			return &InputError{Helm: helm, InputFile: valuesFile, Msg: "Failed to read values file", Err: err}
+		}
+
+		values = string(content)
+	} else {
+		values = "# this file intentionally left blank\n"
+	}
+
+	name, dp, app, registry, err := GenerateDeploymentPackageResources(helm, values, namespace, includeAuth)
 	if err != nil {
 		return err
 	}
