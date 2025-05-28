@@ -737,6 +737,7 @@ Response message for the GetRegistry method.
 | include_auth | [bool](#bool) |  | If true and a username/auth_token is specified then they will be included in the generated Registry object. |
 | generate_default_values | [bool](#bool) |  | If true and chart_values is not set, then the values.yaml will be extracted and used to generate default profile values. |
 | generate_default_parameters | [bool](#bool) |  | Generates default parameters from the values, from chart_values or from generate_default_values as appropriate. |
+| namespace | [string](#string) |  | Optional namespace |
 
 <a name="catalog-v3-ImportResponse"></a>
 

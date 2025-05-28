@@ -611,6 +611,9 @@ type CatalogServiceImportParams struct {
 
 	// GenerateDefaultParameters Generates default parameters from the values, from chart_values or from generate_default_values as appropriate.
 	GenerateDefaultParameters *bool `form:"generateDefaultParameters,omitempty" json:"generateDefaultParameters,omitempty"`
+
+	// Namespace Optional namespace
+	Namespace *string `form:"namespace,omitempty" json:"namespace,omitempty"`
 }
 
 // CatalogServiceListRegistriesParams defines parameters for CatalogServiceListRegistries.

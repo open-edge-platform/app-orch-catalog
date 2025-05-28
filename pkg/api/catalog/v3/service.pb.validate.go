@@ -513,6 +513,17 @@ func (m *ImportRequest) validate(all bool) error {
 
 	// no validation rules for GenerateDefaultParameters
 
+	if l := utf8.RuneCountInString(m.GetNamespace()); l < 0 || l > 40 {
+		err := ImportRequestValidationError{
+			field:  "Namespace",
+			reason: "value length must be between 0 and 40 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
 	if len(errors) > 0 {
 		return ImportRequestMultiError(errors)
 	}

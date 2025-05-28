@@ -269,6 +269,15 @@ message ImportRequest {
   // Generates default parameters from the values, from chart_values or from
   // generate_default_values as appropriate.
   bool generate_default_parameters = 9 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional namespace
+  string namespace = 10 [
+    (google.api.field_behavior) = OPTIONAL,
+    (validate.rules).string = {
+      min_len: 0
+      max_len: 40
+    }
+  ];
 }
 
 // Response message for the Import method

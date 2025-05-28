@@ -1,5 +1,6 @@
 # Generated with protoc-gen-openapi
 # https://github.com/kollalabs/protoc-gen-openapi
+
 openapi: 3.0.3
 info:
   title: Application Catalog API
@@ -540,6 +541,12 @@ paths:
           description: Generates default parameters from the values, from chart_values or from generate_default_values as appropriate.
           schema:
             type: boolean
+        - name: namespace
+          in: query
+          description: Optional namespace
+          schema:
+            maxLength: 40
+            type: string
       responses:
         "200":
           description: OK
