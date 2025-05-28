@@ -10,8 +10,8 @@ import (
 
 	"github.com/open-edge-platform/app-orch-catalog/internal/helm"
 	"github.com/open-edge-platform/app-orch-catalog/internal/shared/verboseerror"
+	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/exporter"
-	restclient "github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/schema/upload"
 	"gopkg.in/yaml.v2"
 )
@@ -36,7 +36,7 @@ func appendHeader(yaml []byte, kind string) []byte {
 }
 */
 
-func GenerateDeploymentPackageResources(helm helm.HelmInfo, valuesFile string, namespace string, includeAuth bool) (string, *restclient.DeploymentPackage, *restclient.Application, *restclient.Registry, error) {
+func GenerateDeploymentPackageResources(helm helm.HelmInfo, valuesFile string, namespace string, includeAuth bool) (string, *catalogv3.DeploymentPackage, *catalogv3.Application, *catalogv3.Registry, error) {
 	name := helm.Name
 	if len(name) > 30 {
 		newName := name[:25]
@@ -68,31 +68,31 @@ func GenerateDeploymentPackageResources(helm helm.HelmInfo, valuesFile string, n
 		values = "# this file intentionally left blank\n"
 	}
 
-	app := &restclient.Application{
+	app := &catalogv3.Application{
 		Name:             name,
 		Version:          helm.Version,
-		Description:      stringPtr(helm.Description),
+		Description:      helm.Description,
 		HelmRegistryName: registryName,
 		ChartName:        helm.Name,
 		ChartVersion:     helm.Version,
-		Profiles: &[]restclient.Profile{
+		Profiles: []*catalogv3.Profile{
 			{
 				Name:        "default",
-				ChartValues: stringPtr(values),
+				ChartValues: values,
 			},
 		},
 	}
 
-	dp := &restclient.DeploymentPackage{
+	dp := &catalogv3.DeploymentPackage{
 		Name:    name,
 		Version: helm.Version,
-		ApplicationReferences: []restclient.ApplicationReference{
+		ApplicationReferences: []*catalogv3.ApplicationReference{
 			{
 				Name:    name,
 				Version: helm.Version,
 			},
 		},
-		Profiles: &[]restclient.DeploymentProfile{
+		Profiles: []*catalogv3.DeploymentProfile{
 			{
 				Name:                "default",
 				ApplicationProfiles: map[string]string{"default": name},
@@ -100,17 +100,17 @@ func GenerateDeploymentPackageResources(helm helm.HelmInfo, valuesFile string, n
 		},
 	}
 
-	registry := &restclient.Registry{
+	registry := &catalogv3.Registry{
 		Name:        registryName,
-		Description: stringPtr("OCI registry for " + name),
+		Description: "OCI registry for " + name,
 		Type:        "HELM",
 		RootUrl:     helm.OCIRegistry,
 	}
 	if includeAuth && helm.Username != "" && helm.Password != "" {
 		verboseerror.Infof("NOTE: Username and password have been added to registry object.\n")
 		verboseerror.Infof("      Please ensure that the deployment package is stored securely.\n")
-		registry.Username = stringPtr(helm.Username)
-		registry.AuthToken = stringPtr(helm.Password)
+		registry.Username = helm.Username
+		registry.AuthToken = helm.Password
 	}
 
 	return name, dp, app, registry, nil
