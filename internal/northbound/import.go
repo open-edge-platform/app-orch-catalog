@@ -19,6 +19,7 @@ import (
 
 	"github.com/open-edge-platform/app-orch-catalog/internal/dp"
 	"github.com/open-edge-platform/app-orch-catalog/internal/helm"
+	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
 	nberrors "github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 )
@@ -47,10 +48,46 @@ func (g *Server) Import(ctx context.Context, req *catalogv3.ImportRequest) (*cat
 
 	_, pkg, app, reg, err := dp.GenerateDeploymentPackageResources(helm, req.ChartValues, req.Namespace, req.IncludeAuth)
 
-	_ = helm
-
-	_ = projectUUID
 	resp := &catalogv3.ImportResponse{}
+
+	tx, err := g.startTransaction(ctx)
+	if err != nil {
+		return nil, errors.NewDBError(errors.WithError(err))
+	}
+
+	registryEvents := &RegistryEvents{}
+	_, err = g.createRegistry(ctx, tx, projectUUID, reg, registryEvents)
+	if err != nil {
+		g.rollbackTransaction(tx)
+		return nil, err
+	}
+
+	appEvents := &ApplicationEvents{}
+	_, err = g.createApplication(ctx, tx, projectUUID, app, appEvents)
+	if err != nil {
+		g.rollbackTransaction(tx)
+		return nil, err
+	}
+
+	dpEvents := &DeploymentPackageEvents{}
+	_, err = g.createDeploymentPackage(ctx, tx, projectUUID, pkg, dpEvents)
+	if err != nil {
+		g.rollbackTransaction(tx)
+		return nil, err
+	}
+
+	err = g.commitTransaction(tx)
+	if err != nil {
+		return nil, errors.NewDBError(errors.WithError(err))
+	}
+
+	logActivity(ctx, "created", "registry", projectUUID, reg.Name)
+	logActivity(ctx, "created", "application", projectUUID, app.Name, app.Version)
+	logActivity(ctx, "created", "deployment-package", projectUUID, pkg.Name, pkg.Version)
+
+	registryEvents.sendToAll(g.listeners)
+	appEvents.sendToAll(g.listeners)
+	dpEvents.sendToAll(g.listeners)
 
 	return resp, nil
 }
