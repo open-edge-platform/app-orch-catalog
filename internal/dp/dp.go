@@ -87,6 +87,7 @@ func GenerateDeploymentPackageResources(helm helm.HelmInfo, values string, names
 				ApplicationProfiles: map[string]string{name: "default"},
 			},
 		},
+		DefaultProfileName: "default",
 	}
 
 	registry := &catalogv3.Registry{
