@@ -130,6 +130,7 @@ spec:
           - name: MALWARE_SCANNER_PERMISSIVE
             value: {{ .Values.malwareScannerPermissive | quote }}
           {{- end }}
+<<<<<<< HEAD
           {{- if and .Values.catalogServer .Values.catalogServer.httpProxy }}
           # http proxy settings          
           - name: http_proxy
@@ -143,6 +144,20 @@ spec:
           - name: no_proxy
             value: {{ .Values.catalogServer.noProxy }}
           {{- end }}
+=======
+          {{- with .Values.catalogServer.http_proxy }}
+          - name: HTTP_PROXY
+            value: {{ . }}
+          {{- end }}
+          {{- with .Values.catalogServer.https_proxy }}
+          - name: HTTPS_PROXY
+            value: {{ . }}
+          {{- end }}
+          {{- with .Values.catalogServer.no_proxy }}
+          - name: NO_PROXY
+            value: {{ . }}
+          {{- end }}          
+>>>>>>> bc03001 (fix section name in helm chart values)
           resources:
           {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:

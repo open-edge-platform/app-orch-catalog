@@ -196,7 +196,7 @@ resources:
     cpu: 10m
     memory: 64Mi
 
-catalog-server:
+catalogServer:
   httpProxy: ""
   httpsProxy: ""
   noProxy: ""
