@@ -130,13 +130,19 @@ spec:
           - name: MALWARE_SCANNER_PERMISSIVE
             value: {{ .Values.malwareScannerPermissive | quote }}
           {{- end }}
-          # http proxy settings
+          {{- if and .Values.catalogServer .Values.catalogServer.httpProxy }}
+          # http proxy settings          
           - name: http_proxy
             value: {{ .Values.catalogServer.httpProxy }}
+          {{- end }}
+          {{- if and .Values.catalogServer .Values.catalogServer.httpsProxy }}
           - name: https_proxy
             value: {{ .Values.catalogServer.httpsProxy }}
+          {{- end }}
+          {{- if and .Values.catalogServer .Values.catalogServer.noProxy }}
           - name: no_proxy
-            value: {{ .Values.catalogServer.noProxy }}      
+            value: {{ .Values.catalogServer.noProxy }}
+          {{- end }}
           resources:
           {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
