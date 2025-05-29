@@ -70,6 +70,7 @@ func GenerateDeploymentPackageResources(helm helm.HelmInfo, values string, names
 				ChartValues: values,
 			},
 		},
+		DefaultProfileName: "default",
 	}
 
 	dp := &catalogv3.DeploymentPackage{
