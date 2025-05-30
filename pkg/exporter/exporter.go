@@ -41,12 +41,18 @@ func NewExporter() *Exporter {
 	}
 }
 
+func appendHeader(yaml []byte) []byte {
+	header := fmt.Sprintf("---\n")
+	return append([]byte(header), yaml...)
+}
+
 func saveSpec(spec *upload.YamlSpec, fileName string) error {
 	// Marshal the spec into YAML and write the file
 	data, err := yaml.Marshal(spec)
 	if err != nil {
 		return err
 	}
+	data = appendHeader(data)
 	return os.WriteFile(fileName, data, permissions)
 }
 

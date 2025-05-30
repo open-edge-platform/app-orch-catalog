@@ -6,10 +6,11 @@ package dp
 
 import (
 	"fmt"
-	"github.com/open-edge-platform/app-orch-catalog/internal/helm"
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+
+	"github.com/open-edge-platform/app-orch-catalog/internal/helm"
+	"github.com/stretchr/testify/assert"
 )
 
 // fileExists checks if a file exists and is not a directory.
@@ -41,7 +42,7 @@ func TestGenerateDeploymentPackage(t *testing.T) {
 	dpFileName := fmt.Sprintf("%s/%s-deployment-package.yaml", tempDir, h.Name)
 	appFileName := fmt.Sprintf("%s/%s-application.yaml", tempDir, h.Name)
 	regFileName := fmt.Sprintf("%s/%s-registry.yaml", tempDir, h.Name)
-	valFileName := fmt.Sprintf("%s/%s-values.yaml", tempDir, h.Name)
+	valFileName := fmt.Sprintf("%s/values-%s-%s-default.yaml", tempDir, h.Name, h.Version)
 
 	assert.True(t, fileExists(dpFileName))
 	assert.True(t, fileExists(appFileName))
@@ -51,31 +52,28 @@ func TestGenerateDeploymentPackage(t *testing.T) {
 	dpContent, err := os.ReadFile(dpFileName)
 	assert.NoError(t, err)
 	expectedDPContent := `---
-specSchema: "DeploymentPackage"
+specSchema: DeploymentPackage
 schemaVersion: "0.1"
-$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
-
 name: test
 version: 1.0.0
 description: ""
-applications:
-- name: test
-  version: 1.0.0
 deploymentProfiles:
-- name: default
-  applicationProfiles:
-  - application: test
-    profile: default
+    - name: default
+      applicationProfiles:
+        - application: test
+          profile: default
+defaultProfile: default
+applications:
+    - name: test
+      version: 1.0.0
 `
 	assert.Equal(t, expectedDPContent, string(dpContent))
 
 	appContent, err := os.ReadFile(appFileName)
 	assert.NoError(t, err)
 	expectedAppContent := `---
-specSchema: "Application"
+specSchema: Application
 schemaVersion: "0.1"
-$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
-
 name: test
 version: 1.0.0
 description: test description
@@ -83,24 +81,21 @@ helmRegistry: test-registry
 chartName: test
 chartVersion: 1.0.0
 profiles:
-- name: default
-  valuesFileName: test-values.yaml
+    - name: default
+      valuesFileName: values-test-1.0.0-default.yaml
+defaultProfile: default
 `
 	assert.Equal(t, expectedAppContent, string(appContent))
 
 	regContent, err := os.ReadFile(regFileName)
 	assert.NoError(t, err)
 	expectedRegContent := `---
-specSchema: "Registry"
+specSchema: Registry
 schemaVersion: "0.1"
-$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
-
 name: test-registry
 description: OCI registry for test
 type: HELM
 rootUrl: oci://test
-userName: ""
-authToken: ""
 `
 	assert.Equal(t, expectedRegContent, string(regContent))
 
@@ -134,10 +129,8 @@ func TestGenerateDeploymentPackageWithAuth(t *testing.T) {
 	regContent, err := os.ReadFile(regFileName)
 	assert.NoError(t, err)
 	expectedRegContent := `---
-specSchema: "Registry"
+specSchema: Registry
 schemaVersion: "0.1"
-$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
-
 name: test-registry
 description: OCI registry for test
 type: HELM
@@ -180,7 +173,7 @@ service:
 	err = GenerateDeploymentPackage(h, inputValuesFileName, tempDir, "", false)
 	assert.NoError(t, err)
 
-	valFileName := fmt.Sprintf("%s/%s-values.yaml", tempDir, h.Name)
+	valFileName := fmt.Sprintf("%s/values-%s-%s-default.yaml", tempDir, h.Name, h.Version)
 
 	assert.True(t, fileExists(valFileName))
 
@@ -213,23 +206,22 @@ func TestGenerateDeploymentPackageWithNamespace(t *testing.T) {
 	dpContent, err := os.ReadFile(dpFileName)
 	assert.NoError(t, err)
 	expectedDPContent := `---
-specSchema: "DeploymentPackage"
+specSchema: DeploymentPackage
 schemaVersion: "0.1"
-$schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
-
 name: test
 version: 1.0.0
 description: ""
-applications:
-- name: test
-  version: 1.0.0
 deploymentProfiles:
-- name: default
-  applicationProfiles:
-  - application: test
-    profile: default
+    - name: default
+      applicationProfiles:
+        - application: test
+          profile: default
+defaultProfile: default
+applications:
+    - name: test
+      version: 1.0.0
 defaultNamespaces:
-  test: testnamespace
+    test: testnamespace
 `
 	assert.Equal(t, expectedDPContent, string(dpContent))
 }

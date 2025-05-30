@@ -12,7 +12,6 @@ import (
 	"github.com/open-edge-platform/app-orch-catalog/internal/shared/verboseerror"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/exporter"
-	"github.com/open-edge-platform/app-orch-catalog/pkg/schema/upload"
 	"gopkg.in/yaml.v2"
 )
 
@@ -21,13 +20,6 @@ const (
 	DollarSchema          = "https://schema.intel.com/catalog.orchestrator/0.1/schema"
 	DefaultFilePermission = 0600
 )
-
-/*
-func appendHeader(yaml []byte, kind string) []byte {
-	header := fmt.Sprintf("---\nspecSchema: \"%s\"\nschemaVersion: \"%s\"\n$schema: \"%s\"\n\n", kind, SchemaVersion, DollarSchema)
-	return append([]byte(header), yaml...)
-}
-*/
 
 func GenerateDeploymentPackageResources(helm helm.HelmInfo, values string, namespace string, includeAuth bool) (string, *catalogv3.DeploymentPackage, *catalogv3.Application, *catalogv3.Registry, error) {
 	name := helm.Name
@@ -104,21 +96,6 @@ func GenerateDeploymentPackageResources(helm helm.HelmInfo, values string, names
 	return name, dp, app, registry, nil
 }
 
-func SaveSpec(spec *upload.YamlSpec, outputFile string) error {
-	yamlData, err := yaml.Marshal(spec)
-	if err != nil {
-		return &GenerationError{Msg: "Failed to marshal spec to YAML", Err: err}
-	}
-	//yamlData = appendHeader(yamlData, spec.SpecSchema)
-
-	err = os.WriteFile(outputFile, yamlData, DefaultFilePermission)
-	if err != nil {
-		return &OutputError{OutputFile: outputFile, Msg: "Failed to write spec YAML to file", Err: err}
-	}
-
-	return nil
-}
-
 func GenerateDeploymentPackage(helm helm.HelmInfo, valuesFile string, outputDir string, namespace string, includeAuth bool) error {
 	err := os.MkdirAll(outputDir, os.ModePerm)
 	if err != nil {
@@ -143,9 +120,9 @@ func GenerateDeploymentPackage(helm helm.HelmInfo, valuesFile string, outputDir 
 	}
 
 	e := exporter.NewExporter()
-	err = e.ExportRegistry(registry, fmt.Sprintf("%s/%s-registry.yaml", outputDir, registry.Name))
+	err = e.ExportRegistry(registry, fmt.Sprintf("%s/%s.yaml", outputDir, registry.Name)) // note: registry already has "-registry" in the name
 	if err != nil {
-		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fmt.Sprintf("%s/%s-registry.yaml", outputDir, registry.Name), Msg: "Failed to export registry", Err: err}
+		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fmt.Sprintf("%s/%s.yaml", outputDir, registry.Name), Msg: "Failed to export registry", Err: err}
 	}
 	err = e.ExportApplication(app, fmt.Sprintf("%s/%s-application.yaml", outputDir, name), outputDir)
 	if err != nil {
