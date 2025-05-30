@@ -16,6 +16,7 @@ package northbound
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/open-edge-platform/app-orch-catalog/internal/dp"
 	"github.com/open-edge-platform/app-orch-catalog/internal/helm"
@@ -48,27 +49,29 @@ func (g *Server) Import(ctx context.Context, req *catalogv3.ImportRequest) (*cat
 
 	_, pkg, app, reg, err := dp.GenerateDeploymentPackageResources(helm, req.ChartValues, req.Namespace, req.IncludeAuth)
 
+	fmt.Printf("App: %+v", app)
+
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
 		return nil, errors.NewDBError(errors.WithError(err))
 	}
 
 	registryEvents := &RegistryEvents{}
-	_, err = g.createRegistry(ctx, tx, projectUUID, reg, registryEvents)
+	err = g.createOrUpdateRegistry(ctx, tx, projectUUID, reg, registryEvents)
 	if err != nil {
 		g.rollbackTransaction(tx)
 		return nil, err
 	}
 
 	appEvents := &ApplicationEvents{}
-	_, err = g.createApplication(ctx, tx, projectUUID, app, appEvents)
+	err = g.createOrUpdateApplication(ctx, tx, projectUUID, app, appEvents)
 	if err != nil {
 		g.rollbackTransaction(tx)
 		return nil, err
 	}
 
 	dpEvents := &DeploymentPackageEvents{}
-	_, err = g.createDeploymentPackage(ctx, tx, projectUUID, pkg, dpEvents)
+	err = g.createOrUpdateDeploymentPackage(ctx, tx, projectUUID, pkg, dpEvents)
 	if err != nil {
 		g.rollbackTransaction(tx)
 		return nil, err

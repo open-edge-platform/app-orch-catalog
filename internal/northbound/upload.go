@@ -22,10 +22,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
-	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/application"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/artifact"
-	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/deploymentpackage"
-	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/registry"
 	"github.com/open-edge-platform/app-orch-catalog/internal/yamlreader"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/malware"
@@ -252,12 +249,7 @@ func (u *uploadSession) ProcessFiles(ctx context.Context, files yamlreader.FileS
 }
 
 func (u *uploadSession) loadRegistry(ctx context.Context, tx *generated.Tx, reg *catalogv3.Registry) error {
-	_, err := tx.Registry.Query().Where(registry.ProjectUUID(u.projectUUID), registry.Name(reg.Name)).First(ctx)
-	if err != nil {
-		_, err = u.g.createRegistry(ctx, tx, u.projectUUID, reg, u.registryEvents)
-		return err
-	}
-	return u.g.updateRegistry(ctx, tx, u.projectUUID, reg, u.registryEvents)
+	return u.g.createOrUpdateRegistry(ctx, tx, u.projectUUID, reg, u.registryEvents)
 }
 
 func (u *uploadSession) loadArtifact(ctx context.Context, tx *generated.Tx, art *catalogv3.Artifact) error {
@@ -270,20 +262,9 @@ func (u *uploadSession) loadArtifact(ctx context.Context, tx *generated.Tx, art 
 }
 
 func (u *uploadSession) loadApplication(ctx context.Context, tx *generated.Tx, app *catalogv3.Application) error {
-	_, err := tx.Application.Query().Where(application.ProjectUUID(u.projectUUID), application.Name(app.Name), application.Version(app.Version)).First(ctx)
-	if err != nil {
-		_, err = u.g.createApplication(ctx, tx, u.projectUUID, app, u.applicationEvents)
-		return err
-	}
-	return u.g.updateApplication(ctx, tx, u.projectUUID, app, u.applicationEvents)
+	return u.g.createOrUpdateApplication(ctx, tx, u.projectUUID, app, u.applicationEvents)
 }
 
 func (u *uploadSession) loadDeploymentPackage(ctx context.Context, tx *generated.Tx, pkg *catalogv3.DeploymentPackage) error {
-	_, err := tx.DeploymentPackage.Query().Where(deploymentpackage.ProjectUUID(u.projectUUID),
-		deploymentpackage.Name(pkg.Name), deploymentpackage.Version(pkg.Version)).First(ctx)
-	if err != nil {
-		_, err = u.g.createDeploymentPackage(ctx, tx, u.projectUUID, pkg, u.deploymentPackageEvents)
-		return err
-	}
-	return u.g.updateDeploymentPackage(ctx, tx, u.projectUUID, pkg, u.deploymentPackageEvents)
+	return u.g.createOrUpdateDeploymentPackage(ctx, tx, u.projectUUID, pkg, u.deploymentPackageEvents)
 }
