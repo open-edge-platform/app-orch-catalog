@@ -225,6 +225,7 @@ message UploadMultipleCatalogEntitiesResponse {
 
 // === Import Messages ===
 
+// ImportRequest is a request for importing a helm chart from an OCI registry
 message ImportRequest {
   // Required URL of Helm Chart to import
   string url = 1 [
