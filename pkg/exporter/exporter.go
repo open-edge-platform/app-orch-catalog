@@ -170,7 +170,7 @@ func (e *Exporter) exportDeploymentRequirements(p *catalogv3.Profile) []upload.D
 
 func (e *Exporter) exportParameterTemplates(p *catalogv3.Profile) []upload.ParameterTemplate {
 	templates := make([]upload.ParameterTemplate, 0, len(p.ParameterTemplates))
-	for _, pt := range templates {
+	for _, pt := range p.ParameterTemplates {
 		templates = append(templates, upload.ParameterTemplate{
 			Name:            pt.Name,
 			DisplayName:     pt.DisplayName,
