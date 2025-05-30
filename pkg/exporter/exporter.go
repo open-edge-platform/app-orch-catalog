@@ -158,12 +158,11 @@ func (e *Exporter) exportIgnoredResources(app *catalogv3.Application) []upload.R
 
 func (e *Exporter) exportDeploymentRequirements(p *catalogv3.Profile) []upload.DeploymentRequirement {
 	requirements := make([]upload.DeploymentRequirement, 0, len(p.DeploymentRequirement))
-	for _, dr := range requirements {
+	for _, dr := range p.DeploymentRequirement {
 		requirements = append(requirements, upload.DeploymentRequirement{
-			Publisher:         dr.Publisher,
 			Name:              dr.Name,
 			Version:           dr.Version,
-			DeploymentProfile: dr.DeploymentProfile,
+			DeploymentProfile: dr.DeploymentProfileName,
 		})
 	}
 	return requirements
