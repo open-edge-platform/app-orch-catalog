@@ -11,6 +11,8 @@ export GO111MODULE=on
 GOCMD := GOPRIVATE="github.com/intel*/*" go
 
 GOTESTREPORT := $(shell which go-testreport || echo "")
+GOTESTSUM_PKG := gotest.tools/gotestsum@v1.12.2
+
 
 all: component-tests
 
@@ -29,5 +31,4 @@ install-go-test-report: # @HELP install go-test-report if not already installed
 .PHONY: component-tests
 component-tests: install-go-test-report
 	@echo "Running component tests..."
-	#$(GOCMD) test -json -v -count=1  ./restapi/... ./cmdline/... | $(shell go env GOPATH)/bin/go-test-report -v -o test-report.html
-	$(GOCMD) test -json -v -count=1  ./restapi/... ./cmdline/... > test-report.json
+	go run $(GOTESTSUM_PKG) --format=standard-verbose --jsonfile=test-report.json -- -count=1  ./restapi/... ./cmdline/...
