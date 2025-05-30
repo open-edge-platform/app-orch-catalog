@@ -47,6 +47,10 @@ func (g *Server) Import(ctx context.Context, req *catalogv3.ImportRequest) (*cat
 	}
 
 	_, pkg, app, reg, err := dp.GenerateDeploymentPackageResources(helm, req.ChartValues, req.Namespace, req.IncludeAuth)
+	if err != nil {
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithMessage(err.Error()))
+	}
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {

@@ -22,13 +22,6 @@ const (
 	DefaultFilePermission = 0600
 )
 
-func stringPtr(s string) *string {
-	if s == "" {
-		return nil
-	}
-	return &s
-}
-
 /*
 func appendHeader(yaml []byte, kind string) []byte {
 	header := fmt.Sprintf("---\nspecSchema: \"%s\"\nschemaVersion: \"%s\"\n$schema: \"%s\"\n\n", kind, SchemaVersion, DollarSchema)
@@ -91,6 +84,10 @@ func GenerateDeploymentPackageResources(helm helm.HelmInfo, values string, names
 		DefaultProfileName: "default",
 	}
 
+	if namespace != "" {
+		dp.DefaultNamespaces = map[string]string{name: namespace}
+	}
+
 	registry := &catalogv3.Registry{
 		Name:        registryName,
 		Description: "OCI registry for " + name,
@@ -146,15 +143,15 @@ func GenerateDeploymentPackage(helm helm.HelmInfo, valuesFile string, outputDir 
 	}
 
 	e := exporter.NewExporter()
-	err = e.ExportRegistry(*registry, fmt.Sprintf("%s/%s-registry.yaml", outputDir, registry.Name))
+	err = e.ExportRegistry(registry, fmt.Sprintf("%s/%s-registry.yaml", outputDir, registry.Name))
 	if err != nil {
 		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fmt.Sprintf("%s/%s-registry.yaml", outputDir, registry.Name), Msg: "Failed to export registry", Err: err}
 	}
-	err = e.ExportApplication(*app, fmt.Sprintf("%s/%s-application.yaml", outputDir, name), outputDir)
+	err = e.ExportApplication(app, fmt.Sprintf("%s/%s-application.yaml", outputDir, name), outputDir)
 	if err != nil {
 		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fmt.Sprintf("%s/%s-application.yaml", outputDir, name), Msg: "Failed to export application", Err: err}
 	}
-	err = e.ExportDeploymentPackage(*dp, fmt.Sprintf("%s/%s-deployment-package.yaml", outputDir, dp.Name))
+	err = e.ExportDeploymentPackage(dp, fmt.Sprintf("%s/%s-deployment-package.yaml", outputDir, dp.Name))
 	if err != nil {
 		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fmt.Sprintf("%s/%s-deployment-package.yaml", outputDir, dp.Name), Msg: "Failed to export deployment package", Err: err}
 	}

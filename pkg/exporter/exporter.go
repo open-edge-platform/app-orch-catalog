@@ -50,7 +50,7 @@ func saveSpec(spec *upload.YamlSpec, fileName string) error {
 	return os.WriteFile(fileName, data, permissions)
 }
 
-func (e *Exporter) ExportRegistry(reg catalogv3.Registry, fileName string) error {
+func (e *Exporter) ExportRegistry(reg *catalogv3.Registry, fileName string) error {
 	spec := &upload.YamlSpec{
 		SpecSchema:    upload.RegistryType,
 		SchemaVersion: schemaVersion,
@@ -67,7 +67,7 @@ func (e *Exporter) ExportRegistry(reg catalogv3.Registry, fileName string) error
 	return saveSpec(spec, fileName)
 }
 
-func (e *Exporter) ExportArtifact(art catalogv3.Artifact, fileName string) error {
+func (e *Exporter) ExportArtifact(art *catalogv3.Artifact, fileName string) error {
 	e.LogChange("Exporting artifact %s\n", art.Name)
 	spec := &upload.YamlSpec{
 		SpecSchema:    upload.ArtifactType,
@@ -82,7 +82,7 @@ func (e *Exporter) ExportArtifact(art catalogv3.Artifact, fileName string) error
 	return saveSpec(spec, fileName)
 }
 
-func (e *Exporter) ExportApplication(app catalogv3.Application, fileName string, profilePath string) error {
+func (e *Exporter) ExportApplication(app *catalogv3.Application, fileName string, profilePath string) error {
 	e.LogChange("Exporting application %s\n", app.Name)
 	profiles, err := e.exportProfiles(profilePath, app)
 	ignoredResources := e.exportIgnoredResources(app)
@@ -108,7 +108,7 @@ func (e *Exporter) ExportApplication(app catalogv3.Application, fileName string,
 	return saveSpec(spec, fileName)
 }
 
-func (e *Exporter) exportProfiles(path string, app catalogv3.Application) ([]upload.Profile, error) {
+func (e *Exporter) exportProfiles(path string, app *catalogv3.Application) ([]upload.Profile, error) {
 	profiles := make([]upload.Profile, 0, len(app.Profiles))
 	for _, p := range app.Profiles {
 		fileName, err := e.exportProfile(path, app, p)
@@ -129,7 +129,7 @@ func (e *Exporter) exportProfiles(path string, app catalogv3.Application) ([]upl
 	return profiles, nil
 }
 
-func (e *Exporter) exportProfile(path string, app catalogv3.Application, p *catalogv3.Profile) (string, error) {
+func (e *Exporter) exportProfile(path string, app *catalogv3.Application, p *catalogv3.Profile) (string, error) {
 	e.LogChange("Exporting profile %s\n", p.Name)
 	baseFile := fmt.Sprintf("values-%s-%s-%s.yaml", app.Name, app.Version, p.Name)
 	valuesFile := fmt.Sprintf("%s/%s", path, baseFile)
@@ -139,7 +139,7 @@ func (e *Exporter) exportProfile(path string, app catalogv3.Application, p *cata
 	return baseFile, nil
 }
 
-func (e *Exporter) exportIgnoredResources(app catalogv3.Application) []upload.ResourceReference {
+func (e *Exporter) exportIgnoredResources(app *catalogv3.Application) []upload.ResourceReference {
 	if app.IgnoredResources == nil {
 		return []upload.ResourceReference{}
 	}
@@ -225,7 +225,7 @@ func (e *Exporter) exportExtension(ext *catalogv3.APIExtension) upload.APIExtens
 	return extension
 }
 
-func (e *Exporter) ExportDeploymentPackage(pkg catalogv3.DeploymentPackage, fileName string) error {
+func (e *Exporter) ExportDeploymentPackage(pkg *catalogv3.DeploymentPackage, fileName string) error {
 
 	e.LogChange("Exporting deployment package %s\n", pkg.Name)
 	spec := &upload.YamlSpec{
@@ -249,7 +249,7 @@ func (e *Exporter) ExportDeploymentPackage(pkg catalogv3.DeploymentPackage, file
 	return saveSpec(spec, fileName)
 }
 
-func (e *Exporter) exportDeploymentProfiles(app catalogv3.DeploymentPackage) []upload.DeploymentProfile {
+func (e *Exporter) exportDeploymentProfiles(app *catalogv3.DeploymentPackage) []upload.DeploymentProfile {
 	profiles := make([]upload.DeploymentProfile, 0, len(app.Profiles))
 	for _, p := range app.Profiles {
 		appProfiles := make([]upload.ApplicationProfile, 0, len(app.Profiles))
@@ -266,7 +266,7 @@ func (e *Exporter) exportDeploymentProfiles(app catalogv3.DeploymentPackage) []u
 	return profiles
 }
 
-func (e *Exporter) exportApplicationReferences(pkg catalogv3.DeploymentPackage) []upload.Application {
+func (e *Exporter) exportApplicationReferences(pkg *catalogv3.DeploymentPackage) []upload.Application {
 	apprefs := make([]upload.Application, 0, len(pkg.ApplicationReferences))
 	for _, ref := range pkg.ApplicationReferences {
 		apprefs = append(apprefs, upload.Application{
@@ -277,7 +277,7 @@ func (e *Exporter) exportApplicationReferences(pkg catalogv3.DeploymentPackage) 
 	return apprefs
 }
 
-func (e *Exporter) exportApplicationDependencies(pkg catalogv3.DeploymentPackage) []upload.ApplicationDependency {
+func (e *Exporter) exportApplicationDependencies(pkg *catalogv3.DeploymentPackage) []upload.ApplicationDependency {
 	appdeps := make([]upload.ApplicationDependency, 0, len(pkg.ApplicationDependencies))
 	for _, dep := range pkg.ApplicationDependencies {
 		appdeps = append(appdeps, upload.ApplicationDependency{
@@ -294,13 +294,11 @@ func (e *Exporter) exportDefaultNamespaces(namespaces map[string]string) map[str
 
 func (e *Exporter) exportNamespaces(namespaces []*catalogv3.Namespace) []upload.Namespace {
 	list := make([]upload.Namespace, 0)
-	if namespaces != nil {
-		for _, ns := range namespaces {
-			item := upload.Namespace{Name: ns.Name}
-			item.Labels = ns.Labels
-			item.Annotations = ns.Annotations
-			list = append(list, item)
-		}
+	for _, ns := range namespaces {
+		item := upload.Namespace{Name: ns.Name}
+		item.Labels = ns.Labels
+		item.Annotations = ns.Annotations
+		list = append(list, item)
 	}
 	return list
 }
