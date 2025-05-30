@@ -42,7 +42,7 @@ func NewExporter() *Exporter {
 }
 
 func appendHeader(yaml []byte) []byte {
-	header := fmt.Sprintf("---\n")
+	header := "---\n"
 	return append([]byte(header), yaml...)
 }
 
