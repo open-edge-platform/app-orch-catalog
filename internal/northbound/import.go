@@ -16,7 +16,6 @@ package northbound
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/open-edge-platform/app-orch-catalog/internal/dp"
 	"github.com/open-edge-platform/app-orch-catalog/internal/helm"
@@ -37,9 +36,9 @@ func (g *Server) Import(ctx context.Context, req *catalogv3.ImportRequest) (*cat
 			nberrors.WithMessage("incomplete request"))
 	}
 
-	//if err = g.authCheckAllowed(ctx, req); err != nil {
-	//	return nil, err
-	//}
+	if err = g.authCheckAllowed(ctx, req); err != nil {
+		return nil, err
+	}
 
 	helm, err := helm.FetchHelmChartOCI(req.Url, req.Username, req.AuthToken)
 	if err != nil {
@@ -48,8 +47,6 @@ func (g *Server) Import(ctx context.Context, req *catalogv3.ImportRequest) (*cat
 	}
 
 	_, pkg, app, reg, err := dp.GenerateDeploymentPackageResources(helm, req.ChartValues, req.Namespace, req.IncludeAuth)
-
-	fmt.Printf("App: %+v", app)
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
