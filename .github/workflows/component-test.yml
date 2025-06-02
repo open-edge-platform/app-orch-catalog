@@ -83,6 +83,13 @@ jobs:
         working-directory: emf
         run: echo "GIT_HASH_DEPLOY=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
 
+      - name: Setup asdf and install dependencies
+        id: install-deps
+        uses: open-edge-platform/orch-utils/.github/actions/setup-asdf@main  # zizmor: ignore[unpinned-uses]
+
+      - name: test mage
+        working-directory: emf
+        run: mage -version
       - name: Setup users and project/org
         shell: bash
         working-directory: emf
