@@ -38,6 +38,9 @@ jobs:
 
 
     steps:
+      - name: Setup asdf and install dependencies
+        uses: open-edge-platform/orch-utils/.github/actions/setup-asdf@ef4477dd6974c58a987f646eff1bc81c485c9c9a
+        
       - name: Checkout code
         uses: actions/checkout@v4.2.1
         with:
@@ -54,8 +57,7 @@ jobs:
       #    orch_version: ${{ inputs.emf-branch || 'main' }}
       #    docker_username: ${{ secrets.SYS_DOCKERHUB_USERNAME }}
       #    docker_password: ${{ secrets.SYS_DOCKERHUB_RO }}
-      - name: Setup asdf and install dependencies
-        uses: open-edge-platform/orch-utils/.github/actions/setup-asdf@ef4477dd6974c58a987f646eff1bc81c485c9c9a
+
 
       - name: Setup Go
         uses: actions/setup-go@v4
