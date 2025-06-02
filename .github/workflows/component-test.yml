@@ -38,17 +38,25 @@ jobs:
 
 
     steps:
-      - name: Setup asdf and install dependencies
-        uses: open-edge-platform/orch-utils/.github/actions/setup-asdf@ef4477dd6974c58a987f646eff1bc81c485c9c9a
-        
       - name: Checkout code
         uses: actions/checkout@v4.2.1
         with:
-            repository: open-edge-platform/edge-manageability-framework
-            token: ${{ secrets.SYS_ORCH_GITHUB }}
-            ref: feature/deploy-onprem-gha
-            persist-credentials: false
-            path: emf
+          repository: open-edge-platform/edge-manageability-framework
+          token: ${{ secrets.SYS_ORCH_GITHUB }}
+          ref: feature/deploy-onprem-gha
+          persist-credentials: false
+          path: emf
+      - name: Fetch all branches
+        run: git fetch --all
+      - name: Set up git credentials
+        shell: bash
+        run: |
+            echo "GOPRIVATE=github.com/open-edge-platform" >> $GITHUB_ENV
+            git config --global url."https://${{ secrets.SYS_ORCH_GITHUB }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+      - name: Setup asdf and install dependencies
+        uses: open-edge-platform/orch-utils/.github/actions/setup-asdf@ef4477dd6974c58a987f646eff1bc81c485c9c9a
+
+
 
       #- name: Deploy On Prem Orchestrator
       #  uses: ./emf/.github/actions/deploy_on_prem  # yamllint disable-line rule:line-length
