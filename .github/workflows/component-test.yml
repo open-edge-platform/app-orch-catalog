@@ -68,6 +68,7 @@ jobs:
 
       # ls the whole workspace
       - name: List workspace
+        working-directory: emf
         run: ls -la
 
       - name: Get current git hash of the app-orch-catalog PR
@@ -79,6 +80,7 @@ jobs:
 
       - name: Get current git hash of the edge-manageability-framework PR
         id: get-git-hash-deploy
+        working-directory: emf
         run: echo "GIT_HASH_DEPLOY=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
 
       - name: Setup users and project/org
