@@ -45,13 +45,13 @@ jobs:
             persist-credentials: false
             path: emf
 
-      - name: Deploy On Prem Orchestrator
-        uses: ./emf/.github/actions/deploy_on_prem  # yamllint disable-line rule:line-length
-        with:
-          token: ${{ secrets.SYS_ORCH_GITHUB }}
-          orch_version: ${{ inputs.emf-branch || 'main' }}
-          docker_username: ${{ secrets.SYS_DOCKERHUB_USERNAME }}
-          docker_password: ${{ secrets.SYS_DOCKERHUB_RO }}
+      #- name: Deploy On Prem Orchestrator
+      #  uses: ./emf/.github/actions/deploy_on_prem  # yamllint disable-line rule:line-length
+      #  with:
+      #    token: ${{ secrets.SYS_ORCH_GITHUB }}
+      #    orch_version: ${{ inputs.emf-branch || 'main' }}
+      #    docker_username: ${{ secrets.SYS_DOCKERHUB_USERNAME }}
+      #    docker_password: ${{ secrets.SYS_DOCKERHUB_RO }}
 
       - name: Setup Go
         uses: actions/setup-go@v4
@@ -66,6 +66,10 @@ jobs:
           token: ${{ secrets.SYS_ORCH_GITHUB }}
           persist-credentials: false
 
+      # ls the whole workspace
+      - name: List workspace
+        run: ls -la
+
       - name: Get current git hash of the app-orch-catalog PR
         id: get-git-hash-catalog
         working-directory: app-orch-catalog
@@ -75,12 +79,10 @@ jobs:
 
       - name: Get current git hash of the edge-manageability-framework PR
         id: get-git-hash-deploy
-        working-directory: emf
         run: echo "GIT_HASH_DEPLOY=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
 
       - name: Setup users and project/org
         shell: bash
-        working-directory: emf
         run: |
           mage tenantUtils:createDefaultMtSetup
           echo "Orch org/project/users created!"
