@@ -85,6 +85,7 @@ jobs:
 
       - name: Setup users and project/org
         shell: bash
+        working-directory: emf
         run: |
           mage tenantUtils:createDefaultMtSetup
           echo "Orch org/project/users created!"
