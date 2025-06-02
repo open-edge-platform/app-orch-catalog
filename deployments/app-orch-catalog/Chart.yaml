@@ -20,7 +20,7 @@ type: application
 # time you make changes to the chart and its templates, including the app
 # version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.14.4-dev
+version: 0.14.4
 # This is the version number of the application being deployed. This version
 # number should be incremented each time you make changes to the application.
 # Versions are not expected to follow Semantic Versioning. They should reflect
@@ -28,7 +28,7 @@ version: 0.14.4-dev
 # It is recommended to use it with quotes.
 #
 # appVersion is populated by invoking command: make chart
-appVersion: "0.14.4-dev-e6ab957"
+appVersion: "0.14.4"
 annotations:
   revision: ""
-  created: "2025-05-30T17:22:47Z"
+  created: "2025-06-02T17:38:08Z"
