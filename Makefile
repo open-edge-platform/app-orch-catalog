@@ -8,7 +8,7 @@ VERSION            := $(shell cat VERSION)
 CHART_VERSION      := $(shell cat VERSION)
 VERSION_DEV_SUFFIX := -dev
 GIT_COMMIT         ?= $(shell git rev-parse --short HEAD)
-OPA_IMAGE_VER       = 0.70.0-static
+OPA_IMAGE_VER       = 1.5.0-static
 
 
 ifeq ($(patsubst %$(VERSION_DEV_SUFFIX),,$(lastword $(VERSION))),)
@@ -58,6 +58,7 @@ CHART_NAME					?= app-orch-catalog
 
 ## CHART_PATHs is given based on repo structure
 CHART_PATH					?= "./deployments/app-orch-catalog"
+OPA_FILE_PATH               ?= ${CHART_PATH}/files/openpolicyagent
 
 ## MIGRATION_BASE_VERSION is the base version from which migration should be tested
 MIGRATION_BASE_VERSION   	?= 0.5.5
@@ -300,7 +301,7 @@ lint: rego-service-write-rule-match yamllint mdlint shelllint helmlint hadolint 
 	golangci-lint run --timeout 10m
 
 opa-lint: docker-opa
-	docker run -v $(shell pwd)/${CHART_PATH}/files/openpolicyagent:/policies openpolicyagent/opa:$(OPA_IMAGE_VER) check  policies/
+	docker run -v $(shell pwd)/${OPA_FILE_PATH}:/policies openpolicyagent/opa:$(OPA_IMAGE_VER) check  policies/
 
 .PHONY: mdlint ## lint markdown files
 mdlint:
@@ -339,17 +340,12 @@ envoy-lint: ## Lint envoy config files
 
 .PHONY: rego-service-write-rule-match
 rego-service-write-rule-match: ## For every service request in Proto we expect a corresponding REGO rule
-	@egrep -oh "\((Create|Update|Delete|List|Get|Watch|Upload).*Request" ${API_DIR}/catalog/v3/service.proto | awk -F'(' '{print $$2}' | sort > ${TMP_DIR}/list_service_requests_out;
-	@egrep -oh "(Create|Update|Delete|List|Get|Watch|Upload).*Request {" ${CHART_PATH}/files/openpolicyagent/*.rego | grep -v "WithSensitiveInfo" | awk '{print $$1}' | sort > ${TMP_DIR}/list_rego_rules_out;
-	@diff ${TMP_DIR}/list_service_requests_out ${TMP_DIR}/list_rego_rules_out;
+	egrep -oh "\((Create|Update|Delete|List|Get|Watch|Upload|Import).*Request" ${API_DIR}/catalog/v3/service.proto | awk -F'(' '{print $$2}' | sort > ${TMP_DIR}/list_service_requests_out;
+	egrep -oh "(Create|Update|Delete|List|Get|Watch|Upload|Import).*Request if {" ${OPA_FILE_PATH}/*.rego | grep -v "WithSensitiveInfo" | awk '{print $$1}' | sort > ${TMP_DIR}/list_rego_rules_out;
+	diff ${TMP_DIR}/list_service_requests_out ${TMP_DIR}/list_rego_rules_out;
 
-.PHONY: rego-rule-test
-rego-rule-test: ## test the REGO rules
-    # TODO Enable the rego rule tests when the migration to new OPA version is complete
-	#@make -C deployments/app-orch-catalog/files/openpolicyagent/testdata/artifact all
-	#@make -C deployments/app-orch-catalog/files/openpolicyagent/testdata/deployment-package all
-	#@make -C deployments/app-orch-catalog/files/openpolicyagent/testdata/upload all
-	#@make -C deployments/app-orch-catalog/files/openpolicyagent/testdata/registry all
+opa-test: docker-opa ## Test OPA policies
+	docker run -v $(shell pwd)/$(OPA_FILE_PATH):/policies openpolicyagent/opa:$(OPA_IMAGE_VER) test --coverage policies -vv
 
 .PHONY: go-cover-dependency
 go-cover-dependency: ## install the gocover tool
@@ -361,7 +357,7 @@ go-format: ## Formats go source files
 	@go fmt $(shell sh -c "go list ./...")
 
 .PHONY: test
-test: mod-update rego-rule-test go-test ## Runs test stage
+test: mod-update opa-test go-test ## Runs test stage
 
 .PHONY: go-test
 go-test: ## Runs go unit tests
