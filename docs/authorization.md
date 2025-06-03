@@ -159,7 +159,7 @@ are loaded into a config map in OPA at startup. The OPA API `/v1/policy` can be 
 
 ### Test Rules Locally
 
-> The [testdata](../deployments/app-orch-catalog/files/openpolicyagent/testdata) folder shows an example of the kind
+> The [testdata](../deployments/app-orch-catalog/files/temp/testdata) folder shows an example of the kind
 > of input expected as a combination of `request` and `metadata`.
 
 Test with:
