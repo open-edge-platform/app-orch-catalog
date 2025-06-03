@@ -46,17 +46,23 @@ func appendHeader(yaml []byte) []byte {
 	return append([]byte(header), yaml...)
 }
 
-func saveSpec(spec *upload.YamlSpec, fileName string) error {
+func specToBytes(spec *upload.YamlSpec) ([]byte, error) {
 	// Marshal the spec into YAML and write the file
 	data, err := yaml.Marshal(spec)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	data = appendHeader(data)
-	return os.WriteFile(fileName, data, permissions)
+	return data, nil
 }
 
-func (e *Exporter) ExportRegistry(reg *catalogv3.Registry, fileName string) error {
+/*
+func saveSpec(spec *upload.YamlSpec, fileName string) error {
+	return os.WriteFile(fileName, data, permissions)
+}
+*/
+
+func (e *Exporter) ExportRegistry(reg *catalogv3.Registry) ([]byte, error) {
 	spec := &upload.YamlSpec{
 		SpecSchema:    upload.RegistryType,
 		SchemaVersion: schemaVersion,
@@ -70,10 +76,10 @@ func (e *Exporter) ExportRegistry(reg *catalogv3.Registry, fileName string) erro
 		Type:          reg.Type,
 	}
 
-	return saveSpec(spec, fileName)
+	return specToBytes(spec)
 }
 
-func (e *Exporter) ExportArtifact(art *catalogv3.Artifact, fileName string) error {
+func (e *Exporter) ExportArtifact(art *catalogv3.Artifact) ([]byte, error) {
 	e.LogChange("Exporting artifact %s\n", art.Name)
 	spec := &upload.YamlSpec{
 		SpecSchema:    upload.ArtifactType,
@@ -85,15 +91,15 @@ func (e *Exporter) ExportArtifact(art *catalogv3.Artifact, fileName string) erro
 		Artifact:      b64.StdEncoding.EncodeToString(art.Artifact),
 	}
 
-	return saveSpec(spec, fileName)
+	return specToBytes(spec)
 }
 
-func (e *Exporter) ExportApplication(app *catalogv3.Application, fileName string, profilePath string) error {
+func (e *Exporter) ExportApplication(app *catalogv3.Application) ([]byte, error) {
 	e.LogChange("Exporting application %s\n", app.Name)
-	profiles, err := e.exportProfiles(profilePath, app)
+	profiles, err := e.exportProfiles(app)
 	ignoredResources := e.exportIgnoredResources(app)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	spec := &upload.YamlSpec{
 		SpecSchema:       upload.ApplicationType,
@@ -111,7 +117,7 @@ func (e *Exporter) ExportApplication(app *catalogv3.Application, fileName string
 		IgnoredResources: ignoredResources,
 	}
 
-	return saveSpec(spec, fileName)
+	return specToBytes(spec)
 }
 
 func (e *Exporter) exportProfiles(path string, app *catalogv3.Application) ([]upload.Profile, error) {
@@ -230,7 +236,7 @@ func (e *Exporter) exportExtension(ext *catalogv3.APIExtension) upload.APIExtens
 	return extension
 }
 
-func (e *Exporter) ExportDeploymentPackage(pkg *catalogv3.DeploymentPackage, fileName string) error {
+func (e *Exporter) ExportDeploymentPackage(pkg *catalogv3.DeploymentPackage) ([]byte, error) {
 
 	e.LogChange("Exporting deployment package %s\n", pkg.Name)
 	spec := &upload.YamlSpec{
@@ -251,7 +257,7 @@ func (e *Exporter) ExportDeploymentPackage(pkg *catalogv3.DeploymentPackage, fil
 		DefaultNamespaces:          e.exportDefaultNamespaces(pkg.DefaultNamespaces),
 		Namespaces:                 e.exportNamespaces(pkg.Namespaces),
 	}
-	return saveSpec(spec, fileName)
+	return specToBytes(spec)
 }
 
 func (e *Exporter) exportDeploymentProfiles(app *catalogv3.DeploymentPackage) []upload.DeploymentProfile {

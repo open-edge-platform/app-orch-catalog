@@ -120,17 +120,38 @@ func GenerateDeploymentPackage(helm helm.HelmInfo, valuesFile string, outputDir 
 	}
 
 	e := exporter.NewExporter()
-	err = e.ExportRegistry(registry, fmt.Sprintf("%s/%s.yaml", outputDir, registry.Name)) // note: registry already has "-registry" in the name
-	if err != nil {
-		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fmt.Sprintf("%s/%s.yaml", outputDir, registry.Name), Msg: "Failed to export registry", Err: err}
+	fileName := fmt.Sprintf("%s/%s.yaml", outputDir, registry.Name)
+	data, err := e.ExportRegistry(registry) // note: registry already has "-registry" in the name
+	if err == nil {
+		err = os.WriteFile(fileName, data, 0600)
 	}
-	err = e.ExportApplication(app, fmt.Sprintf("%s/%s-application.yaml", outputDir, name), outputDir)
 	if err != nil {
-		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fmt.Sprintf("%s/%s-application.yaml", outputDir, name), Msg: "Failed to export application", Err: err}
+		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fileName, Msg: "Failed to export registry", Err: err}
 	}
-	err = e.ExportDeploymentPackage(dp, fmt.Sprintf("%s/%s-deployment-package.yaml", outputDir, dp.Name))
+
+	for _, profile := 
+	profiles, err := e.exportProfiles(profilePath, app)
+	ignoredResources := e.exportIgnoredResources(app)
 	if err != nil {
-		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fmt.Sprintf("%s/%s-deployment-package.yaml", outputDir, dp.Name), Msg: "Failed to export deployment package", Err: err}
+		return nil, err
+	}
+
+	fileName = fmt.Sprintf("%s/%s-application.yaml", outputDir, name)
+	data, err = e.ExportApplication(app, outputDir)
+	if err == nil {
+		err = os.WriteFile(fileName, data, 0600)
+	}
+	if err != nil {
+		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fileName, Msg: "Failed to export application", Err: err}
+	}
+
+	fileName = fmt.Sprintf("%s/%s-deployment-package.yaml", outputDir, dp.Name)
+	data, err = e.ExportDeploymentPackage(dp)
+	if err == nil {
+		err = os.WriteFile(fileName, data, 0600)
+	}
+	if err != nil {
+		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fileName, Msg: "Failed to export deployment package", Err: err}
 	}
 
 	return nil
