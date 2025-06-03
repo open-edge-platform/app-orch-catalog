@@ -22,7 +22,7 @@ import (
 const importEndpoint = "/catalog.orchestrator.apis/v3/import"
 
 type ImportRequest struct {
-	Url                       string `json:"url"`
+	URL                       string `json:"url"`
 	Username                  string `json:"username,omitempty"`
 	AuthToken                 string `json:"auth_token,omitempty"`
 	ChartValues               string `json:"chart_values,omitempty"`
@@ -34,11 +34,12 @@ type ImportRequest struct {
 
 func (s *TestSuite) ImportHelmChart(importRequest *ImportRequest) (int, string) {
 	params := url.Values{}
-	params.Add("url", importRequest.Url)
+	params.Add("url", importRequest.URL)
 
 	requestURL := fmt.Sprintf("%s%s?%s", s.CatalogRESTServerUrl, importEndpoint, params.Encode())
 
 	req, err := http.NewRequest("POST", requestURL, nil)
+	s.Require().NoError(err, "Expected to create HTTP request for importing Helm chart")
 	auth.AddRestAuthHeader(req, s.token, s.projectID)
 
 	log.Printf("Importing Helm chart with request URL: %s", requestURL)
@@ -55,7 +56,7 @@ func (s *TestSuite) ImportHelmChart(importRequest *ImportRequest) (int, string) 
 
 func (s *TestSuite) TestImportHelmChart() {
 	importRequest := &ImportRequest{
-		Url: "oci://ghcr.io/open-edge-platform/geti/helm/impt:2.9.0",
+		URL: "oci://ghcr.io/open-edge-platform/geti/helm/impt:2.9.0",
 	}
 
 	status, body := s.ImportHelmChart(importRequest)

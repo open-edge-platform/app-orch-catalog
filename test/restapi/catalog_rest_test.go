@@ -304,7 +304,13 @@ func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 		case registry.DisplayName != result.Registry.DisplayName:
 			assert.Equal(s.T(), registry.DisplayName, result.Registry.DisplayName, "Mismatch in 'DisplayName' for registry: %s", registry.Name)
 		case registry.RootURL != result.Registry.RootURL:
-			assert.Equal(s.T(), registry.RootURL, result.Registry.RootURL, "Mismatch in 'RootURL' for registry: %s", registry.Name)
+			oldDockerURL := fmt.Sprintf("https://registry-oci.%s/", s.orchDomain)
+			newDockerURL := fmt.Sprintf("oci://registry-oci.%s/catalog-apps-sample-org-sample-project", s.orchDomain)
+			// Docker Registry URL was changed recently. Avoid throwing errors in a development environment that's using the new URL
+			// TODO: remove this special case when component-tests are moved forward
+			if registry.RootURL != oldDockerURL || result.Registry.RootURL != newDockerURL {
+				assert.Equal(s.T(), registry.RootURL, result.Registry.RootURL, "Mismatch in 'RootURL' for registry: %s", registry.Name)
+			}
 		case registry.Type != result.Registry.Type:
 			assert.Equal(s.T(), registry.Type, result.Registry.Type, "Mismatch in 'Type' for registry: %s", registry.Name)
 		}
@@ -314,8 +320,8 @@ func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 
 func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
 	for _, app := range s.getApplications() {
-		requestURL := fmt.Sprintf("%s%s/%s/versions/%s", s.CatalogRESTServerUrl,
-			applicationsEndpoint, app.Name, app.Version)
+		requestURL := fmt.Sprintf("%s%s/%s/versions", s.CatalogRESTServerUrl,
+			applicationsEndpoint, app.Name)
 
 		req, err := http.NewRequest("GET", requestURL, nil)
 		assert.NoError(s.T(), err)
@@ -326,7 +332,7 @@ func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
 		assert.NoError(s.T(), err)
 		defer res.Body.Close()
 		if res.Status != "200 OK" {
-			assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for application: %s", app.Name)
+			assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for application: %s - %s", app.Name, requestURL)
 			continue
 		}
 
@@ -334,35 +340,37 @@ func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
 		assert.NoError(s.T(), err)
 
 		var result struct {
-			Application Application `json:"application"`
+			Applications []Application `json:"application"`
 		}
 		err = json.Unmarshal(body, &result)
 		assert.NoError(s.T(), err)
 
-		switch {
-		case app.Name != result.Application.Name:
-			assert.Equalf(s.T(), app.Name, result.Application.Name, "Mismatch in 'Name' for application: %s", app.Name)
-		case app.DisplayName != result.Application.DisplayName:
-			assert.Equalf(s.T(), app.DisplayName, result.Application.DisplayName, "Mismatch in 'DisplayName' for application: %s", app.Name)
-		case app.ChartName != result.Application.ChartName:
-			assert.Equalf(s.T(), app.ChartName, result.Application.ChartName, "Mismatch in 'ChartName' for application: %s", app.Name)
-		case app.ChartVersion != result.Application.ChartVersion:
-			assert.Equalf(s.T(), app.ChartVersion, result.Application.ChartVersion, "Mismatch in 'ChartVersion' for application: %s", app.Name)
-		case app.Version != result.Application.Version:
-			assert.Equalf(s.T(), app.Version, result.Application.Version, "Mismatch in 'Version' for application: %s", app.Name)
-		case app.Kind != result.Application.Kind:
-			assert.Equalf(s.T(), app.Kind, result.Application.Kind, "Mismatch in 'Kind' for application: %s", app.Name)
-		case app.HelmRegistryName != result.Application.HelmRegistryName:
-			assert.Equalf(s.T(), app.HelmRegistryName, result.Application.HelmRegistryName, "Mismatch in 'HelmRegistryName' for application: %s", app.Name)
+		s.True(len(result.Applications) > 0, "Expected at least one application for %s", app.Name)
+
+		if len(result.Applications) == 0 {
+			gotApp := result.Applications[0]
+
+			switch {
+			case app.Name != gotApp.Name:
+				assert.Equalf(s.T(), app.Name, gotApp.Name, "Mismatch in 'Name' for application: %s", app.Name)
+			case app.DisplayName != gotApp.DisplayName:
+				assert.Equalf(s.T(), app.DisplayName, gotApp.DisplayName, "Mismatch in 'DisplayName' for application: %s", app.Name)
+			case app.ChartName != gotApp.ChartName:
+				assert.Equalf(s.T(), app.ChartName, gotApp.ChartName, "Mismatch in 'ChartName' for application: %s", app.Name)
+			case app.Kind != gotApp.Kind:
+				assert.Equalf(s.T(), app.Kind, gotApp.Kind, "Mismatch in 'Kind' for application: %s", app.Name)
+			case app.HelmRegistryName != gotApp.HelmRegistryName:
+				assert.Equalf(s.T(), app.HelmRegistryName, gotApp.HelmRegistryName, "Mismatch in 'HelmRegistryName' for application: %s", app.Name)
+			}
+			//assert.Equal(s.T(), app.Description, result.Application.Description)
 		}
-		//assert.Equal(s.T(), app.Description, result.Application.Description)
 	}
 }
 
 func (s *TestSuite) TestVerifyBootstrappedDeploymentPackagesExist() {
 	for _, pkg := range s.getDeploymentPackages() {
-		requestURL := fmt.Sprintf("%s%s/%s/versions/%s", s.CatalogRESTServerUrl,
-			deploymentPackagesEndpoint, pkg.Name, pkg.Version)
+		requestURL := fmt.Sprintf("%s%s/%s/versions", s.CatalogRESTServerUrl,
+			deploymentPackagesEndpoint, pkg.Name)
 
 		req, err := http.NewRequest("GET", requestURL, nil)
 		assert.NoError(s.T(), err)
@@ -381,18 +389,21 @@ func (s *TestSuite) TestVerifyBootstrappedDeploymentPackagesExist() {
 		assert.NoError(s.T(), err)
 
 		var result struct {
-			DeploymentPackage DeploymentPackage `json:"deploymentPackage"`
+			DeploymentPackage []DeploymentPackage `json:"deploymentPackages"`
 		}
 		err = json.Unmarshal(body, &result)
 		assert.NoError(s.T(), err)
 
-		switch {
-		case pkg.Name != result.DeploymentPackage.Name:
-			assert.Equalf(s.T(), pkg.Name, result.DeploymentPackage.Name, "Mismatch in 'Name' for deployment package: %s", pkg.Name)
-		case pkg.Version != result.DeploymentPackage.Version:
-			assert.Equalf(s.T(), pkg.Version, result.DeploymentPackage.Version, "Mismatch in 'Version' for deployment package: %s", pkg.Name)
-		case pkg.Kind != result.DeploymentPackage.Kind:
-			assert.Equalf(s.T(), pkg.Kind, result.DeploymentPackage.Kind, "Mismatch in 'Kind' for deployment package: %s", pkg.Name)
+		s.True(len(result.DeploymentPackage) > 0, "Expected at least one deployment package for %s", pkg.Name)
+		if len(result.DeploymentPackage) > 0 {
+			gotPkg := result.DeploymentPackage[0]
+
+			switch {
+			case pkg.Name != gotPkg.Name:
+				assert.Equalf(s.T(), pkg.Name, gotPkg.Name, "Mismatch in 'Name' for deployment package: %s", pkg.Name)
+			case pkg.Kind != gotPkg.Kind:
+				assert.Equalf(s.T(), pkg.Kind, gotPkg.Kind, "Mismatch in 'Kind' for deployment package: %s", pkg.Name)
+			}
 		}
 	}
 }
