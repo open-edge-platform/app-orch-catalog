@@ -3,6 +3,6 @@
 
 package catalogv3
 
-ImportRequest {
+ImportRequest if {
     hasWriteAccess
 }

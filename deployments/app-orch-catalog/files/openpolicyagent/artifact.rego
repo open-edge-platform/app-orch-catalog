@@ -3,26 +3,26 @@
 
 package catalogv3
 
-CreateArtifactRequest {
+CreateArtifactRequest if {
     hasWriteAccess
 }
 
-UpdateArtifactRequest {
+UpdateArtifactRequest if {
     hasWriteAccess
 }
 
-DeleteArtifactRequest {
+DeleteArtifactRequest if {
     hasWriteAccess
 }
 
-GetArtifactRequest {
+GetArtifactRequest if {
     hasReadAccess
 }
 
-ListArtifactsRequest {
+ListArtifactsRequest if {
     hasReadAccess
 }
 
-WatchArtifactsRequest {
+WatchArtifactsRequest if {
     hasReadAccess
 }

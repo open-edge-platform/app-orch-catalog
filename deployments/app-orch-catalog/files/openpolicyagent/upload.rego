@@ -3,6 +3,6 @@
 
 package catalogv3
 
-UploadCatalogEntitiesRequest {
+UploadCatalogEntitiesRequest if {
     hasWriteAccess
 }

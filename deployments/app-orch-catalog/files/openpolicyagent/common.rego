@@ -6,31 +6,31 @@ package catalogv3
 import future.keywords.in
 
 # Allows management of all objects
-hasWriteAccess {
+hasWriteAccess if {
     projectRole := sprintf("%s_cat-rw", [input.metadata.activeprojectid[0]])
     some role in input.metadata["realm_access/roles"] # iteration
     [projectRole][_] == role
 }
 # OR for m2m there is a non-project specific role
-hasWriteAccess {
+hasWriteAccess if {
     some role in input.metadata["realm_access/roles"] # iteration
     ["ao-m2m-rw"][_] == role
 }
 
 # This is used for access to all objects
-hasReadAccess {
+hasReadAccess if {
     projectRole := sprintf("%s_cat-r", [input.metadata.activeprojectid[0]])
     some role in input.metadata["realm_access/roles"] # iteration
     [projectRole][_] == role
 }
 # OR with new short role names rw includes read access
-hasReadAccess {
+hasReadAccess if {
     projectRole := sprintf("%s_cat-rw", [input.metadata.activeprojectid[0]])
     some role in input.metadata["realm_access/roles"] # iteration
     [projectRole][_] == role
 }
 # OR for m2m there is a non-project specific role
-hasReadAccess {
+hasReadAccess if {
     some role in input.metadata["realm_access/roles"] # iteration
     ["ao-m2m-rw"][_] == role
 }
