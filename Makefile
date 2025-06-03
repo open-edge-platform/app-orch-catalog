@@ -339,14 +339,13 @@ envoy-lint: ## Lint envoy config files
 
 .PHONY: rego-service-write-rule-match
 rego-service-write-rule-match: ## For every service request in Proto we expect a corresponding REGO rule
-	@egrep -oh "\((Create|Update|Delete|List|Get|Watch|Upload).*Request" ${API_DIR}/catalog/v3/service.proto | awk -F'(' '{print $$2}' | sort > ${TMP_DIR}/list_service_requests_out;
-	@egrep -oh "(Create|Update|Delete|List|Get|Watch|Upload).*Request {" ${CHART_PATH}/files/openpolicyagent/*.rego | grep -v "WithSensitiveInfo" | awk '{print $$1}' | sort > ${TMP_DIR}/list_rego_rules_out;
-	@diff ${TMP_DIR}/list_service_requests_out ${TMP_DIR}/list_rego_rules_out;
+	egrep -oh "\((Create|Update|Delete|List|Get|Watch|Upload).*Request" ${API_DIR}/catalog/v3/service.proto | awk -F'(' '{print $$2}' | sort > ${TMP_DIR}/list_service_requests_out;
+	egrep -oh "(Create|Update|Delete|List|Get|Watch|Upload).*Request if {" ${CHART_PATH}/files/openpolicyagent/*.rego | grep -v "WithSensitiveInfo" | awk '{print $$1}' | sort > ${TMP_DIR}/list_rego_rules_out;
+	diff ${TMP_DIR}/list_service_requests_out ${TMP_DIR}/list_rego_rules_out;
 
 OPA_CMD="docker run -i -v $(shell pwd)/${CHART_PATH}/files/openpolicyagent:/policies openpolicyagent/opa:$(OPA_IMAGE_VER)"
 .PHONY: rego-rule-test
 rego-rule-test: ## test the REGO rules
-    # TODO Enable the rego rule tests when the migration to new OPA version is complete
 	@OPA=${OPA_CMD} BUNDLE=/policies make -C deployments/app-orch-catalog/files/openpolicyagent/testdata/artifact all
 	@OPA=${OPA_CMD} BUNDLE=/policies make -C deployments/app-orch-catalog/files/openpolicyagent/testdata/deployment-package all
 	@OPA=${OPA_CMD} BUNDLE=/policies make -C deployments/app-orch-catalog/files/openpolicyagent/testdata/upload all
