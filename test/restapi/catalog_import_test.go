@@ -98,3 +98,33 @@ func (s *TestSuite) TestImportHelmChart() {
 	err = s.DeleteRegistry("impt-registry", true)
 	s.NoError(err, "Expected to delete registry")
 }
+
+func (s *TestSuite) TestImportHelmChartBadURL() {
+	importRequest := &ImportRequest{
+		URL: "oci://ghcr.invalid/open-edge-platform/geti/helm/impt:2.9.0",
+	}
+
+	status, body := s.ImportHelmChart(importRequest)
+	s.Equal(http.StatusBadRequest, status, "Expected status code 400 for invalid Helm chart URL")
+	s.Contains(body, "failed to resolve", "Expected error message to contain 'failed to resolve'")
+}
+
+func (s *TestSuite) TestImportHelmChartNotAURL() {
+	importRequest := &ImportRequest{
+		URL: "this is not a url",
+	}
+
+	status, body := s.ImportHelmChart(importRequest)
+	s.Equal(http.StatusBadRequest, status, "Expected status code 400 for invalid Helm chart URL")
+	s.Contains(body, "Scheme is not oci", "Expected error message to contain 'scheme is not oci'")
+}
+
+func (s *TestSuite) TestImportHelmChartBadObject() {
+	importRequest := &ImportRequest{
+		URL: "oci://registry-rs.edgeorchestration.intel.com/edge-orch/en/file/cluster-extension-manifest:v1.1.2",
+	}
+
+	status, body := s.ImportHelmChart(importRequest)
+	s.Equal(http.StatusBadRequest, status, "Expected status code 400 for invalid Helm chart URL")
+	s.Contains(body, "Failed to create gzip reader", "Expected error message to contain 'failed to resolve'")
+}
