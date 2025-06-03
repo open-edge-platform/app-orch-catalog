@@ -34,12 +34,12 @@ const deploymentPackagesEndpoint = "/catalog.orchestrator.apis/v3/deployment_pac
 const registriesEndpoint = "/catalog.orchestrator.apis/v3/registries"
 const uploadEndpoint = "/catalog.orchestrator.apis/upload"
 
-/* The reason for these Simple* objects was to facilitate converting the existing
+/* The reason for these Short* objects was to facilitate converting the existing
  * rest api tests to the more complex test framework that came from the mage e2e
  * tests, which have many more fields.
  */
 
-type SimpleRegistry struct {
+type ShortRegistry struct {
 	Name        string `json:"name"`
 	DisplayName string `json:"displayName"`
 	Description string `json:"description"`
@@ -52,7 +52,7 @@ func (s *TestSuite) getRegistries() []Registry {
 	helmURL := fmt.Sprintf("oci://registry-oci.%s/catalog-apps-sample-org-sample-project", s.orchDomain)
 
 	regs := []Registry{}
-	for _, ra := range []SimpleRegistry{
+	for _, ra := range []ShortRegistry{
 		{"akri-helm-registry", "akri-helm-registry", "Public registry for akri chart", "https://project-akri.github.io/akri/", "HELM"},
 		{"bitnami-helm-oci", "bitnami-helm-oci", "Bitnami helm registry", "oci://registry-1.docker.io/bitnamicharts", "HELM"},
 		{"fluent-bit", "fluent-bit", "Public registry for fluent bit chart", "https://fluent.github.io/helm-charts", "HELM"},
@@ -76,14 +76,12 @@ func (s *TestSuite) getRegistries() []Registry {
 	return regs
 }
 
-type SimpleApplication struct {
+type ShortApplication struct {
 	Name             string `json:"name"`
 	DisplayName      string `json:"displayName"`
 	Description      string `json:"description"`
-	Version          string `json:"version"`
 	Kind             string `json:"kind"`
 	ChartName        string `json:"chartName"`
-	ChartVersion     string `json:"chartVersion"`
 	HelmRegistryName string `json:"helmRegistryName"`
 }
 
@@ -93,46 +91,43 @@ update the version information here
 */
 func (s *TestSuite) getApplications() []Application {
 	apps := []Application{}
-	for _, sa := range []SimpleApplication{
-		{"gatekeeper-constraints", "gatekeeper-constraints", "Gatekeeper Constraints", "1.0.15", "KIND_EXTENSION", "edge-orch/en/charts/gatekeeper-constraints", "1.0.15", "intel-rs-helm"},
-		{"ingress-nginx", "ingress-nginx", "Edge Orchestrator EdgeDNS", "5.1.1", "KIND_EXTENSION", "ingress-nginx", "4.12.0", "kubernetes-ingress-helm"},
-		{"intel-device-operator", "intel-device-operator", "Intel Device Plugin Operator", "0.29.0", "KIND_EXTENSION", "intel-device-plugins-operator", "0.29.0", "intel-github-io"},
-		{"intel-gpu-plugin", "intel-gpu-plugin", "Intel GPU Device Plugin", "0.29.0", "KIND_EXTENSION", "intel-device-plugins-gpu", "0.29.0", "intel-github-io"},
-		{"kubernetes-dashboard", "kubernetes-dashboard", "kubernetes-dashboard", "0.0.5", "KIND_EXTENSION", "kubernetes-dashboard", "7.10.0", "kubernetes"},
-		{"metallb", "metallb", "Load balancer for bare metal k8s clusters", "1.1.1", "KIND_EXTENSION", "metallb", "6.4.5", "bitnami-helm-oci"},
-		{"metallb-base", "metallb-base", "Metallb base configuration", "0.15.2", "KIND_EXTENSION", "edge-orch/en/charts/metallb-base", "0.15.2", "intel-rs-helm"},
-		{"metallb-config", "metallb-config", "Load balancer configuration for bare metal k8s clusters", "0.1.4", "KIND_EXTENSION", "edge-orch/en/charts/metallb-config", "0.1.4", "intel-rs-helm"},
-		{"network-policies", "network-policies", "Network Policies", "0.1.13", "KIND_EXTENSION", "edge-orch/en/charts/network-policies", "0.1.13", "intel-rs-helm"},
-		{"cert-manager", "cert-manager", "Cert Manager", "1.16.2", "KIND_EXTENSION", "cert-manager", "1.16.2", "jetstack"},
-		{"edgedns", "edgedns", "Edge Orchestrator EdgeDNS", "2.0.8", "KIND_EXTENSION", "edge-orch/en/charts/edgedns", "1.3.31", "intel-rs-helm"},
-		{"fluent-bit", "fluent-bit", "Fluent Bit", "0.48.9", "KIND_EXTENSION", "fluent-bit", "0.48.9", "fluent-bit"},
-		{"gatekeeper", "gatekeeper", "Gatekeeper", "3.17.1", "KIND_EXTENSION", "gatekeeper", "3.17.1", "gatekeeper"},
-		{"akri", "akri", "akri base application", "0.13.8", "KIND_EXTENSION", "akri", "0.13.8", "akri-helm-registry"},
-		{"attestation-manager", "attestation-manager", "Workload prptection and continus monitoring add-on for Kubernetes", "1.0.0", "KIND_EXTENSION", "edge-orch/trusted-compute/charts/attestation-manager", "0.1.0", "intel-rs-helm"},
-		{"attestation-verifier", "attestation-verifier", "attestation verifier of trusted compute", "1.0.0", "KIND_EXTENSION", "edge-orch/trusted-compute/charts/attestation-verifier", "0.1.0", "intel-rs-helm"},
-		{"cdi", "cdi", "Persistent storage management add-on for Kubernetes", "2.0.3", "KIND_EXTENSION", "edge-orch/en/charts/cdi", "1.60.4", "intel-rs-helm"},
-		{"kubevirt", "kubevirt", "Virtual machine management add-on for Kubernetes", "1.2.7", "KIND_EXTENSION", "edge-orch/en/charts/kubevirt", "1.2.7", "intel-rs-helm"},
-		{"kubevirt-helper", "kubevirt-helper", "Automatically restart VM when editable VM spec is updated", "1.4.5", "KIND_EXTENSION", "edge-orch/en/charts/kubevirt-helper", "1.4.5", "intel-rs-helm"},
-		{"nfd", "nfd", "NFD", "0.17.0", "KIND_EXTENSION", "node-feature-discovery", "0.17.0", "node-feature-discovery"},
+	for _, sa := range []ShortApplication{
+		{"gatekeeper-constraints", "gatekeeper-constraints", "Gatekeeper Constraints", "KIND_EXTENSION", "edge-orch/en/charts/gatekeeper-constraints", "intel-rs-helm"},
+		{"ingress-nginx", "ingress-nginx", "Edge Orchestrator EdgeDNS", "KIND_EXTENSION", "ingress-nginx", "kubernetes-ingress-helm"},
+		{"intel-device-operator", "intel-device-operator", "Intel Device Plugin Operator", "KIND_EXTENSION", "intel-device-plugins-operator", "intel-github-io"},
+		{"intel-gpu-plugin", "intel-gpu-plugin", "Intel GPU Device Plugin", "KIND_EXTENSION", "intel-device-plugins-gpu", "intel-github-io"},
+		{"kubernetes-dashboard", "kubernetes-dashboard", "kubernetes-dashboard", "KIND_EXTENSION", "kubernetes-dashboard", "kubernetes"},
+		{"metallb", "metallb", "Load balancer for bare metal k8s clusters", "KIND_EXTENSION", "metallb", "bitnami-helm-oci"},
+		{"metallb-base", "metallb-base", "Metallb base configuration", "KIND_EXTENSION", "edge-orch/en/charts/metallb-base", "intel-rs-helm"},
+		{"metallb-config", "metallb-config", "Load balancer configuration for bare metal k8s clusters", "KIND_EXTENSION", "edge-orch/en/charts/metallb-config", "intel-rs-helm"},
+		{"network-policies", "network-policies", "Network Policies", "KIND_EXTENSION", "edge-orch/en/charts/network-policies", "intel-rs-helm"},
+		{"cert-manager", "cert-manager", "Cert Manager", "KIND_EXTENSION", "cert-manager", "jetstack"},
+		{"edgedns", "edgedns", "Edge Orchestrator EdgeDNS", "KIND_EXTENSION", "edge-orch/en/charts/edgedns", "intel-rs-helm"},
+		{"fluent-bit", "fluent-bit", "Fluent Bit", "KIND_EXTENSION", "fluent-bit", "fluent-bit"},
+		{"gatekeeper", "gatekeeper", "Gatekeeper", "KIND_EXTENSION", "gatekeeper", "gatekeeper"},
+		{"akri", "akri", "akri base application", "KIND_EXTENSION", "akri", "akri-helm-registry"},
+		{"attestation-manager", "attestation-manager", "Workload prptection and continus monitoring add-on for Kubernetes", "KIND_EXTENSION", "edge-orch/trusted-compute/charts/attestation-manager", "intel-rs-helm"},
+		{"attestation-verifier", "attestation-verifier", "attestation verifier of trusted compute", "KIND_EXTENSION", "edge-orch/trusted-compute/charts/attestation-verifier", "intel-rs-helm"},
+		{"cdi", "cdi", "Persistent storage management add-on for Kubernetes", "KIND_EXTENSION", "edge-orch/en/charts/cdi", "intel-rs-helm"},
+		{"kubevirt", "kubevirt", "Virtual machine management add-on for Kubernetes", "KIND_EXTENSION", "edge-orch/en/charts/kubevirt", "intel-rs-helm"},
+		{"kubevirt-helper", "kubevirt-helper", "Automatically restart VM when editable VM spec is updated", "KIND_EXTENSION", "edge-orch/en/charts/kubevirt-helper", "intel-rs-helm"},
+		{"nfd", "nfd", "NFD", "KIND_EXTENSION", "node-feature-discovery", "node-feature-discovery"},
 	} {
 		apps = append(apps, Application{
 			Name:             sa.Name,
 			DisplayName:      sa.DisplayName,
 			Description:      sa.Description,
-			Version:          sa.Version,
 			Kind:             sa.Kind,
 			ChartName:        sa.ChartName,
-			ChartVersion:     sa.ChartVersion,
 			HelmRegistryName: sa.HelmRegistryName,
 		})
 	}
 	return apps
 }
 
-type SimpleDeploymentPackage struct {
+type ShortDeploymentPackage struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
-	Version     string `json:"version"`
 	Kind        string `json:"kind"`
 }
 
@@ -142,21 +137,20 @@ update the version information here
 */
 func (s *TestSuite) getDeploymentPackages() []DeploymentPackage {
 	pkgs := []DeploymentPackage{}
-	for _, dp := range []SimpleDeploymentPackage{
-		{"base-extensions", "Base Extensions", "0.7.8", "KIND_EXTENSION"},
-		{"intel-gpu", "Intel GPU K8S extension", "1.2.4", "KIND_EXTENSION"},
-		{"kubernetes-dashboard", "kubernetes-dashboard", "0.0.6", "KIND_EXTENSION"},
-		{"loadbalancer", "Enables load balancer and dns services on the edge", "0.4.5", "KIND_EXTENSION"},
-		{"skupper", "Enables Skupper service on the edge", "0.1.7", "KIND_EXTENSION"},
-		{"sriov", "Provisions and configures SR-IOV CNI plugin and Device plugin", "0.3.4", "KIND_EXTENSION"},
-		{"trusted-compute", "Trusted Compute k8s plugin for trusted workloads. Requires cluster using a \"privilege\" template.", "0.4.2", "KIND_EXTENSION"},
-		{"usb", "Brings USB allocation for containers/VMs running on k8s cluster", "0.3.3", "KIND_EXTENSION"},
-		{"virtualization", "Virtualization support for k8s cluster", "0.3.7", "KIND_EXTENSION"},
+	for _, dp := range []ShortDeploymentPackage{
+		{"base-extensions", "Base Extensions", "KIND_EXTENSION"},
+		{"intel-gpu", "Intel GPU K8S extension", "KIND_EXTENSION"},
+		{"kubernetes-dashboard", "kubernetes-dashboard", "KIND_EXTENSION"},
+		{"loadbalancer", "Enables load balancer and dns services on the edge", "KIND_EXTENSION"},
+		{"skupper", "Enables Skupper service on the edge", "KIND_EXTENSION"},
+		{"sriov", "Provisions and configures SR-IOV CNI plugin and Device plugin", "KIND_EXTENSION"},
+		{"trusted-compute", "Trusted Compute k8s plugin for trusted workloads. Requires cluster using a \"privilege\" template.", "KIND_EXTENSION"},
+		{"usb", "Brings USB allocation for containers/VMs running on k8s cluster", "KIND_EXTENSION"},
+		{"virtualization", "Virtualization support for k8s cluster", "KIND_EXTENSION"},
 	} {
 		pkgs = append(pkgs, DeploymentPackage{
 			Name:        dp.Name,
 			Description: dp.Description,
-			Version:     dp.Version,
 			Kind:        dp.Kind,
 		})
 	}
