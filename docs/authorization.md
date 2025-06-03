@@ -157,17 +157,10 @@ sequenceDiagram
 The REGO rules (policies) are present [in the Helm chart](../deployments/app-orch-catalog/files/openpolicyagent), and
 are loaded into a config map in OPA at startup. The OPA API `/v1/policy` can be used to update or inspect these at runtime.
 
-### Test Rules Locally
-
-> The [testdata](../deployments/app-orch-catalog/files/temp/testdata) folder shows an example of the kind
-> of input expected as a combination of `request` and `metadata`.
-
 Test with:
 
 ```shell
-opa eval -f pretty -b ~/intel/app-orch-catalog/deployments/application-catalog/files/openpolicyagent \
-  --input ~/intel/app-orch-catalog/deployments/application-catalog/files/openpolicyagent/testdata/CreateApplicationInput.json \
-  data.catalogv3.CreateApplicationRequest
+make opa-test
 ```
 
 > Note: Many IDEs support running these tests in a graphical environment, e.g., GoLand or IntelliJ IDEA.
