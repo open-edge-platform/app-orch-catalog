@@ -7,7 +7,6 @@ package exporter
 import (
 	b64 "encoding/base64"
 	"fmt"
-	"os"
 
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/schema/upload"
@@ -16,7 +15,6 @@ import (
 
 const (
 	schemaVersion = "0.1"
-	permissions   = 0600
 )
 
 // Exporter implements the functions used to export YAML files
@@ -56,12 +54,6 @@ func specToBytes(spec *upload.YamlSpec) ([]byte, error) {
 	return data, nil
 }
 
-/*
-func saveSpec(spec *upload.YamlSpec, fileName string) error {
-	return os.WriteFile(fileName, data, permissions)
-}
-*/
-
 func (e *Exporter) ExportRegistry(reg *catalogv3.Registry) ([]byte, error) {
 	spec := &upload.YamlSpec{
 		SpecSchema:    upload.RegistryType,
@@ -94,12 +86,12 @@ func (e *Exporter) ExportArtifact(art *catalogv3.Artifact) ([]byte, error) {
 	return specToBytes(spec)
 }
 
-func (e *Exporter) ExportApplication(app *catalogv3.Application) ([]byte, error) {
+func (e *Exporter) ExportApplication(app *catalogv3.Application) ([]byte, map[string][]byte, error) {
 	e.LogChange("Exporting application %s\n", app.Name)
-	profiles, err := e.exportProfiles(app)
+	profiles, profileData, err := e.exportProfiles(app)
 	ignoredResources := e.exportIgnoredResources(app)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	spec := &upload.YamlSpec{
 		SpecSchema:       upload.ApplicationType,
@@ -117,16 +109,23 @@ func (e *Exporter) ExportApplication(app *catalogv3.Application) ([]byte, error)
 		IgnoredResources: ignoredResources,
 	}
 
-	return specToBytes(spec)
+	data, err := specToBytes(spec)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return data, profileData, err
 }
 
-func (e *Exporter) exportProfiles(path string, app *catalogv3.Application) ([]upload.Profile, error) {
+func (e *Exporter) exportProfiles(app *catalogv3.Application) ([]upload.Profile, map[string][]byte, error) {
 	profiles := make([]upload.Profile, 0, len(app.Profiles))
+	profileData := map[string][]byte{}
 	for _, p := range app.Profiles {
-		fileName, err := e.exportProfile(path, app, p)
+		fileName, thisProfileData, err := e.exportProfile(app, p)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
+		profileData[fileName] = thisProfileData
 		spec := upload.Profile{
 			Name:                   p.Name,
 			DisplayName:            p.DisplayName,
@@ -138,17 +137,13 @@ func (e *Exporter) exportProfiles(path string, app *catalogv3.Application) ([]up
 
 		profiles = append(profiles, spec)
 	}
-	return profiles, nil
+	return profiles, profileData, nil
 }
 
-func (e *Exporter) exportProfile(path string, app *catalogv3.Application, p *catalogv3.Profile) (string, error) {
+func (e *Exporter) exportProfile(app *catalogv3.Application, p *catalogv3.Profile) (string, []byte, error) {
 	e.LogChange("Exporting profile %s\n", p.Name)
 	baseFile := fmt.Sprintf("values-%s-%s-%s.yaml", app.Name, app.Version, p.Name)
-	valuesFile := fmt.Sprintf("%s/%s", path, baseFile)
-	if err := os.WriteFile(valuesFile, []byte(p.ChartValues), permissions); err != nil {
-		return "", err
-	}
-	return baseFile, nil
+	return baseFile, []byte(p.ChartValues), nil
 }
 
 func (e *Exporter) exportIgnoredResources(app *catalogv3.Application) []upload.ResourceReference {
