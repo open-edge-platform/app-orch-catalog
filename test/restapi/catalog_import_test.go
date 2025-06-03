@@ -60,9 +60,7 @@ func (s *TestSuite) TestImportHelmChart() {
 	}
 
 	status, body := s.ImportHelmChart(importRequest)
-	s.Equal(200, status, "Expected status code 200 for successful import")
-
-	fmt.Println("Response body:", body)
+	s.Equal(http.StatusOK, status, "Expected status code 200 for successful import")
 
 	_ = body
 

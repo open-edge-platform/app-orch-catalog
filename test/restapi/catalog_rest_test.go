@@ -340,15 +340,15 @@ func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
 		assert.NoError(s.T(), err)
 
 		var result struct {
-			Applications []Application `json:"application"`
+			Application []Application `json:"application"`
 		}
 		err = json.Unmarshal(body, &result)
 		assert.NoError(s.T(), err)
 
-		s.True(len(result.Applications) > 0, "Expected at least one application for %s", app.Name)
+		s.True(len(result.Application) > 0, "Expected at least one application for %s", app.Name)
 
-		if len(result.Applications) == 0 {
-			gotApp := result.Applications[0]
+		if len(result.Application) > 0 {
+			gotApp := result.Application[0]
 
 			switch {
 			case app.Name != gotApp.Name:
