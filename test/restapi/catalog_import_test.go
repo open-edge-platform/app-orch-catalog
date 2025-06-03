@@ -7,28 +7,19 @@ package restapi
 import (
 	// Standard library imports
 
-	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
-	"os"
+	"net/url"
 
 	// Third-party imports
-	"net/url"
 
 	// Project-specific imports
 	"github.com/open-edge-platform/app-orch-catalog/test/auth"
-
-	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 )
 
 const importEndpoint = "/catalog.orchestrator.apis/v3/import"
-
-func init() {
-	log.SetFlags(log.LstdFlags | log.Lshortfile)
-	log.SetOutput(os.Stdout)
-}
 
 type ImportRequest struct {
 	Url                       string `json:"url"`
@@ -62,34 +53,6 @@ func (s *TestSuite) ImportHelmChart(importRequest *ImportRequest) (int, string) 
 	return res.StatusCode, string(body)
 }
 
-func (s *TestSuite) GetApplication(name string, version string) (*catalogv3.Application, error) {
-	requestURL := fmt.Sprintf("%s%s/%s/versions/%s", s.CatalogRESTServerUrl, applicationsEndpoint, name, version)
-
-	log.Printf("Retrieving application with request URL: %s", requestURL)
-
-	req, err := http.NewRequest("GET", requestURL, nil)
-	s.Require().NoError(err)
-	auth.AddRestAuthHeader(req, s.token, s.projectID)
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-
-	if res.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to get application: %s", res.Status)
-	}
-
-	var app catalogv3.Application
-	err = json.NewDecoder(res.Body).Decode(&app)
-	if err != nil {
-		return nil, err
-	}
-
-	return &app, nil
-}
-
 func (s *TestSuite) TestImportHelmChart() {
 	importRequest := &ImportRequest{
 		Url: "oci://ghcr.io/open-edge-platform/geti/helm/impt:2.9.0",
@@ -102,8 +65,37 @@ func (s *TestSuite) TestImportHelmChart() {
 
 	_ = body
 
-	app, err := s.GetApplication("impt", "2.9.0")
-	s.NoError(err, "Expected to retrieve application after import")
+	app, err := s.GetApplication("impt", "2.9.0", true)
+	s.Require().NoError(err, "Expected to retrieve application after import")
 
-	_ = app
+	s.Equal("impt", app.Name, "Expected application name to be 'impt'")
+	s.Equal("2.9.0", app.Version, "Expected application version to be '2.9.0'")
+	s.Equal("impt-registry", app.HelmRegistryName, "Expected application registry to be 'impt-registry'")
+	s.Equal("impt", app.ChartName, "Expected application chart name to be 'impt'")
+	s.Equal("2.9.0", app.ChartVersion, "Expected application chart version to be '2.9.0'")
+	s.Equal("default", app.DefaultProfileName, "Expected application default profile name to be 'default'")
+
+	pkg, err := s.GetDeploymentPackage("impt", "2.9.0", true)
+	s.Require().NoError(err, "Expected to retrieve deployment package after import")
+
+	s.Equal("impt", pkg.Name, "Expected deployment package name to be 'impt'")
+	s.Equal("2.9.0", pkg.Version, "Expected deployment package version to be '2.9.0'")
+	s.Equal("default", pkg.DefaultProfileName, "Expected deployment package default profile name to be 'default'")
+
+	reg, err := s.GetRegistry("impt-registry", true)
+	s.Require().NoError(err, "Expected to retrieve registry")
+
+	s.Equal("impt-registry", reg.Name, "Expected registry name to be 'impt-registry'")
+	s.Equal("oci://ghcr.io/open-edge-platform/geti/helm", reg.RootURL, "Expected registry URL to match the input")
+
+	/* cleanup -- these should all exist at this point */
+
+	err = s.DeleteDeploymentPackage("impt", "2.9.0", true)
+	s.NoError(err, "Expected to delete registry")
+
+	err = s.DeleteApplication("impt", "2.9.0", true)
+	s.NoError(err, "Expected to delete registry")
+
+	err = s.DeleteRegistry("impt-registry", true)
+	s.NoError(err, "Expected to delete registry")
 }

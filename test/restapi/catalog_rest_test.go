@@ -31,10 +31,15 @@ func init() {
 
 const applicationsEndpoint = "/catalog.orchestrator.apis/v3/applications"
 const deploymentPackagesEndpoint = "/catalog.orchestrator.apis/v3/deployment_packages"
-const registriesEndPoint = "/catalog.orchestrator.apis/v3/registries"
+const registriesEndpoint = "/catalog.orchestrator.apis/v3/registries"
 const uploadEndpoint = "/catalog.orchestrator.apis/upload"
 
-type Registry struct {
+/* The reason for these Simple* objects was to facilitate converting the existing
+ * rest api tests to the more complex test framework that came from the mage e2e
+ * tests, which have many more fields.
+ */
+
+type SimpleRegistry struct {
 	Name        string `json:"name"`
 	DisplayName string `json:"displayName"`
 	Description string `json:"description"`
@@ -46,7 +51,8 @@ func (s *TestSuite) getRegistries() []Registry {
 	dockerURL := fmt.Sprintf("https://registry-oci.%s/", s.orchDomain)
 	helmURL := fmt.Sprintf("oci://registry-oci.%s/catalog-apps-sample-org-sample-project", s.orchDomain)
 
-	return []Registry{
+	regs := []Registry{}
+	for _, ra := range []SimpleRegistry{
 		{"akri-helm-registry", "akri-helm-registry", "Public registry for akri chart", "https://project-akri.github.io/akri/", "HELM"},
 		{"bitnami-helm-oci", "bitnami-helm-oci", "Bitnami helm registry", "oci://registry-1.docker.io/bitnamicharts", "HELM"},
 		{"fluent-bit", "fluent-bit", "Public registry for fluent bit chart", "https://fluent.github.io/helm-charts", "HELM"},
@@ -57,10 +63,20 @@ func (s *TestSuite) getRegistries() []Registry {
 		{"intel-rs-helm", "intel-rs-helm", "Repo on registry registry-rs.edgeorchestration.intel.com", "oci://rs-proxy.orch-platform.svc.cluster.local:8443", "HELM"},
 		{"intel-rs-images", "intel-rs-image", "Repo on registry registry-rs.edgeorchestration.intel.com", "oci://registry-rs.edgeorchestration.intel.com", "IMAGE"},
 		{"jetstack", "jetstack", "Public registry for cert manager chart", "https://charts.jetstack.io", "HELM"},
+	} {
+		regs = append(regs, Registry{
+			Name:        ra.Name,
+			DisplayName: ra.DisplayName,
+			Description: ra.Description,
+			RootURL:     ra.RootURL,
+			Type:        ra.Type,
+		})
 	}
+
+	return regs
 }
 
-type Application struct {
+type SimpleApplication struct {
 	Name             string `json:"name"`
 	DisplayName      string `json:"displayName"`
 	Description      string `json:"description"`
@@ -76,7 +92,8 @@ If there is change in the versions, you can verify the list by executing the fun
 update the version information here
 */
 func (s *TestSuite) getApplications() []Application {
-	return []Application{
+	apps := []Application{}
+	for _, sa := range []SimpleApplication{
 		{"gatekeeper-constraints", "gatekeeper-constraints", "Gatekeeper Constraints", "1.0.15", "KIND_EXTENSION", "edge-orch/en/charts/gatekeeper-constraints", "1.0.15", "intel-rs-helm"},
 		{"ingress-nginx", "ingress-nginx", "Edge Orchestrator EdgeDNS", "5.1.1", "KIND_EXTENSION", "ingress-nginx", "4.12.0", "kubernetes-ingress-helm"},
 		{"intel-device-operator", "intel-device-operator", "Intel Device Plugin Operator", "0.29.0", "KIND_EXTENSION", "intel-device-plugins-operator", "0.29.0", "intel-github-io"},
@@ -97,10 +114,22 @@ func (s *TestSuite) getApplications() []Application {
 		{"kubevirt", "kubevirt", "Virtual machine management add-on for Kubernetes", "1.2.7", "KIND_EXTENSION", "edge-orch/en/charts/kubevirt", "1.2.7", "intel-rs-helm"},
 		{"kubevirt-helper", "kubevirt-helper", "Automatically restart VM when editable VM spec is updated", "1.4.5", "KIND_EXTENSION", "edge-orch/en/charts/kubevirt-helper", "1.4.5", "intel-rs-helm"},
 		{"nfd", "nfd", "NFD", "0.17.0", "KIND_EXTENSION", "node-feature-discovery", "0.17.0", "node-feature-discovery"},
+	} {
+		apps = append(apps, Application{
+			Name:             sa.Name,
+			DisplayName:      sa.DisplayName,
+			Description:      sa.Description,
+			Version:          sa.Version,
+			Kind:             sa.Kind,
+			ChartName:        sa.ChartName,
+			ChartVersion:     sa.ChartVersion,
+			HelmRegistryName: sa.HelmRegistryName,
+		})
 	}
+	return apps
 }
 
-type DeploymentPackages struct {
+type SimpleDeploymentPackage struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	Version     string `json:"version"`
@@ -111,8 +140,9 @@ type DeploymentPackages struct {
 If there is change in the versions, you can verify the list by executing the function TestListBootStrapDeploymentPackages and
 update the version information here
 */
-func (s *TestSuite) getDeploymentPackages() []DeploymentPackages {
-	return []DeploymentPackages{
+func (s *TestSuite) getDeploymentPackages() []DeploymentPackage {
+	pkgs := []DeploymentPackage{}
+	for _, dp := range []SimpleDeploymentPackage{
 		{"base-extensions", "Base Extensions", "0.7.8", "KIND_EXTENSION"},
 		{"intel-gpu", "Intel GPU K8S extension", "1.2.4", "KIND_EXTENSION"},
 		{"kubernetes-dashboard", "kubernetes-dashboard", "0.0.6", "KIND_EXTENSION"},
@@ -122,7 +152,15 @@ func (s *TestSuite) getDeploymentPackages() []DeploymentPackages {
 		{"trusted-compute", "Trusted Compute k8s plugin for trusted workloads. Requires cluster using a \"privilege\" template.", "0.4.2", "KIND_EXTENSION"},
 		{"usb", "Brings USB allocation for containers/VMs running on k8s cluster", "0.3.3", "KIND_EXTENSION"},
 		{"virtualization", "Virtualization support for k8s cluster", "0.3.7", "KIND_EXTENSION"},
+	} {
+		pkgs = append(pkgs, DeploymentPackage{
+			Name:        dp.Name,
+			Description: dp.Description,
+			Version:     dp.Version,
+			Kind:        dp.Kind,
+		})
 	}
+	return pkgs
 }
 
 func (s *TestSuite) TestListBootStrapExtensions() {
@@ -178,7 +216,7 @@ func (s *TestSuite) TestListBootStrapDeploymentPackages() {
 	body, err := io.ReadAll(res.Body)
 	assert.NoError(s.T(), err)
 	var result struct {
-		DeploymentPackages []DeploymentPackages `json:"deploymentPackages"`
+		DeploymentPackages []DeploymentPackage `json:"deploymentPackages"`
 	}
 	err = json.Unmarshal(body, &result)
 	assert.NoError(s.T(), err)
@@ -195,7 +233,7 @@ func (s *TestSuite) TestListBootStrapDeploymentPackages() {
 }
 
 func (s *TestSuite) TestListBootStrapRegistries() {
-	requestURL := fmt.Sprintf("%s%s", s.CatalogRESTServerUrl, registriesEndPoint)
+	requestURL := fmt.Sprintf("%s%s", s.CatalogRESTServerUrl, registriesEndpoint)
 	req, err := http.NewRequest("GET", requestURL, nil)
 	assert.NoError(s.T(), err)
 	auth.AddRestAuthHeader(req, s.token, s.projectID)
@@ -238,7 +276,7 @@ func (s *TestSuite) TestListBootStrapRegistries() {
 
 func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 	for _, registry := range s.getRegistries() {
-		requestURL := fmt.Sprintf("%s%s/%s", s.CatalogRESTServerUrl, registriesEndPoint, registry.Name)
+		requestURL := fmt.Sprintf("%s%s/%s", s.CatalogRESTServerUrl, registriesEndpoint, registry.Name)
 		req, err := http.NewRequest("GET", requestURL, nil)
 		assert.NoError(s.T(), err)
 		auth.AddRestAuthHeader(req, s.token, s.projectID)
@@ -343,7 +381,7 @@ func (s *TestSuite) TestVerifyBootstrappedDeploymentPackagesExist() {
 		assert.NoError(s.T(), err)
 
 		var result struct {
-			DeploymentPackage DeploymentPackages `json:"deploymentPackage"`
+			DeploymentPackage DeploymentPackage `json:"deploymentPackage"`
 		}
 		err = json.Unmarshal(body, &result)
 		assert.NoError(s.T(), err)
@@ -427,7 +465,7 @@ func (s *TestSuite) TestUploadTarball() {
 	resBody, err := io.ReadAll(res.Body)
 	assert.NoError(s.T(), err)
 	var result struct {
-		DeploymentPackage DeploymentPackages `json:"deploymentPackage"`
+		DeploymentPackage DeploymentPackage `json:"deploymentPackage"`
 	}
 	err = json.Unmarshal(resBody, &result)
 	assert.NoError(s.T(), err)
@@ -439,7 +477,7 @@ func (s *TestSuite) TestUploadTarball() {
 	// Cleanup
 	s.Delete(fmt.Sprintf("%s%s/test-wordpress/versions/0.1.1", s.CatalogRESTServerUrl, deploymentPackagesEndpoint))
 	s.Delete(fmt.Sprintf("%s%s/test-wordpress/versions/0.1.1", s.CatalogRESTServerUrl, applicationsEndpoint))
-	s.Delete(fmt.Sprintf("%s%s/test-bitnami", s.CatalogRESTServerUrl, registriesEndPoint))
+	s.Delete(fmt.Sprintf("%s%s/test-bitnami", s.CatalogRESTServerUrl, registriesEndpoint))
 }
 
 func (s *TestSuite) TestUploadSeparateFiles() {
@@ -507,7 +545,7 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 	resBody, err := io.ReadAll(res.Body)
 	assert.NoError(s.T(), err)
 	var result struct {
-		DeploymentPackage DeploymentPackages `json:"deploymentPackage"`
+		DeploymentPackage DeploymentPackage `json:"deploymentPackage"`
 	}
 	err = json.Unmarshal(resBody, &result)
 	assert.NoError(s.T(), err)
@@ -519,7 +557,7 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 	// Cleanup
 	s.Delete(fmt.Sprintf("%s%s/test-wordpress/versions/0.1.1", s.CatalogRESTServerUrl, deploymentPackagesEndpoint))
 	s.Delete(fmt.Sprintf("%s%s/test-wordpress/versions/0.1.1", s.CatalogRESTServerUrl, applicationsEndpoint))
-	s.Delete(fmt.Sprintf("%s%s/test-bitnami", s.CatalogRESTServerUrl, registriesEndPoint))
+	s.Delete(fmt.Sprintf("%s%s/test-bitnami", s.CatalogRESTServerUrl, registriesEndpoint))
 }
 
 func (s *TestSuite) TestGetCharts() {
