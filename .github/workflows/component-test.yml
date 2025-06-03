@@ -41,7 +41,7 @@ jobs:
         with:
           repository: open-edge-platform/edge-manageability-framework
           token: ${{ secrets.SYS_ORCH_GITHUB }}
-          ref: ${{ inputs.emf-branch || '53e430f45faaee7671fa3c25f6acc3945aba2065' }}
+          ref: ${{ inputs.emf-branch || '35c4625439b5208816ce12ae620d6ccc1d497efa' }}
           persist-credentials: false
 
       - name: Fetch all branches
