@@ -357,7 +357,7 @@ go-format: ## Formats go source files
 	@go fmt $(shell sh -c "go list ./...")
 
 .PHONY: test
-test: mod-update rego-rule-test go-test ## Runs test stage
+test: mod-update opa-test go-test ## Runs test stage
 
 .PHONY: go-test
 go-test: ## Runs go unit tests
