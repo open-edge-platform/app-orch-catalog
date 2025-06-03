@@ -5,30 +5,30 @@ package catalogv3
 
 import future.keywords.in
 
-CreateDeploymentPackageRequest {
+CreateDeploymentPackageRequest if {
     hasWriteAccess
 }
 
-UpdateDeploymentPackageRequest {
+UpdateDeploymentPackageRequest if {
     hasWriteAccess
 }
 
-DeleteDeploymentPackageRequest {
+DeleteDeploymentPackageRequest if {
     hasWriteAccess
 }
 
-GetDeploymentPackageRequest {
+GetDeploymentPackageRequest if {
     hasReadAccess
 }
 
-GetDeploymentPackageVersionsRequest {
+GetDeploymentPackageVersionsRequest if {
     hasReadAccess
 }
 
-ListDeploymentPackagesRequest {
+ListDeploymentPackagesRequest if {
     hasReadAccess
 }
 
-WatchDeploymentPackagesRequest {
+WatchDeploymentPackagesRequest if {
     hasReadAccess
 }

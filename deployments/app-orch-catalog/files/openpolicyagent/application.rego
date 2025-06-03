@@ -3,34 +3,34 @@
 
 package catalogv3
 
-CreateApplicationRequest {
+CreateApplicationRequest if {
     hasWriteAccess
 }
 
-UpdateApplicationRequest {
+UpdateApplicationRequest if {
     hasWriteAccess
 }
 
-DeleteApplicationRequest {
+DeleteApplicationRequest if {
     hasWriteAccess
 }
 
-GetApplicationRequest {
+GetApplicationRequest if {
     hasReadAccess
 }
 
-GetApplicationVersionsRequest {
+GetApplicationVersionsRequest if {
     hasReadAccess
 }
 
-GetApplicationReferenceCountRequest {
+GetApplicationReferenceCountRequest if {
     hasReadAccess
 }
 
-ListApplicationsRequest {
+ListApplicationsRequest if {
     hasReadAccess
 }
 
-WatchApplicationsRequest {
+WatchApplicationsRequest if {
     hasReadAccess
 }

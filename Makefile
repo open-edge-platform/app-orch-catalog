@@ -8,7 +8,7 @@ VERSION            := $(shell cat VERSION)
 CHART_VERSION      := $(shell cat VERSION)
 VERSION_DEV_SUFFIX := -dev
 GIT_COMMIT         ?= $(shell git rev-parse --short HEAD)
-OPA_IMAGE_VER       = 0.70.0-static
+OPA_IMAGE_VER       = 1.5.0-static
 
 
 ifeq ($(patsubst %$(VERSION_DEV_SUFFIX),,$(lastword $(VERSION))),)
@@ -343,13 +343,14 @@ rego-service-write-rule-match: ## For every service request in Proto we expect a
 	@egrep -oh "(Create|Update|Delete|List|Get|Watch|Upload).*Request {" ${CHART_PATH}/files/openpolicyagent/*.rego | grep -v "WithSensitiveInfo" | awk '{print $$1}' | sort > ${TMP_DIR}/list_rego_rules_out;
 	@diff ${TMP_DIR}/list_service_requests_out ${TMP_DIR}/list_rego_rules_out;
 
+OPA_CMD="docker run -i -v $(shell pwd)/${CHART_PATH}/files/openpolicyagent:/policies openpolicyagent/opa:$(OPA_IMAGE_VER)"
 .PHONY: rego-rule-test
 rego-rule-test: ## test the REGO rules
     # TODO Enable the rego rule tests when the migration to new OPA version is complete
-	#@make -C deployments/app-orch-catalog/files/openpolicyagent/testdata/artifact all
-	#@make -C deployments/app-orch-catalog/files/openpolicyagent/testdata/deployment-package all
-	#@make -C deployments/app-orch-catalog/files/openpolicyagent/testdata/upload all
-	#@make -C deployments/app-orch-catalog/files/openpolicyagent/testdata/registry all
+	@OPA=${OPA_CMD} BUNDLE=/policies make -C deployments/app-orch-catalog/files/openpolicyagent/testdata/artifact all
+	@OPA=${OPA_CMD} BUNDLE=/policies make -C deployments/app-orch-catalog/files/openpolicyagent/testdata/deployment-package all
+	@OPA=${OPA_CMD} BUNDLE=/policies make -C deployments/app-orch-catalog/files/openpolicyagent/testdata/upload all
+	@OPA=${OPA_CMD} BUNDLE=/policies make -C deployments/app-orch-catalog/files/openpolicyagent/testdata/registry all
 
 .PHONY: go-cover-dependency
 go-cover-dependency: ## install the gocover tool

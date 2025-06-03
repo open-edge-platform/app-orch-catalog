@@ -3,38 +3,38 @@
 
 package catalogv3
 
-CreateRegistryRequest {
+CreateRegistryRequest if {
     hasWriteAccess
 }
 
-UpdateRegistryRequest {
+UpdateRegistryRequest if {
     hasWriteAccess
 }
 
-DeleteRegistryRequest {
+DeleteRegistryRequest if {
     hasWriteAccess
 }
 
-GetRegistryWithSensitiveInfoRequest {
+GetRegistryWithSensitiveInfoRequest if {
     hasReadAccess
 }
 
-GetRegistryRequest {
+GetRegistryRequest if {
     hasReadAccess
 }
 
-ListRegistriesWithSensitiveInfoRequest {
+ListRegistriesWithSensitiveInfoRequest if {
     hasReadAccess
 }
 
-ListRegistriesRequest {
+ListRegistriesRequest if {
     hasReadAccess
 }
 
-WatchRegistriesWithSensitiveInfoRequest {
+WatchRegistriesWithSensitiveInfoRequest if {
     hasReadAccess
 }
 
-WatchRegistriesRequest {
+WatchRegistriesRequest if {
     hasReadAccess
 }
