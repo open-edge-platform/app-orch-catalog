@@ -57,7 +57,7 @@ jobs:
         uses: open-edge-platform/orch-utils/.github/actions/setup-asdf@d6fff1fe6760a6e6ed825bc25323a34f4ebc0ff6
 
       - name: Setup Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: 1.24
 
