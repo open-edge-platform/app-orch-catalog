@@ -128,6 +128,12 @@ func NewRESTProxy(cfg *Config) (*RESTProxy, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// Add download to the mux so it is part of the /v3/ API
+	mux.HandlePath("GET", fmt.Sprintf("/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}/download"), func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+		fileHandler.Download(w, r, pathParams)
+	})
+
 	// FIXME understand how to make this endpoint part of the openapi specs
 	// Example:
 	// curl -X POST http://localhost:8080/upload \
@@ -137,29 +143,10 @@ func NewRESTProxy(cfg *Config) (*RESTProxy, error) {
 	engine.Handle("POST", fmt.Sprintf("%scatalog.orchestrator.apis/upload", cfg.BasePath), func(c *gin.Context) {
 		fileHandler.Upload(c)
 	})
-	/*
-		engine.Handle("GET", fmt.Sprintf("%scatalog.orchestrator.apis/download/:name/:version", cfg.BasePath), func(c *gin.Context) {
-			fileHandler.Download(c)
-		})
-	*/
-	mux.HandlePath("GET", fmt.Sprintf("/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}/download"), func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-		fileHandler.Download(w, r, pathParams)
-	})
-	/*
-		mux.HandlePath("GET", fmt.Sprintf("/catalog.orchestrator.apis/v3/foo2"), func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-			w.WriteHeader(http.StatusOK)
-			w.Header().Set("Content-Type", "text/plain")
-			w.Write([]byte("Hello, World!4"))
-			_ = r
-			_ = pathParams
-		})
-	*/
-	log.Infof("%+v", mux)
 	spec, err := openapiutils.LoadOpenAPISpec(cfg.SpecFilePath)
 	if err != nil {
 		return nil, err
 	}
-
 	// Restrict GET verb for different endpoints of the API
 	allPaths := openapiutils.ExtractAllPaths(spec)
 

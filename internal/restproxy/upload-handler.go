@@ -99,35 +99,6 @@ func (h *FileHandler) Upload(c *gin.Context) {
 	c.Render(returnStatus, renderer)
 }
 
-/*
-func (h *FileHandler) Download(w http.ResponseWriter, r *http.Request, pathParams map[string]string)) {
-        name := c.Param("name")
-        version := c.Param("version")
-
-        log.Infof("downloading deployment package: %s, version: %s", name, version)
-
-        authHeader := c.Request.Header.Get("Authorization")
-        uaHeader := c.Request.Header.Get("User-Agent")
-        projectHeader := c.Request.Header.Get(ActiveProjectID)
-
-        mdCtx := metadata.NewOutgoingContext(context.TODO(),
-                metadata.Pairs("authorization", authHeader, "user-agent", uaHeader, "activeprojectid", projectHeader))
-
-        res, err := h.grpcClient.DownloadDeploymentPackage(mdCtx, &catalogv3.GetDeploymentPackageRequest{
-                DeploymentPackageName: name,
-                Version:               version,
-        })
-
-        if err != nil {
-                c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-                log.Errorw("error downloading deployment package", dazl.String("name", name), dazl.String("version", version), dazl.Error(err))
-                return
-        }
-
-        c.Data(http.StatusOK, "application/octet-stream", res.Artifact)
-}
-*/
-
 func (h *FileHandler) Download(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	name := pathParams["deployment_package_name"]
 	version := pathParams["version"]
