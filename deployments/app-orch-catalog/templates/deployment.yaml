@@ -163,9 +163,11 @@ spec:
           args:
             - "run"
             - "--server"
-            - "/etc/onos/rego"
+            - "/etc/app-orch/rego"
             - "--log-level"
             - {{ .Values.openpolicyagent.loglevel }}
+            - "--addr"
+            - ":{{ .Values.openpolicyagent.port }}"
           livenessProbe:
             httpGet:
               path: /health?bundle=true  # Include bundle activation in readiness
@@ -184,7 +186,7 @@ spec:
           {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: openpolicyagent
-              mountPath: /etc/onos/rego
+              mountPath: /etc/app-orch/rego
               readOnly: true
         {{end}}
       volumes:
