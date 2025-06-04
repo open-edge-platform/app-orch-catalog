@@ -155,9 +155,6 @@ type ClientInterface interface {
 
 	CatalogServiceUpdateDeploymentPackage(ctx context.Context, deploymentPackageName string, version string, body CatalogServiceUpdateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	// CatalogServiceDownloadDeploymentPackage request
-	CatalogServiceDownloadDeploymentPackage(ctx context.Context, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error)
-
 	// CatalogServiceImport request
 	CatalogServiceImport(ctx context.Context, params *CatalogServiceImportParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
@@ -464,18 +461,6 @@ func (c *Client) CatalogServiceUpdateDeploymentPackageWithBody(ctx context.Conte
 
 func (c *Client) CatalogServiceUpdateDeploymentPackage(ctx context.Context, deploymentPackageName string, version string, body CatalogServiceUpdateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
 	req, err := NewCatalogServiceUpdateDeploymentPackageRequest(c.Server, deploymentPackageName, version, body)
-	if err != nil {
-		return nil, err
-	}
-	req = req.WithContext(ctx)
-	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
-		return nil, err
-	}
-	return c.Client.Do(req)
-}
-
-func (c *Client) CatalogServiceDownloadDeploymentPackage(ctx context.Context, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceDownloadDeploymentPackageRequest(c.Server, deploymentPackageName, version)
 	if err != nil {
 		return nil, err
 	}
@@ -1545,47 +1530,6 @@ func NewCatalogServiceUpdateDeploymentPackageRequestWithBody(server string, depl
 	return req, nil
 }
 
-// NewCatalogServiceDownloadDeploymentPackageRequest generates requests for CatalogServiceDownloadDeploymentPackage
-func NewCatalogServiceDownloadDeploymentPackageRequest(server string, deploymentPackageName string, version string) (*http.Request, error) {
-	var err error
-
-	var pathParam0 string
-
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deploymentPackageName", runtime.ParamLocationPath, deploymentPackageName)
-	if err != nil {
-		return nil, err
-	}
-
-	var pathParam1 string
-
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
-	if err != nil {
-		return nil, err
-	}
-
-	serverURL, err := url.Parse(server)
-	if err != nil {
-		return nil, err
-	}
-
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/deployment_packages/%s/versions/%s/download", pathParam0, pathParam1)
-	if operationPath[0] == '/' {
-		operationPath = "." + operationPath
-	}
-
-	queryURL, err := serverURL.Parse(operationPath)
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequest("GET", queryURL.String(), nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return req, nil
-}
-
 // NewCatalogServiceImportRequest generates requests for CatalogServiceImport
 func NewCatalogServiceImportRequest(server string, params *CatalogServiceImportParams) (*http.Request, error) {
 	var err error
@@ -2240,9 +2184,6 @@ type ClientWithResponsesInterface interface {
 
 	CatalogServiceUpdateDeploymentPackageWithResponse(ctx context.Context, deploymentPackageName string, version string, body CatalogServiceUpdateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateDeploymentPackageResponse, error)
 
-	// CatalogServiceDownloadDeploymentPackageWithResponse request
-	CatalogServiceDownloadDeploymentPackageWithResponse(ctx context.Context, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceDownloadDeploymentPackageResponse, error)
-
 	// CatalogServiceImportWithResponse request
 	CatalogServiceImportWithResponse(ctx context.Context, params *CatalogServiceImportParams, reqEditors ...RequestEditorFn) (*CatalogServiceImportResponse, error)
 
@@ -2661,28 +2602,6 @@ func (r CatalogServiceUpdateDeploymentPackageResponse) StatusCode() int {
 	return 0
 }
 
-type CatalogServiceDownloadDeploymentPackageResponse struct {
-	Body         []byte
-	HTTPResponse *http.Response
-	JSON200      *DownloadDeploymentPackageResponse
-}
-
-// Status returns HTTPResponse.Status
-func (r CatalogServiceDownloadDeploymentPackageResponse) Status() string {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.Status
-	}
-	return http.StatusText(0)
-}
-
-// StatusCode returns HTTPResponse.StatusCode
-func (r CatalogServiceDownloadDeploymentPackageResponse) StatusCode() int {
-	if r.HTTPResponse != nil {
-		return r.HTTPResponse.StatusCode
-	}
-	return 0
-}
-
 type CatalogServiceImportResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
@@ -3043,15 +2962,6 @@ func (c *ClientWithResponses) CatalogServiceUpdateDeploymentPackageWithResponse(
 		return nil, err
 	}
 	return ParseCatalogServiceUpdateDeploymentPackageResponse(rsp)
-}
-
-// CatalogServiceDownloadDeploymentPackageWithResponse request returning *CatalogServiceDownloadDeploymentPackageResponse
-func (c *ClientWithResponses) CatalogServiceDownloadDeploymentPackageWithResponse(ctx context.Context, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceDownloadDeploymentPackageResponse, error) {
-	rsp, err := c.CatalogServiceDownloadDeploymentPackage(ctx, deploymentPackageName, version, reqEditors...)
-	if err != nil {
-		return nil, err
-	}
-	return ParseCatalogServiceDownloadDeploymentPackageResponse(rsp)
 }
 
 // CatalogServiceImportWithResponse request returning *CatalogServiceImportResponse
@@ -3544,32 +3454,6 @@ func ParseCatalogServiceUpdateDeploymentPackageResponse(rsp *http.Response) (*Ca
 	response := &CatalogServiceUpdateDeploymentPackageResponse{
 		Body:         bodyBytes,
 		HTTPResponse: rsp,
-	}
-
-	return response, nil
-}
-
-// ParseCatalogServiceDownloadDeploymentPackageResponse parses an HTTP response from a CatalogServiceDownloadDeploymentPackageWithResponse call
-func ParseCatalogServiceDownloadDeploymentPackageResponse(rsp *http.Response) (*CatalogServiceDownloadDeploymentPackageResponse, error) {
-	bodyBytes, err := io.ReadAll(rsp.Body)
-	defer func() { _ = rsp.Body.Close() }()
-	if err != nil {
-		return nil, err
-	}
-
-	response := &CatalogServiceDownloadDeploymentPackageResponse{
-		Body:         bodyBytes,
-		HTTPResponse: rsp,
-	}
-
-	switch {
-	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest DownloadDeploymentPackageResponse
-		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
-			return nil, err
-		}
-		response.JSON200 = &dest
-
 	}
 
 	return response, nil

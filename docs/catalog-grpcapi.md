@@ -1092,7 +1092,9 @@ The API provides Create, Get, List, Update, Delete, and Watch operations for eac
 | UpdateDeploymentPackage | [UpdateDeploymentPackageRequest](#catalog-v3-UpdateDeploymentPackageRequest) | [.google.protobuf.Empty](#google-protobuf-Empty) | Updates a deployment package. |
 | DeleteDeploymentPackage | [DeleteDeploymentPackageRequest](#catalog-v3-DeleteDeploymentPackageRequest) | [.google.protobuf.Empty](#google-protobuf-Empty) | Deletes a deployment package. |
 | WatchDeploymentPackages | [WatchDeploymentPackagesRequest](#catalog-v3-WatchDeploymentPackagesRequest) | [WatchDeploymentPackagesResponse](#catalog-v3-WatchDeploymentPackagesResponse) stream | Watches inventory of deployment packages for changes. |
-| DownloadDeploymentPackage | [GetDeploymentPackageRequest](#catalog-v3-GetDeploymentPackageRequest) | [DownloadDeploymentPackageResponse](#catalog-v3-DownloadDeploymentPackageResponse) | Downloads a deployment package as a tarball. |
+| DownloadDeploymentPackage | [GetDeploymentPackageRequest](#catalog-v3-GetDeploymentPackageRequest) | [DownloadDeploymentPackageResponse](#catalog-v3-DownloadDeploymentPackageResponse) | Downloads a deployment package as a tarball.
+
+option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}/download"}; |
 | CreateApplication | [CreateApplicationRequest](#catalog-v3-CreateApplicationRequest) | [CreateApplicationResponse](#catalog-v3-CreateApplicationResponse) | Creates a new application. |
 | ListApplications | [ListApplicationsRequest](#catalog-v3-ListApplicationsRequest) | [ListApplicationsResponse](#catalog-v3-ListApplicationsResponse) | Gets a list of applications. |
 | GetApplication | [GetApplicationRequest](#catalog-v3-GetApplicationRequest) | [GetApplicationResponse](#catalog-v3-GetApplicationResponse) | Gets a specific application. |
