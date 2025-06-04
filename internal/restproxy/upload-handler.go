@@ -6,6 +6,10 @@ package restproxy
 
 import (
 	"context"
+	"io"
+	"net/http"
+	"regexp"
+
 	"github.com/gin-gonic/gin"
 	"github.com/open-edge-platform/app-orch-catalog/internal/shared/jsonrenderer"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
@@ -13,9 +17,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/metadata"
-	"io"
-	"net/http"
-	"regexp"
 )
 
 type FileHandler struct {
@@ -96,6 +97,32 @@ func (h *FileHandler) Upload(c *gin.Context) {
 	// otherwise the casing in the JSON are messed up (we'll get snake_case instead of the expected camelCase)
 	renderer := jsonrenderer.JSONFromProto{Data: responses}
 	c.Render(returnStatus, renderer)
+}
+
+func (h *FileHandler) Download(c *gin.Context) {
+	name := c.Param("name")
+	version := c.Param("version")
+
+	log.Infof("downloading deployment package: %s, version: %s", name, version)
+
+	authHeader := c.Request.Header.Get("Authorization")
+	uaHeader := c.Request.Header.Get("User-Agent")
+	projectHeader := c.Request.Header.Get(ActiveProjectID)
+
+	mdCtx := metadata.NewOutgoingContext(context.TODO(),
+		metadata.Pairs("authorization", authHeader, "user-agent", uaHeader, "activeprojectid", projectHeader))
+
+	res, err := h.grpcClient.DownloadDeploymentPackage(mdCtx, &catalogv3.GetDeploymentPackageRequest{
+		DeploymentPackageName: name,
+		Version:               version,
+	})
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		log.Errorw("error downloading deployment package", dazl.String("name", name), dazl.String("version", version), dazl.Error(err))
+	}
+
+	c.Data(http.StatusOK, "application/octet-stream", res.Artifact)
 }
 
 func NewFileHandler(endpoint string, opts []grpc.DialOption) (*FileHandler, error) {

@@ -7,6 +7,9 @@ package restproxy
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/secure"
 	"github.com/gin-gonic/gin"
@@ -20,8 +23,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
-	"net/http"
-	"strings"
 )
 
 var log = dazl.GetPackageLogger()
@@ -135,6 +136,9 @@ func NewRESTProxy(cfg *Config) (*RESTProxy, error) {
 	//  -H "Content-Type: multipart/form-data"
 	engine.Handle("POST", fmt.Sprintf("%scatalog.orchestrator.apis/upload", cfg.BasePath), func(c *gin.Context) {
 		fileHandler.Upload(c)
+	})
+	engine.Handle("POST", fmt.Sprintf("%scatalog.orchestrator.apis/deployment_packages/:name/versions/:version/download", cfg.BasePath), func(c *gin.Context) {
+		fileHandler.Download(c)
 	})
 	spec, err := openapiutils.LoadOpenAPISpec(cfg.SpecFilePath)
 	if err != nil {

@@ -272,6 +272,12 @@ type DeploymentRequirement struct {
 	Version string `json:"version"`
 }
 
+// DownloadDeploymentPackageResponse Response message for the DownloadDeploymentPackage method.
+type DownloadDeploymentPackageResponse struct {
+	// Artifact Raw bytes content of the file being downloaded.
+	Artifact []byte `json:"artifact"`
+}
+
 // Endpoint Endpoint represents an application service endpoint.
 type Endpoint struct {
 	// AppName The name of the application providing this endpoint.

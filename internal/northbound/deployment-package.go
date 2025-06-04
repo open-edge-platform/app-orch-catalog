@@ -7,10 +7,11 @@ package northbound
 import (
 	"context"
 	"fmt"
-	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/namespace"
-	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/predicate"
 	"reflect"
 	"strings"
+
+	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/namespace"
+	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/predicate"
 
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/application"
@@ -23,6 +24,7 @@ import (
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/extension"
 	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
+	"github.com/open-edge-platform/app-orch-catalog/pkg/exporter"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -987,6 +989,67 @@ func (g *Server) GetDeploymentPackage(ctx context.Context, req *catalogv3.GetDep
 	}
 	logActivity(ctx, "got", "deployment-package", projectUUID, req.DeploymentPackageName, req.Version)
 	return &catalogv3.GetDeploymentPackageResponse{DeploymentPackage: ca}, nil
+}
+
+// DownloadDeploymentPackage gets a package and its related objects as a tarball
+func (g *Server) DownloadDeploymentPackage(ctx context.Context, req *catalogv3.GetDeploymentPackageRequest) (*catalogv3.DownloadDeploymentPackageResponse, error) {
+	projectUUID, err := GetActiveProjectID(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if req == nil || req.DeploymentPackageName == "" || req.Version == "" {
+		return nil, errors.NewInvalidArgument(
+			errors.WithResourceType(errors.DeploymentPackageType),
+			errors.WithMessage("incomplete request"))
+	}
+
+	if err := g.authCheckAllowed(ctx, req); err != nil {
+		return nil, err
+	}
+
+	tx, err := g.startTransaction(ctx)
+	if err != nil {
+		return nil, errors.NewDBError(errors.WithError(err))
+	}
+
+	pkgDB, err := tx.DeploymentPackage.Query().
+		Where(
+			deploymentpackage.ProjectUUID(projectUUID),
+			deploymentpackage.Name(req.DeploymentPackageName),
+			deploymentpackage.Version(req.Version),
+		).
+		Only(ctx)
+	if err != nil {
+		g.rollbackTransaction(tx)
+		if generated.IsNotFound(err) {
+			return nil, errors.NewNotFound(
+				errors.WithResourceType(errors.DeploymentPackageType),
+				errors.WithResourceName(req.DeploymentPackageName),
+				errors.WithResourceVersion(req.Version))
+		}
+		return nil, errors.NewDBError(errors.WithError(err))
+	}
+
+	ca, err := extractDeploymentPackage(ctx, pkgDB)
+	if err != nil {
+		g.rollbackTransaction(tx)
+		return nil, errors.NewDBError(errors.WithError(err))
+	}
+
+	err = g.commitTransaction(tx)
+	if err != nil {
+		return nil, errors.NewDBError(errors.WithError(err))
+	}
+
+	e := exporter.NewExporter()
+	data, err := e.ExportDeploymentPackage(ca)
+	if err != nil {
+		return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+	}
+
+	logActivity(ctx, "download", "deployment-package", projectUUID, req.DeploymentPackageName, req.Version)
+
+	return &catalogv3.DownloadDeploymentPackageResponse{Artifact: data}, nil
 }
 
 type packageChanges struct {

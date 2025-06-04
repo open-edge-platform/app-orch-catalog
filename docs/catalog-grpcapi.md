@@ -47,6 +47,7 @@
   - [DeleteArtifactRequest](#catalog-v3-DeleteArtifactRequest)
   - [DeleteDeploymentPackageRequest](#catalog-v3-DeleteDeploymentPackageRequest)
   - [DeleteRegistryRequest](#catalog-v3-DeleteRegistryRequest)
+  - [DownloadDeploymentPackageResponse](#catalog-v3-DownloadDeploymentPackageResponse)
   - [GetApplicationReferenceCountRequest](#catalog-v3-GetApplicationReferenceCountRequest)
   - [GetApplicationReferenceCountResponse](#catalog-v3-GetApplicationReferenceCountResponse)
   - [GetApplicationRequest](#catalog-v3-GetApplicationRequest)
@@ -578,6 +579,16 @@ Request message for the DeleteRegistry method.
 | ----- | ---- | ----- | ----------- |
 | registry_name | [string](#string) |  | Name of the registry. |
 
+<a name="catalog-v3-DownloadDeploymentPackageResponse"></a>
+
+### DownloadDeploymentPackageResponse
+
+Response message for the DownloadDeploymentPackage method.
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| artifact | [bytes](#bytes) |  | Raw bytes content of the file being downloaded. |
+
 <a name="catalog-v3-GetApplicationReferenceCountRequest"></a>
 
 ### GetApplicationReferenceCountRequest
@@ -727,6 +738,8 @@ Response message for the GetRegistry method.
 <a name="catalog-v3-ImportRequest"></a>
 
 ### ImportRequest
+
+ImportRequest is a request for importing a helm chart from an OCI registry
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -1079,6 +1092,7 @@ The API provides Create, Get, List, Update, Delete, and Watch operations for eac
 | UpdateDeploymentPackage | [UpdateDeploymentPackageRequest](#catalog-v3-UpdateDeploymentPackageRequest) | [.google.protobuf.Empty](#google-protobuf-Empty) | Updates a deployment package. |
 | DeleteDeploymentPackage | [DeleteDeploymentPackageRequest](#catalog-v3-DeleteDeploymentPackageRequest) | [.google.protobuf.Empty](#google-protobuf-Empty) | Deletes a deployment package. |
 | WatchDeploymentPackages | [WatchDeploymentPackagesRequest](#catalog-v3-WatchDeploymentPackagesRequest) | [WatchDeploymentPackagesResponse](#catalog-v3-WatchDeploymentPackagesResponse) stream | Watches inventory of deployment packages for changes. |
+| DownloadDeploymentPackage | [GetDeploymentPackageRequest](#catalog-v3-GetDeploymentPackageRequest) | [DownloadDeploymentPackageResponse](#catalog-v3-DownloadDeploymentPackageResponse) | Downloads a deployment package as a tarball. |
 | CreateApplication | [CreateApplicationRequest](#catalog-v3-CreateApplicationRequest) | [CreateApplicationResponse](#catalog-v3-CreateApplicationResponse) | Creates a new application. |
 | ListApplications | [ListApplicationsRequest](#catalog-v3-ListApplicationsRequest) | [ListApplicationsResponse](#catalog-v3-ListApplicationsResponse) | Gets a list of applications. |
 | GetApplication | [GetApplicationRequest](#catalog-v3-GetApplicationRequest) | [GetApplicationResponse](#catalog-v3-GetApplicationResponse) | Gets a specific application. |

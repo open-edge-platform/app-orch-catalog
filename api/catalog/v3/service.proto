@@ -115,6 +115,10 @@ service CatalogService {
   }
   // Watches inventory of deployment packages for changes.
   rpc WatchDeploymentPackages(WatchDeploymentPackagesRequest) returns (stream WatchDeploymentPackagesResponse) {}
+  // Downloads a deployment package as a tarball.
+  rpc DownloadDeploymentPackage(GetDeploymentPackageRequest) returns (DownloadDeploymentPackageResponse) {
+    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}/download"};
+  }
 
   // === Application ===
 
@@ -467,6 +471,12 @@ message WatchDeploymentPackagesRequest {
 message WatchDeploymentPackagesResponse {
   catalog.v3.Event event = 1 [(google.api.field_behavior) = REQUIRED];
   catalog.v3.DeploymentPackage deployment_package = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Response message for the DownloadDeploymentPackage method.
+message DownloadDeploymentPackageResponse {
+  // Raw bytes content of the file being downloaded.
+  bytes artifact = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 // === Application Messages ===

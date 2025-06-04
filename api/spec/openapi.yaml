@@ -490,6 +490,33 @@ paths:
         "200":
           description: OK
           content: {}
+  /catalog.orchestrator.apis/v3/deployment_packages/{deploymentPackageName}/versions/{version}/download:
+    get:
+      tags:
+        - CatalogService
+      summary: DownloadDeploymentPackage
+      description: Downloads a deployment package as a tarball.
+      operationId: CatalogService_DownloadDeploymentPackage
+      parameters:
+        - name: deploymentPackageName
+          in: path
+          description: Name of the DeploymentPackage.
+          required: true
+          schema:
+            type: string
+        - name: version
+          in: path
+          description: Version of the DeploymentPackage.
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DownloadDeploymentPackageResponse'
   /catalog.orchestrator.apis/v3/import:
     post:
       tags:
@@ -1127,6 +1154,16 @@ components:
           type: string
           description: Optional name of the deployment profile to be used. When not provided, the default deployment profile will be used.
       description: DeploymentRequirement is a reference to the deployment package that must be deployed first, as a requirement for an application to be deployed.
+    DownloadDeploymentPackageResponse:
+      required:
+        - artifact
+      type: object
+      properties:
+        artifact:
+          type: string
+          description: Raw bytes content of the file being downloaded.
+          format: byte
+      description: Response message for the DownloadDeploymentPackage method.
     Endpoint:
       required:
         - serviceName
