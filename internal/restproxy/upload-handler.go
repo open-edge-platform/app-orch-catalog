@@ -99,15 +99,44 @@ func (h *FileHandler) Upload(c *gin.Context) {
 	c.Render(returnStatus, renderer)
 }
 
-func (h *FileHandler) Download(c *gin.Context) {
-	name := c.Param("name")
-	version := c.Param("version")
+/*
+func (h *FileHandler) Download(w http.ResponseWriter, r *http.Request, pathParams map[string]string)) {
+        name := c.Param("name")
+        version := c.Param("version")
+
+        log.Infof("downloading deployment package: %s, version: %s", name, version)
+
+        authHeader := c.Request.Header.Get("Authorization")
+        uaHeader := c.Request.Header.Get("User-Agent")
+        projectHeader := c.Request.Header.Get(ActiveProjectID)
+
+        mdCtx := metadata.NewOutgoingContext(context.TODO(),
+                metadata.Pairs("authorization", authHeader, "user-agent", uaHeader, "activeprojectid", projectHeader))
+
+        res, err := h.grpcClient.DownloadDeploymentPackage(mdCtx, &catalogv3.GetDeploymentPackageRequest{
+                DeploymentPackageName: name,
+                Version:               version,
+        })
+
+        if err != nil {
+                c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+                log.Errorw("error downloading deployment package", dazl.String("name", name), dazl.String("version", version), dazl.Error(err))
+                return
+        }
+
+        c.Data(http.StatusOK, "application/octet-stream", res.Artifact)
+}
+*/
+
+func (h *FileHandler) Download(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	name := pathParams["deployment_package_name"]
+	version := pathParams["version"]
 
 	log.Infof("downloading deployment package: %s, version: %s", name, version)
 
-	authHeader := c.Request.Header.Get("Authorization")
-	uaHeader := c.Request.Header.Get("User-Agent")
-	projectHeader := c.Request.Header.Get(ActiveProjectID)
+	authHeader := r.Header.Get("Authorization")
+	uaHeader := r.Header.Get("User-Agent")
+	projectHeader := r.Header.Get(ActiveProjectID)
 
 	mdCtx := metadata.NewOutgoingContext(context.TODO(),
 		metadata.Pairs("authorization", authHeader, "user-agent", uaHeader, "activeprojectid", projectHeader))
@@ -118,11 +147,23 @@ func (h *FileHandler) Download(c *gin.Context) {
 	})
 
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		w.WriteHeader(http.StatusBadRequest)
+		if _, err := w.Write([]byte(err.Error())); err != nil {
+			log.Errorw("error writing error response", dazl.String("name", name), dazl.String("version", version), dazl.Error(err))
+		}
 		log.Errorw("error downloading deployment package", dazl.String("name", name), dazl.String("version", version), dazl.Error(err))
+		return
 	}
 
-	c.Data(http.StatusOK, "application/octet-stream", res.Artifact)
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", "attachment; filename=dp.tar.gz")
+	w.Header().Set("Content-Length", string(len(res.Artifact)))
+	w.WriteHeader(http.StatusOK)
+	if _, err := w.Write(res.Artifact); err != nil {
+		log.Errorw("error writing response", dazl.String("name", name), dazl.String("version", version), dazl.Error(err))
+		return
+	}
+	log.Infow("downloaded deployment package", dazl.String("name", name), dazl.String("version", version))
 }
 
 func NewFileHandler(endpoint string, opts []grpc.DialOption) (*FileHandler, error) {
