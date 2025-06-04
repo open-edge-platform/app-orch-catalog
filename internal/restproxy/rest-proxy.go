@@ -137,7 +137,10 @@ func NewRESTProxy(cfg *Config) (*RESTProxy, error) {
 	engine.Handle("POST", fmt.Sprintf("%scatalog.orchestrator.apis/upload", cfg.BasePath), func(c *gin.Context) {
 		fileHandler.Upload(c)
 	})
-	engine.Handle("POST", fmt.Sprintf("%scatalog.orchestrator.apis/deployment_packages/:name/versions/:version/download", cfg.BasePath), func(c *gin.Context) {
+	engine.Handle("GET", fmt.Sprintf("%scatalog.orchestrator.apis/deployment_packages/:name/versions/:version/download", cfg.BasePath), func(c *gin.Context) {
+		fileHandler.Download(c)
+	})
+	engine.Handle("GET", fmt.Sprintf("%scatalog.orchestrator.apis/foo", cfg.BasePath), func(c *gin.Context) {
 		fileHandler.Download(c)
 	})
 	spec, err := openapiutils.LoadOpenAPISpec(cfg.SpecFilePath)
