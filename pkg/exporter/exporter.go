@@ -7,6 +7,7 @@ package exporter
 import (
 	"archive/tar"
 	"bytes"
+	"compress/gzip"
 	b64 "encoding/base64"
 	"fmt"
 
@@ -344,7 +345,19 @@ func (e *Exporter) CloseTarball() ([]byte, error) {
 		return nil, fmt.Errorf("error closing tar writer: %w", err)
 	}
 	data := e.TarBuffer.Bytes()
+
+	var buf bytes.Buffer
+	gz := gzip.NewWriter(&buf)
+	_, err := gz.Write(data)
+	if err != nil {
+		return nil, fmt.Errorf("error compressing tarball: %w", err)
+	}
+	if err := gz.Close(); err != nil {
+		return nil, fmt.Errorf("error closing gzip writer: %w", err)
+	}
+
 	e.TarWriter = nil
 	e.TarBuffer = nil
-	return data, nil
+
+	return buf.Bytes(), nil
 }
