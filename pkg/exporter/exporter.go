@@ -5,6 +5,8 @@
 package exporter
 
 import (
+	"archive/tar"
+	"bytes"
 	b64 "encoding/base64"
 	"fmt"
 
@@ -19,7 +21,9 @@ const (
 
 // Exporter implements the functions used to export YAML files
 type Exporter struct {
-	output []string
+	output    []string
+	TarBuffer *bytes.Buffer
+	TarWriter *tar.Writer
 }
 
 // LogChange prints the given formatted output to stdout if the verbose flag is enabled
@@ -307,4 +311,40 @@ func (e *Exporter) exportNamespaces(namespaces []*catalogv3.Namespace) []upload.
 		list = append(list, item)
 	}
 	return list
+}
+
+func (e *Exporter) NewTarball() {
+	e.TarBuffer = &bytes.Buffer{}
+	e.TarWriter = tar.NewWriter(e.TarBuffer)
+}
+
+func (e *Exporter) AddToTarball(filename string, data []byte) error {
+	if e.TarWriter == nil {
+		return fmt.Errorf("tar writer is not initialized")
+	}
+	hdr := &tar.Header{
+		Name: filename,
+		Mode: 0600,
+		Size: int64(len(data)),
+	}
+	if err := e.TarWriter.WriteHeader(hdr); err != nil {
+		return fmt.Errorf("error writing tar header for %s: %w", filename, err)
+	}
+	if _, err := e.TarWriter.Write(data); err != nil {
+		return fmt.Errorf("error writing data to tar for %s: %w", filename, err)
+	}
+	return nil
+}
+
+func (e *Exporter) CloseTarball() ([]byte, error) {
+	if e.TarWriter == nil {
+		return nil, fmt.Errorf("tar writer is not initialized")
+	}
+	if err := e.TarWriter.Close(); err != nil {
+		return nil, fmt.Errorf("error closing tar writer: %w", err)
+	}
+	data := e.TarBuffer.Bytes()
+	e.TarWriter = nil
+	e.TarBuffer = nil
+	return data, nil
 }

@@ -12,6 +12,7 @@ import (
 
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/namespace"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/predicate"
+	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/registry"
 
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/application"
@@ -1036,13 +1037,105 @@ func (g *Server) DownloadDeploymentPackage(ctx context.Context, req *catalogv3.G
 		return nil, errors.NewDBError(errors.WithError(err))
 	}
 
+	registryNames := map[string]bool{}
+
+	apps := make([]*catalogv3.Application, 0, len(ca.ApplicationReferences))
+	for _, appReference := range ca.ApplicationReferences {
+		appDB, err := tx.Application.Query().
+			Where(
+				application.ProjectUUID(projectUUID),
+				application.Name(appReference.Name),
+				application.Version(appReference.Version),
+			).
+			Only(ctx)
+		if err != nil {
+			g.rollbackTransaction(tx)
+			if generated.IsNotFound(err) {
+				return nil, errors.NewNotFound(
+					errors.WithResourceType(errors.ApplicationType),
+					errors.WithResourceName(appReference.Name),
+					errors.WithResourceVersion(appReference.Version))
+			}
+			return nil, errors.NewDBError(errors.WithError(err))
+		}
+		app, err := g.applicationExtract(ctx, appDB, projectUUID)
+		if err != nil {
+			g.rollbackTransaction(tx)
+			return nil, errors.NewDBError(errors.WithError(err))
+		}
+		registryNames[app.HelmRegistryName] = true
+		apps = append(apps, app)
+	}
+
+	// we need a secretService to populate the registry
+	var secretService SecretService
+	if UseSecretService {
+		secretService, err = SecretServiceFactory(ctx)
+		if err != nil {
+			return nil, errors.NewVaultError(errors.WithError(err))
+		}
+		defer secretService.Logout(ctx)
+	}
+
+	regs := make([]*catalogv3.Registry, 0, len(registryNames))
+	for regName, _ := range registryNames {
+		regDB, err := tx.Registry.Query().
+			Where(
+				registry.ProjectUUID(projectUUID),
+				registry.Name(regName),
+			).
+			Only(ctx)
+		if err != nil {
+			g.rollbackTransaction(tx)
+			if generated.IsNotFound(err) {
+				return nil, errors.NewNotFound(
+					errors.WithResourceType(errors.RegistryType),
+					errors.WithResourceName(regName))
+			}
+			return nil, errors.NewDBError(errors.WithError(err))
+		}
+		reg, err := g.extractRegistry(ctx, regDB, secretService, true)
+		if err != nil {
+			g.rollbackTransaction(tx)
+			return nil, errors.NewDBError(errors.WithError(err))
+		}
+		regs = append(regs, reg)
+	}
+
 	err = g.commitTransaction(tx)
 	if err != nil {
 		return nil, errors.NewDBError(errors.WithError(err))
 	}
 
 	e := exporter.NewExporter()
+	e.NewTarball()
+
 	data, err := e.ExportDeploymentPackage(ca)
+	if err != nil {
+		return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+	}
+	e.AddToTarball(fmt.Sprintf("%s-deployment-package.yaml", ca.Name), data)
+
+	for _, app := range apps {
+		data, profileData, err := e.ExportApplication(app)
+		if err != nil {
+			return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+		}
+		e.AddToTarball(fmt.Sprintf("%s-application.yaml", app.Name), data)
+		for name, profile := range profileData {
+			e.AddToTarball(name, profile)
+		}
+	}
+
+	for _, reg := range regs {
+		data, err = e.ExportRegistry(reg)
+		if err != nil {
+			return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+		}
+		e.AddToTarball(fmt.Sprintf("%s-registry.yaml", reg.Name), data)
+	}
+
+	data, err = e.CloseTarball()
 	if err != nil {
 		return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
 	}
