@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"regexp"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/open-edge-platform/app-orch-catalog/internal/shared/jsonrenderer"
@@ -128,7 +129,7 @@ func (h *FileHandler) Download(w http.ResponseWriter, r *http.Request, pathParam
 
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Header().Set("Content-Disposition", "attachment; filename=dp.tar.gz")
-	w.Header().Set("Content-Length", string(len(res.Artifact)))
+	w.Header().Set("Content-Length", strconv.Itoa(len(res.Artifact)))
 	w.WriteHeader(http.StatusOK)
 	if _, err := w.Write(res.Artifact); err != nil {
 		log.Errorw("error writing response", dazl.String("name", name), dazl.String("version", version), dazl.Error(err))

@@ -1078,7 +1078,7 @@ func (g *Server) DownloadDeploymentPackage(ctx context.Context, req *catalogv3.G
 	}
 
 	regs := make([]*catalogv3.Registry, 0, len(registryNames))
-	for regName, _ := range registryNames {
+	for regName := range registryNames {
 		regDB, err := tx.Registry.Query().
 			Where(
 				registry.ProjectUUID(projectUUID),
@@ -1114,16 +1114,25 @@ func (g *Server) DownloadDeploymentPackage(ctx context.Context, req *catalogv3.G
 	if err != nil {
 		return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
 	}
-	e.AddToTarball(fmt.Sprintf("%s-deployment-package.yaml", ca.Name), data)
+	err = e.AddToTarball(fmt.Sprintf("%s-deployment-package.yaml", ca.Name), data)
+	if err != nil {
+		return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+	}
 
 	for _, app := range apps {
 		data, profileData, err := e.ExportApplication(app)
 		if err != nil {
 			return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
 		}
-		e.AddToTarball(fmt.Sprintf("%s-application.yaml", app.Name), data)
+		err = e.AddToTarball(fmt.Sprintf("%s-application.yaml", app.Name), data)
+		if err != nil {
+			return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+		}
 		for name, profile := range profileData {
-			e.AddToTarball(name, profile)
+			err = e.AddToTarball(name, profile)
+			if err != nil {
+				return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+			}
 		}
 	}
 
@@ -1132,7 +1141,10 @@ func (g *Server) DownloadDeploymentPackage(ctx context.Context, req *catalogv3.G
 		if err != nil {
 			return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
 		}
-		e.AddToTarball(fmt.Sprintf("%s-registry.yaml", reg.Name), data)
+		err = e.AddToTarball(fmt.Sprintf("%s-registry.yaml", reg.Name), data)
+		if err != nil {
+			return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+		}
 	}
 
 	data, err = e.CloseTarball()
