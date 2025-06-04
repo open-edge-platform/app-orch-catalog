@@ -163,7 +163,7 @@ spec:
           args:
             - "run"
             - "--server"
-            - "/etc/app-orch/rego"
+            - "/etc/app-orch-catalog/rego"
             - "--log-level"
             - {{ .Values.openpolicyagent.loglevel }}
             - "--addr"
@@ -186,7 +186,7 @@ spec:
           {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: openpolicyagent
-              mountPath: /etc/app-orch/rego
+              mountPath: /etc/app-orch-catalog/rego
               readOnly: true
         {{end}}
       volumes:
