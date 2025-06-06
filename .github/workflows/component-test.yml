@@ -38,7 +38,7 @@ jobs:
     steps:
       - name: Deploy Kind Orchestrator
         id: deploy-kind-orchestrator
-        uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@8c3f55be361603be6ff364b3cd97ad2ce8db7af2
+        uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@adfe6d335aa766fb80d0fe082f2452c49828307b
         timeout-minutes: 30
         with:
           orch_version: ${{ github.event.pull_request.head.sha || github.sha }}
