@@ -19,7 +19,7 @@ on:
         description: 'The branch, tag or SHA to checkout EMF'
         required: true
         type: string
-        default: 'fix_kind_action'
+        default: 'main'
 
 permissions:
   contents: read
@@ -38,7 +38,7 @@ jobs:
     steps:
       - name: Deploy Kind Orchestrator
         id: deploy-kind-orchestrator
-        uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@fix_kind_action
+        uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@main
         timeout-minutes: 30
         with:
           orch_version: ${{ inputs.emf-branch || 'main' }}
