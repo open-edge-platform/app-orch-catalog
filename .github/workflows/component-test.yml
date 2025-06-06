@@ -19,7 +19,7 @@ on:
         description: 'The branch, tag or SHA to checkout EMF'
         required: true
         type: string
-        default: '53e430f45faaee7671fa3c25f6acc3945aba2065'
+        default: 'fix_kind_action'
 
 permissions:
   contents: read
@@ -46,7 +46,7 @@ jobs:
           docker_username: ${{ secrets.SYS_DOCKERHUB_USERNAME }}
           docker_password: ${{ secrets.SYS_DOCKERHUB_RO }}
           token: ${{ secrets.SYS_ORCH_GITHUB }}
-          deployment_type: minimal
+          deployment_type: 'minimal'
 
       - name: Setup Go
         uses: actions/setup-go@v5
