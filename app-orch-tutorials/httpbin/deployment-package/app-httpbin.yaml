@@ -6,16 +6,27 @@ schemaVersion: "0.1"
 $schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
 
 name: httpbin
-version: 0.1.7
+version: 0.1.8
 description: "Helm chart to install httpbingo.org on Kubernetes."
 displayName: "HttpBin Go"
 
-helmRegistry: "harbor-helm-oci"
-chartName: "httpbin"
-chartVersion: "0.1.7"
+helmRegistry: harbor-helm-oci
+chartName: httpbin
+chartVersion: 0.1.8
 
 profiles:
-  - name: "without-envoy"
-    valuesFileName: "values-httpbin.yaml"
-  - name: "with-envoy"
-    valuesFileName: "values-httpbin-envoy.yaml"
+  - name: without-envoy
+    description: "HttpBin without envoy"
+    valuesFileName: values-httpbin.yaml
+  - name: with-envoy
+    description: "HttpBin plus envoy to support Service Link"
+    valuesFileName: values-httpbin-envoy.yaml
+  - name: modify-test
+    description: "HttpBin with a modification job to test ignoreResources feature"
+    valuesFileName: values-httpbin-modify-test.yaml
+
+ignoredResources:
+  - name: httpbin-envoy-config
+    kind: ConfigMap
+  - name: httpbin-test-secret
+    kind: Secret

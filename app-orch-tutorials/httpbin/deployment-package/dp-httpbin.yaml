@@ -8,21 +8,28 @@ $schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
 name: httpbin
 displayName: "HttpBin"
 description: "DP to install httpbingo.org on Kubernetes"
-version: "2.3.4"
+version: "2.3.5"
 
 applications:
   - name: httpbin
-    version: 0.1.7
+    version: 0.1.8
 
 deploymentProfiles:
   - name: default
+    description: "HttpBin plus envoy to support Service Link"
     applicationProfiles:
       - application: httpbin
         profile: with-envoy
   - name: without-envoy
+    description: "HttpBin without envoy"
     applicationProfiles:
       - application: httpbin
         profile: without-envoy
+  - name: modify-test
+    description: "HttpBin with a modification job to test ignoreResources feature"
+    applicationProfiles:
+      - application: httpbin
+        profile: modify-test
 
 defaultNamespaces:
   httpbin: httpbin-ns

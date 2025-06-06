@@ -10,3 +10,6 @@ metadata:
 data:
   envoy-config.yaml: |-
 {{ .Files.Get "files/envoy-config.yaml" | indent 4 }}
+{{- if .Values.modifyResource.configmap}}
+  test-key: old-value
+{{- end }}

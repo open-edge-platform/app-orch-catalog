@@ -1,0 +1,45 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+---
+{{ if .Values.modifyResource.configmap }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "httpbin.fullname" . }}-update-configmap-job
+spec:
+  template:
+    spec:
+      serviceAccountName: {{ include "httpbin.serviceAccountName" . }}
+      containers:
+        - name: updater
+          image: bitnami/kubectl:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              kubectl patch configmap {{ include "httpbin.fullname" . }}-envoy-config -p '{"data":{"test-key":"new-value"}}'
+      restartPolicy: Never
+  backoffLimit: 4
+{{- end }}
+---
+{{ if .Values.modifyResource.secret }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "httpbin.fullname" . }}-update-secret-job
+spec:
+  template:
+    spec:
+      serviceAccountName: {{ include "httpbin.serviceAccountName" . }}
+      containers:
+        - name: updater
+          image: bitnami/kubectl:latest
+          command:
+            - /bin/sh
+            - -c
+            - |
+              kubectl delete secret {{ include "httpbin.fullname" . }}-test-secret && \
+                kubectl create secret generic {{ include "httpbin.fullname" . }}-test-secret --from-literal=some-key=recreated-value
+      restartPolicy: Never
+  backoffLimit: 4
+{{- end }}
