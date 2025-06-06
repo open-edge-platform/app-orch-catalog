@@ -36,31 +36,22 @@ jobs:
       CODER_DIR: ${{ github.workspace }}
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+      - name: Deploy Kind Orchestrator
+        id: deploy-kind-orchestrator
+        uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@8c3f55be361603be6ff364b3cd97ad2ce8db7af2
+        timeout-minutes: 30
         with:
-          repository: open-edge-platform/edge-manageability-framework
+          orch_version: ${{ github.event.pull_request.head.sha || github.sha }}
+          orch_password: ${{ secrets.ORCH_DEFAULT_PASSWORD }}
+          docker_username: ${{ secrets.SYS_DOCKERHUB_USERNAME }}
+          docker_password: ${{ secrets.SYS_DOCKERHUB_RO }}
           token: ${{ secrets.SYS_ORCH_GITHUB }}
-          ref: ${{ inputs.emf-branch || '35c4625439b5208816ce12ae620d6ccc1d497efa' }}
-          persist-credentials: false
-
-      - name: Fetch all branches
-        run: git fetch --all
-
-      - name: Set up git credentials
-        shell: bash
-        run: |
-          echo "GOPRIVATE=github.com/open-edge-platform" >> $GITHUB_ENV
-          git config --global url."https://${{ secrets.SYS_ORCH_GITHUB }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
-
-      - name: Setup asdf and install dependencies
-        uses: open-edge-platform/orch-utils/.github/actions/setup-asdf@d6fff1fe6760a6e6ed825bc25323a34f4ebc0ff6
+          deployment_type: minimal
 
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version: 1.24
-
 
       - name: Checkout app-orch-catalog repository
         uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
@@ -77,49 +68,6 @@ jobs:
           GIT_HASH_CHARTS: ${{ github.event.pull_request.head.sha }}
         run: echo "GIT_HASH_CHARTS=$GIT_HASH_CHARTS" >> "$GITHUB_ENV"
 
-      - name: Get current git hash of the edge-manageability-framework PR
-        id: get-git-hash-deploy
-        run: echo "GIT_HASH_DEPLOY=$(git rev-parse --short HEAD)" >> "$GITHUB_ENV"
-
-      - name: Deploy External Orchestrator
-        env:
-          GIT_USER: "git"
-          GIT_TOKEN: ${{ secrets.SYS_ORCH_GITHUB }}
-          ORCH_DEPLOY_REV: ${{ env.GIT_HASH_DEPLOY }}
-          DOCKERHUB_TOKEN: ${{ secrets.SYS_DOCKERHUB_RO }}
-          DOCKERHUB_USERNAME: ${{ secrets.SYS_DOCKERHUB_USERNAME }}
-        run: |
-          set +x
-          echo "Starting to deploy Orchestrator..."
-          mage deploy:kindMinimal
-          echo "Orchestrator deployment done!"
-          echo "Root App Status:"
-          kubectl -n dev get applications root-app -o yaml
-
-      - name: Verify Kind Deployment
-        timeout-minutes: 50
-        run: |
-          echo "Starting to verify Orchestrator deployment..."
-          mage deploy:waitUntilComplete &
-          WAIT_PID=$!
-          while kill -0 $WAIT_PID 2>/dev/null; do
-            echo "Waiting for Orchestrator deployment to complete..."
-            kubectl get pods -A || true
-            sleep 30
-          done
-          wait $WAIT_PID || true
-          echo "Orchestrator deployment verified!"
-          mage router:stop router:start || true
-          echo "Router restarted"
-
-      - name: Setup Test environment
-        shell: bash
-        run: |
-          sudo awk -i inplace '/BEGIN ORCH DEVELOPMENT HOSTS/,/END ORCH DEVELOPMENT HOSTS/ { next } 1' /etc/hosts
-          sudo awk -i inplace '/BEGIN ORCH SRE DEVELOPMENT HOST/,/END ORCH SRE DEVELOPMENT HOST/ { next } 1' /etc/hosts
-          mage gen:hostfileTraefik | sudo tee -a /etc/hosts > /dev/null
-          echo "Updated Hostfile entries!"
-          mage gen:orchCa deploy:orchCa
 
       - name: Setup users and project/org
         shell: bash
