@@ -36,9 +36,6 @@ jobs:
       CODER_DIR: ${{ github.workspace }}
 
     steps:
-      - name: Setup asdf and install dependencies
-        uses: open-edge-platform/orch-utils/.github/actions/setup-asdf@d6fff1fe6760a6e6ed825bc25323a34f4ebc0ff6
-
       - name: Deploy Kind Orchestrator
         id: deploy-kind-orchestrator
         uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@8c3f55be361603be6ff364b3cd97ad2ce8db7af2
