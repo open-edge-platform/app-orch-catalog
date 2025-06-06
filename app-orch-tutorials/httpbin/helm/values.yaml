@@ -53,6 +53,10 @@ envoy:
     tag: v1.33.1
     pullPolicy: IfNotPresent
 
+modifyResource:
+  configmap: false
+  secret: false
+
 ingress:
   enabled: false
   className: ""
