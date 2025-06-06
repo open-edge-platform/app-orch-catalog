@@ -19,11 +19,12 @@ the Web UI as in the Deployment details under Endpoint.
 ## Helm Chart
 
 The Helm chart deploys image `mccutchen/go-httpbin` and adds
-an Envoy proxy sidecar that sets the `Authorization` header removed by Kube API proxy.
+an Envoy proxy sidecar that sets the `Authorization` header removed by Kube API proxy
+when using App Service Proxy.
 
 See more details [here](../../open-edge-platform/app-orch-catalog/app-orch-tutorials/httpbin/helm/README.md).
 
-To use the chart package it and upload it to your local OCI registry:
+To use the chart, package it and upload it to your local OCI registry:
 
 ```bash
 helm package helm
@@ -42,7 +43,7 @@ It refers to the Helm Chart in the [application.yaml](../../open-edge-platform/a
  
 # Deploying
 
-When deploying there are 2 choices - with Envoy Proxy or without.
+When deploying there are 3 choices - with Envoy Proxy or without and a testing profile.
 
 The Envoy Proxy:
 
@@ -52,7 +53,7 @@ The Envoy Proxy:
 - Sets Secure Headers like COOP, COEP, CORP and CSP in the response.
   - These are useful for testing and debugging, but not required for the application to work.
 
-Without these most functions will work.
+Without these though most functions will still work with App Service Proxy.
 
 ## Testing /headers
 
