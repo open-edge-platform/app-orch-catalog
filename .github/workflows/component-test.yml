@@ -40,6 +40,7 @@ jobs:
         id: deploy-kind-orchestrator
         uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@fix_kind_action
         timeout-minutes: 30
+        working-directory: ${{ github.workspace }}
         with:
           orch_version: ${{ inputs.emf-branch || 'main' }}
           orch_password: ${{ secrets.ORCH_DEFAULT_PASSWORD }}
@@ -47,6 +48,7 @@ jobs:
           docker_password: ${{ secrets.SYS_DOCKERHUB_RO }}
           token: ${{ secrets.SYS_ORCH_GITHUB }}
           deployment_type: 'minimal'
+
 
       - name: Setup Go
         uses: actions/setup-go@v5
