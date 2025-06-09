@@ -34,6 +34,7 @@ GOLANG_COVER_VERSION             = v0.2.0
 GOLANG_GOCOVER_COBERTURA_VERSION = v1.2.0
 GOPATH                           := $(shell go env GOPATH)
 GOCMD                            := GOPRIVATE="github.com/open-edge-platform/*" go
+GOBIN                           := $(shell go env GOBIN)
 PKG                              := github.com/open-edge-platform/app-orch-catalog
 
 ## Docker labels. Only set ref and commit date if committed
