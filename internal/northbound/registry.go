@@ -5,6 +5,7 @@
 package northbound
 
 import (
+	"buf.build/go/protovalidate"
 	"bytes"
 	"context"
 	"encoding/base64"
@@ -130,7 +131,7 @@ func (g *Server) CreateRegistry(ctx context.Context, req *catalogv3.CreateRegist
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.RegistryType),
 			errors.WithMessage("incomplete request"))
-	} else if err := req.Registry.Validate(); err != nil {
+	} else if err := protovalidate.Validate(req); err != nil {
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.RegistryType),
 			errors.WithMessage(err.Error()))
@@ -521,7 +522,7 @@ func (g *Server) UpdateRegistry(ctx context.Context, req *catalogv3.UpdateRegist
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.RegistryType),
 			errors.WithMessage("incomplete request"))
-	} else if err := req.Registry.Validate(); err != nil {
+	} else if err := protovalidate.Validate(req); err != nil {
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.RegistryType),
 			errors.WithMessage(err.Error()))

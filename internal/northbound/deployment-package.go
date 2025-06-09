@@ -5,6 +5,7 @@
 package northbound
 
 import (
+	"buf.build/go/protovalidate"
 	"context"
 	"fmt"
 	"reflect"
@@ -40,7 +41,7 @@ func (g *Server) CreateDeploymentPackage(ctx context.Context, req *catalogv3.Cre
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.DeploymentPackageType),
 			errors.WithMessage("incomplete request"))
-	} else if err := req.DeploymentPackage.Validate(); err != nil {
+	} else if err := protovalidate.Validate(req); err != nil {
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.DeploymentPackageType),
 			errors.WithMessage(err.Error()))
@@ -1189,7 +1190,7 @@ func (g *Server) UpdateDeploymentPackage(ctx context.Context, req *catalogv3.Upd
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.DeploymentPackageType),
 			errors.WithMessage("incomplete request"))
-	} else if err := req.DeploymentPackage.Validate(); err != nil {
+	} else if err := protovalidate.Validate(req); err != nil {
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.DeploymentPackageType),
 			errors.WithMessage(err.Error()))
