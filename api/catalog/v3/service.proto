@@ -5,11 +5,11 @@ syntax = "proto3";
 
 package catalog.v3;
 
+import "buf/validate/validate.proto";
 import "catalog/v3/resources.proto";
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
-import "validate/validate.proto";
 
 // See reference example.
 //  https://github.com/google/gnostic/blob/main/cmd/protoc-gen-openapi/examples/google/example/library/v1/library.proto
@@ -234,21 +234,21 @@ message ImportRequest {
   // Required URL of Helm Chart to import
   string url = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 1000
     }
   ];
 
   // Optional username for downloading from the URL
-  string username = 2 [(validate.rules).string = {
+  string username = 2 [(buf.validate.field).string = {
     min_len: 0
     max_len: 1000
     pattern: "^\\PC*$"
   }];
 
   // Optional authentication token or password for downloading from the URL
-  string auth_token = 3 [(validate.rules).string = {
+  string auth_token = 3 [(buf.validate.field).string = {
     min_len: 0
     max_len: 4500
     pattern: "^\\PC*$"
@@ -257,7 +257,7 @@ message ImportRequest {
   // Optional raw byte value containing the chart values as raw YAML bytes.
   string chart_values = 4 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 4000000
     }
@@ -278,7 +278,7 @@ message ImportRequest {
   // Optional namespace
   string namespace = 10 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 40
     }
