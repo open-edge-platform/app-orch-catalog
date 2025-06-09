@@ -8,13 +8,14 @@ import (
 	"archive/tar"
 	"compress/gzip"
 	"context"
-	"github.com/blang/semver/v4"
-	"github.com/open-edge-platform/app-orch-catalog/internal/shared/verboseerror"
-	"gopkg.in/yaml.v2"
 	"io"
 	"net/url"
 	"sort"
 	"strings"
+
+	"github.com/blang/semver/v4"
+	"github.com/open-edge-platform/app-orch-catalog/internal/shared/verboseerror"
+	"gopkg.in/yaml.v2"
 )
 
 const (
@@ -156,6 +157,9 @@ func FetchHelmChartOCI(ociurl string, user string, password string) (HelmInfo, e
 	}
 
 	verboseerror.Infof("Fetching helm chart from oci://%s/%s:%s\n", remoteHost, artifactName, tagName)
+
+	// TODO: Unless latest is used, The URL isn't actually fetched until inside GetTarball(), so we are returning ExtractError when
+	// we really should be returning FetchError. See if we can do something to catch this earlier.
 
 	contentReader, err := orasClient.GetTarball(ctx, tagName)
 	if err != nil {
