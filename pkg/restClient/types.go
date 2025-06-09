@@ -9,30 +9,34 @@ import (
 
 // Defines values for ApplicationKind.
 const (
-	ApplicationKindKINDADDON     ApplicationKind = "KIND_ADDON"
-	ApplicationKindKINDEXTENSION ApplicationKind = "KIND_EXTENSION"
-	ApplicationKindKINDNORMAL    ApplicationKind = "KIND_NORMAL"
+	ApplicationKindKINDADDON       ApplicationKind = "KIND_ADDON"
+	ApplicationKindKINDEXTENSION   ApplicationKind = "KIND_EXTENSION"
+	ApplicationKindKINDNORMAL      ApplicationKind = "KIND_NORMAL"
+	ApplicationKindKINDUNSPECIFIED ApplicationKind = "KIND_UNSPECIFIED"
 )
 
 // Defines values for DeploymentPackageKind.
 const (
-	DeploymentPackageKindKINDADDON     DeploymentPackageKind = "KIND_ADDON"
-	DeploymentPackageKindKINDEXTENSION DeploymentPackageKind = "KIND_EXTENSION"
-	DeploymentPackageKindKINDNORMAL    DeploymentPackageKind = "KIND_NORMAL"
+	DeploymentPackageKindKINDADDON       DeploymentPackageKind = "KIND_ADDON"
+	DeploymentPackageKindKINDEXTENSION   DeploymentPackageKind = "KIND_EXTENSION"
+	DeploymentPackageKindKINDNORMAL      DeploymentPackageKind = "KIND_NORMAL"
+	DeploymentPackageKindKINDUNSPECIFIED DeploymentPackageKind = "KIND_UNSPECIFIED"
 )
 
 // Defines values for CatalogServiceListApplicationsParamsKinds.
 const (
-	CatalogServiceListApplicationsParamsKindsKINDADDON     CatalogServiceListApplicationsParamsKinds = "KIND_ADDON"
-	CatalogServiceListApplicationsParamsKindsKINDEXTENSION CatalogServiceListApplicationsParamsKinds = "KIND_EXTENSION"
-	CatalogServiceListApplicationsParamsKindsKINDNORMAL    CatalogServiceListApplicationsParamsKinds = "KIND_NORMAL"
+	CatalogServiceListApplicationsParamsKindsKINDADDON       CatalogServiceListApplicationsParamsKinds = "KIND_ADDON"
+	CatalogServiceListApplicationsParamsKindsKINDEXTENSION   CatalogServiceListApplicationsParamsKinds = "KIND_EXTENSION"
+	CatalogServiceListApplicationsParamsKindsKINDNORMAL      CatalogServiceListApplicationsParamsKinds = "KIND_NORMAL"
+	CatalogServiceListApplicationsParamsKindsKINDUNSPECIFIED CatalogServiceListApplicationsParamsKinds = "KIND_UNSPECIFIED"
 )
 
 // Defines values for CatalogServiceListDeploymentPackagesParamsKinds.
 const (
-	CatalogServiceListDeploymentPackagesParamsKindsKINDADDON     CatalogServiceListDeploymentPackagesParamsKinds = "KIND_ADDON"
-	CatalogServiceListDeploymentPackagesParamsKindsKINDEXTENSION CatalogServiceListDeploymentPackagesParamsKinds = "KIND_EXTENSION"
-	CatalogServiceListDeploymentPackagesParamsKindsKINDNORMAL    CatalogServiceListDeploymentPackagesParamsKinds = "KIND_NORMAL"
+	CatalogServiceListDeploymentPackagesParamsKindsKINDADDON       CatalogServiceListDeploymentPackagesParamsKinds = "KIND_ADDON"
+	CatalogServiceListDeploymentPackagesParamsKindsKINDEXTENSION   CatalogServiceListDeploymentPackagesParamsKinds = "KIND_EXTENSION"
+	CatalogServiceListDeploymentPackagesParamsKindsKINDNORMAL      CatalogServiceListDeploymentPackagesParamsKinds = "KIND_NORMAL"
+	CatalogServiceListDeploymentPackagesParamsKindsKINDUNSPECIFIED CatalogServiceListDeploymentPackagesParamsKinds = "KIND_UNSPECIFIED"
 )
 
 // APIExtension APIExtensions represents some form of an extension to the external API provided by deployment package.
@@ -40,16 +44,18 @@ type APIExtension struct {
 	// Description Description of the API extension. Displayed on user interfaces.
 	Description *string `json:"description,omitempty"`
 
-	// DisplayName Display name is an optional human-readable name for the API extension. When specified, it must be unique among all extensions of a given deployment package. It is used for display purposes on user interfaces.
+	// DisplayName Display name is an optional human-readable name for the API extension. When specified, it must be unique among all
+	//  extensions of a given deployment package. It is used for display purposes on user interfaces.
 	DisplayName *string `json:"displayName,omitempty"`
 
 	// Endpoints One or more API endpoints provided by the API extension.
 	Endpoints *[]Endpoint `json:"endpoints,omitempty"`
 
-	// Name Name is a human-readable unique identifier for the API extension and must be unique for all extensions of a given deployment package.
+	// Name Name is a human-readable unique identifier for the API extension and must be unique for all extensions of a
+	//  given deployment package.
 	Name string `json:"name"`
 
-	// UiExtension UIExtension is an augmentation of an API extension.
+	// UiExtension Additional information specific to UI extensions.
 	UiExtension *UIExtension `json:"uiExtension,omitempty"`
 
 	// Version Version of the API extension.
@@ -67,13 +73,15 @@ type Application struct {
 	// CreateTime The creation time of the application.
 	CreateTime *time.Time `json:"createTime,omitempty"`
 
-	// DefaultProfileName Name of the profile to be used by default when deploying this application. If at least one profile is available, this field must be set.
+	// DefaultProfileName Name of the profile to be used by default when deploying this application.
+	//  If at least one profile is available, this field must be set.
 	DefaultProfileName *string `json:"defaultProfileName,omitempty"`
 
 	// Description Description of the application. Displayed on user interfaces.
 	Description *string `json:"description,omitempty"`
 
-	// DisplayName Display name is an optional human-readable name for the application. When specified, it must be unique among all applications within a project. It is used for display purposes on user interfaces.
+	// DisplayName Display name is an optional human-readable name for the application. When specified, it must be unique among all
+	//  applications within a project. It is used for display purposes on user interfaces.
 	DisplayName *string `json:"displayName,omitempty"`
 
 	// HelmRegistryName ID of the project's registry where the Helm chart of the application is available for download.
@@ -88,7 +96,8 @@ type Application struct {
 	// Kind Field designating whether the application is a system add-on, system extension, or a normal application.
 	Kind *ApplicationKind `json:"kind,omitempty"`
 
-	// Name Name is a human readable unique identifier for the application and must be unique for all applications of a given project. Used in network URIs.
+	// Name Name is a human readable unique identifier for the application and must be unique for all applications of a
+	//  given project. Used in network URIs.
 	Name string `json:"name"`
 
 	// Profiles Set of profiles that can be used when deploying the application.
@@ -104,7 +113,10 @@ type Application struct {
 // ApplicationKind Field designating whether the application is a system add-on, system extension, or a normal application.
 type ApplicationKind string
 
-// ApplicationDependency ApplicationDependency represents the dependency of one application on another within the context of a deployment package. This dependency is specified as the name of the application that has the dependency, and the name of the application that is the dependency.
+// ApplicationDependency ApplicationDependency represents the dependency of one application on another within the context of a deployment package.
+//
+//	This dependency is specified as the name of the application that has the dependency, and the name of the application
+//	that is the dependency.
 type ApplicationDependency struct {
 	// Name Name of the application that has the dependency on the other.
 	Name string `json:"name"`
@@ -122,10 +134,13 @@ type ApplicationReference struct {
 	Version string `json:"version"`
 }
 
-// Artifact Artifact represents a binary artifact that can be used for various purposes, e.g. icon or thumbnail for UI display, or auxiliary artifacts for integration with various platform services such as Grafana dashboard and similar. An artifact may be used by multiple deployment packages.
+// Artifact Artifact represents a binary artifact that can be used for various purposes, e.g. icon or thumbnail for UI display, or
+//
+//	auxiliary artifacts for integration with various platform services such as Grafana dashboard and similar. An artifact may be
+//	used by multiple deployment packages.
 type Artifact struct {
 	// Artifact Raw byte content of the artifact encoded as base64. The limits refer to the number of raw bytes.
-	Artifact []byte `json:"artifact"`
+	Artifact string `json:"artifact"`
 
 	// CreateTime The creation time of the artifact.
 	CreateTime *time.Time `json:"createTime,omitempty"`
@@ -133,10 +148,13 @@ type Artifact struct {
 	// Description Description of the artifact. Displayed on user interfaces.
 	Description *string `json:"description,omitempty"`
 
-	// DisplayName Display name is an optional human-readable name for the artifact. When specified, it must be unique among all artifacts within a project. It is used for display purposes on user interfaces.
+	// DisplayName Display name is an optional human-readable name for the artifact. When specified, it must be unique among all
+	//  artifacts within a project. It is used for display purposes on user interfaces.
 	DisplayName *string `json:"displayName,omitempty"`
 
-	// MimeType Artifact's MIME type. Only text/plain, application/json, application/yaml, image/png, and image/jpeg are allowed at this time. MIME types are defined and standardized in IETF's RFC 6838.
+	// MimeType Artifact's MIME type. Only text/plain, application/json, application/yaml, image/png, and image/jpeg are allowed at this time.
+	//
+	//  MIME types are defined and standardized in IETF's RFC 6838.
 	MimeType string `json:"mimeType"`
 
 	// Name Name is a human-readable unique identifier for the artifact and must be unique for all artifacts within a project.
@@ -157,43 +175,55 @@ type ArtifactReference struct {
 
 // CreateApplicationResponse Response message for the CreateApplication method.
 type CreateApplicationResponse struct {
-	// Application Application represents a Helm chart that can be deployed to one or more Kubernetes pods.
+	// Application The application created.
 	Application Application `json:"application"`
 }
 
 // CreateArtifactResponse Response message for the CreateArtifact method.
 type CreateArtifactResponse struct {
-	// Artifact Artifact represents a binary artifact that can be used for various purposes, e.g. icon or thumbnail for UI display, or auxiliary artifacts for integration with various platform services such as Grafana dashboard and similar. An artifact may be used by multiple deployment packages.
+	// Artifact The artifact created.
 	Artifact Artifact `json:"artifact"`
 }
 
 // CreateDeploymentPackageResponse Response message for the CreateDeploymentPackage method.
 type CreateDeploymentPackageResponse struct {
-	// DeploymentPackage DeploymentPackage represents a collection of applications (referenced by their name and a version) that are deployed together. The package can define one or more deployment profiles that specify the individual application profiles to be used when deploying each application. If applications need to be deployed in a particular order, the package can also define any startup dependencies between its constituent applications as a set of dependency graph edges. The deployment package can also refer to a set of artifacts used for miscellaneous purposes, e.g. a thumbnail, icon, or a Grafana extension.
+	// DeploymentPackage The deployment package created.
 	DeploymentPackage DeploymentPackage `json:"deploymentPackage"`
 }
 
 // CreateRegistryResponse Response message for the CreateRegistry method.
 type CreateRegistryResponse struct {
-	// Registry Registry represents a repository from which various artifacts, such as application Docker\* images or Helm\* charts can be retrieved. As such, the registry entity holds information used for finding and accessing the represented repository.
+	// Registry The created registry.
 	Registry Registry `json:"registry"`
 }
 
-// DeploymentPackage DeploymentPackage represents a collection of applications (referenced by their name and a version) that are deployed together. The package can define one or more deployment profiles that specify the individual application profiles to be used when deploying each application. If applications need to be deployed in a particular order, the package can also define any startup dependencies between its constituent applications as a set of dependency graph edges. The deployment package can also refer to a set of artifacts used for miscellaneous purposes, e.g. a thumbnail, icon, or a Grafana extension.
+// DeploymentPackage DeploymentPackage represents a collection of applications (referenced by their name and a version) that are
+//
+//	deployed together. The package can define one or more deployment profiles that specify the individual application
+//	profiles to be used when deploying each application. If applications need to be deployed in a particular order, the
+//	package can also define any startup dependencies between its constituent applications as a set of dependency graph edges.
+//
+//	The deployment package can also refer to a set of artifacts used for miscellaneous purposes,
+//	e.g. a thumbnail, icon, or a Grafana extension.
 type DeploymentPackage struct {
-	// ApplicationDependencies Optional set of application deployment dependencies, expressed as (name, requires) pairs of edges in the deployment order dependency graph.
+	// ApplicationDependencies Optional set of application deployment dependencies, expressed as (name, requires) pairs of edges in the
+	//  deployment order dependency graph.
 	ApplicationDependencies *[]ApplicationDependency `json:"applicationDependencies,omitempty"`
 
 	// ApplicationReferences List of applications comprising this deployment package. Expressed as (name, version) pairs.
 	ApplicationReferences []ApplicationReference `json:"applicationReferences"`
 
-	// Artifacts Optional list of artifacts required for displaying or deploying this package. For example, icon or thumbnail artifacts can be used by the UI; Grafana\* dashboard definitions can be used by the deployment manager.
+	// Artifacts Optional list of artifacts required for displaying or deploying this package. For example, icon or thumbnail
+	//  artifacts can be used by the UI; Grafana\* dashboard definitions can be used by the deployment manager.
 	Artifacts []ArtifactReference `json:"artifacts"`
 
 	// CreateTime The creation time of the deployment package.
 	CreateTime *time.Time `json:"createTime,omitempty"`
 
-	// DefaultNamespaces Optional map of application-to-namespace bindings to be used as a default when deploying the applications that comprise the package. If a namespace is not defined in the set of "namespaces" in this Deployment Package, it will be inferred that it is a simple namespace with no predefined labels or annotations.
+	// DefaultNamespaces Optional map of application-to-namespace bindings to be used as a default when deploying the applications that
+	//  comprise the package.
+	//  If a namespace is not defined in the set of "namespaces" in this Deployment Package,
+	//  it will be inferred that it is a simple namespace with no predefined labels or annotations.
 	DefaultNamespaces *map[string]string `json:"defaultNamespaces,omitempty"`
 
 	// DefaultProfileName Name of the default deployment profile to be used by default when deploying this package.
@@ -202,7 +232,8 @@ type DeploymentPackage struct {
 	// Description Description of the deployment package. Displayed on user interfaces.
 	Description *string `json:"description,omitempty"`
 
-	// DisplayName Display name is an optional human-readable name for the deployment package. When specified, it must be unique among all packages within a project. It is used for display purposes on user interfaces.
+	// DisplayName Display name is an optional human-readable name for the deployment package. When specified, it must be unique among all
+	//  packages within a project. It is used for display purposes on user interfaces.
 	DisplayName *string `json:"displayName,omitempty"`
 
 	// Extensions Optional list of API and UI extensions.
@@ -211,19 +242,27 @@ type DeploymentPackage struct {
 	// ForbidsMultipleDeployments Optional flag indicating whether multiple deployments of this package are forbidden within the same realm.
 	ForbidsMultipleDeployments *bool `json:"forbidsMultipleDeployments,omitempty"`
 
-	// IsDeployed Flag indicating whether the deployment package has been deployed. The mutability of the deployment package entity can be limited when this flag is true. For example, one may not be able to update when an application is removed from a package after it has been marked as deployed.
+	// IsDeployed Flag indicating whether the deployment package has been deployed.
+	//  The mutability of the deployment package entity can be limited when this flag is true. For example, one may
+	//  not be able to update when an application is removed from a package after it has been marked as
+	//  deployed.
 	IsDeployed *bool `json:"isDeployed,omitempty"`
 
-	// IsVisible Flag indicating whether the deployment package is visible in the UI. Some deployment packages can be classified as auxiliary platform extensions and therefore are to be deployed indirectly only when specified as deployment requirements, rather than directly by the platform operator.
+	// IsVisible Flag indicating whether the deployment package is visible in the UI.
+	//  Some deployment packages can be classified as auxiliary platform extensions and therefore are to be deployed
+	//  indirectly only when specified as deployment requirements, rather than directly by the platform operator.
 	IsVisible *bool `json:"isVisible,omitempty"`
 
 	// Kind Field designating whether the deployment package is a system add-on, system extension, or a normal package.
 	Kind *DeploymentPackageKind `json:"kind,omitempty"`
 
-	// Name Name is a human-readable unique identifier for the deployment package and must be unique for all packages of a given project.
+	// Name Name is a human-readable unique identifier for the deployment package and must be unique for all packages of a
+	//  given project.
 	Name string `json:"name"`
 
-	// Namespaces Namespace definitions to be created before resources are deployed. This allows complex namespaces to be defined with predefined labels and annotations. If not defined, simple namespaces will be created as needed.
+	// Namespaces Namespace definitions to be created before resources are deployed.
+	//  This allows complex namespaces to be defined with predefined labels and annotations.
+	//  If not defined, simple namespaces will be created as needed.
 	Namespaces *[]Namespace `json:"namespaces,omitempty"`
 
 	// Profiles Set of deployment profiles to choose from when deploying this package.
@@ -241,7 +280,8 @@ type DeploymentPackageKind string
 
 // DeploymentProfile DeploymentProfile specifies which application profiles will be used for deployment of which applications.
 type DeploymentProfile struct {
-	// ApplicationProfiles Application profiles map application names to the names of its profile, to be used when deploying the application as part of the deployment package together with the deployment profile.
+	// ApplicationProfiles Application profiles map application names to the names of its profile, to be used when deploying the application
+	//  as part of the deployment package together with the deployment profile.
 	ApplicationProfiles map[string]string `json:"applicationProfiles"`
 
 	// CreateTime The creation time of the deployment profile.
@@ -250,17 +290,21 @@ type DeploymentProfile struct {
 	// Description Description of the deployment profile. Displayed on user interfaces.
 	Description *string `json:"description,omitempty"`
 
-	// DisplayName Display name is an optional human-readable name for the registry. When specified, it must be unique among all profiles of a given package. It is used for display purposes on user interfaces.
+	// DisplayName Display name is an optional human-readable name for the registry. When specified, it must be unique among all
+	//  profiles of a given package. It is used for display purposes on user interfaces.
 	DisplayName *string `json:"displayName,omitempty"`
 
-	// Name Name is a human-readable unique identifier for the profile and must be unique for all profiles of a given deployment package.
+	// Name Name is a human-readable unique identifier for the profile and must be unique for all profiles of a
+	//  given deployment package.
 	Name string `json:"name"`
 
 	// UpdateTime The last update time of the deployment profile.
 	UpdateTime *time.Time `json:"updateTime,omitempty"`
 }
 
-// DeploymentRequirement DeploymentRequirement is a reference to the deployment package that must be deployed first, as a requirement for an application to be deployed.
+// DeploymentRequirement DeploymentRequirement is a reference to the deployment package that must be deployed first,
+//
+//	as a requirement for an application to be deployed.
 type DeploymentRequirement struct {
 	// DeploymentProfileName Optional name of the deployment profile to be used. When not provided, the default deployment profile will be used.
 	DeploymentProfileName *string `json:"deploymentProfileName,omitempty"`
@@ -300,7 +344,7 @@ type GetApplicationReferenceCountResponse struct {
 
 // GetApplicationResponse Response message for the GetApplication method.
 type GetApplicationResponse struct {
-	// Application Application represents a Helm chart that can be deployed to one or more Kubernetes pods.
+	// Application The requested application.
 	Application Application `json:"application"`
 }
 
@@ -312,13 +356,13 @@ type GetApplicationVersionsResponse struct {
 
 // GetArtifactResponse Response message for the GetArtifact method.
 type GetArtifactResponse struct {
-	// Artifact Artifact represents a binary artifact that can be used for various purposes, e.g. icon or thumbnail for UI display, or auxiliary artifacts for integration with various platform services such as Grafana dashboard and similar. An artifact may be used by multiple deployment packages.
+	// Artifact The requested artifact.
 	Artifact Artifact `json:"artifact"`
 }
 
 // GetDeploymentPackageResponse Response message for the GetDeploymentPackage method.
 type GetDeploymentPackageResponse struct {
-	// DeploymentPackage DeploymentPackage represents a collection of applications (referenced by their name and a version) that are deployed together. The package can define one or more deployment profiles that specify the individual application profiles to be used when deploying each application. If applications need to be deployed in a particular order, the package can also define any startup dependencies between its constituent applications as a set of dependency graph edges. The deployment package can also refer to a set of artifacts used for miscellaneous purposes, e.g. a thumbnail, icon, or a Grafana extension.
+	// DeploymentPackage The DeploymentPackage requested.
 	DeploymentPackage DeploymentPackage `json:"deploymentPackage"`
 }
 
@@ -330,7 +374,8 @@ type GetDeploymentPackageVersionsResponse struct {
 
 // GetRegistryResponse Response message for the GetRegistry method.
 type GetRegistryResponse struct {
-	// Registry Registry represents a repository from which various artifacts, such as application Docker\* images or Helm\* charts can be retrieved. As such, the registry entity holds information used for finding and accessing the represented repository.
+	// Registry Registry represents a repository from which various artifacts, such as application Docker\* images or Helm\* charts
+	//  can be retrieved. As such, the registry entity holds information used for finding and accessing the represented repository.
 	Registry Registry `json:"registry"`
 }
 
@@ -376,12 +421,16 @@ type ListRegistriesResponse struct {
 	TotalElements int32 `json:"totalElements"`
 }
 
-// Namespace Namespace represents a complex namespace definition with predefined labels and annotations. They are created before any other resources in the deployment.
+// Namespace Namespace represents a complex namespace definition with predefined labels and annotations.
+//
+//	They are created before any other resources in the deployment.
 type Namespace struct {
 	Annotations *map[string]string `json:"annotations,omitempty"`
 	Labels      *map[string]string `json:"labels,omitempty"`
 
-	// Name namespace names must be valid RFC 1123 DNS labels. Avoid creating namespaces with the prefix `kube-`, since it is reserved for Kubernetes\* system namespaces. Avoid `default` - will already exist
+	// Name namespace names must be valid RFC 1123 DNS labels.
+	//  Avoid creating namespaces with the prefix `kube-`, since it is reserved for Kubernetes\* system namespaces.
+	//  Avoid `default` - will already exist
 	Name string `json:"name"`
 }
 
@@ -426,7 +475,8 @@ type Profile struct {
 	// Description Description of the profile. Displayed on user interfaces.
 	Description *string `json:"description,omitempty"`
 
-	// DisplayName Display name is an optional human-readable name for the profile. When specified, it must be unique among all profiles of a given application. It is used for display purposes on user interfaces.
+	// DisplayName Display name is an optional human-readable name for the profile. When specified, it must be unique among all
+	//  profiles of a given application. It is used for display purposes on user interfaces.
 	DisplayName *string `json:"displayName,omitempty"`
 
 	// Name Human-readable name for the profile. Unique among all profiles of the same application.
@@ -439,7 +489,9 @@ type Profile struct {
 	UpdateTime *time.Time `json:"updateTime,omitempty"`
 }
 
-// Registry Registry represents a repository from which various artifacts, such as application Docker\* images or Helm\* charts can be retrieved. As such, the registry entity holds information used for finding and accessing the represented repository.
+// Registry Registry represents a repository from which various artifacts, such as application Docker\* images or Helm\* charts
+//
+//	can be retrieved. As such, the registry entity holds information used for finding and accessing the represented repository.
 type Registry struct {
 	// ApiType Optional type of the API used to obtain inventory of the articles hosted by the registry.
 	ApiType *string `json:"apiType,omitempty"`
@@ -456,13 +508,15 @@ type Registry struct {
 	// Description Description of the registry. Displayed on user interfaces.
 	Description *string `json:"description,omitempty"`
 
-	// DisplayName Display name is an optional human-readable name for the registry. When specified, it must be unique among all registries within a project. It is used for display purposes on user interfaces.
+	// DisplayName Display name is an optional human-readable name for the registry. When specified, it must be unique among all
+	//  registries within a project. It is used for display purposes on user interfaces.
 	DisplayName *string `json:"displayName,omitempty"`
 
 	// InventoryUrl Optional URL of the API for accessing inventory of artifacts hosted by the registry.
 	InventoryUrl *string `json:"inventoryUrl,omitempty"`
 
-	// Name Name is a human-readable unique identifier for the registry and must be unique for all registries of a given project.
+	// Name Name is a human-readable unique identifier for the registry and must be unique for all registries of a
+	//  given project.
 	Name string `json:"name"`
 
 	// RootUrl Root URL for retrieving artifacts, e.g. Docker images and Helm charts, from the registry.
@@ -480,6 +534,9 @@ type Registry struct {
 
 // ResourceReference ResourceReference represents a Kubernetes resource identifier.
 type ResourceReference struct {
+	// Ignore Ignore whole resource if true. Will use "remove" if false or not present.
+	Ignore *bool `json:"ignore,omitempty"`
+
 	// Kind Kubernetes resource kind, e.g. ConfigMap.
 	Kind string `json:"kind"`
 
@@ -514,7 +571,7 @@ type UIExtension struct {
 // Upload Upload represents a single file-upload record.
 type Upload struct {
 	// Artifact Raw bytes content of the file being uploaded.
-	Artifact []byte `json:"artifact"`
+	Artifact string `json:"artifact"`
 
 	// FileName Name of the file being uploaded.
 	FileName string `json:"fileName"`
@@ -603,13 +660,16 @@ type CatalogServiceImportParams struct {
 	// ChartValues Optional raw byte value containing the chart values as raw YAML bytes.
 	ChartValues *string `form:"chartValues,omitempty" json:"chartValues,omitempty"`
 
-	// IncludeAuth If true and a username/auth_token is specified then they will be included in the generated Registry object.
+	// IncludeAuth If true and a username/auth_token is specified then they will be included
+	//  in the generated Registry object.
 	IncludeAuth *bool `form:"includeAuth,omitempty" json:"includeAuth,omitempty"`
 
-	// GenerateDefaultValues If true and chart_values is not set, then the values.yaml will be extracted and used to generate default profile values.
+	// GenerateDefaultValues If true and chart_values is not set, then the values.yaml will be extracted and
+	//  used to generate default profile values.
 	GenerateDefaultValues *bool `form:"generateDefaultValues,omitempty" json:"generateDefaultValues,omitempty"`
 
-	// GenerateDefaultParameters Generates default parameters from the values, from chart_values or from generate_default_values as appropriate.
+	// GenerateDefaultParameters Generates default parameters from the values, from chart_values or from
+	//  generate_default_values as appropriate.
 	GenerateDefaultParameters *bool `form:"generateDefaultParameters,omitempty" json:"generateDefaultParameters,omitempty"`
 
 	// Namespace Optional namespace
@@ -642,7 +702,8 @@ type CatalogServiceGetRegistryParams struct {
 
 // CatalogServiceUploadCatalogEntitiesParams defines parameters for CatalogServiceUploadCatalogEntities.
 type CatalogServiceUploadCatalogEntitiesParams struct {
-	// SessionId First upload request in the batch must not specify session ID. Subsequent upload requests must copy the session ID from the previously issued response.
+	// SessionId First upload request in the batch must not specify session ID. Subsequent upload requests must copy
+	//  the session ID from the previously issued response.
 	SessionId *string `form:"sessionId,omitempty" json:"sessionId,omitempty"`
 
 	// UploadNumber Deprecated: Upload number must increase sequentially, starting with 1.

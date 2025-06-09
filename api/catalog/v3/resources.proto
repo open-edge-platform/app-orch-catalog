@@ -663,6 +663,9 @@ message ResourceReference {
 
   // Kubernetes namespace where the ignored resource resides. When empty, the application namespace will be used.
   string namespace = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Ignore whole resource if true. Will use "remove" if false or not present.
+  bool ignore = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ParameterTemplate describes override values for Helm chart values

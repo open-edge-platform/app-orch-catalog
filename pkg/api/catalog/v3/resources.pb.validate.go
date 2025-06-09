@@ -2856,6 +2856,8 @@ func (m *ResourceReference) validate(all bool) error {
 
 	// no validation rules for Namespace
 
+	// no validation rules for Ignore
+
 	if len(errors) > 0 {
 		return ResourceReferenceMultiError(errors)
 	}

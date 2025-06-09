@@ -29,7 +29,7 @@ plugins:
       - title=Application Catalog API
       - version=0.0.1alpha2
       - default_response=false
-      - validate=true
+      - enum_type=string
       - description=An application catalog service providing operations for tenants catalogs and applications.
     strategy: all
   - remote: buf.build/grpc-ecosystem/gateway:v2.15.2
