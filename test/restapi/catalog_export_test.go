@@ -20,7 +20,7 @@ import (
 	"github.com/open-edge-platform/app-orch-catalog/test/auth"
 )
 
-func (s *TestSuite) ExportDeploymentPackage(name string, version string) (int, io.Reader) {
+func (s *TestSuite) ExportDeploymentPackage(name string, version string) *http.Response {
 	requestURL := fmt.Sprintf("%s%s/%s/versions/%s/download", s.CatalogRESTServerUrl, deploymentPackagesEndpoint, name, version)
 
 	req, err := http.NewRequest("GET", requestURL, nil)
@@ -34,7 +34,7 @@ func (s *TestSuite) ExportDeploymentPackage(name string, version string) (int, i
 
 	// Note: res.Body is intentionally not closed here, as the caller is expected to handle it.
 
-	return res.StatusCode, res.Body
+	return res
 }
 
 func (s *TestSuite) TestExportDeploymentPackage() {
@@ -42,13 +42,14 @@ func (s *TestSuite) TestExportDeploymentPackage() {
 	_, err := s.UploadTarball(wordpressTarballPathName)
 	s.Require().NoError(err, "Expected to upload tarball before exporting")
 
-	statusCode, body := s.ExportDeploymentPackage("test-wordpress", "0.1.1")
-	s.Require().Equal(http.StatusOK, statusCode, "Expected HTTP status code 200 OK for export")
+	res := s.ExportDeploymentPackage("test-wordpress", "0.1.1")
+	s.Require().Equal(http.StatusOK, res.StatusCode, "Expected HTTP status code 200 OK for export")
+	defer res.Body.Close()
 
 	files := make(map[string][]byte)
 
 	// decompress the tarball
-	gzReader, err := gzip.NewReader(body)
+	gzReader, err := gzip.NewReader(res.Body)
 	s.Require().NoError(err, "Expected to create gzip reader")
 	defer gzReader.Close()
 
@@ -83,4 +84,15 @@ func (s *TestSuite) TestExportDeploymentPackage() {
 
 	_, ok = files["values-test-wordpress-0.1.1-default.yaml"]
 	s.True(ok, "Expected to find 'values-wordpress-0.1.1-default.yaml' in the tarball")
+
+	// Cleanup
+	s.NoError(s.DeleteDeploymentPackage(wordpressName, wordpressVersion, true), "Expected to delete deployment package after export")
+	s.NoError(s.DeleteApplication(wordpressName, wordpressVersion, true), "Expected to delete application after export")
+	s.NoError(s.DeleteRegistry(wordpressRegistryName, true), "Expected to delete registry after export")
+}
+
+func (s *TestSuite) TestExportDeploymentPackageNoExist() {
+	res := s.ExportDeploymentPackage("not-a-real-package", "0.1.1")
+	s.Require().Equal(http.StatusNotFound, res.StatusCode, "Expected HTTP status code 404 for export")
+	defer res.Body.Close()
 }

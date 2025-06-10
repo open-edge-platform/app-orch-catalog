@@ -29,11 +29,17 @@ func init() {
 	log.SetOutput(os.Stdout)
 }
 
-const applicationsEndpoint = "/catalog.orchestrator.apis/v3/applications"
-const deploymentPackagesEndpoint = "/catalog.orchestrator.apis/v3/deployment_packages"
-const registriesEndpoint = "/catalog.orchestrator.apis/v3/registries"
-const uploadEndpoint = "/catalog.orchestrator.apis/upload"
-const wordpressTarballPathName = "../testdata/wordpress.tar.gz"
+const (
+	applicationsEndpoint       = "/catalog.orchestrator.apis/v3/applications"
+	deploymentPackagesEndpoint = "/catalog.orchestrator.apis/v3/deployment_packages"
+	registriesEndpoint         = "/catalog.orchestrator.apis/v3/registries"
+	uploadEndpoint             = "/catalog.orchestrator.apis/upload"
+
+	wordpressTarballPathName = "../testdata/wordpress.tar.gz"
+	wordpressName            = "test-wordpress"
+	wordpressVersion         = "0.1.1"
+	wordpressRegistryName    = "test-bitnami"
+)
 
 /* The reason for these Short* objects was to facilitate converting the existing
  * rest api tests to the more complex test framework that came from the mage e2e
@@ -418,29 +424,11 @@ func (s *TestSuite) Delete(url string) {
 }
 
 func (s *TestSuite) TestUploadTarball() {
+	res, err := s.UploadTarball(wordpressTarballPathName)
+	assert.NoError(s.T(), err, "Expected to upload tarball without error")
+	assert.Equal(s.T(), http.StatusOK, res.StatusCode, "Expected HTTP status code 200 OK for upload")
 
-	file, err := os.Open(wordpressTarballPathName)
-	assert.NoError(s.T(), err)
-	defer file.Close()
-
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-	part, _ := writer.CreateFormFile("files", "wordpress.tar.gz")
-	_, err = io.Copy(part, file)
-	assert.NoError(s.T(), err)
-	writer.Close()
-
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s%s", s.CatalogRESTServerUrl, uploadEndpoint), body)
-	assert.NoError(s.T(), err)
-
-	req.Header.Add("Content-Type", writer.FormDataContentType())
-
-	auth.AddRestAuthHeader(req, s.token, s.projectID)
-
-	res, err := http.DefaultClient.Do(req)
-	assert.NoError(s.T(), err)
 	defer res.Body.Close()
-	assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for upload")
 	if res.Status != "200 OK" {
 		// print response message if something has gone wrong, for debugging
 		bodyBytes, err := io.ReadAll(res.Body)
@@ -451,7 +439,7 @@ func (s *TestSuite) TestUploadTarball() {
 	// Make sure the wordpress DP was created
 
 	requestURL := fmt.Sprintf("%s%s/test-wordpress/versions/0.1.1", s.CatalogRESTServerUrl, deploymentPackagesEndpoint)
-	req, err = http.NewRequest("GET", requestURL, nil)
+	req, err := http.NewRequest("GET", requestURL, nil)
 	assert.NoError(s.T(), err)
 
 	auth.AddRestAuthHeader(req, s.token, s.projectID)
@@ -475,15 +463,15 @@ func (s *TestSuite) TestUploadTarball() {
 	}
 	err = json.Unmarshal(resBody, &result)
 	assert.NoError(s.T(), err)
-	assert.Equal(s.T(), "test-wordpress", result.DeploymentPackage.Name, "Mismatch in the name of the deployment package")
-	assert.Equal(s.T(), "0.1.1", result.DeploymentPackage.Version, "Mismatch in the version of the deployment package")
+	assert.Equal(s.T(), wordpressName, result.DeploymentPackage.Name, "Mismatch in the name of the deployment package")
+	assert.Equal(s.T(), wordpressVersion, result.DeploymentPackage.Version, "Mismatch in the version of the deployment package")
 
 	// Note: Not verifying the application or registry, as the DP would fail without them
 
 	// Cleanup
-	s.Delete(fmt.Sprintf("%s%s/test-wordpress/versions/0.1.1", s.CatalogRESTServerUrl, deploymentPackagesEndpoint))
-	s.Delete(fmt.Sprintf("%s%s/test-wordpress/versions/0.1.1", s.CatalogRESTServerUrl, applicationsEndpoint))
-	s.Delete(fmt.Sprintf("%s%s/test-bitnami", s.CatalogRESTServerUrl, registriesEndpoint))
+	s.NoError(s.DeleteDeploymentPackage(wordpressName, wordpressVersion, true), "Expected to delete deployment package after upload")
+	s.NoError(s.DeleteApplication(wordpressName, wordpressVersion, true), "Expected to delete application after upload")
+	s.NoError(s.DeleteRegistry(wordpressRegistryName, true), "Expected to delete registry after upload")
 }
 
 func (s *TestSuite) TestUploadSeparateFiles() {
@@ -561,9 +549,9 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 	// Note: Not verifying the application or registry, as the DP would fail without them
 
 	// Cleanup
-	s.Delete(fmt.Sprintf("%s%s/test-wordpress/versions/0.1.1", s.CatalogRESTServerUrl, deploymentPackagesEndpoint))
-	s.Delete(fmt.Sprintf("%s%s/test-wordpress/versions/0.1.1", s.CatalogRESTServerUrl, applicationsEndpoint))
-	s.Delete(fmt.Sprintf("%s%s/test-bitnami", s.CatalogRESTServerUrl, registriesEndpoint))
+	s.NoError(s.DeleteDeploymentPackage(wordpressName, wordpressVersion, true), "Expected to delete deployment package after upload")
+	s.NoError(s.DeleteApplication(wordpressName, wordpressVersion, true), "Expected to delete application after upload")
+	s.NoError(s.DeleteRegistry(wordpressRegistryName, true), "Expected to delete registry after upload")
 }
 
 func (s *TestSuite) TestGetCharts() {

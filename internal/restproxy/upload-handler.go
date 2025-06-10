@@ -12,6 +12,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/open-edge-platform/app-orch-catalog/internal/shared/jsonrenderer"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/orch-library/go/dazl"
@@ -100,7 +101,7 @@ func (h *FileHandler) Upload(c *gin.Context) {
 	c.Render(returnStatus, renderer)
 }
 
-func (h *FileHandler) Download(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+func (h *FileHandler) Download(mux *runtime.ServeMux, w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
 	name := pathParams["deployment_package_name"]
 	version := pathParams["version"]
 
@@ -119,12 +120,8 @@ func (h *FileHandler) Download(w http.ResponseWriter, r *http.Request, pathParam
 	})
 
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		if _, err := w.Write([]byte(err.Error())); err != nil {
-			log.Errorw("error writing error response", dazl.String("name", name), dazl.String("version", version), dazl.Error(err))
-		}
 		log.Errorw("error downloading deployment package", dazl.String("name", name), dazl.String("version", version), dazl.Error(err))
-		return
+		runtime.DefaultHTTPErrorHandler(context.Background(), mux, &runtime.JSONPb{}, w, r, err)
 	}
 
 	w.Header().Set("Content-Type", "application/octet-stream")

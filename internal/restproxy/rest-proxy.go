@@ -131,7 +131,7 @@ func NewRESTProxy(cfg *Config) (*RESTProxy, error) {
 
 	// Add download to the mux so it is part of the /v3/ API
 	err = mux.HandlePath("GET", "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}/download", func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
-		fileHandler.Download(w, r, pathParams)
+		fileHandler.Download(mux, w, r, pathParams)
 	})
 	if err != nil {
 		return nil, fmt.Errorf("failed to register download handler: %w", err)
