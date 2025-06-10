@@ -52,6 +52,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: '1.24.1'
+          cache: true
 
       - name: Checkout app-orch-catalog repository
         uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
@@ -93,18 +94,26 @@ jobs:
 
       - name: Wait for app-orch-catalog pod to be Running
         run: |
-          while true; do
+          MAX_RETRIES=30
+          count=0
+          while [ $count -lt $MAX_RETRIES ]; do
             POD_NAME=$(kubectl get pods -n orch-app -l app.kubernetes.io/instance=app-orch-catalog -o jsonpath='{.items[0].metadata.name}')
             POD_STATUS=$(kubectl get pod $POD_NAME -n orch-app -o jsonpath='{.status.phase}')
-            if [ "$POD_STATUS" == "Running" ]; then
-              echo "Pod $POD_NAME is in Running state."
+            READY_STATUS=$(kubectl get pod $POD_NAME -n orch-app -o jsonpath='{.status.containerStatuses[0].ready}')
+            if [ "$POD_STATUS" == "Running" ] && [ "$READY_STATUS" == "true" ]; then
+              echo "Pod $POD_NAME is Running and Ready."
               break
             else
-              echo "Pod $POD_NAME is not in Running state. Current state: $POD_STATUS"
-              echo "Waiting for 10 seconds before checking again..."
+              echo "Pod $POD_NAME status: $POD_STATUS, Ready: $READY_STATUS"
+              count=$((count+1))
               sleep 10
             fi
-          done  
+          done
+          if [ $count -eq $MAX_RETRIES ]; then
+            echo "Pod did not reach Running state within time limit."
+            kubectl describe pod $POD_NAME -n orch-app
+            exit 1
+          fi  
 
       - name: Run Catalog Component Tests
         working-directory: app-orch-catalog/test
@@ -126,6 +135,7 @@ jobs:
         with:
           name: test-report
           path: app-orch-catalog/test/${{ github.event_name }}-${{ github.event.number }}-test-report.html
+          retention-days: 14
 
       # collect app orch catalog logs in case of failure
       - name: Get app-orch-catalog diagnostic information
