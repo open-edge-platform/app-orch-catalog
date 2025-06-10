@@ -57,7 +57,7 @@ type CatalogServiceClient interface {
 	// Watches inventory of deployment packages for changes.
 	WatchDeploymentPackages(ctx context.Context, in *WatchDeploymentPackagesRequest, opts ...grpc.CallOption) (CatalogService_WatchDeploymentPackagesClient, error)
 	// Downloads a deployment package as a tarball.
-	DownloadDeploymentPackage(ctx context.Context, in *GetDeploymentPackageRequest, opts ...grpc.CallOption) (*DownloadDeploymentPackageResponse, error)
+	DownloadDeploymentPackage(ctx context.Context, in *DownloadDeploymentPackageRequest, opts ...grpc.CallOption) (*DownloadDeploymentPackageResponse, error)
 	// Creates a new application.
 	CreateApplication(ctx context.Context, in *CreateApplicationRequest, opts ...grpc.CallOption) (*CreateApplicationResponse, error)
 	// Gets a list of applications.
@@ -277,7 +277,7 @@ func (x *catalogServiceWatchDeploymentPackagesClient) Recv() (*WatchDeploymentPa
 	return m, nil
 }
 
-func (c *catalogServiceClient) DownloadDeploymentPackage(ctx context.Context, in *GetDeploymentPackageRequest, opts ...grpc.CallOption) (*DownloadDeploymentPackageResponse, error) {
+func (c *catalogServiceClient) DownloadDeploymentPackage(ctx context.Context, in *DownloadDeploymentPackageRequest, opts ...grpc.CallOption) (*DownloadDeploymentPackageResponse, error) {
 	out := new(DownloadDeploymentPackageResponse)
 	err := c.cc.Invoke(ctx, "/catalog.v3.CatalogService/DownloadDeploymentPackage", in, out, opts...)
 	if err != nil {
@@ -496,7 +496,7 @@ type CatalogServiceServer interface {
 	// Watches inventory of deployment packages for changes.
 	WatchDeploymentPackages(*WatchDeploymentPackagesRequest, CatalogService_WatchDeploymentPackagesServer) error
 	// Downloads a deployment package as a tarball.
-	DownloadDeploymentPackage(context.Context, *GetDeploymentPackageRequest) (*DownloadDeploymentPackageResponse, error)
+	DownloadDeploymentPackage(context.Context, *DownloadDeploymentPackageRequest) (*DownloadDeploymentPackageResponse, error)
 	// Creates a new application.
 	CreateApplication(context.Context, *CreateApplicationRequest) (*CreateApplicationResponse, error)
 	// Gets a list of applications.
@@ -576,7 +576,7 @@ func (UnimplementedCatalogServiceServer) DeleteDeploymentPackage(context.Context
 func (UnimplementedCatalogServiceServer) WatchDeploymentPackages(*WatchDeploymentPackagesRequest, CatalogService_WatchDeploymentPackagesServer) error {
 	return status.Errorf(codes.Unimplemented, "method WatchDeploymentPackages not implemented")
 }
-func (UnimplementedCatalogServiceServer) DownloadDeploymentPackage(context.Context, *GetDeploymentPackageRequest) (*DownloadDeploymentPackageResponse, error) {
+func (UnimplementedCatalogServiceServer) DownloadDeploymentPackage(context.Context, *DownloadDeploymentPackageRequest) (*DownloadDeploymentPackageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DownloadDeploymentPackage not implemented")
 }
 func (UnimplementedCatalogServiceServer) CreateApplication(context.Context, *CreateApplicationRequest) (*CreateApplicationResponse, error) {
@@ -910,7 +910,7 @@ func (x *catalogServiceWatchDeploymentPackagesServer) Send(m *WatchDeploymentPac
 }
 
 func _CatalogService_DownloadDeploymentPackage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetDeploymentPackageRequest)
+	in := new(DownloadDeploymentPackageRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -922,7 +922,7 @@ func _CatalogService_DownloadDeploymentPackage_Handler(srv interface{}, ctx cont
 		FullMethod: "/catalog.v3.CatalogService/DownloadDeploymentPackage",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CatalogServiceServer).DownloadDeploymentPackage(ctx, req.(*GetDeploymentPackageRequest))
+		return srv.(CatalogServiceServer).DownloadDeploymentPackage(ctx, req.(*DownloadDeploymentPackageRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

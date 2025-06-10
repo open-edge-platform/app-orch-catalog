@@ -113,7 +113,7 @@ func (h *FileHandler) Download(w http.ResponseWriter, r *http.Request, pathParam
 	mdCtx := metadata.NewOutgoingContext(context.TODO(),
 		metadata.Pairs("authorization", authHeader, "user-agent", uaHeader, "activeprojectid", projectHeader))
 
-	res, err := h.grpcClient.DownloadDeploymentPackage(mdCtx, &catalogv3.GetDeploymentPackageRequest{
+	res, err := h.grpcClient.DownloadDeploymentPackage(mdCtx, &catalogv3.DownloadDeploymentPackageRequest{
 		DeploymentPackageName: name,
 		Version:               version,
 	})

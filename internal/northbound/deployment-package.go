@@ -993,7 +993,7 @@ func (g *Server) GetDeploymentPackage(ctx context.Context, req *catalogv3.GetDep
 }
 
 // DownloadDeploymentPackage gets a package and its related objects as a tarball
-func (g *Server) DownloadDeploymentPackage(ctx context.Context, req *catalogv3.GetDeploymentPackageRequest) (*catalogv3.DownloadDeploymentPackageResponse, error) {
+func (g *Server) DownloadDeploymentPackage(ctx context.Context, req *catalogv3.DownloadDeploymentPackageRequest) (*catalogv3.DownloadDeploymentPackageResponse, error) {
 	projectUUID, err := GetActiveProjectID(ctx)
 	if err != nil {
 		return nil, err

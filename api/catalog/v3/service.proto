@@ -116,7 +116,7 @@ service CatalogService {
   // Watches inventory of deployment packages for changes.
   rpc WatchDeploymentPackages(WatchDeploymentPackagesRequest) returns (stream WatchDeploymentPackagesResponse) {}
   // Downloads a deployment package as a tarball.
-  rpc DownloadDeploymentPackage(GetDeploymentPackageRequest) returns (DownloadDeploymentPackageResponse) {
+  rpc DownloadDeploymentPackage(DownloadDeploymentPackageRequest) returns (DownloadDeploymentPackageResponse) {
     //option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}/download"};
   }
 
@@ -413,6 +413,15 @@ message ListDeploymentPackagesResponse {
 
 // Request message for the GetDeploymentPackage method.
 message GetDeploymentPackageRequest {
+  // Name of the DeploymentPackage.
+  string deployment_package_name = 1 [(google.api.field_behavior) = REQUIRED];
+  // Version of the DeploymentPackage.
+  string version = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Request message for the DownloadDeploymentPackage method.
+// Same parameters as GetDeploymentPackageRequest
+message DownloadDeploymentPackageRequest {
   // Name of the DeploymentPackage.
   string deployment_package_name = 1 [(google.api.field_behavior) = REQUIRED];
   // Version of the DeploymentPackage.
