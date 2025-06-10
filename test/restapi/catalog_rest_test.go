@@ -33,6 +33,7 @@ const applicationsEndpoint = "/catalog.orchestrator.apis/v3/applications"
 const deploymentPackagesEndpoint = "/catalog.orchestrator.apis/v3/deployment_packages"
 const registriesEndpoint = "/catalog.orchestrator.apis/v3/registries"
 const uploadEndpoint = "/catalog.orchestrator.apis/upload"
+const wordpressTarballPathName = "../testdata/wordpress/wordpress.tar.gz"
 
 /* The reason for these Short* objects was to facilitate converting the existing
  * rest api tests to the more complex test framework that came from the mage e2e
@@ -418,7 +419,7 @@ func (s *TestSuite) Delete(url string) {
 
 func (s *TestSuite) TestUploadTarball() {
 
-	file, err := os.Open("../testdata/wordpress.tar.gz")
+	file, err := os.Open(wordpressTarballPathName)
 	assert.NoError(s.T(), err)
 	defer file.Close()
 

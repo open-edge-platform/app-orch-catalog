@@ -7,14 +7,20 @@ package restapi
 import (
 	// Standard library imports
 
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	// Third-party imports
 
 	// Project-specific imports
 	"github.com/open-edge-platform/app-orch-catalog/test/auth"
+	"github.com/stretchr/testify/assert"
 )
 
 type (
@@ -276,4 +282,35 @@ func (s *TestSuite) DeleteRegistry(name string, mustExist bool) error {
 	}
 
 	return nil
+}
+
+func (s *TestSuite) UploadTarball(pathName string) (*http.Response, error) {
+	file, err := os.Open(pathName)
+	assert.NoError(s.T(), err)
+	defer file.Close()
+
+	filename := filepath.Base(pathName)
+
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	part, _ := writer.CreateFormFile("files", filename)
+	_, err = io.Copy(part, file)
+	assert.NoError(s.T(), err)
+	writer.Close()
+
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s%s", s.CatalogRESTServerUrl, uploadEndpoint), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+
+	auth.AddRestAuthHeader(req, s.token, s.projectID)
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
