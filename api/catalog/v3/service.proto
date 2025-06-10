@@ -117,7 +117,7 @@ service CatalogService {
   rpc WatchDeploymentPackages(WatchDeploymentPackagesRequest) returns (stream WatchDeploymentPackagesResponse) {}
   // Downloads a deployment package as a tarball.
   rpc DownloadDeploymentPackage(DownloadDeploymentPackageRequest) returns (DownloadDeploymentPackageResponse) {
-    //option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}/download"};
+    // REST get API handler is special-cased in rest-proxy to cause file to be downloaded rather than returning JSON
   }
 
   // === Application ===
