@@ -6,16 +6,19 @@ package restproxy
 
 import (
 	"context"
+	"io"
+	"net/http"
+	"regexp"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/open-edge-platform/app-orch-catalog/internal/shared/jsonrenderer"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/orch-library/go/dazl"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/metadata"
-	"io"
-	"net/http"
-	"regexp"
 )
 
 type FileHandler struct {
@@ -96,6 +99,41 @@ func (h *FileHandler) Upload(c *gin.Context) {
 	// otherwise the casing in the JSON are messed up (we'll get snake_case instead of the expected camelCase)
 	renderer := jsonrenderer.JSONFromProto{Data: responses}
 	c.Render(returnStatus, renderer)
+}
+
+func (h *FileHandler) Download(mux *runtime.ServeMux, w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+	name := pathParams["deployment_package_name"]
+	version := pathParams["version"]
+
+	log.Infof("downloading deployment package: %s, version: %s", name, version)
+
+	authHeader := r.Header.Get("Authorization")
+	uaHeader := r.Header.Get("User-Agent")
+	projectHeader := r.Header.Get(ActiveProjectID)
+
+	mdCtx := metadata.NewOutgoingContext(context.TODO(),
+		metadata.Pairs("authorization", authHeader, "user-agent", uaHeader, "activeprojectid", projectHeader))
+
+	res, err := h.grpcClient.DownloadDeploymentPackage(mdCtx, &catalogv3.DownloadDeploymentPackageRequest{
+		DeploymentPackageName: name,
+		Version:               version,
+	})
+
+	if err != nil {
+		log.Errorw("error downloading deployment package", dazl.String("name", name), dazl.String("version", version), dazl.Error(err))
+		runtime.DefaultHTTPErrorHandler(context.Background(), mux, &runtime.JSONPb{}, w, r, err)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Disposition", "attachment; filename=dp.tar.gz")
+	w.Header().Set("Content-Length", strconv.Itoa(len(res.Artifact)))
+	w.WriteHeader(http.StatusOK)
+	if _, err := w.Write(res.Artifact); err != nil {
+		log.Errorw("error writing response", dazl.String("name", name), dazl.String("version", version), dazl.Error(err))
+		return
+	}
+	log.Infow("downloaded deployment package", dazl.String("name", name), dazl.String("version", version))
 }
 
 func NewFileHandler(endpoint string, opts []grpc.DialOption) (*FileHandler, error) {

@@ -32,3 +32,7 @@ ListDeploymentPackagesRequest if {
 WatchDeploymentPackagesRequest if {
     hasReadAccess
 }
+
+DownloadDeploymentPackageRequest if {
+    hasReadAccess
+}

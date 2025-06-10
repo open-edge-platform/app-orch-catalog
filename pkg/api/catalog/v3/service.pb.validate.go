@@ -2581,6 +2581,115 @@ var _ interface {
 	ErrorName() string
 } = GetDeploymentPackageRequestValidationError{}
 
+// Validate checks the field values on DownloadDeploymentPackageRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *DownloadDeploymentPackageRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DownloadDeploymentPackageRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// DownloadDeploymentPackageRequestMultiError, or nil if none found.
+func (m *DownloadDeploymentPackageRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DownloadDeploymentPackageRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for DeploymentPackageName
+
+	// no validation rules for Version
+
+	if len(errors) > 0 {
+		return DownloadDeploymentPackageRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// DownloadDeploymentPackageRequestMultiError is an error wrapping multiple
+// validation errors returned by
+// DownloadDeploymentPackageRequest.ValidateAll() if the designated
+// constraints aren't met.
+type DownloadDeploymentPackageRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DownloadDeploymentPackageRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DownloadDeploymentPackageRequestMultiError) AllErrors() []error { return m }
+
+// DownloadDeploymentPackageRequestValidationError is the validation error
+// returned by DownloadDeploymentPackageRequest.Validate if the designated
+// constraints aren't met.
+type DownloadDeploymentPackageRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DownloadDeploymentPackageRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DownloadDeploymentPackageRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DownloadDeploymentPackageRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DownloadDeploymentPackageRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DownloadDeploymentPackageRequestValidationError) ErrorName() string {
+	return "DownloadDeploymentPackageRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DownloadDeploymentPackageRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDownloadDeploymentPackageRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DownloadDeploymentPackageRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DownloadDeploymentPackageRequestValidationError{}
+
 // Validate checks the field values on GetDeploymentPackageResponse with the
 // rules defined in the proto definition for this message. If any rules are
 // violated, the first error encountered is returned, or nil if there are no violations.
@@ -3469,6 +3578,113 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = WatchDeploymentPackagesResponseValidationError{}
+
+// Validate checks the field values on DownloadDeploymentPackageResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *DownloadDeploymentPackageResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DownloadDeploymentPackageResponse
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// DownloadDeploymentPackageResponseMultiError, or nil if none found.
+func (m *DownloadDeploymentPackageResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DownloadDeploymentPackageResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Artifact
+
+	if len(errors) > 0 {
+		return DownloadDeploymentPackageResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// DownloadDeploymentPackageResponseMultiError is an error wrapping multiple
+// validation errors returned by
+// DownloadDeploymentPackageResponse.ValidateAll() if the designated
+// constraints aren't met.
+type DownloadDeploymentPackageResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DownloadDeploymentPackageResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DownloadDeploymentPackageResponseMultiError) AllErrors() []error { return m }
+
+// DownloadDeploymentPackageResponseValidationError is the validation error
+// returned by DownloadDeploymentPackageResponse.Validate if the designated
+// constraints aren't met.
+type DownloadDeploymentPackageResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DownloadDeploymentPackageResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DownloadDeploymentPackageResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DownloadDeploymentPackageResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DownloadDeploymentPackageResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DownloadDeploymentPackageResponseValidationError) ErrorName() string {
+	return "DownloadDeploymentPackageResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DownloadDeploymentPackageResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDownloadDeploymentPackageResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DownloadDeploymentPackageResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DownloadDeploymentPackageResponseValidationError{}
 
 // Validate checks the field values on CreateApplicationRequest with the rules
 // defined in the proto definition for this message. If any rules are

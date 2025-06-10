@@ -120,17 +120,39 @@ func GenerateDeploymentPackage(helm helm.HelmInfo, valuesFile string, outputDir 
 	}
 
 	e := exporter.NewExporter()
-	err = e.ExportRegistry(registry, fmt.Sprintf("%s/%s.yaml", outputDir, registry.Name)) // note: registry already has "-registry" in the name
-	if err != nil {
-		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fmt.Sprintf("%s/%s.yaml", outputDir, registry.Name), Msg: "Failed to export registry", Err: err}
+	fileName := fmt.Sprintf("%s/%s.yaml", outputDir, registry.Name)
+	data, err := e.ExportRegistry(registry) // note: registry already has "-registry" in the name
+	if err == nil {
+		err = os.WriteFile(fileName, data, DefaultFilePermission)
 	}
-	err = e.ExportApplication(app, fmt.Sprintf("%s/%s-application.yaml", outputDir, name), outputDir)
 	if err != nil {
-		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fmt.Sprintf("%s/%s-application.yaml", outputDir, name), Msg: "Failed to export application", Err: err}
+		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fileName, Msg: "Failed to export registry", Err: err}
 	}
-	err = e.ExportDeploymentPackage(dp, fmt.Sprintf("%s/%s-deployment-package.yaml", outputDir, dp.Name))
+
+	fileName = fmt.Sprintf("%s/%s-application.yaml", outputDir, name)
+	data, profileData, err := e.ExportApplication(app)
+	if err == nil {
+		err = os.WriteFile(fileName, data, DefaultFilePermission)
+	}
 	if err != nil {
-		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fmt.Sprintf("%s/%s-deployment-package.yaml", outputDir, dp.Name), Msg: "Failed to export deployment package", Err: err}
+		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fileName, Msg: "Failed to export application", Err: err}
+	}
+
+	for profileFileName, profileContent := range profileData {
+		profileFilePathName := fmt.Sprintf("%s/%s", outputDir, profileFileName)
+		err = os.WriteFile(profileFilePathName, profileContent, DefaultFilePermission)
+		if err != nil {
+			return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: profileFilePathName, Msg: "Failed to export profile", Err: err}
+		}
+	}
+
+	fileName = fmt.Sprintf("%s/%s-deployment-package.yaml", outputDir, dp.Name)
+	data, err = e.ExportDeploymentPackage(dp)
+	if err == nil {
+		err = os.WriteFile(fileName, data, DefaultFilePermission)
+	}
+	if err != nil {
+		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fileName, Msg: "Failed to export deployment package", Err: err}
 	}
 
 	return nil

@@ -7,6 +7,9 @@ package restproxy
 import (
 	"context"
 	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-contrib/secure"
 	"github.com/gin-gonic/gin"
@@ -20,8 +23,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
-	"net/http"
-	"strings"
 )
 
 var log = dazl.GetPackageLogger()
@@ -127,6 +128,15 @@ func NewRESTProxy(cfg *Config) (*RESTProxy, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// Add download to the mux so it is part of the /v3/ API
+	err = mux.HandlePath("GET", "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}/download", func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+		fileHandler.Download(mux, w, r, pathParams)
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to register download handler: %w", err)
+	}
+
 	// FIXME understand how to make this endpoint part of the openapi specs
 	// Example:
 	// curl -X POST http://localhost:8080/upload \
@@ -140,7 +150,6 @@ func NewRESTProxy(cfg *Config) (*RESTProxy, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	// Restrict GET verb for different endpoints of the API
 	allPaths := openapiutils.ExtractAllPaths(spec)
 
