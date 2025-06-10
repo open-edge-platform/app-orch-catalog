@@ -285,7 +285,9 @@ func (s *TestSuite) DeleteRegistry(name string, mustExist bool) error {
 
 func (s *TestSuite) UploadTarball(pathName string) (*http.Response, error) {
 	file, err := os.Open(pathName)
-	s.NoError(err)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open file %s: %w", pathName, err)
+	}
 	defer file.Close()
 
 	filename := filepath.Base(pathName)
@@ -293,13 +295,19 @@ func (s *TestSuite) UploadTarball(pathName string) (*http.Response, error) {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 	part, err := writer.CreateFormFile("files", filename)
-	s.NoError(err)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create form file for %s: %w", filename, err)
+	}
 	_, err = io.Copy(part, file)
-	s.NoError(err)
+	if err != nil {
+		return nil, fmt.Errorf("failed to copy file content for %s: %w", filename, err)
+	}
 	writer.Close()
 
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s%s", s.CatalogRESTServerUrl, uploadEndpoint), body)
-	s.NoError(err)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create HTTP request for uploading tarball: %w", err)
+	}
 
 	req.Header.Add("Content-Type", writer.FormDataContentType())
 
