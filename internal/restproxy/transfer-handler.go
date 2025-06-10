@@ -122,6 +122,7 @@ func (h *FileHandler) Download(mux *runtime.ServeMux, w http.ResponseWriter, r *
 	if err != nil {
 		log.Errorw("error downloading deployment package", dazl.String("name", name), dazl.String("version", version), dazl.Error(err))
 		runtime.DefaultHTTPErrorHandler(context.Background(), mux, &runtime.JSONPb{}, w, r, err)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/octet-stream")
