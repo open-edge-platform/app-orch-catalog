@@ -72,5 +72,5 @@ func WriteErrorTemplate(templateName string, templateContents string, wr io.Writ
 	err := template.Must(template.New(templateName).Parse(templateContents)).Execute(wr, e)
 
 	/* if we failed to render the template, then fatal exit */
-	FatalErrCheck(fmt.Errorf("Failed to render error template: %v", err))
+	FatalErrCheck(err)
 }
