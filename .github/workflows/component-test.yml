@@ -127,3 +127,11 @@ jobs:
           name: test-report
           path: app-orch-catalog/test/${{ github.event_name }}-${{ github.event.number }}-test-report.html
 
+      # collect app orch catalog logs in case of failure
+      - name: Get app-orch-catalog diagnostic information
+        if: failure()
+        id: get-app-orch-catalog-diag-info
+        run: |
+          kubectl logs -n orch-app -l app=app-orch-catalog -c app-orch-catalog-server --tail=-1 > app-orch-catalog-server.log || echo "No current logs for app-orch-catalog-server"
+          kubectl logs -n orch-app -l app=app-orch-catalog -c app-orch-catalog-rest-proxy --tail=-1 > app-orch-catalog-rest-proxy.log || echo "No current logs for app-orch-catalog-rest-proxy" 
+
