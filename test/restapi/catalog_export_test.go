@@ -13,7 +13,6 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"net/url"
 
 	// Third-party imports
 
@@ -21,14 +20,8 @@ import (
 	"github.com/open-edge-platform/app-orch-catalog/test/auth"
 )
 
-const exportEndpoint = "/catalog.orchestrator.apis/v3/export"
-
 func (s *TestSuite) ExportDeploymentPackage(name string, version string) (int, io.Reader) {
-	params := url.Values{}
-	params.Add("deployment_package_name", name)
-	params.Add("version", version)
-
-	requestURL := fmt.Sprintf("%s%s?%s", s.CatalogRESTServerUrl, exportEndpoint, params.Encode())
+	requestURL := fmt.Sprintf("%s%s/%s/versions/%s/download", s.CatalogRESTServerUrl, deploymentPackagesEndpoint, name, version)
 
 	req, err := http.NewRequest("GET", requestURL, nil)
 	s.Require().NoError(err, "Expected to create HTTP request for exporting Deployment Package")
@@ -38,19 +31,18 @@ func (s *TestSuite) ExportDeploymentPackage(name string, version string) (int, i
 
 	res, err := http.DefaultClient.Do(req)
 	s.Require().NoError(err)
-	defer res.Body.Close()
 
-	//	body, err := io.ReadAll(res.Body)
-	//	s.Require().NoError(err)
+	// Note: res.Body is intentionally not closed here, as the caller is expected to handle it.
 
 	return res.StatusCode, res.Body
 }
 
 func (s *TestSuite) TestExportDeploymentPackage() {
+	// Before we can test export, first import the wordpress package
 	_, err := s.UploadTarball(wordpressTarballPathName)
 	s.Require().NoError(err, "Expected to upload tarball before exporting")
 
-	statusCode, body := s.ExportDeploymentPackage("wordpress", "1.0.0")
+	statusCode, body := s.ExportDeploymentPackage("test-wordpress", "0.1.1")
 	s.Require().Equal(http.StatusOK, statusCode, "Expected HTTP status code 200 OK for export")
 
 	files := make(map[string][]byte)
@@ -76,15 +68,19 @@ func (s *TestSuite) TestExportDeploymentPackage() {
 		}
 	}
 
-	_, ok := files["wordpress-deployment-package.yaml"]
+	for fileName, content := range files {
+		log.Printf("Found file in tarball: %s, size: %d bytes", fileName, len(content))
+	}
+
+	_, ok := files["test-wordpress-deployment-package.yaml"]
 	s.True(ok, "Expected to find 'wordpress-deployment-package.yaml' in the tarball")
 
-	_, ok = files["wordpress-application.yaml"]
+	_, ok = files["test-wordpress-application.yaml"]
 	s.True(ok, "Expected to find 'wordpress-application.yaml' in the tarball")
 
-	_, ok = files["bitnami-registry.yaml"]
+	_, ok = files["test-bitnami-registry.yaml"]
 	s.True(ok, "Expected to find 'bitnami-registry.yaml' in the tarball")
 
-	_, ok = files["values-wordpress-0.1.1-default.yaml"]
+	_, ok = files["values-test-wordpress-0.1.1-default.yaml"]
 	s.True(ok, "Expected to find 'values-wordpress-0.1.1-default.yaml' in the tarball")
 }

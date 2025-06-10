@@ -33,7 +33,7 @@ const applicationsEndpoint = "/catalog.orchestrator.apis/v3/applications"
 const deploymentPackagesEndpoint = "/catalog.orchestrator.apis/v3/deployment_packages"
 const registriesEndpoint = "/catalog.orchestrator.apis/v3/registries"
 const uploadEndpoint = "/catalog.orchestrator.apis/upload"
-const wordpressTarballPathName = "../testdata/wordpress/wordpress.tar.gz"
+const wordpressTarballPathName = "../testdata/wordpress.tar.gz"
 
 /* The reason for these Short* objects was to facilitate converting the existing
  * rest api tests to the more complex test framework that came from the mage e2e
