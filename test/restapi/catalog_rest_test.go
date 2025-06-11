@@ -573,3 +573,50 @@ func (s *TestSuite) TestGetCharts() {
 
 	assert.Equal(s.T(), "null", string(body), "Expected the response body to be empty")
 }
+
+func (s *TestSuite) TestCreateApplicationValidParams() {
+	requestURL := fmt.Sprintf("%s%s", s.CatalogRESTServerUrl, applicationsEndpoint)
+
+	app := Application{
+		Name:               "test-app",
+		DisplayName:        "Test Application",
+		Description:        "This is a test application",
+		Kind:               "KIND_NORMAL",
+		ChartName:          "test-chart",
+		HelmRegistryName:   "test-registry",
+		DefaultProfileName: "default-profile",
+	}
+
+	appJSON, err := json.Marshal(app)
+	assert.NoError(s.T(), err)
+
+	req, err := http.NewRequest("POST", requestURL, bytes.NewBuffer(appJSON))
+	assert.NoError(s.T(), err)
+
+	auth.AddRestAuthHeader(req, s.token, s.projectID)
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := http.DefaultClient.Do(req)
+	assert.NoError(s.T(), err)
+	defer res.Body.Close()
+
+	s.Equal("201 Created", res.Status)
+
+	body, err := io.ReadAll(res.Body)
+	assert.NoError(s.T(), err)
+
+	var createdApp Application
+	err = json.Unmarshal(body, &createdApp)
+	assert.NoError(s.T(), err)
+
+	s.Equal(app.Name, createdApp.Name)
+	s.Equal(app.DisplayName, createdApp.DisplayName)
+	s.Equal(app.Description, createdApp.Description)
+	s.Equal(app.Kind, createdApp.Kind)
+	s.Equal(app.ChartName, createdApp.ChartName)
+	s.Equal(app.HelmRegistryName, createdApp.HelmRegistryName)
+	s.Equal(app.DefaultProfileName, createdApp.DefaultProfileName)
+
+	// Cleanup
+	s.NoError(s.DeleteApplication(createdApp.Name, "", true), "Expected to delete application after creation")
+}
