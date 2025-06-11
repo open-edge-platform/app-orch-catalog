@@ -7,10 +7,12 @@ package northbound
 import (
 	"context"
 	"fmt"
-	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/namespace"
-	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/predicate"
 	"reflect"
 	"strings"
+
+	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/namespace"
+	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/predicate"
+	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/registry"
 
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/application"
@@ -23,6 +25,7 @@ import (
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/extension"
 	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
+	"github.com/open-edge-platform/app-orch-catalog/pkg/exporter"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -987,6 +990,171 @@ func (g *Server) GetDeploymentPackage(ctx context.Context, req *catalogv3.GetDep
 	}
 	logActivity(ctx, "got", "deployment-package", projectUUID, req.DeploymentPackageName, req.Version)
 	return &catalogv3.GetDeploymentPackageResponse{DeploymentPackage: ca}, nil
+}
+
+// DownloadDeploymentPackage gets a package and its related objects as a tarball
+func (g *Server) DownloadDeploymentPackage(ctx context.Context, req *catalogv3.DownloadDeploymentPackageRequest) (*catalogv3.DownloadDeploymentPackageResponse, error) {
+	projectUUID, err := GetActiveProjectID(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if req == nil || req.DeploymentPackageName == "" || req.Version == "" {
+		return nil, errors.NewInvalidArgument(
+			errors.WithResourceType(errors.DeploymentPackageType),
+			errors.WithMessage("incomplete request"))
+	}
+
+	if err := g.authCheckAllowed(ctx, req); err != nil {
+		return nil, err
+	}
+
+	tx, err := g.startTransaction(ctx)
+	if err != nil {
+		return nil, errors.NewDBError(errors.WithError(err))
+	}
+
+	pkgDB, err := tx.DeploymentPackage.Query().
+		Where(
+			deploymentpackage.ProjectUUID(projectUUID),
+			deploymentpackage.Name(req.DeploymentPackageName),
+			deploymentpackage.Version(req.Version),
+		).
+		Only(ctx)
+	if err != nil {
+		g.rollbackTransaction(tx)
+		if generated.IsNotFound(err) {
+			return nil, errors.NewNotFound(
+				errors.WithResourceType(errors.DeploymentPackageType),
+				errors.WithResourceName(req.DeploymentPackageName),
+				errors.WithResourceVersion(req.Version))
+		}
+		return nil, errors.NewDBError(errors.WithError(err))
+	}
+
+	ca, err := extractDeploymentPackage(ctx, pkgDB)
+	if err != nil {
+		g.rollbackTransaction(tx)
+		return nil, errors.NewDBError(errors.WithError(err))
+	}
+
+	registryNames := map[string]bool{}
+
+	apps := make([]*catalogv3.Application, 0, len(ca.ApplicationReferences))
+	for _, appReference := range ca.ApplicationReferences {
+		appDB, err := tx.Application.Query().
+			Where(
+				application.ProjectUUID(projectUUID),
+				application.Name(appReference.Name),
+				application.Version(appReference.Version),
+			).
+			Only(ctx)
+		if err != nil {
+			g.rollbackTransaction(tx)
+			if generated.IsNotFound(err) {
+				return nil, errors.NewNotFound(
+					errors.WithResourceType(errors.ApplicationType),
+					errors.WithResourceName(appReference.Name),
+					errors.WithResourceVersion(appReference.Version))
+			}
+			return nil, errors.NewDBError(errors.WithError(err))
+		}
+		app, err := g.applicationExtract(ctx, appDB, projectUUID)
+		if err != nil {
+			g.rollbackTransaction(tx)
+			return nil, errors.NewDBError(errors.WithError(err))
+		}
+		registryNames[app.HelmRegistryName] = true
+		apps = append(apps, app)
+	}
+
+	// we need a secretService to populate the registry
+	var secretService SecretService
+	if UseSecretService {
+		secretService, err = SecretServiceFactory(ctx)
+		if err != nil {
+			return nil, errors.NewVaultError(errors.WithError(err))
+		}
+		defer secretService.Logout(ctx)
+	}
+
+	regs := make([]*catalogv3.Registry, 0, len(registryNames))
+	for regName := range registryNames {
+		regDB, err := tx.Registry.Query().
+			Where(
+				registry.ProjectUUID(projectUUID),
+				registry.Name(regName),
+			).
+			Only(ctx)
+		if err != nil {
+			g.rollbackTransaction(tx)
+			if generated.IsNotFound(err) {
+				return nil, errors.NewNotFound(
+					errors.WithResourceType(errors.RegistryType),
+					errors.WithResourceName(regName))
+			}
+			return nil, errors.NewDBError(errors.WithError(err))
+		}
+		reg, err := g.extractRegistry(ctx, regDB, secretService, true)
+		if err != nil {
+			g.rollbackTransaction(tx)
+			return nil, errors.NewDBError(errors.WithError(err))
+		}
+		regs = append(regs, reg)
+	}
+
+	err = g.commitTransaction(tx)
+	if err != nil {
+		return nil, errors.NewDBError(errors.WithError(err))
+	}
+
+	e := exporter.NewExporter()
+	e.NewTarball()
+
+	data, err := e.ExportDeploymentPackage(ca)
+	if err != nil {
+		return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+	}
+	err = e.AddToTarball(fmt.Sprintf("%s-deployment-package.yaml", ca.Name), data)
+	if err != nil {
+		return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+	}
+
+	for _, app := range apps {
+		data, profileData, err := e.ExportApplication(app)
+		if err != nil {
+			return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+		}
+		err = e.AddToTarball(fmt.Sprintf("%s-application.yaml", app.Name), data)
+		if err != nil {
+			return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+		}
+		for name, profile := range profileData {
+			err = e.AddToTarball(name, profile)
+			if err != nil {
+				return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+			}
+		}
+	}
+
+	for _, reg := range regs {
+		data, err = e.ExportRegistry(reg)
+		if err != nil {
+			return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+		}
+		err = e.AddToTarball(fmt.Sprintf("%s-registry.yaml", reg.Name), data)
+		if err != nil {
+			return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+		}
+	}
+
+	data, err = e.CloseTarball()
+	if err != nil {
+		return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+	}
+
+	logActivity(ctx, "download", "deployment-package", projectUUID, req.DeploymentPackageName, req.Version)
+
+	return &catalogv3.DownloadDeploymentPackageResponse{Artifact: data}, nil
 }
 
 type packageChanges struct {

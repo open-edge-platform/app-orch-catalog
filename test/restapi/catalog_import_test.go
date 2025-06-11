@@ -89,14 +89,9 @@ func (s *TestSuite) TestImportHelmChart() {
 
 	/* cleanup -- these should all exist at this point */
 
-	err = s.DeleteDeploymentPackage("impt", "2.9.0", true)
-	s.NoError(err, "Expected to delete registry")
-
-	err = s.DeleteApplication("impt", "2.9.0", true)
-	s.NoError(err, "Expected to delete registry")
-
-	err = s.DeleteRegistry("impt-registry", true)
-	s.NoError(err, "Expected to delete registry")
+	s.NoError(s.DeleteDeploymentPackage("impt", "2.9.0", true), "Expected to delete registry")
+	s.NoError(s.DeleteApplication("impt", "2.9.0", true), "Expected to delete registry")
+	s.NoError(s.DeleteRegistry("impt-registry", true), "Expected to delete registry")
 }
 
 func (s *TestSuite) TestImportHelmChartBadURL() {

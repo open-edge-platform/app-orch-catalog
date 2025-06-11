@@ -115,6 +115,10 @@ service CatalogService {
   }
   // Watches inventory of deployment packages for changes.
   rpc WatchDeploymentPackages(WatchDeploymentPackagesRequest) returns (stream WatchDeploymentPackagesResponse) {}
+  // Downloads a deployment package as a tarball.
+  rpc DownloadDeploymentPackage(DownloadDeploymentPackageRequest) returns (DownloadDeploymentPackageResponse) {
+    // REST get API handler is special-cased in rest-proxy to cause file to be downloaded rather than returning JSON
+  }
 
   // === Application ===
 
@@ -415,6 +419,15 @@ message GetDeploymentPackageRequest {
   string version = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
+// Request message for the DownloadDeploymentPackage method.
+// Same parameters as GetDeploymentPackageRequest
+message DownloadDeploymentPackageRequest {
+  // Name of the DeploymentPackage.
+  string deployment_package_name = 1 [(google.api.field_behavior) = REQUIRED];
+  // Version of the DeploymentPackage.
+  string version = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
 // Response message for the GetDeploymentPackage method.
 message GetDeploymentPackageResponse {
   // The DeploymentPackage requested.
@@ -467,6 +480,12 @@ message WatchDeploymentPackagesRequest {
 message WatchDeploymentPackagesResponse {
   catalog.v3.Event event = 1 [(google.api.field_behavior) = REQUIRED];
   catalog.v3.DeploymentPackage deployment_package = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+// Response message for the DownloadDeploymentPackage method.
+message DownloadDeploymentPackageResponse {
+  // Raw bytes content of the file being downloaded.
+  bytes artifact = 2 [(google.api.field_behavior) = REQUIRED];
 }
 
 // === Application Messages ===

@@ -5,9 +5,11 @@
 package exporter
 
 import (
+	"archive/tar"
+	"bytes"
+	"compress/gzip"
 	b64 "encoding/base64"
 	"fmt"
-	"os"
 
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/schema/upload"
@@ -16,12 +18,13 @@ import (
 
 const (
 	schemaVersion = "0.1"
-	permissions   = 0600
 )
 
 // Exporter implements the functions used to export YAML files
 type Exporter struct {
-	output []string
+	output    []string
+	TarBuffer *bytes.Buffer
+	TarWriter *tar.Writer
 }
 
 // LogChange prints the given formatted output to stdout if the verbose flag is enabled
@@ -46,17 +49,17 @@ func appendHeader(yaml []byte) []byte {
 	return append([]byte(header), yaml...)
 }
 
-func saveSpec(spec *upload.YamlSpec, fileName string) error {
+func specToBytes(spec *upload.YamlSpec) ([]byte, error) {
 	// Marshal the spec into YAML and write the file
 	data, err := yaml.Marshal(spec)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	data = appendHeader(data)
-	return os.WriteFile(fileName, data, permissions)
+	return data, nil
 }
 
-func (e *Exporter) ExportRegistry(reg *catalogv3.Registry, fileName string) error {
+func (e *Exporter) ExportRegistry(reg *catalogv3.Registry) ([]byte, error) {
 	spec := &upload.YamlSpec{
 		SpecSchema:    upload.RegistryType,
 		SchemaVersion: schemaVersion,
@@ -70,10 +73,10 @@ func (e *Exporter) ExportRegistry(reg *catalogv3.Registry, fileName string) erro
 		Type:          reg.Type,
 	}
 
-	return saveSpec(spec, fileName)
+	return specToBytes(spec)
 }
 
-func (e *Exporter) ExportArtifact(art *catalogv3.Artifact, fileName string) error {
+func (e *Exporter) ExportArtifact(art *catalogv3.Artifact) ([]byte, error) {
 	e.LogChange("Exporting artifact %s\n", art.Name)
 	spec := &upload.YamlSpec{
 		SpecSchema:    upload.ArtifactType,
@@ -85,15 +88,15 @@ func (e *Exporter) ExportArtifact(art *catalogv3.Artifact, fileName string) erro
 		Artifact:      b64.StdEncoding.EncodeToString(art.Artifact),
 	}
 
-	return saveSpec(spec, fileName)
+	return specToBytes(spec)
 }
 
-func (e *Exporter) ExportApplication(app *catalogv3.Application, fileName string, profilePath string) error {
+func (e *Exporter) ExportApplication(app *catalogv3.Application) ([]byte, map[string][]byte, error) {
 	e.LogChange("Exporting application %s\n", app.Name)
-	profiles, err := e.exportProfiles(profilePath, app)
+	profiles, profileData, err := e.exportProfiles(app)
 	ignoredResources := e.exportIgnoredResources(app)
 	if err != nil {
-		return err
+		return nil, nil, err
 	}
 	spec := &upload.YamlSpec{
 		SpecSchema:       upload.ApplicationType,
@@ -111,16 +114,23 @@ func (e *Exporter) ExportApplication(app *catalogv3.Application, fileName string
 		IgnoredResources: ignoredResources,
 	}
 
-	return saveSpec(spec, fileName)
+	data, err := specToBytes(spec)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return data, profileData, err
 }
 
-func (e *Exporter) exportProfiles(path string, app *catalogv3.Application) ([]upload.Profile, error) {
+func (e *Exporter) exportProfiles(app *catalogv3.Application) ([]upload.Profile, map[string][]byte, error) {
 	profiles := make([]upload.Profile, 0, len(app.Profiles))
+	profileData := map[string][]byte{}
 	for _, p := range app.Profiles {
-		fileName, err := e.exportProfile(path, app, p)
+		fileName, thisProfileData, err := e.exportProfile(app, p)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
+		profileData[fileName] = thisProfileData
 		spec := upload.Profile{
 			Name:                   p.Name,
 			DisplayName:            p.DisplayName,
@@ -132,17 +142,13 @@ func (e *Exporter) exportProfiles(path string, app *catalogv3.Application) ([]up
 
 		profiles = append(profiles, spec)
 	}
-	return profiles, nil
+	return profiles, profileData, nil
 }
 
-func (e *Exporter) exportProfile(path string, app *catalogv3.Application, p *catalogv3.Profile) (string, error) {
+func (e *Exporter) exportProfile(app *catalogv3.Application, p *catalogv3.Profile) (string, []byte, error) {
 	e.LogChange("Exporting profile %s\n", p.Name)
 	baseFile := fmt.Sprintf("values-%s-%s-%s.yaml", app.Name, app.Version, p.Name)
-	valuesFile := fmt.Sprintf("%s/%s", path, baseFile)
-	if err := os.WriteFile(valuesFile, []byte(p.ChartValues), permissions); err != nil {
-		return "", err
-	}
-	return baseFile, nil
+	return baseFile, []byte(p.ChartValues), nil
 }
 
 func (e *Exporter) exportIgnoredResources(app *catalogv3.Application) []upload.ResourceReference {
@@ -230,7 +236,7 @@ func (e *Exporter) exportExtension(ext *catalogv3.APIExtension) upload.APIExtens
 	return extension
 }
 
-func (e *Exporter) ExportDeploymentPackage(pkg *catalogv3.DeploymentPackage, fileName string) error {
+func (e *Exporter) ExportDeploymentPackage(pkg *catalogv3.DeploymentPackage) ([]byte, error) {
 
 	e.LogChange("Exporting deployment package %s\n", pkg.Name)
 	spec := &upload.YamlSpec{
@@ -251,7 +257,7 @@ func (e *Exporter) ExportDeploymentPackage(pkg *catalogv3.DeploymentPackage, fil
 		DefaultNamespaces:          e.exportDefaultNamespaces(pkg.DefaultNamespaces),
 		Namespaces:                 e.exportNamespaces(pkg.Namespaces),
 	}
-	return saveSpec(spec, fileName)
+	return specToBytes(spec)
 }
 
 func (e *Exporter) exportDeploymentProfiles(app *catalogv3.DeploymentPackage) []upload.DeploymentProfile {
@@ -306,4 +312,52 @@ func (e *Exporter) exportNamespaces(namespaces []*catalogv3.Namespace) []upload.
 		list = append(list, item)
 	}
 	return list
+}
+
+func (e *Exporter) NewTarball() {
+	e.TarBuffer = &bytes.Buffer{}
+	e.TarWriter = tar.NewWriter(e.TarBuffer)
+}
+
+func (e *Exporter) AddToTarball(filename string, data []byte) error {
+	if e.TarWriter == nil {
+		return fmt.Errorf("tar writer is not initialized")
+	}
+	hdr := &tar.Header{
+		Name: filename,
+		Mode: 0600,
+		Size: int64(len(data)),
+	}
+	if err := e.TarWriter.WriteHeader(hdr); err != nil {
+		return fmt.Errorf("error writing tar header for %s: %w", filename, err)
+	}
+	if _, err := e.TarWriter.Write(data); err != nil {
+		return fmt.Errorf("error writing data to tar for %s: %w", filename, err)
+	}
+	return nil
+}
+
+func (e *Exporter) CloseTarball() ([]byte, error) {
+	if e.TarWriter == nil {
+		return nil, fmt.Errorf("tar writer is not initialized")
+	}
+	if err := e.TarWriter.Close(); err != nil {
+		return nil, fmt.Errorf("error closing tar writer: %w", err)
+	}
+	data := e.TarBuffer.Bytes()
+
+	var buf bytes.Buffer
+	gz := gzip.NewWriter(&buf)
+	_, err := gz.Write(data)
+	if err != nil {
+		return nil, fmt.Errorf("error compressing tarball: %w", err)
+	}
+	if err := gz.Close(); err != nil {
+		return nil, fmt.Errorf("error closing gzip writer: %w", err)
+	}
+
+	e.TarWriter = nil
+	e.TarBuffer = nil
+
+	return buf.Bytes(), nil
 }
