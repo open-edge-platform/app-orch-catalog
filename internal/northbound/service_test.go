@@ -46,7 +46,8 @@ func createServerConnection(t *testing.T, dbClient *ent.Client, opaClient openpo
 	}()
 
 	ctx := context.Background()
-	// TODO: Migrate from grpc.Dial/DialContext to grpc.NewClient. Deferred due to potential change in behavior.
+	// TODO: Migrate from grpc.Dial/DialContext to grpc.NewClient. Deferred due to potential changes in behavior
+	// as described at https://github.com/grpc/grpc-go/blob/master/Documentation/anti-patterns.md
 	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithTransportCredentials(insecure.NewCredentials())) //nolint:staticcheck
 	if err != nil {
 		t.Fatalf("Failed to dial bufnet: %v", err)

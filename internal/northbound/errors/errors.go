@@ -190,7 +190,11 @@ func newError(options Options) error {
 			strVal := &wrapperspb.StringValue{Value: detail}
 			details = append(details, strVal)
 		}
-		s, _ = s.WithDetails(details...)
+		var err error
+		s, err = s.WithDetails(details...)
+		if err != nil {
+			log.Warnf("Failed to add details to status: %v", err)
+		}
 	}
 
 	return s.Err()
