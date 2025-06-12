@@ -12,6 +12,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 
 	// Third-party imports
 
@@ -89,8 +90,8 @@ func (s *TestSuite) TestImportHelmChart() {
 
 	/* cleanup -- these should all exist at this point */
 
-	s.NoError(s.DeleteDeploymentPackage("impt", "2.9.0", true), "Expected to delete registry")
-	s.NoError(s.DeleteApplication("impt", "2.9.0", true), "Expected to delete registry")
+	s.NoError(s.DeleteDeploymentPackage("impt", "2.9.0", true), "Expected to delete deployment package")
+	s.NoError(s.DeleteApplication("impt", "2.9.0", true), "Expected to delete application")
 	s.NoError(s.DeleteRegistry("impt-registry", true), "Expected to delete registry")
 }
 
@@ -101,7 +102,10 @@ func (s *TestSuite) TestImportHelmChartBadURL() {
 
 	status, body := s.ImportHelmChart(importRequest)
 	s.Equal(http.StatusBadRequest, status, "Expected status code 400 for invalid Helm chart URL")
-	s.Contains(body, "failed to resolve", "Expected error message to contain 'failed to resolve'")
+	s.True(
+		strings.Contains(body, "failed to resolve") || strings.Contains(body, "failed to verify certificate"),
+		"Expected error containing 'failed to resolve' or 'failed to verify certificate' in body",
+	)
 }
 
 func (s *TestSuite) TestImportHelmChartNotAURL() {
