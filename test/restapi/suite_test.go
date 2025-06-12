@@ -42,6 +42,7 @@ func (s *TestSuite) SetupSuite() {
 	if err != nil || !autoCert || s.orchDomain == "" {
 		s.orchDomain = "kind.internal"
 	}
+	s.T().Log("Orchestration domain set to:", s.orchDomain)
 	s.KeycloakServer = fmt.Sprintf("keycloak.%s", s.orchDomain)
 
 	s.catalogClient.Token = auth.SetUpAccessToken(s.T(), s.KeycloakServer)
