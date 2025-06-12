@@ -2,6 +2,11 @@ package restproxy
 
 import (
 	"context"
+	"net"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	ent "github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/enttest"
@@ -14,10 +19,6 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/test/bufconn"
-	"net"
-	"net/http"
-	"net/http/httptest"
-	"testing"
 )
 
 func createRestServerConnection(t *testing.T, dbClient *ent.Client) *restclient.ClientWithResponses {
@@ -53,7 +54,8 @@ func createRestServerConnection(t *testing.T, dbClient *ent.Client) *restclient.
 	}
 
 	ctx := context.Background()
-	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(dialer), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// TODO: Migrate from grpc.Dial/DialContext to grpc.NewClient. Deferred due to potential change in behavior.
+	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(dialer), grpc.WithTransportCredentials(insecure.NewCredentials())) //nolint:staticcheck
 	if err != nil {
 		t.Fatalf("Failed to dial bufnet: %v", err)
 	}
