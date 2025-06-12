@@ -63,7 +63,10 @@ func (s *TestSuite) TestImportHelmChart() {
 	status, body := s.ImportHelmChart(importRequest)
 	s.Equal(http.StatusOK, status, "Expected status code 200 for successful import")
 
-	_ = body
+	if http.StatusOK != status {
+		// for debugging purposes, log the response body. It will have error messages from the importer.
+		s.T().Logf("Response body: %s\n", body)
+	}
 
 	app, err := s.GetApplication("impt", "2.9.0", true)
 	s.Require().NoError(err, "Expected to retrieve application after import")
