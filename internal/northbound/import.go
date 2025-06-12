@@ -21,6 +21,7 @@ import (
 	"github.com/open-edge-platform/app-orch-catalog/internal/helm"
 	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
 	nberrors "github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
+	"github.com/open-edge-platform/app-orch-catalog/internal/shared/verboseerror"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 )
 
@@ -42,10 +43,19 @@ func (g *Server) Import(ctx context.Context, req *catalogv3.ImportRequest) (*cat
 
 	helm, err := helm.FetchHelmChartOCI(req.Url, req.Username, req.AuthToken)
 	if err != nil {
-		return nil, nberrors.NewInvalidArgument(
-			nberrors.WithMessage("%s", err.Error()),
-			nberrors.WithError(err),
-		)
+		verboseErrMsg := verboseerror.VerboseErrorAsString(err)
+		if verboseErrMsg != "" {
+			return nil, nberrors.NewInvalidArgument(
+				nberrors.WithMessage("%s", err.Error()),
+				nberrors.WithDetails(verboseErrMsg),
+				nberrors.WithError(err),
+			)
+		} else {
+			return nil, nberrors.NewInvalidArgument(
+				nberrors.WithMessage("%s", err.Error()),
+				nberrors.WithError(err),
+			)
+		}
 	}
 
 	_, pkg, app, reg, err := dp.GenerateDeploymentPackageResources(helm, req.ChartValues, req.Namespace, req.IncludeAuth)

@@ -5,12 +5,16 @@
 package errors
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/open-edge-platform/orch-library/go/dazl"
 
+	"github.com/golang/protobuf/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 var log = dazl.GetPackageLogger()
@@ -23,6 +27,7 @@ type Options struct {
 	Message         string
 	Error           error
 	Args            []any
+	Details         []string
 }
 
 func (o *Options) apply(opts ...Option) {
@@ -91,6 +96,12 @@ func WithMessage(message string, args ...any) Option {
 func WithError(err error) Option {
 	return func(opts *Options) {
 		opts.Error = err
+	}
+}
+
+func WithDetails(details ...string) Option {
+	return func(opts *Options) {
+		opts.Details = details
 	}
 }
 
@@ -171,5 +182,21 @@ func newError(options Options) error {
 		builder.WriteString(options.Message)
 		args = append(args, options.Args...)
 	}
+
+	if options.Details != nil {
+		details := []proto.Message{}
+		for _, detail := range options.Details {
+			strVal := &wrapperspb.StringValue{Value: detail}
+			anyVal, err := anypb.New(strVal)
+			if err == nil {
+				details = append(details, anyVal)
+			}
+		}
+
+		s := status.New(options.Code, fmt.Sprintf(builder.String(), args...))
+		s.WithDetails(details...)
+		return s.Err()
+	}
+
 	return status.Errorf(options.Code, builder.String(), args...)
 }

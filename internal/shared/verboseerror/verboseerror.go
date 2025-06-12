@@ -8,6 +8,7 @@
 package verboseerror
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -61,6 +62,20 @@ func PrintVerboseError(err error) {
 			fmt.Fprintf(os.Stderr, "%v\n", err)
 		}
 	}
+}
+
+// VerboseErrorAsString returns a string representation of the error's verbose message.
+// If the error does not implement VerboseError, it returns an empty string.
+
+func VerboseErrorAsString(err error) string {
+	if err != nil {
+		if e, ok := err.(VerboseError); ok {
+			var buf bytes.Buffer
+			e.Verbose(&buf)
+			return buf.String()
+		}
+	}
+	return ""
 }
 
 // WriteErrorTemplate renders an error template to the writer, using the provided
