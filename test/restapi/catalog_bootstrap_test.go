@@ -18,32 +18,69 @@ import (
 	"strings"
 
 	// Third-party imports
-
 	"github.com/stretchr/testify/assert"
 
 	// Project-specific imports
 	"github.com/open-edge-platform/app-orch-catalog/test/utils/auth"
 )
 
-func (s *TestSuite) TestListBootStrapExtensions() {
-	requestURL := fmt.Sprintf("%s%s", s.catalogClient.CatalogRESTServerUrl, types.ApplicationsEndpoint)
-	req, err := http.NewRequest("GET", requestURL, nil)
-	assert.NoError(s.T(), err)
+// makeAuthenticatedRequest creates and sends an HTTP request with auth headers
+func (s *TestSuite) makeAuthenticatedRequest(method, endpoint string, requestBody io.Reader, queryParams map[string]string, headers ...map[string]string) (*http.Response, error) {
+	requestURL := fmt.Sprintf("%s%s", s.catalogClient.CatalogRESTServerUrl, endpoint)
+	req, err := http.NewRequest(method, requestURL, requestBody)
+	if err != nil {
+		return nil, err
+	}
+
 	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
-	res, err := http.DefaultClient.Do(req)
-	assert.NoError(s.T(), err)
+
+	// Add custom headers if provided
+	if len(headers) > 0 && headers[0] != nil {
+		for key, value := range headers[0] {
+			req.Header.Set(key, value)
+		}
+	}
+
+	// Add query parameters if provided
+	if len(queryParams) > 0 {
+		query := req.URL.Query()
+		for key, value := range queryParams {
+			query.Add(key, value)
+		}
+		req.URL.RawQuery = query.Encode()
+	}
+
+	return http.DefaultClient.Do(req)
+}
+
+// processResponse validates response status and returns body
+func (s *TestSuite) processResponse(res *http.Response) ([]byte, error) {
 	defer res.Body.Close()
-	assert.NoError(s.T(), err)
 	s.Equal("200 OK", res.Status)
 
 	body, err := io.ReadAll(res.Body)
+	assert.NoError(s.T(), err)
+	return body, err
+}
+
+// unmarshalJSON unmarshals response body into provided result struct
+func (s *TestSuite) unmarshalJSON(body []byte, result interface{}) error {
+	err := json.Unmarshal(body, result)
+	assert.NoError(s.T(), err)
+	return err
+}
+
+func (s *TestSuite) TestListBootStrapExtensions() {
+	res, err := s.makeAuthenticatedRequest("GET", types.ApplicationsEndpoint, nil, nil)
+	assert.NoError(s.T(), err)
+
+	body, err := s.processResponse(res)
 	assert.NoError(s.T(), err)
 
 	var result struct {
 		Applications []types.Application `json:"applications"`
 	}
-	err = json.Unmarshal(body, &result)
-	assert.NoError(s.T(), err)
+	s.unmarshalJSON(body, &result)
 
 	assert.Equal(s.T(), len(types.GetApplications()), len(result.Applications), "Mismatch in the number of applications")
 	// Log application details for debugging purposes
@@ -52,36 +89,26 @@ func (s *TestSuite) TestListBootStrapExtensions() {
 		log.Printf("Name: %s, DisplayName: %s, Description: %s, Version: %s, Kind: %s, ChartName: %s, ChartVersion: %s, HelmRegistryName: %s",
 			app.Name, app.DisplayName, app.Description, app.Version, app.Kind, app.ChartName, app.ChartVersion, app.HelmRegistryName)
 	}
-
 }
 
 func (s *TestSuite) TestListBootStrapDeploymentPackages() {
-	requestURL := fmt.Sprintf("%s%s", s.catalogClient.CatalogRESTServerUrl, types.DeploymentPackagesEndpoint)
-	req, err := http.NewRequest("GET", requestURL, nil)
+	queryParams := map[string]string{
+		"orderBy":  "name",
+		"pageSize": "10",
+		"offset":   "0",
+		"kinds":    "KIND_EXTENSION",
+	}
+
+	res, err := s.makeAuthenticatedRequest("GET", types.DeploymentPackagesEndpoint, nil, queryParams)
 	assert.NoError(s.T(), err)
 
-	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
-
-	// Add query parameters
-	query := req.URL.Query()
-	query.Add("orderBy", "name")
-	query.Add("pageSize", "10")
-	query.Add("offset", "0")
-	query.Add("kinds", "KIND_EXTENSION")
-	req.URL.RawQuery = query.Encode()
-
-	res, err := http.DefaultClient.Do(req)
+	body, err := s.processResponse(res)
 	assert.NoError(s.T(), err)
-	defer res.Body.Close()
-	s.Equal("200 OK", res.Status)
 
-	body, err := io.ReadAll(res.Body)
-	assert.NoError(s.T(), err)
 	var result struct {
 		DeploymentPackages []types.DeploymentPackage `json:"deploymentPackages"`
 	}
-	err = json.Unmarshal(body, &result)
-	assert.NoError(s.T(), err)
+	s.unmarshalJSON(body, &result)
 
 	assert.Equal(s.T(), len(types.GetDeploymentPackages()), len(result.DeploymentPackages), "Mismatch in the number of deployment packages")
 
@@ -91,24 +118,17 @@ func (s *TestSuite) TestListBootStrapDeploymentPackages() {
 		log.Printf("Name: %s, Description: %s, Version: %s, Kind: %s",
 			pkg.Name, pkg.Description, pkg.Version, pkg.Kind)
 	}
-
 }
 
 func (s *TestSuite) TestListBootStrapRegistries() {
-	requestURL := fmt.Sprintf("%s%s", s.catalogClient.CatalogRESTServerUrl, types.RegistriesEndpoint)
-	req, err := http.NewRequest("GET", requestURL, nil)
-	assert.NoError(s.T(), err)
-	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
+	queryParams := map[string]string{
+		"orderBy":           "name",
+		"pageSize":          "10",
+		"offset":            "0",
+		"showSensitiveInfo": "true",
+	}
 
-	// Add query parameters
-	query := req.URL.Query()
-	query.Add("orderBy", "name")
-	query.Add("pageSize", "10")
-	query.Add("offset", "0")
-	query.Add("showSensitiveInfo", "true")
-	req.URL.RawQuery = query.Encode()
-
-	res, err := http.DefaultClient.Do(req)
+	res, err := s.makeAuthenticatedRequest("GET", types.RegistriesEndpoint, nil, queryParams)
 	assert.NoError(s.T(), err)
 	defer res.Body.Close()
 
@@ -138,27 +158,23 @@ func (s *TestSuite) TestListBootStrapRegistries() {
 
 func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 	for _, registry := range s.catalogClient.GetRegistries() {
-		requestURL := fmt.Sprintf("%s%s/%s", s.catalogClient.CatalogRESTServerUrl, types.RegistriesEndpoint, registry.Name)
-		req, err := http.NewRequest("GET", requestURL, nil)
+		endpoint := fmt.Sprintf("%s/%s", types.RegistriesEndpoint, registry.Name)
+		res, err := s.makeAuthenticatedRequest("GET", endpoint, nil, nil)
 		assert.NoError(s.T(), err)
-		auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
 
-		res, err := http.DefaultClient.Do(req)
-		assert.NoError(s.T(), err)
-		defer res.Body.Close()
 		if res.Status != "200 OK" {
 			assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for Registry: %s", registry.Name)
+			res.Body.Close()
 			continue
 		}
 
-		body, err := io.ReadAll(res.Body)
+		body, err := s.processResponse(res)
 		assert.NoError(s.T(), err)
 
 		var result struct {
 			Registry types.Registry `json:"registry"`
 		}
-		err = json.Unmarshal(body, &result)
-		assert.NoError(s.T(), err)
+		s.unmarshalJSON(body, &result)
 
 		switch {
 		case registry.Name != result.Registry.Name:
@@ -182,30 +198,23 @@ func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 
 func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
 	for _, app := range types.GetApplications() {
-		requestURL := fmt.Sprintf("%s%s/%s/versions", s.catalogClient.CatalogRESTServerUrl,
-			types.ApplicationsEndpoint, app.Name)
-
-		req, err := http.NewRequest("GET", requestURL, nil)
+		endpoint := fmt.Sprintf("%s/%s/versions", types.ApplicationsEndpoint, app.Name)
+		res, err := s.makeAuthenticatedRequest("GET", endpoint, nil, nil)
 		assert.NoError(s.T(), err)
 
-		auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
-
-		res, err := http.DefaultClient.Do(req)
-		assert.NoError(s.T(), err)
-		defer res.Body.Close()
 		if res.Status != "200 OK" {
-			assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for application: %s - %s", app.Name, requestURL)
+			assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for application: %s - %s", app.Name, endpoint)
+			res.Body.Close()
 			continue
 		}
 
-		body, err := io.ReadAll(res.Body)
+		body, err := s.processResponse(res)
 		assert.NoError(s.T(), err)
 
 		var result struct {
 			Application []types.Application `json:"application"`
 		}
-		err = json.Unmarshal(body, &result)
-		assert.NoError(s.T(), err)
+		s.unmarshalJSON(body, &result)
 
 		s.True(len(result.Application) > 0, "Expected at least one application for %s", app.Name)
 
@@ -231,30 +240,23 @@ func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
 
 func (s *TestSuite) TestVerifyBootstrappedDeploymentPackagesExist() {
 	for _, pkg := range types.GetDeploymentPackages() {
-		requestURL := fmt.Sprintf("%s%s/%s/versions", s.catalogClient.CatalogRESTServerUrl,
-			types.DeploymentPackagesEndpoint, pkg.Name)
-
-		req, err := http.NewRequest("GET", requestURL, nil)
+		endpoint := fmt.Sprintf("%s/%s/versions", types.DeploymentPackagesEndpoint, pkg.Name)
+		res, err := s.makeAuthenticatedRequest("GET", endpoint, nil, nil)
 		assert.NoError(s.T(), err)
 
-		auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
-
-		res, err := http.DefaultClient.Do(req)
-		assert.NoError(s.T(), err)
-		defer res.Body.Close()
 		if res.Status != "200 OK" {
 			assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for Package: %s", pkg.Name)
+			res.Body.Close()
 			continue // Everything else is going to fail...
 		}
 
-		body, err := io.ReadAll(res.Body)
+		body, err := s.processResponse(res)
 		assert.NoError(s.T(), err)
 
 		var result struct {
 			DeploymentPackage []types.DeploymentPackage `json:"deploymentPackages"`
 		}
-		err = json.Unmarshal(body, &result)
-		assert.NoError(s.T(), err)
+		s.unmarshalJSON(body, &result)
 
 		s.True(len(result.DeploymentPackage) > 0, "Expected at least one deployment package for %s", pkg.Name)
 		if len(result.DeploymentPackage) > 0 {
@@ -271,13 +273,10 @@ func (s *TestSuite) TestVerifyBootstrappedDeploymentPackagesExist() {
 }
 
 func (s *TestSuite) Delete(url string) {
-	req, err := http.NewRequest("DELETE", url, nil)
+	endpoint := strings.TrimPrefix(url, s.catalogClient.CatalogRESTServerUrl)
+	res, err := s.makeAuthenticatedRequest("DELETE", endpoint, nil, nil)
 	assert.NoError(s.T(), err)
 
-	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
-
-	res, err := http.DefaultClient.Do(req)
-	assert.NoError(s.T(), err)
 	defer res.Body.Close()
 	if res.Status != "200 OK" {
 		assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for delete on url %s", url)
@@ -298,32 +297,24 @@ func (s *TestSuite) TestUploadTarball() {
 	}
 
 	// Make sure the wordpress DP was created
+	endpoint := fmt.Sprintf("%s/test-wordpress/versions/0.1.1", types.DeploymentPackagesEndpoint)
+	queryParams := map[string]string{
+		"orderBy":  "name",
+		"pageSize": "10",
+		"offset":   "0",
+	}
 
-	requestURL := fmt.Sprintf("%s%s/test-wordpress/versions/0.1.1", s.catalogClient.CatalogRESTServerUrl, types.DeploymentPackagesEndpoint)
-	req, err := http.NewRequest("GET", requestURL, nil)
+	res, err = s.makeAuthenticatedRequest("GET", endpoint, nil, queryParams)
 	assert.NoError(s.T(), err)
 
-	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
-
-	// Add query parameters
-	query := req.URL.Query()
-	query.Add("orderBy", "name")
-	query.Add("pageSize", "10")
-	query.Add("offset", "0")
-	req.URL.RawQuery = query.Encode()
-
-	res, err = http.DefaultClient.Do(req)
+	body, err := s.processResponse(res)
 	assert.NoError(s.T(), err)
-	defer res.Body.Close()
-	s.Equal("200 OK", res.Status)
 
-	resBody, err := io.ReadAll(res.Body)
-	assert.NoError(s.T(), err)
 	var result struct {
 		DeploymentPackage types.DeploymentPackage `json:"deploymentPackage"`
 	}
-	err = json.Unmarshal(resBody, &result)
-	assert.NoError(s.T(), err)
+	s.unmarshalJSON(body, &result)
+
 	assert.Equal(s.T(), types.WordpressName, result.DeploymentPackage.Name, "Mismatch in the name of the deployment package")
 	assert.Equal(s.T(), types.WordpressVersion, result.DeploymentPackage.Version, "Mismatch in the version of the deployment package")
 
@@ -359,15 +350,12 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 
 	writer.Close()
 
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s%s", s.catalogClient.CatalogRESTServerUrl, types.UploadEndpoint), body)
+	headers := map[string]string{
+		"Content-Type": writer.FormDataContentType(),
+	}
+	res, err := s.makeAuthenticatedRequest("POST", types.UploadEndpoint, body, nil, headers)
 	assert.NoError(s.T(), err)
 
-	req.Header.Add("Content-Type", writer.FormDataContentType())
-
-	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
-
-	res, err := http.DefaultClient.Do(req)
-	assert.NoError(s.T(), err)
 	defer res.Body.Close()
 	assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for upload")
 	if res.Status != "200 OK" {
@@ -378,32 +366,24 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 	}
 
 	// Make sure the wordpress DP was created
+	endpoint := fmt.Sprintf("%s/test-wordpress/versions/0.1.1", types.DeploymentPackagesEndpoint)
+	queryParams := map[string]string{
+		"orderBy":  "name",
+		"pageSize": "10",
+		"offset":   "0",
+	}
 
-	requestURL := fmt.Sprintf("%s%s/test-wordpress/versions/0.1.1", s.catalogClient.CatalogRESTServerUrl, types.DeploymentPackagesEndpoint)
-	req, err = http.NewRequest("GET", requestURL, nil)
+	res, err = s.makeAuthenticatedRequest("GET", endpoint, nil, queryParams)
 	assert.NoError(s.T(), err)
 
-	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
-
-	// Add query parameters
-	query := req.URL.Query()
-	query.Add("orderBy", "name")
-	query.Add("pageSize", "10")
-	query.Add("offset", "0")
-	req.URL.RawQuery = query.Encode()
-
-	res, err = http.DefaultClient.Do(req)
+	resBody, err := s.processResponse(res)
 	assert.NoError(s.T(), err)
-	defer res.Body.Close()
-	s.Equal("200 OK", res.Status)
 
-	resBody, err := io.ReadAll(res.Body)
-	assert.NoError(s.T(), err)
 	var result struct {
 		DeploymentPackage types.DeploymentPackage `json:"deploymentPackage"`
 	}
-	err = json.Unmarshal(resBody, &result)
-	assert.NoError(s.T(), err)
+	s.unmarshalJSON(resBody, &result)
+
 	assert.Equal(s.T(), "test-wordpress", result.DeploymentPackage.Name, "Mismatch in the name of the deployment package")
 	assert.Equal(s.T(), "0.1.1", result.DeploymentPackage.Version, "Mismatch in the version of the deployment package")
 
@@ -416,21 +396,12 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 }
 
 func (s *TestSuite) TestGetCharts() {
-	requestURL := fmt.Sprintf("%s/catalog.orchestrator.apis/charts?registry=harbor-helm-oci", s.catalogClient.CatalogRESTServerUrl)
-	req, err := http.NewRequest("GET", requestURL, nil)
+	res, err := s.makeAuthenticatedRequest("GET", "/catalog.orchestrator.apis/charts", nil, map[string]string{"registry": "harbor-helm-oci"})
 	assert.NoError(s.T(), err)
 
-	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
-
-	res, err := http.DefaultClient.Do(req)
-	assert.NoError(s.T(), err)
-	defer res.Body.Close()
-	s.Equal("200 OK", res.Status)
-
-	body, err := io.ReadAll(res.Body)
+	body, err := s.processResponse(res)
 	assert.NoError(s.T(), err)
 
 	// On a fresh orchestrator there should be no charts in the registry
-
 	assert.Equal(s.T(), "null", string(body), "Expected the response body to be empty")
 }
