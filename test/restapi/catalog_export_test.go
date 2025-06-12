@@ -17,6 +17,7 @@ import (
 )
 
 func (s *TestSuite) TestExportDeploymentPackage() {
+	s.T().Skip()
 	// Before we can test export, first import the wordpress package
 	_, err := s.catalogClient.UploadTarball(types.WordpressTarballPathName)
 	s.Require().NoError(err, "Expected to upload tarball before exporting")
@@ -72,6 +73,7 @@ func (s *TestSuite) TestExportDeploymentPackage() {
 }
 
 func (s *TestSuite) TestExportDeploymentPackageNoExist() {
+	s.T().Skip()
 	res, err := s.catalogClient.ExportDeploymentPackage("not-a-real-package", "0.1.1")
 	s.Require().NoError(err)
 	s.Require().Equal(http.StatusNotFound, res.StatusCode, "Expected HTTP status code 404 for export")

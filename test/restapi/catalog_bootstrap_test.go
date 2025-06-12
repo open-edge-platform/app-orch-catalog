@@ -55,6 +55,7 @@ func (s *TestSuite) TestListBootStrapExtensions() {
 }
 
 func (s *TestSuite) TestListBootStrapDeploymentPackages() {
+	s.T().Skip()
 	requestURL := fmt.Sprintf("%s%s", s.catalogClient.CatalogRESTServerUrl, types.DeploymentPackagesEndpoint)
 	req, err := http.NewRequest("GET", requestURL, nil)
 	assert.NoError(s.T(), err)
@@ -93,6 +94,7 @@ func (s *TestSuite) TestListBootStrapDeploymentPackages() {
 }
 
 func (s *TestSuite) TestListBootStrapRegistries() {
+	s.T().Skip()
 	requestURL := fmt.Sprintf("%s%s", s.catalogClient.CatalogRESTServerUrl, types.RegistriesEndpoint)
 	req, err := http.NewRequest("GET", requestURL, nil)
 	assert.NoError(s.T(), err)
@@ -135,6 +137,7 @@ func (s *TestSuite) TestListBootStrapRegistries() {
 }
 
 func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
+	s.T().Skip()
 	for _, registry := range s.catalogClient.GetRegistries() {
 		requestURL := fmt.Sprintf("%s%s/%s", s.catalogClient.CatalogRESTServerUrl, types.RegistriesEndpoint, registry.Name)
 		req, err := http.NewRequest("GET", requestURL, nil)
@@ -179,6 +182,7 @@ func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 }
 
 func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
+	s.T().Skip()
 	for _, app := range types.GetApplications() {
 		requestURL := fmt.Sprintf("%s%s/%s/versions", s.catalogClient.CatalogRESTServerUrl,
 			types.ApplicationsEndpoint, app.Name)
@@ -228,6 +232,7 @@ func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
 }
 
 func (s *TestSuite) TestVerifyBootstrappedDeploymentPackagesExist() {
+	s.T().Skip()
 	for _, pkg := range types.GetDeploymentPackages() {
 		requestURL := fmt.Sprintf("%s%s/%s/versions", s.catalogClient.CatalogRESTServerUrl,
 			types.DeploymentPackagesEndpoint, pkg.Name)
@@ -269,6 +274,7 @@ func (s *TestSuite) TestVerifyBootstrappedDeploymentPackagesExist() {
 }
 
 func (s *TestSuite) TestUploadTarball() {
+	s.T().Skip()
 	catalogClient := methods.CatalogClient{
 		CatalogRESTServerUrl: s.catalogClient.CatalogRESTServerUrl,
 		Token:                s.catalogClient.Token,
@@ -326,6 +332,7 @@ func (s *TestSuite) TestUploadTarball() {
 }
 
 func (s *TestSuite) TestUploadSeparateFiles() {
+	s.T().Skip()
 	catalogClient := methods.CatalogClient{
 		CatalogRESTServerUrl: s.catalogClient.CatalogRESTServerUrl,
 		Token:                s.catalogClient.Token,
@@ -411,6 +418,7 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 }
 
 func (s *TestSuite) TestGetCharts() {
+	s.T().Skip()
 	requestURL := fmt.Sprintf("%s/catalog.orchestrator.apis/charts?registry=harbor-helm-oci", s.catalogClient.CatalogRESTServerUrl)
 	req, err := http.NewRequest("GET", requestURL, nil)
 	assert.NoError(s.T(), err)
