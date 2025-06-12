@@ -184,7 +184,7 @@ func newError(options Options) error {
 
 	s := status.New(options.Code, fmt.Sprintf(builder.String(), args...))
 
-	if options.Details != nil {
+	if options.Details != nil && len(options.Details) > 0 {
 		details := []protoadapt.MessageV1{}
 		for _, detail := range options.Details {
 			strVal := &wrapperspb.StringValue{Value: detail}
