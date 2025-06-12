@@ -295,6 +295,7 @@ func (c *CatalogClient) ImportHelmChart(importRequest *ImportRequest) (int, stri
 	params.Add("url", importRequest.URL)
 
 	requestURL := fmt.Sprintf("%s%s?%s", c.CatalogRESTServerUrl, types.ImportEndpoint, params.Encode())
+	fmt.Println("requestURL:", requestURL)
 
 	req, err := http.NewRequest("POST", requestURL, nil)
 	if err != nil {
