@@ -13,7 +13,7 @@ require (
 	github.com/blang/semver/v4 v4.0.0
 	github.com/envoyproxy/protoc-gen-validate v1.2.1
 	github.com/gin-contrib/cors v1.7.6
-	github.com/gin-contrib/secure v0.0.1
+	github.com/gin-contrib/secure v1.1.2
 	github.com/gin-gonic/gin v1.11.0
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/websocket v1.5.4-0.20250319132907-e064f32e3674
