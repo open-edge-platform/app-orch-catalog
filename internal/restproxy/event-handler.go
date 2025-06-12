@@ -6,14 +6,15 @@ package restproxy
 
 import (
 	"context"
+	"net/http"
+	"sync"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/orch-library/go/dazl"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
-	"net/http"
-	"sync"
 )
 
 // EventHandler represents entity capable of relaying various Watch<X> events to a web-socket channel
@@ -52,7 +53,9 @@ func NewEventHandler(endpoint string, opts []grpc.DialOption) (*EventHandler, er
 	log.Infow("Creating EventHandler", dazl.String("grpcEndpoint", endpoint))
 
 	ctx := context.Background()
-	conn, err := grpc.Dial(endpoint, opts...)
+	// TODO: Migrate from grpc.Dial/DialContext to grpc.NewClient. Deferred due to potential changes in behavior
+	// as described at https://github.com/grpc/grpc-go/blob/master/Documentation/anti-patterns.md
+	conn, err := grpc.Dial(endpoint, opts...) //nolint:staticcheck
 
 	if err != nil {
 		return nil, err

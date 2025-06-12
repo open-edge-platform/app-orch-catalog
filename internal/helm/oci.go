@@ -156,6 +156,11 @@ func FetchHelmChartOCI(ociurl string, user string, password string) (HelmInfo, e
 		verboseerror.Infof("Found latest tag %s\n", tagName)
 	}
 
+	err = orasClient.VerifyExists(ctx, tagName)
+	if err != nil {
+		return HelmInfo{}, &FetchError{Msg: "Failed to verify tag exists in repository", Err: err, URL: ociurl, Host: remoteHost, Artifact: artifactName, Tag: tagName}
+	}
+
 	verboseerror.Infof("Fetching helm chart from oci://%s/%s:%s\n", remoteHost, artifactName, tagName)
 
 	// TODO: Unless latest is used, The URL isn't actually fetched until inside GetTarball(), so we are returning ExtractError when

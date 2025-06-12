@@ -6,6 +6,10 @@ package northbound
 
 import (
 	"context"
+	"net"
+	"strings"
+	"testing"
+
 	_ "github.com/mattn/go-sqlite3"
 	ent "github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/enttest"
@@ -15,9 +19,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/test/bufconn"
-	"net"
-	"strings"
-	"testing"
 )
 
 var lis *bufconn.Listener
@@ -45,7 +46,9 @@ func createServerConnection(t *testing.T, dbClient *ent.Client, opaClient openpo
 	}()
 
 	ctx := context.Background()
-	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// TODO: Migrate from grpc.Dial/DialContext to grpc.NewClient. Deferred due to potential changes in behavior
+	// as described at https://github.com/grpc/grpc-go/blob/master/Documentation/anti-patterns.md
+	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithContextDialer(bufDialer), grpc.WithTransportCredentials(insecure.NewCredentials())) //nolint:staticcheck
 	if err != nil {
 		t.Fatalf("Failed to dial bufnet: %v", err)
 	}

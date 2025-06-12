@@ -5,12 +5,15 @@
 package errors
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/open-edge-platform/orch-library/go/dazl"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/protoadapt"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 var log = dazl.GetPackageLogger()
@@ -23,6 +26,7 @@ type Options struct {
 	Message         string
 	Error           error
 	Args            []any
+	Details         []string
 }
 
 func (o *Options) apply(opts ...Option) {
@@ -91,6 +95,12 @@ func WithMessage(message string, args ...any) Option {
 func WithError(err error) Option {
 	return func(opts *Options) {
 		opts.Error = err
+	}
+}
+
+func WithDetails(details ...string) Option {
+	return func(opts *Options) {
+		opts.Details = details
 	}
 }
 
@@ -171,5 +181,21 @@ func newError(options Options) error {
 		builder.WriteString(options.Message)
 		args = append(args, options.Args...)
 	}
-	return status.Errorf(options.Code, builder.String(), args...)
+
+	s := status.New(options.Code, fmt.Sprintf(builder.String(), args...))
+
+	if len(options.Details) > 0 {
+		details := []protoadapt.MessageV1{}
+		for _, detail := range options.Details {
+			strVal := &wrapperspb.StringValue{Value: detail}
+			details = append(details, strVal)
+		}
+		var err error
+		s, err = s.WithDetails(details...)
+		if err != nil {
+			log.Warnf("Failed to add details to status: %v", err)
+		}
+	}
+
+	return s.Err()
 }

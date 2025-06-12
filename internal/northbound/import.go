@@ -21,6 +21,7 @@ import (
 	"github.com/open-edge-platform/app-orch-catalog/internal/helm"
 	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
 	nberrors "github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
+	"github.com/open-edge-platform/app-orch-catalog/internal/shared/verboseerror"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 )
 
@@ -42,14 +43,25 @@ func (g *Server) Import(ctx context.Context, req *catalogv3.ImportRequest) (*cat
 
 	helm, err := helm.FetchHelmChartOCI(req.Url, req.Username, req.AuthToken)
 	if err != nil {
-		return nil, nberrors.NewInvalidArgument(
-			nberrors.WithMessage(err.Error()))
+		opts := []nberrors.Option{nberrors.WithMessage("%s", err.Error()),
+			nberrors.WithError(err)}
+
+		verboseErrMsg := verboseerror.VerboseErrorAsString(err)
+		if verboseErrMsg != "" {
+			opts = append(opts, nberrors.WithDetails(verboseErrMsg))
+		}
+		return nil, nberrors.NewInvalidArgument(opts...)
 	}
 
 	_, pkg, app, reg, err := dp.GenerateDeploymentPackageResources(helm, req.ChartValues, req.Namespace, req.IncludeAuth)
 	if err != nil {
-		return nil, nberrors.NewInvalidArgument(
-			nberrors.WithMessage(err.Error()))
+		opts := []nberrors.Option{nberrors.WithMessage("%s", err.Error()),
+			nberrors.WithError(err)}
+		verboseErrMsg := verboseerror.VerboseErrorAsString(err)
+		if verboseErrMsg != "" {
+			opts = append(opts, nberrors.WithDetails(verboseErrMsg))
+		}
+		return nil, nberrors.NewInvalidArgument(opts...)
 	}
 
 	tx, err := g.startTransaction(ctx)
@@ -61,21 +73,21 @@ func (g *Server) Import(ctx context.Context, req *catalogv3.ImportRequest) (*cat
 	err = g.createOrUpdateRegistry(ctx, tx, projectUUID, reg, registryEvents)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return nil, err
+		return nil, errors.NewDBError(errors.WithError(err))
 	}
 
 	appEvents := &ApplicationEvents{}
 	err = g.createOrUpdateApplication(ctx, tx, projectUUID, app, appEvents)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return nil, err
+		return nil, errors.NewDBError(errors.WithError(err))
 	}
 
 	dpEvents := &DeploymentPackageEvents{}
 	err = g.createOrUpdateDeploymentPackage(ctx, tx, projectUUID, pkg, dpEvents)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return nil, err
+		return nil, errors.NewDBError(errors.WithError(err))
 	}
 
 	err = g.commitTransaction(tx)

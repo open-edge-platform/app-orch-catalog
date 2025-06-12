@@ -6,14 +6,15 @@ package restproxy
 
 import (
 	"context"
+	"net/http"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/orch-library/go/dazl"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/metadata"
-	"net/http"
-	"strings"
 )
 
 // ChartsHandler provides reverse proxy for access to a list of Help charts provided by a named repository.
@@ -27,7 +28,9 @@ func NewChartsHandler(endpoint string, opts []grpc.DialOption) (*ChartsHandler, 
 	log.Infow("Creating ChartsHandler", dazl.String("grpcEndpoint", endpoint))
 
 	ctx := context.Background()
-	conn, err := grpc.Dial(endpoint, opts...)
+	// TODO: Migrate from grpc.Dial/DialContext to grpc.NewClient. Deferred due to potential changes in behavior
+	// as described at https://github.com/grpc/grpc-go/blob/master/Documentation/anti-patterns.md
+	conn, err := grpc.Dial(endpoint, opts...) //nolint:staticcheck
 
 	if err != nil {
 		return nil, err

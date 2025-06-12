@@ -6,8 +6,9 @@ package helm
 
 import (
 	"fmt"
-	"github.com/open-edge-platform/app-orch-catalog/internal/shared/verboseerror"
 	"io"
+
+	"github.com/open-edge-platform/app-orch-catalog/internal/shared/verboseerror"
 )
 
 // ParseError is an error that occurs when parsing OCI URLs
@@ -100,6 +101,7 @@ type FetchError struct {
 	URL      string
 	Host     string
 	Artifact string
+	Tag      string
 	Msg      string
 
 	Err error
@@ -128,6 +130,9 @@ Host:          {{.Host}}
 {{end}}
 {{- if .Artifact -}}
 Artifact:      {{.Artifact}}
+{{end}}
+{{- if .Tag -}}
+Tag:           {{.Tag}}
 {{end}}
 {{- if .Err -}}
 Wrapped Error: {{.Err}}
