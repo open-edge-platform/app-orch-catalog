@@ -1,87 +1,130 @@
-// SPDX-FileCopyrightText: (C) 2025-present Intel Corporation
+// SPDX-FileCopyrightText: (C) 2023-present Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
 package restapi
 
 import (
+	// Standard library imports
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
-	"github.com/stretchr/testify/assert"
 	"io"
+	"log"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"strings"
+
+	// Third-party imports
+
+	"github.com/stretchr/testify/assert"
+
+	// Project-specific imports
 )
 
 func (s *TestSuite) TestListBootStrapExtensions() {
 	res, err := s.catalogClient.MakeHTTPRequest("GET", types.ApplicationsEndpoint, nil)
-	s.Require().NoError(err)
+	assert.NoError(s.T(), err)
 	defer res.Body.Close()
-	s.assertStatus(res, http.StatusOK)
+	assert.NoError(s.T(), err)
+	s.Equal("200 OK", res.Status)
 
-	body := s.readResponseBody(res)
+	body, err := io.ReadAll(res.Body)
+	assert.NoError(s.T(), err)
+
 	var result struct {
 		Applications []types.Application `json:"applications"`
 	}
-	s.unmarshalJSON(body, &result)
+	err = json.Unmarshal(body, &result)
+	assert.NoError(s.T(), err)
 
 	assert.Equal(s.T(), len(types.GetApplications()), len(result.Applications), "Mismatch in the number of applications")
-	s.T().Log("Extensions:")
+	// Log application details for debugging purposes
+	log.Printf("Extensions:")
 	for _, app := range result.Applications {
-		s.T().Logf("Name: %s, DisplayName: %s, Description: %s, Version: %s, Kind: %s, ChartName: %s, ChartVersion: %s, HelmRegistryName: %s",
+		log.Printf("Name: %s, DisplayName: %s, Description: %s, Version: %s, Kind: %s, ChartName: %s, ChartVersion: %s, HelmRegistryName: %s",
 			app.Name, app.DisplayName, app.Description, app.Version, app.Kind, app.ChartName, app.ChartVersion, app.HelmRegistryName)
 	}
+
 }
 
 func (s *TestSuite) TestListBootStrapDeploymentPackages() {
-	res, err := s.catalogClient.MakeHTTPRequestWithQuery("GET", types.DeploymentPackagesEndpoint, map[string]string{
-		"orderBy": "name", "pageSize": "10", "offset": "0", "kinds": "KIND_EXTENSION",
-	})
-	s.Require().NoError(err)
+	queryParams := map[string]string{
+		"orderBy":  "name",
+		"pageSize": "10",
+		"offset":   "0",
+		"kinds":    "KIND_EXTENSION",
+	}
+	res, err := s.catalogClient.MakeHTTPRequestWithQuery("GET", types.DeploymentPackagesEndpoint, queryParams)
+	assert.NoError(s.T(), err)
 	defer res.Body.Close()
-	s.assertStatus(res, http.StatusOK)
+	s.Equal("200 OK", res.Status)
 
-	body := s.readResponseBody(res)
+	body, err := io.ReadAll(res.Body)
+	assert.NoError(s.T(), err)
 	var result struct {
 		DeploymentPackages []types.DeploymentPackage `json:"deploymentPackages"`
 	}
-	s.unmarshalJSON(body, &result)
+	err = json.Unmarshal(body, &result)
+	assert.NoError(s.T(), err)
 
 	assert.Equal(s.T(), len(types.GetDeploymentPackages()), len(result.DeploymentPackages), "Mismatch in the number of deployment packages")
-	s.T().Log("Deployment Packages:")
+
+	// Log deployment package details for debugging purposes
+	log.Printf("Deployment Packages:")
 	for _, pkg := range result.DeploymentPackages {
-		s.T().Logf("Name: %s, Description: %s, Version: %s, Kind: %s", pkg.Name, pkg.Description, pkg.Version, pkg.Kind)
+		log.Printf("Name: %s, Description: %s, Version: %s, Kind: %s",
+			pkg.Name, pkg.Description, pkg.Version, pkg.Kind)
 	}
+
 }
 
 func (s *TestSuite) TestListBootStrapRegistries() {
-	res, err := s.catalogClient.MakeHTTPRequestWithQuery("GET", types.RegistriesEndpoint, map[string]string{
-		"orderBy": "name", "pageSize": "10", "offset": "0", "showSensitiveInfo": "true",
-	})
-	s.Require().NoError(err)
+	queryParams := map[string]string{
+		"orderBy":           "name",
+		"pageSize":          "10",
+		"offset":            "0",
+		"showSensitiveInfo": "true",
+	}
+	res, err := s.catalogClient.MakeHTTPRequestWithQuery("GET", types.RegistriesEndpoint, queryParams)
+	assert.NoError(s.T(), err)
 	defer res.Body.Close()
-	s.assertStatus(res, http.StatusOK)
 
-	body := s.readResponseBody(res)
+	if res.Status != "200 OK" {
+		s.Equal("200 OK", res.Status)
+		return // Everything else is going to fail...
+	}
+
+	body, err := io.ReadAll(res.Body)
+	assert.NoError(s.T(), err)
+
 	var result struct {
 		Registries []types.Registry `json:"registries"`
 	}
-	s.unmarshalJSON(body, &result)
+	err = json.Unmarshal(body, &result)
+	assert.NoError(s.T(), err)
 
+	// Assert that the size of the result.Registries matches the size of getRegistries
 	assert.Equal(s.T(), len(s.catalogClient.GetRegistries()), len(result.Registries), "Mismatch in the number of registries")
-	s.T().Log("Registries:")
+	// Log registry details for debugging purposes
+	log.Printf("Registries:")
 	for _, registry := range result.Registries {
-		s.T().Logf("Name: %s, DisplayName: %s, Description: %s, RootURL: %s, Type: %s",
+		log.Printf("Name: %s, DisplayName: %s, Description: %s, RootURL: %s, Type: %s",
 			registry.Name, registry.DisplayName, registry.Description, registry.RootURL, registry.Type)
 	}
 }
 
 func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 	for _, registry := range s.catalogClient.GetRegistries() {
-		requestURL := fmt.Sprintf("%s%s/%s", s.catalogClient.CatalogRESTServerUrl, types.RegistriesEndpoint, registry.Name)
-		res, err := s.catalogClient.MakeHTTPRequest("GET", requestURL, nil)
-		s.Require().NoError(err)
+		res, err := s.catalogClient.MakeHTTPRequest("GET", fmt.Sprintf("%s/%s", types.RegistriesEndpoint, registry.Name), nil)
+		assert.NoError(s.T(), err)
 		defer res.Body.Close()
+		if res.Status != "200 OK" {
+			assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for Registry: %s", registry.Name)
+			continue
+		}
 
 		body, err := io.ReadAll(res.Body)
 		assert.NoError(s.T(), err)
@@ -112,17 +155,191 @@ func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 	}
 }
 
-func (s *TestSuite) assertStatus(res *http.Response, expectedStatus int) {
-	assert.Equal(s.T(), expectedStatus, res.StatusCode, "Unexpected response status")
+func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
+	for _, app := range types.GetApplications() {
+		res, err := s.catalogClient.MakeHTTPRequest("GET", fmt.Sprintf("%s/%s/versions", types.ApplicationsEndpoint, app.Name), nil)
+		assert.NoError(s.T(), err)
+		defer res.Body.Close()
+		if res.Status != "200 OK" {
+			assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for application: %s - %s", app.Name, fmt.Sprintf("%s/%s/versions", types.ApplicationsEndpoint, app.Name))
+			continue
+		}
+
+		body, err := io.ReadAll(res.Body)
+		assert.NoError(s.T(), err)
+
+		var result struct {
+			Application []types.Application `json:"application"`
+		}
+		err = json.Unmarshal(body, &result)
+		assert.NoError(s.T(), err)
+
+		s.True(len(result.Application) > 0, "Expected at least one application for %s", app.Name)
+
+		if len(result.Application) > 0 {
+			gotApp := result.Application[0]
+
+			switch {
+			case app.Name != gotApp.Name:
+				assert.Equalf(s.T(), app.Name, gotApp.Name, "Mismatch in 'Name' for application: %s", app.Name)
+			case app.DisplayName != gotApp.DisplayName:
+				assert.Equalf(s.T(), app.DisplayName, gotApp.DisplayName, "Mismatch in 'DisplayName' for application: %s", app.Name)
+			case app.ChartName != gotApp.ChartName:
+				assert.Equalf(s.T(), app.ChartName, gotApp.ChartName, "Mismatch in 'ChartName' for application: %s", app.Name)
+			case app.Kind != gotApp.Kind:
+				assert.Equalf(s.T(), app.Kind, gotApp.Kind, "Mismatch in 'Kind' for application: %s", app.Name)
+			case app.HelmRegistryName != gotApp.HelmRegistryName:
+				assert.Equalf(s.T(), app.HelmRegistryName, gotApp.HelmRegistryName, "Mismatch in 'HelmRegistryName' for application: %s", app.Name)
+			}
+			//assert.Equal(s.T(), app.Description, result.Application.Description)
+		}
+	}
 }
 
-func (s *TestSuite) readResponseBody(res *http.Response) []byte {
+func (s *TestSuite) TestVerifyBootstrappedDeploymentPackagesExist() {
+	for _, pkg := range types.GetDeploymentPackages() {
+		res, err := s.catalogClient.MakeHTTPRequest("GET", fmt.Sprintf("%s/%s/versions", types.DeploymentPackagesEndpoint, pkg.Name), nil)
+		assert.NoError(s.T(), err)
+		defer res.Body.Close()
+		if res.Status != "200 OK" {
+			assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for Package: %s", pkg.Name)
+			continue // Everything else is going to fail...
+		}
+
+		body, err := io.ReadAll(res.Body)
+		assert.NoError(s.T(), err)
+
+		var result struct {
+			DeploymentPackage []types.DeploymentPackage `json:"deploymentPackages"`
+		}
+		err = json.Unmarshal(body, &result)
+		assert.NoError(s.T(), err)
+
+		s.True(len(result.DeploymentPackage) > 0, "Expected at least one deployment package for %s", pkg.Name)
+		if len(result.DeploymentPackage) > 0 {
+			gotPkg := result.DeploymentPackage[0]
+
+			switch {
+			case pkg.Name != gotPkg.Name:
+				assert.Equalf(s.T(), pkg.Name, gotPkg.Name, "Mismatch in 'Name' for deployment package: %s", pkg.Name)
+			case pkg.Kind != gotPkg.Kind:
+				assert.Equalf(s.T(), pkg.Kind, gotPkg.Kind, "Mismatch in 'Kind' for deployment package: %s", pkg.Name)
+			}
+		}
+	}
+}
+
+func (s *TestSuite) TestUploadTarball() {
+	res, err := s.catalogClient.UploadTarball(types.WordpressTarballPathName)
+	assert.NoError(s.T(), err, "Expected to upload tarball without error")
+	assert.Equal(s.T(), http.StatusOK, res.StatusCode, "Expected HTTP status code 200 OK for upload")
+
+	defer res.Body.Close()
+	if res.Status != "200 OK" {
+		// print response message if something has gone wrong, for debugging
+		bodyBytes, err := io.ReadAll(res.Body)
+		assert.NoError(s.T(), err)
+		log.Printf("Response Body: %s", string(bodyBytes))
+	}
+
+	// Make sure the wordpress DP was created
+
+	res, err = s.catalogClient.MakeHTTPRequest("GET", fmt.Sprintf("%s/test-wordpress/versions/0.1.1", types.DeploymentPackagesEndpoint), nil)
+	assert.NoError(s.T(), err)
+	defer res.Body.Close()
+	s.Equal("200 OK", res.Status)
+
+	resBody, err := io.ReadAll(res.Body)
+	assert.NoError(s.T(), err)
+	var result struct {
+		DeploymentPackage types.DeploymentPackage `json:"deploymentPackage"`
+	}
+	err = json.Unmarshal(resBody, &result)
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), types.WordpressName, result.DeploymentPackage.Name, "Mismatch in the name of the deployment package")
+	assert.Equal(s.T(), types.WordpressVersion, result.DeploymentPackage.Version, "Mismatch in the version of the deployment package")
+
+	// Note: Not verifying the application or registry, as the DP would fail without them
+
+	// Cleanup
+	s.NoError(s.catalogClient.DeleteDeploymentPackage(types.WordpressName, types.WordpressVersion, true), "Expected to delete deployment package after upload")
+	s.NoError(s.catalogClient.DeleteApplication(types.WordpressName, types.WordpressVersion, true), "Expected to delete application after upload")
+	s.NoError(s.catalogClient.DeleteRegistry(types.WordpressRegistryName, true), "Expected to delete registry after upload")
+}
+
+func (s *TestSuite) TestUploadSeparateFiles() {
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+
+	pathNames := []string{"../testdata/wordpress/app-wordpress-0.1.1.yaml",
+		"../testdata/wordpress/dp-wordpress-0.1.1.yaml",
+		"../testdata/wordpress/registry-bitnami.yaml",
+		"../testdata/wordpress/values-wordpress-0.1.1.yaml",
+	}
+
+	for _, pathName := range pathNames {
+		file, err := os.Open(pathName)
+		assert.NoError(s.T(), err)
+		defer file.Close()
+
+		fileName := pathName[strings.LastIndex(pathName, "/")+1:]
+
+		part, _ := writer.CreateFormFile("files", fileName)
+		_, err = io.Copy(part, file)
+		assert.NoError(s.T(), err)
+	}
+
+	writer.Close()
+
+	res, err := s.catalogClient.MakeHTTPRequest("POST", types.UploadEndpoint, body)
+	assert.NoError(s.T(), err)
+	defer res.Body.Close()
+	assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for upload")
+	if res.Status != "200 OK" {
+		// print response message if something has gone wrong, for debugging
+		bodyBytes, err := io.ReadAll(res.Body)
+		assert.NoError(s.T(), err)
+		log.Printf("Response Body: %s", string(bodyBytes))
+	}
+
+	// Make sure the wordpress DP was created
+
+	res, err = s.catalogClient.MakeHTTPRequest("GET", fmt.Sprintf("%s/test-wordpress/versions/0.1.1", types.DeploymentPackagesEndpoint), nil)
+	assert.NoError(s.T(), err)
+	defer res.Body.Close()
+	s.Equal("200 OK", res.Status)
+
+	resBody, err := io.ReadAll(res.Body)
+	assert.NoError(s.T(), err)
+	var result struct {
+		DeploymentPackage types.DeploymentPackage `json:"deploymentPackage"`
+	}
+	err = json.Unmarshal(resBody, &result)
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), "test-wordpress", result.DeploymentPackage.Name, "Mismatch in the name of the deployment package")
+	assert.Equal(s.T(), "0.1.1", result.DeploymentPackage.Version, "Mismatch in the version of the deployment package")
+
+	// Note: Not verifying the application or registry, as the DP would fail without them
+
+	// Cleanup
+	s.NoError(s.catalogClient.DeleteDeploymentPackage(types.WordpressName, types.WordpressVersion, true), "Expected to delete deployment package after upload")
+	s.NoError(s.catalogClient.DeleteApplication(types.WordpressName, types.WordpressVersion, true), "Expected to delete application after upload")
+	s.NoError(s.catalogClient.DeleteRegistry(types.WordpressRegistryName, true), "Expected to delete registry after upload")
+}
+
+func (s *TestSuite) TestGetCharts() {
+	queryParams := map[string]string{
+		"registry": "harbor-helm-oci",
+	}
+	res, err := s.catalogClient.MakeHTTPRequestWithQuery("GET", "catalog.orchestrator.apis/charts", queryParams)
+	assert.NoError(s.T(), err)
+	defer res.Body.Close()
+	s.Equal("200 OK", res.Status)
+
 	body, err := io.ReadAll(res.Body)
 	assert.NoError(s.T(), err)
-	return body
-}
 
-func (s *TestSuite) unmarshalJSON(data []byte, v interface{}) {
-	err := json.Unmarshal(data, v)
-	assert.NoError(s.T(), err)
+	// On a fresh orchestrator there should be no charts in the registry
+
+	assert.Equal(s.T(), "null", string(body), "Expected the response body to be empty")
 }
