@@ -20,11 +20,17 @@ import (
 	// Third-party imports
 
 	"github.com/stretchr/testify/assert"
+
 	// Project-specific imports
+	"github.com/open-edge-platform/app-orch-catalog/test/utils/auth"
 )
 
 func (s *TestSuite) TestListBootStrapExtensions() {
-	res, err := s.catalogClient.MakeHTTPRequest("GET", types.ApplicationsEndpoint, nil)
+	requestURL := fmt.Sprintf("%s%s", s.catalogClient.CatalogRESTServerUrl, types.ApplicationsEndpoint)
+	req, err := http.NewRequest("GET", requestURL, nil)
+	assert.NoError(s.T(), err)
+	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
+	res, err := http.DefaultClient.Do(req)
 	assert.NoError(s.T(), err)
 	defer res.Body.Close()
 	assert.NoError(s.T(), err)
@@ -50,13 +56,21 @@ func (s *TestSuite) TestListBootStrapExtensions() {
 }
 
 func (s *TestSuite) TestListBootStrapDeploymentPackages() {
-	queryParams := map[string]string{
-		"orderBy":  "name",
-		"pageSize": "10",
-		"offset":   "0",
-		"kinds":    "KIND_EXTENSION",
-	}
-	res, err := s.catalogClient.MakeHTTPRequestWithQuery("GET", types.DeploymentPackagesEndpoint, queryParams)
+	requestURL := fmt.Sprintf("%s%s", s.catalogClient.CatalogRESTServerUrl, types.DeploymentPackagesEndpoint)
+	req, err := http.NewRequest("GET", requestURL, nil)
+	assert.NoError(s.T(), err)
+
+	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
+
+	// Add query parameters
+	query := req.URL.Query()
+	query.Add("orderBy", "name")
+	query.Add("pageSize", "10")
+	query.Add("offset", "0")
+	query.Add("kinds", "KIND_EXTENSION")
+	req.URL.RawQuery = query.Encode()
+
+	res, err := http.DefaultClient.Do(req)
 	assert.NoError(s.T(), err)
 	defer res.Body.Close()
 	s.Equal("200 OK", res.Status)
@@ -81,13 +95,20 @@ func (s *TestSuite) TestListBootStrapDeploymentPackages() {
 }
 
 func (s *TestSuite) TestListBootStrapRegistries() {
-	queryParams := map[string]string{
-		"orderBy":           "name",
-		"pageSize":          "10",
-		"offset":            "0",
-		"showSensitiveInfo": "true",
-	}
-	res, err := s.catalogClient.MakeHTTPRequestWithQuery("GET", types.RegistriesEndpoint, queryParams)
+	requestURL := fmt.Sprintf("%s%s", s.catalogClient.CatalogRESTServerUrl, types.RegistriesEndpoint)
+	req, err := http.NewRequest("GET", requestURL, nil)
+	assert.NoError(s.T(), err)
+	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
+
+	// Add query parameters
+	query := req.URL.Query()
+	query.Add("orderBy", "name")
+	query.Add("pageSize", "10")
+	query.Add("offset", "0")
+	query.Add("showSensitiveInfo", "true")
+	req.URL.RawQuery = query.Encode()
+
+	res, err := http.DefaultClient.Do(req)
 	assert.NoError(s.T(), err)
 	defer res.Body.Close()
 
@@ -117,7 +138,12 @@ func (s *TestSuite) TestListBootStrapRegistries() {
 
 func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 	for _, registry := range s.catalogClient.GetRegistries() {
-		res, err := s.catalogClient.MakeHTTPRequest("GET", fmt.Sprintf("%s/%s", types.RegistriesEndpoint, registry.Name), nil)
+		requestURL := fmt.Sprintf("%s%s/%s", s.catalogClient.CatalogRESTServerUrl, types.RegistriesEndpoint, registry.Name)
+		req, err := http.NewRequest("GET", requestURL, nil)
+		assert.NoError(s.T(), err)
+		auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
+
+		res, err := http.DefaultClient.Do(req)
 		assert.NoError(s.T(), err)
 		defer res.Body.Close()
 		if res.Status != "200 OK" {
@@ -156,11 +182,19 @@ func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 
 func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
 	for _, app := range types.GetApplications() {
-		res, err := s.catalogClient.MakeHTTPRequest("GET", fmt.Sprintf("%s/%s/versions", types.ApplicationsEndpoint, app.Name), nil)
+		requestURL := fmt.Sprintf("%s%s/%s/versions", s.catalogClient.CatalogRESTServerUrl,
+			types.ApplicationsEndpoint, app.Name)
+
+		req, err := http.NewRequest("GET", requestURL, nil)
+		assert.NoError(s.T(), err)
+
+		auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
+
+		res, err := http.DefaultClient.Do(req)
 		assert.NoError(s.T(), err)
 		defer res.Body.Close()
 		if res.Status != "200 OK" {
-			assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for application: %s - %s", app.Name, fmt.Sprintf("%s/%s/versions", types.ApplicationsEndpoint, app.Name))
+			assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for application: %s - %s", app.Name, requestURL)
 			continue
 		}
 
@@ -197,7 +231,15 @@ func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
 
 func (s *TestSuite) TestVerifyBootstrappedDeploymentPackagesExist() {
 	for _, pkg := range types.GetDeploymentPackages() {
-		res, err := s.catalogClient.MakeHTTPRequest("GET", fmt.Sprintf("%s/%s/versions", types.DeploymentPackagesEndpoint, pkg.Name), nil)
+		requestURL := fmt.Sprintf("%s%s/%s/versions", s.catalogClient.CatalogRESTServerUrl,
+			types.DeploymentPackagesEndpoint, pkg.Name)
+
+		req, err := http.NewRequest("GET", requestURL, nil)
+		assert.NoError(s.T(), err)
+
+		auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
+
+		res, err := http.DefaultClient.Do(req)
 		assert.NoError(s.T(), err)
 		defer res.Body.Close()
 		if res.Status != "200 OK" {
@@ -228,6 +270,20 @@ func (s *TestSuite) TestVerifyBootstrappedDeploymentPackagesExist() {
 	}
 }
 
+func (s *TestSuite) Delete(url string) {
+	req, err := http.NewRequest("DELETE", url, nil)
+	assert.NoError(s.T(), err)
+
+	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
+
+	res, err := http.DefaultClient.Do(req)
+	assert.NoError(s.T(), err)
+	defer res.Body.Close()
+	if res.Status != "200 OK" {
+		assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for delete on url %s", url)
+	}
+}
+
 func (s *TestSuite) TestUploadTarball() {
 	res, err := s.catalogClient.UploadTarball(types.WordpressTarballPathName)
 	assert.NoError(s.T(), err, "Expected to upload tarball without error")
@@ -243,7 +299,20 @@ func (s *TestSuite) TestUploadTarball() {
 
 	// Make sure the wordpress DP was created
 
-	res, err = s.catalogClient.MakeHTTPRequest("GET", fmt.Sprintf("%s/test-wordpress/versions/0.1.1", types.DeploymentPackagesEndpoint), nil)
+	requestURL := fmt.Sprintf("%s%s/test-wordpress/versions/0.1.1", s.catalogClient.CatalogRESTServerUrl, types.DeploymentPackagesEndpoint)
+	req, err := http.NewRequest("GET", requestURL, nil)
+	assert.NoError(s.T(), err)
+
+	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
+
+	// Add query parameters
+	query := req.URL.Query()
+	query.Add("orderBy", "name")
+	query.Add("pageSize", "10")
+	query.Add("offset", "0")
+	req.URL.RawQuery = query.Encode()
+
+	res, err = http.DefaultClient.Do(req)
 	assert.NoError(s.T(), err)
 	defer res.Body.Close()
 	s.Equal("200 OK", res.Status)
@@ -290,7 +359,14 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 
 	writer.Close()
 
-	res, err := s.catalogClient.MakeHTTPRequest("POST", types.UploadEndpoint, body)
+	req, err := http.NewRequest("POST", fmt.Sprintf("%s%s", s.catalogClient.CatalogRESTServerUrl, types.UploadEndpoint), body)
+	assert.NoError(s.T(), err)
+
+	req.Header.Add("Content-Type", writer.FormDataContentType())
+
+	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
+
+	res, err := http.DefaultClient.Do(req)
 	assert.NoError(s.T(), err)
 	defer res.Body.Close()
 	assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for upload")
@@ -303,7 +379,20 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 
 	// Make sure the wordpress DP was created
 
-	res, err = s.catalogClient.MakeHTTPRequest("GET", fmt.Sprintf("%s/test-wordpress/versions/0.1.1", types.DeploymentPackagesEndpoint), nil)
+	requestURL := fmt.Sprintf("%s%s/test-wordpress/versions/0.1.1", s.catalogClient.CatalogRESTServerUrl, types.DeploymentPackagesEndpoint)
+	req, err = http.NewRequest("GET", requestURL, nil)
+	assert.NoError(s.T(), err)
+
+	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
+
+	// Add query parameters
+	query := req.URL.Query()
+	query.Add("orderBy", "name")
+	query.Add("pageSize", "10")
+	query.Add("offset", "0")
+	req.URL.RawQuery = query.Encode()
+
+	res, err = http.DefaultClient.Do(req)
 	assert.NoError(s.T(), err)
 	defer res.Body.Close()
 	s.Equal("200 OK", res.Status)
@@ -327,10 +416,13 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 }
 
 func (s *TestSuite) TestGetCharts() {
-	queryParams := map[string]string{
-		"registry": "harbor-helm-oci",
-	}
-	res, err := s.catalogClient.MakeHTTPRequestWithQuery("GET", "catalog.orchestrator.apis/charts", queryParams)
+	requestURL := fmt.Sprintf("%s/catalog.orchestrator.apis/charts?registry=harbor-helm-oci", s.catalogClient.CatalogRESTServerUrl)
+	req, err := http.NewRequest("GET", requestURL, nil)
+	assert.NoError(s.T(), err)
+
+	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
+
+	res, err := http.DefaultClient.Do(req)
 	assert.NoError(s.T(), err)
 	defer res.Body.Close()
 	s.Equal("200 OK", res.Status)
