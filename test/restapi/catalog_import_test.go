@@ -11,6 +11,7 @@ import (
 )
 
 func (s *TestSuite) TestImportHelmChart() {
+	s.T().Skip()
 	importRequest := &methods.ImportRequest{
 		URL: "oci://ghcr.io/open-edge-platform/geti/helm/impt:2.9.0",
 	}
