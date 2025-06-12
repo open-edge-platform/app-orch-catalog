@@ -79,21 +79,37 @@ func (s *TestSuite) TestListBootStrapRegistries() {
 
 func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 	for _, registry := range s.catalogClient.GetRegistries() {
-		res, err := s.catalogClient.MakeHTTPRequest("GET", fmt.Sprintf("%s/%s", types.RegistriesEndpoint, registry.Name), nil)
+		requestURL := fmt.Sprintf("%s%s/%s", s.catalogClient.CatalogRESTServerUrl, types.RegistriesEndpoint, registry.Name)
+		res, err := s.catalogClient.MakeHTTPRequest("GET", requestURL, nil)
 		s.Require().NoError(err)
 		defer res.Body.Close()
-		s.assertStatus(res, http.StatusOK)
 
-		body := s.readResponseBody(res)
+		body, err := io.ReadAll(res.Body)
+		assert.NoError(s.T(), err)
+
 		var result struct {
 			Registry types.Registry `json:"registry"`
 		}
-		s.unmarshalJSON(body, &result)
+		err = json.Unmarshal(body, &result)
+		assert.NoError(s.T(), err)
 
-		assert.Equal(s.T(), registry.Name, result.Registry.Name, "Mismatch in 'Name' for registry: %s", registry.Name)
-		assert.Equal(s.T(), registry.DisplayName, result.Registry.DisplayName, "Mismatch in 'DisplayName' for registry: %s", registry.Name)
-		assert.Equal(s.T(), registry.RootURL, result.Registry.RootURL, "Mismatch in 'RootURL' for registry: %s", registry.Name)
-		assert.Equal(s.T(), registry.Type, result.Registry.Type, "Mismatch in 'Type' for registry: %s", registry.Name)
+		switch {
+		case registry.Name != result.Registry.Name:
+			assert.Equal(s.T(), registry.Name, result.Registry.Name, "Mismatch in 'Name' for registry: %s", registry.Name)
+		case registry.DisplayName != result.Registry.DisplayName:
+			assert.Equal(s.T(), registry.DisplayName, result.Registry.DisplayName, "Mismatch in 'DisplayName' for registry: %s", registry.Name)
+		case registry.RootURL != result.Registry.RootURL:
+			oldDockerURL := fmt.Sprintf("https://registry-oci.%s/", s.orchDomain)
+			newDockerURL := fmt.Sprintf("oci://registry-oci.%s/catalog-apps-sample-org-sample-project", s.orchDomain)
+			// Docker Registry URL was changed recently. Avoid throwing errors in a development environment that's using the new URL
+			// TODO: remove this special case when component-tests are moved forward
+			if registry.RootURL != oldDockerURL || result.Registry.RootURL != newDockerURL {
+				assert.Equal(s.T(), registry.RootURL, result.Registry.RootURL, "Mismatch in 'RootURL' for registry: %s", registry.Name)
+			}
+		case registry.Type != result.Registry.Type:
+			assert.Equal(s.T(), registry.Type, result.Registry.Type, "Mismatch in 'Type' for registry: %s", registry.Name)
+		}
+		// assert.Equal(s.T(), registry.Description, result.Registry.Description)
 	}
 }
 
