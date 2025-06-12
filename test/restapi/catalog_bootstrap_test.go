@@ -7,7 +7,6 @@ package restapi
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/open-edge-platform/app-orch-catalog/test/utils/methods"
 	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
 	"github.com/stretchr/testify/assert"
 	"io"
@@ -16,7 +15,7 @@ import (
 )
 
 func (s *TestSuite) TestListBootStrapExtensions() {
-	res, err := methods.MakeHTTPRequest("GET", types.ApplicationsEndpoint, nil)
+	res, err := s.catalogClient.MakeHTTPRequest("GET", types.ApplicationsEndpoint, nil)
 	s.Require().NoError(err)
 	defer res.Body.Close()
 	s.assertStatus(res, http.StatusOK)
@@ -36,7 +35,7 @@ func (s *TestSuite) TestListBootStrapExtensions() {
 }
 
 func (s *TestSuite) TestListBootStrapDeploymentPackages() {
-	res, err := methods.MakeHTTPRequestWithQuery("GET", types.DeploymentPackagesEndpoint, map[string]string{
+	res, err := s.catalogClient.MakeHTTPRequestWithQuery("GET", types.DeploymentPackagesEndpoint, map[string]string{
 		"orderBy": "name", "pageSize": "10", "offset": "0", "kinds": "KIND_EXTENSION",
 	})
 	s.Require().NoError(err)
@@ -57,7 +56,7 @@ func (s *TestSuite) TestListBootStrapDeploymentPackages() {
 }
 
 func (s *TestSuite) TestListBootStrapRegistries() {
-	res, err := methods.MakeHTTPRequestWithQuery("GET", types.RegistriesEndpoint, map[string]string{
+	res, err := s.catalogClient.MakeHTTPRequestWithQuery("GET", types.RegistriesEndpoint, map[string]string{
 		"orderBy": "name", "pageSize": "10", "offset": "0", "showSensitiveInfo": "true",
 	})
 	s.Require().NoError(err)
@@ -80,7 +79,7 @@ func (s *TestSuite) TestListBootStrapRegistries() {
 
 func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 	for _, registry := range s.catalogClient.GetRegistries() {
-		res, err := methods.MakeHTTPRequest("GET", fmt.Sprintf("%s/%s", types.RegistriesEndpoint, registry.Name), nil)
+		res, err := s.catalogClient.MakeHTTPRequest("GET", fmt.Sprintf("%s/%s", types.RegistriesEndpoint, registry.Name), nil)
 		s.Require().NoError(err)
 		defer res.Body.Close()
 		s.assertStatus(res, http.StatusOK)
