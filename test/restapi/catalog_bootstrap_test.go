@@ -19,39 +19,8 @@ import (
 
 	// Third-party imports
 	"github.com/stretchr/testify/assert"
-
 	// Project-specific imports
-	"github.com/open-edge-platform/app-orch-catalog/test/utils/auth"
 )
-
-// makeAuthenticatedRequest creates and sends an HTTP request with auth headers
-func (s *TestSuite) makeAuthenticatedRequest(method, endpoint string, requestBody io.Reader, queryParams map[string]string, headers ...map[string]string) (*http.Response, error) {
-	requestURL := fmt.Sprintf("%s%s", s.catalogClient.CatalogRESTServerUrl, endpoint)
-	req, err := http.NewRequest(method, requestURL, requestBody)
-	if err != nil {
-		return nil, err
-	}
-
-	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
-
-	// Add custom headers if provided
-	if len(headers) > 0 && headers[0] != nil {
-		for key, value := range headers[0] {
-			req.Header.Set(key, value)
-		}
-	}
-
-	// Add query parameters if provided
-	if len(queryParams) > 0 {
-		query := req.URL.Query()
-		for key, value := range queryParams {
-			query.Add(key, value)
-		}
-		req.URL.RawQuery = query.Encode()
-	}
-
-	return http.DefaultClient.Do(req)
-}
 
 // processResponse validates response status and returns body
 func (s *TestSuite) processResponse(res *http.Response) ([]byte, error) {
@@ -71,7 +40,7 @@ func (s *TestSuite) unmarshalJSON(body []byte, result interface{}) error {
 }
 
 func (s *TestSuite) TestListBootStrapExtensions() {
-	res, err := s.makeAuthenticatedRequest("GET", types.ApplicationsEndpoint, nil, nil)
+	res, err := s.catalogClient.MakeAuthenticatedRequest("GET", types.ApplicationsEndpoint, nil, nil)
 	assert.NoError(s.T(), err)
 
 	body, err := s.processResponse(res)
@@ -99,7 +68,7 @@ func (s *TestSuite) TestListBootStrapDeploymentPackages() {
 		"kinds":    "KIND_EXTENSION",
 	}
 
-	res, err := s.makeAuthenticatedRequest("GET", types.DeploymentPackagesEndpoint, nil, queryParams)
+	res, err := s.catalogClient.MakeAuthenticatedRequest("GET", types.DeploymentPackagesEndpoint, nil, queryParams)
 	assert.NoError(s.T(), err)
 
 	body, err := s.processResponse(res)
@@ -128,7 +97,7 @@ func (s *TestSuite) TestListBootStrapRegistries() {
 		"showSensitiveInfo": "true",
 	}
 
-	res, err := s.makeAuthenticatedRequest("GET", types.RegistriesEndpoint, nil, queryParams)
+	res, err := s.catalogClient.MakeAuthenticatedRequest("GET", types.RegistriesEndpoint, nil, queryParams)
 	assert.NoError(s.T(), err)
 	defer res.Body.Close()
 
@@ -159,7 +128,7 @@ func (s *TestSuite) TestListBootStrapRegistries() {
 func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 	for _, registry := range s.catalogClient.GetRegistries() {
 		endpoint := fmt.Sprintf("%s/%s", types.RegistriesEndpoint, registry.Name)
-		res, err := s.makeAuthenticatedRequest("GET", endpoint, nil, nil)
+		res, err := s.catalogClient.MakeAuthenticatedRequest("GET", endpoint, nil, nil)
 		assert.NoError(s.T(), err)
 
 		if res.Status != "200 OK" {
@@ -199,7 +168,7 @@ func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
 	for _, app := range types.GetApplications() {
 		endpoint := fmt.Sprintf("%s/%s/versions", types.ApplicationsEndpoint, app.Name)
-		res, err := s.makeAuthenticatedRequest("GET", endpoint, nil, nil)
+		res, err := s.catalogClient.MakeAuthenticatedRequest("GET", endpoint, nil, nil)
 		assert.NoError(s.T(), err)
 
 		if res.Status != "200 OK" {
@@ -241,7 +210,7 @@ func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
 func (s *TestSuite) TestVerifyBootstrappedDeploymentPackagesExist() {
 	for _, pkg := range types.GetDeploymentPackages() {
 		endpoint := fmt.Sprintf("%s/%s/versions", types.DeploymentPackagesEndpoint, pkg.Name)
-		res, err := s.makeAuthenticatedRequest("GET", endpoint, nil, nil)
+		res, err := s.catalogClient.MakeAuthenticatedRequest("GET", endpoint, nil, nil)
 		assert.NoError(s.T(), err)
 
 		if res.Status != "200 OK" {
@@ -274,7 +243,7 @@ func (s *TestSuite) TestVerifyBootstrappedDeploymentPackagesExist() {
 
 func (s *TestSuite) Delete(url string) {
 	endpoint := strings.TrimPrefix(url, s.catalogClient.CatalogRESTServerUrl)
-	res, err := s.makeAuthenticatedRequest("DELETE", endpoint, nil, nil)
+	res, err := s.catalogClient.MakeAuthenticatedRequest("DELETE", endpoint, nil, nil)
 	assert.NoError(s.T(), err)
 
 	defer res.Body.Close()
@@ -304,7 +273,7 @@ func (s *TestSuite) TestUploadTarball() {
 		"offset":   "0",
 	}
 
-	res, err = s.makeAuthenticatedRequest("GET", endpoint, nil, queryParams)
+	res, err = s.catalogClient.MakeAuthenticatedRequest("GET", endpoint, nil, queryParams)
 	assert.NoError(s.T(), err)
 
 	body, err := s.processResponse(res)
@@ -353,7 +322,7 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 	headers := map[string]string{
 		"Content-Type": writer.FormDataContentType(),
 	}
-	res, err := s.makeAuthenticatedRequest("POST", types.UploadEndpoint, body, nil, headers)
+	res, err := s.catalogClient.MakeAuthenticatedRequest("POST", types.UploadEndpoint, body, nil, headers)
 	assert.NoError(s.T(), err)
 
 	defer res.Body.Close()
@@ -373,7 +342,7 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 		"offset":   "0",
 	}
 
-	res, err = s.makeAuthenticatedRequest("GET", endpoint, nil, queryParams)
+	res, err = s.catalogClient.MakeAuthenticatedRequest("GET", endpoint, nil, queryParams)
 	assert.NoError(s.T(), err)
 
 	resBody, err := s.processResponse(res)
@@ -396,7 +365,7 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 }
 
 func (s *TestSuite) TestGetCharts() {
-	res, err := s.makeAuthenticatedRequest("GET", "/catalog.orchestrator.apis/charts", nil, map[string]string{"registry": "harbor-helm-oci"})
+	res, err := s.catalogClient.MakeAuthenticatedRequest("GET", "/catalog.orchestrator.apis/charts", nil, map[string]string{"registry": "harbor-helm-oci"})
 	assert.NoError(s.T(), err)
 
 	body, err := s.processResponse(res)

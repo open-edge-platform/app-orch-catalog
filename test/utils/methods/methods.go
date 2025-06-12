@@ -344,3 +344,32 @@ func (c *CatalogClient) GetRegistries() []types.Registry {
 
 	return regs
 }
+
+// MakeAuthenticatedRequest creates and sends an HTTP request with auth headers
+func (c *CatalogClient) MakeAuthenticatedRequest(method, endpoint string, requestBody io.Reader, queryParams map[string]string, headers ...map[string]string) (*http.Response, error) {
+	requestURL := fmt.Sprintf("%s%s", c.CatalogRESTServerUrl, endpoint)
+	req, err := http.NewRequest(method, requestURL, requestBody)
+	if err != nil {
+		return nil, err
+	}
+
+	auth.AddRestAuthHeader(req, c.Token, c.ProjectID)
+
+	// Add custom headers if provided
+	if len(headers) > 0 && headers[0] != nil {
+		for key, value := range headers[0] {
+			req.Header.Set(key, value)
+		}
+	}
+
+	// Add query parameters if provided
+	if len(queryParams) > 0 {
+		query := req.URL.Query()
+		for key, value := range queryParams {
+			query.Add(key, value)
+		}
+		req.URL.RawQuery = query.Encode()
+	}
+
+	return http.DefaultClient.Do(req)
+}
