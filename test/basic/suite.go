@@ -11,6 +11,7 @@ import (
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	restapi "github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
 	"github.com/open-edge-platform/app-orch-catalog/test/auth"
+	auth2 "github.com/open-edge-platform/app-orch-catalog/test/utils/auth"
 	"github.com/open-edge-platform/orch-library/go/pkg/grpc/retry"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc"
@@ -69,7 +70,7 @@ func (s *TestSuite) SetupTest() {
 	s.NoError(err)
 	s.restClient = restClient
 	s.client = catalogv3.NewCatalogServiceClient(conn)
-	s.token = auth.SetUpAccessToken(s.T(), s.KeycloakServer)
+	s.token = auth2.SetUpAccessToken(s.T(), s.KeycloakServer)
 	authToken = s.token
 	if !s.NoClear {
 		fmt.Printf("Clearing out old data\n")

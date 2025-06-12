@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (C) 2023-present Intel Corporation
+// SPDX-FileCopyrightText: (C) 2025-present Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -9,40 +9,20 @@ import (
 
 	"archive/tar"
 	"compress/gzip"
-	"fmt"
+	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
 	"io"
 	"log"
 	"net/http"
-
 	// Third-party imports
-
-	// Project-specific imports
-	"github.com/open-edge-platform/app-orch-catalog/test/auth"
 )
-
-func (s *TestSuite) ExportDeploymentPackage(name string, version string) *http.Response {
-	requestURL := fmt.Sprintf("%s%s/%s/versions/%s/download", s.CatalogRESTServerUrl, deploymentPackagesEndpoint, name, version)
-
-	req, err := http.NewRequest("GET", requestURL, nil)
-	s.Require().NoError(err, "Expected to create HTTP request for exporting Deployment Package")
-	auth.AddRestAuthHeader(req, s.token, s.projectID)
-
-	log.Printf("Exporting Helm chart with request URL: %s", requestURL)
-
-	res, err := http.DefaultClient.Do(req)
-	s.Require().NoError(err)
-
-	// Note: res.Body is intentionally not closed here, as the caller is expected to handle it.
-
-	return res
-}
 
 func (s *TestSuite) TestExportDeploymentPackage() {
 	// Before we can test export, first import the wordpress package
-	_, err := s.UploadTarball(wordpressTarballPathName)
+	_, err := s.catalogClient.UploadTarball(types.WordpressTarballPathName)
 	s.Require().NoError(err, "Expected to upload tarball before exporting")
 
-	res := s.ExportDeploymentPackage("test-wordpress", "0.1.1")
+	res, err := s.catalogClient.ExportDeploymentPackage("test-wordpress", "0.1.1")
+	s.Require().NoError(err)
 	s.Require().Equal(http.StatusOK, res.StatusCode, "Expected HTTP status code 200 OK for export")
 	defer res.Body.Close()
 
@@ -86,13 +66,14 @@ func (s *TestSuite) TestExportDeploymentPackage() {
 	s.True(ok, "Expected to find 'values-wordpress-0.1.1-default.yaml' in the tarball")
 
 	// Cleanup
-	s.NoError(s.DeleteDeploymentPackage(wordpressName, wordpressVersion, true), "Expected to delete deployment package after export")
-	s.NoError(s.DeleteApplication(wordpressName, wordpressVersion, true), "Expected to delete application after export")
-	s.NoError(s.DeleteRegistry(wordpressRegistryName, true), "Expected to delete registry after export")
+	s.NoError(s.catalogClient.DeleteDeploymentPackage(types.WordpressName, types.WordpressVersion, true), "Expected to delete deployment package after export")
+	s.NoError(s.catalogClient.DeleteApplication(types.WordpressName, types.WordpressVersion, true), "Expected to delete application after export")
+	s.NoError(s.catalogClient.DeleteRegistry(types.WordpressRegistryName, true), "Expected to delete registry after export")
 }
 
 func (s *TestSuite) TestExportDeploymentPackageNoExist() {
-	res := s.ExportDeploymentPackage("not-a-real-package", "0.1.1")
+	res, err := s.catalogClient.ExportDeploymentPackage("not-a-real-package", "0.1.1")
+	s.Require().NoError(err)
 	s.Require().Equal(http.StatusNotFound, res.StatusCode, "Expected HTTP status code 404 for export")
 	defer res.Body.Close()
 }
