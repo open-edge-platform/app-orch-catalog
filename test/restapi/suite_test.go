@@ -47,6 +47,7 @@ func (s *TestSuite) SetupSuite() {
 
 	s.catalogClient.Token = auth.SetUpAccessToken(s.T(), s.KeycloakServer)
 	s.catalogClient.ProjectID, err = auth.GetProjectId(context.TODO(), types.SampleProject, types.SampleOrg)
+	s.catalogClient.OrchDomain = s.orchDomain
 	s.NoError(err)
 	s.cmd, err = portforward.PortForwardToCatalog()
 	s.NoError(err)

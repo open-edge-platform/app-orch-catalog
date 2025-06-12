@@ -7,7 +7,7 @@ package restapi
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/open-edge-platform/app-orch-catalog/test/utils/auth"
+	"github.com/open-edge-platform/app-orch-catalog/test/utils/methods"
 	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
 	"github.com/stretchr/testify/assert"
 	"io"
@@ -16,9 +16,10 @@ import (
 )
 
 func (s *TestSuite) TestListBootStrapExtensions() {
-	res := s.makeRequest("GET", types.ApplicationsEndpoint, nil)
+	res, err := methods.MakeHTTPRequest("GET", types.ApplicationsEndpoint, nil)
+	s.Require().NoError(err)
 	defer res.Body.Close()
-	s.assertStatus(res, "200 OK")
+	s.assertStatus(res, http.StatusOK)
 
 	body := s.readResponseBody(res)
 	var result struct {
@@ -35,11 +36,12 @@ func (s *TestSuite) TestListBootStrapExtensions() {
 }
 
 func (s *TestSuite) TestListBootStrapDeploymentPackages() {
-	res := s.makeRequestWithQuery("GET", types.DeploymentPackagesEndpoint, map[string]string{
+	res, err := methods.MakeHTTPRequestWithQuery("GET", types.DeploymentPackagesEndpoint, map[string]string{
 		"orderBy": "name", "pageSize": "10", "offset": "0", "kinds": "KIND_EXTENSION",
 	})
+	s.Require().NoError(err)
 	defer res.Body.Close()
-	s.assertStatus(res, "200 OK")
+	s.assertStatus(res, http.StatusOK)
 
 	body := s.readResponseBody(res)
 	var result struct {
@@ -55,11 +57,12 @@ func (s *TestSuite) TestListBootStrapDeploymentPackages() {
 }
 
 func (s *TestSuite) TestListBootStrapRegistries() {
-	res := s.makeRequestWithQuery("GET", types.RegistriesEndpoint, map[string]string{
+	res, err := methods.MakeHTTPRequestWithQuery("GET", types.RegistriesEndpoint, map[string]string{
 		"orderBy": "name", "pageSize": "10", "offset": "0", "showSensitiveInfo": "true",
 	})
+	s.Require().NoError(err)
 	defer res.Body.Close()
-	s.assertStatus(res, "200 OK")
+	s.assertStatus(res, http.StatusOK)
 
 	body := s.readResponseBody(res)
 	var result struct {
@@ -77,9 +80,10 @@ func (s *TestSuite) TestListBootStrapRegistries() {
 
 func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 	for _, registry := range s.catalogClient.GetRegistries() {
-		res := s.makeRequest("GET", fmt.Sprintf("%s/%s", types.RegistriesEndpoint, registry.Name), nil)
+		res, err := methods.MakeHTTPRequest("GET", fmt.Sprintf("%s/%s", types.RegistriesEndpoint, registry.Name), nil)
+		s.Require().NoError(err)
 		defer res.Body.Close()
-		s.assertStatus(res, "200 OK")
+		s.assertStatus(res, http.StatusOK)
 
 		body := s.readResponseBody(res)
 		var result struct {
@@ -94,33 +98,8 @@ func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 	}
 }
 
-func (s *TestSuite) makeRequest(method, endpoint string, body io.Reader) *http.Response {
-	requestURL := fmt.Sprintf("%s%s", s.catalogClient.CatalogRESTServerUrl, endpoint)
-	req, err := http.NewRequest(method, requestURL, body)
-	assert.NoError(s.T(), err)
-	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
-	res, err := http.DefaultClient.Do(req)
-	assert.NoError(s.T(), err)
-	return res
-}
-
-func (s *TestSuite) makeRequestWithQuery(method, endpoint string, queryParams map[string]string) *http.Response {
-	requestURL := fmt.Sprintf("%s%s", s.catalogClient.CatalogRESTServerUrl, endpoint)
-	req, err := http.NewRequest(method, requestURL, nil)
-	assert.NoError(s.T(), err)
-	auth.AddRestAuthHeader(req, s.catalogClient.Token, s.catalogClient.ProjectID)
-	query := req.URL.Query()
-	for key, value := range queryParams {
-		query.Add(key, value)
-	}
-	req.URL.RawQuery = query.Encode()
-	res, err := http.DefaultClient.Do(req)
-	assert.NoError(s.T(), err)
-	return res
-}
-
-func (s *TestSuite) assertStatus(res *http.Response, expectedStatus string) {
-	assert.Equal(s.T(), expectedStatus, res.Status, "Unexpected response status")
+func (s *TestSuite) assertStatus(res *http.Response, expectedStatus int) {
+	assert.Equal(s.T(), expectedStatus, res.StatusCode, "Unexpected response status")
 }
 
 func (s *TestSuite) readResponseBody(res *http.Response) []byte {
