@@ -23,7 +23,7 @@ func (s *TestSuite) TestExportDeploymentPackage() {
 
 	res, err := s.catalogClient.ExportDeploymentPackage("test-wordpress", "0.1.1")
 	s.Require().NoError(err)
-	s.Require().Equal(http.StatusOK, res.StatusCode, "Expected HTTP status code 200 OK for export")
+	s.Require().Equal(http.StatusOK, res.StatusCode)
 	defer res.Body.Close()
 
 	files := make(map[string][]byte)
