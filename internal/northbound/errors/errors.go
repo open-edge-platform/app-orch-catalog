@@ -10,10 +10,9 @@ import (
 
 	"github.com/open-edge-platform/orch-library/go/dazl"
 
-	"github.com/golang/protobuf/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/protoadapt"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -183,20 +182,16 @@ func newError(options Options) error {
 		args = append(args, options.Args...)
 	}
 
+	s := status.New(options.Code, fmt.Sprintf(builder.String(), args...))
+
 	if options.Details != nil {
-		details := []proto.Message{}
+		details := []protoadapt.MessageV1{}
 		for _, detail := range options.Details {
 			strVal := &wrapperspb.StringValue{Value: detail}
-			anyVal, err := anypb.New(strVal)
-			if err == nil {
-				details = append(details, anyVal)
-			}
+			details = append(details, strVal)
 		}
-
-		s := status.New(options.Code, fmt.Sprintf(builder.String(), args...))
-		s.WithDetails(details...)
-		return s.Err()
+		s, _ = s.WithDetails(details...)
 	}
 
-	return status.Errorf(options.Code, builder.String(), args...)
+	return s.Err()
 }
