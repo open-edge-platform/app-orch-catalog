@@ -6,10 +6,11 @@ package helm
 
 import (
 	"context"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type MockOrasClient struct {
@@ -48,6 +49,13 @@ func (oc *MockOrasClient) GetTarball(ctx context.Context, tagName string) (io.Re
 		return nil, err
 	}
 	return file, nil
+}
+
+func (oc *MockOrasClient) VerifyExists(ctx context.Context, tagName string) error {
+	_ = ctx
+	_ = tagName
+	// Simulate that the tag exists
+	return nil
 }
 
 func TestFetchHelmChartOCI(t *testing.T) {

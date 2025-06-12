@@ -7,8 +7,9 @@ package helm
 import (
 	"context"
 	"encoding/json"
-	ocispec "github.com/opencontainers/image-spec/specs-go/v1"
 	"io"
+
+	ocispec "github.com/opencontainers/image-spec/specs-go/v1"
 	"oras.land/oras-go/v2"
 	"oras.land/oras-go/v2/content/memory"
 	"oras.land/oras-go/v2/registry"
@@ -23,6 +24,7 @@ type OrasClientInterface interface {
 	SetAccessToken(password string)
 	GetTags(ctx context.Context) ([]string, error)
 	GetTarball(ctx context.Context, tagName string) (io.Reader, error)
+	VerifyExists(ctx context.Context, tagName string) error
 }
 
 // Abstract out all Oras client stuff, for easy mocking
@@ -67,6 +69,12 @@ func (oc *OrasClient) GetTags(ctx context.Context) ([]string, error) {
 		return nil
 	})
 	return allTags, err
+}
+
+func (oc *OrasClient) VerifyExists(ctx context.Context, tagName string) error {
+	/* Check if the tag exists in the repository */
+	_, err := oc.src.Resolve(ctx, tagName)
+	return err
 }
 
 func (oc *OrasClient) GetTarball(ctx context.Context, tagName string) (io.Reader, error) {

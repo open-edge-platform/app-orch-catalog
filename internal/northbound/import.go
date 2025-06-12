@@ -43,13 +43,17 @@ func (g *Server) Import(ctx context.Context, req *catalogv3.ImportRequest) (*cat
 	helm, err := helm.FetchHelmChartOCI(req.Url, req.Username, req.AuthToken)
 	if err != nil {
 		return nil, nberrors.NewInvalidArgument(
-			nberrors.WithMessage(err.Error()))
+			nberrors.WithMessage("%s", err.Error()),
+			nberrors.WithError(err),
+		)
 	}
 
 	_, pkg, app, reg, err := dp.GenerateDeploymentPackageResources(helm, req.ChartValues, req.Namespace, req.IncludeAuth)
 	if err != nil {
 		return nil, nberrors.NewInvalidArgument(
-			nberrors.WithMessage(err.Error()))
+			nberrors.WithMessage("%s", err.Error()),
+			nberrors.WithError(err),
+		)
 	}
 
 	tx, err := g.startTransaction(ctx)
@@ -61,21 +65,21 @@ func (g *Server) Import(ctx context.Context, req *catalogv3.ImportRequest) (*cat
 	err = g.createOrUpdateRegistry(ctx, tx, projectUUID, reg, registryEvents)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return nil, err
+		return nil, errors.NewDBError(errors.WithError(err))
 	}
 
 	appEvents := &ApplicationEvents{}
 	err = g.createOrUpdateApplication(ctx, tx, projectUUID, app, appEvents)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return nil, err
+		return nil, errors.NewDBError(errors.WithError(err))
 	}
 
 	dpEvents := &DeploymentPackageEvents{}
 	err = g.createOrUpdateDeploymentPackage(ctx, tx, projectUUID, pkg, dpEvents)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return nil, err
+		return nil, errors.NewDBError(errors.WithError(err))
 	}
 
 	err = g.commitTransaction(tx)
