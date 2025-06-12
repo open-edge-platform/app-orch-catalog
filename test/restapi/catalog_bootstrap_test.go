@@ -10,7 +10,6 @@ import (
 	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
 	"github.com/stretchr/testify/assert"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -27,9 +26,9 @@ func (s *TestSuite) TestListBootStrapExtensions() {
 	s.unmarshalJSON(body, &result)
 
 	assert.Equal(s.T(), len(types.GetApplications()), len(result.Applications), "Mismatch in the number of applications")
-	log.Printf("Extensions:")
+	s.T().Log("Extensions:")
 	for _, app := range result.Applications {
-		log.Printf("Name: %s, DisplayName: %s, Description: %s, Version: %s, Kind: %s, ChartName: %s, ChartVersion: %s, HelmRegistryName: %s",
+		s.T().Logf("Name: %s, DisplayName: %s, Description: %s, Version: %s, Kind: %s, ChartName: %s, ChartVersion: %s, HelmRegistryName: %s",
 			app.Name, app.DisplayName, app.Description, app.Version, app.Kind, app.ChartName, app.ChartVersion, app.HelmRegistryName)
 	}
 }
@@ -49,9 +48,9 @@ func (s *TestSuite) TestListBootStrapDeploymentPackages() {
 	s.unmarshalJSON(body, &result)
 
 	assert.Equal(s.T(), len(types.GetDeploymentPackages()), len(result.DeploymentPackages), "Mismatch in the number of deployment packages")
-	log.Printf("Deployment Packages:")
+	s.T().Log("Deployment Packages:")
 	for _, pkg := range result.DeploymentPackages {
-		log.Printf("Name: %s, Description: %s, Version: %s, Kind: %s", pkg.Name, pkg.Description, pkg.Version, pkg.Kind)
+		s.T().Logf("Name: %s, Description: %s, Version: %s, Kind: %s", pkg.Name, pkg.Description, pkg.Version, pkg.Kind)
 	}
 }
 
@@ -70,9 +69,9 @@ func (s *TestSuite) TestListBootStrapRegistries() {
 	s.unmarshalJSON(body, &result)
 
 	assert.Equal(s.T(), len(s.catalogClient.GetRegistries()), len(result.Registries), "Mismatch in the number of registries")
-	log.Printf("Registries:")
+	s.T().Log("Registries:")
 	for _, registry := range result.Registries {
-		log.Printf("Name: %s, DisplayName: %s, Description: %s, RootURL: %s, Type: %s",
+		s.T().Logf("Name: %s, DisplayName: %s, Description: %s, RootURL: %s, Type: %s",
 			registry.Name, registry.DisplayName, registry.Description, registry.RootURL, registry.Type)
 	}
 }
