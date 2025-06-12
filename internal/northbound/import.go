@@ -43,27 +43,25 @@ func (g *Server) Import(ctx context.Context, req *catalogv3.ImportRequest) (*cat
 
 	helm, err := helm.FetchHelmChartOCI(req.Url, req.Username, req.AuthToken)
 	if err != nil {
+		opts := []nberrors.Option{nberrors.WithMessage("%s", err.Error()),
+			nberrors.WithError(err)}
+
 		verboseErrMsg := verboseerror.VerboseErrorAsString(err)
 		if verboseErrMsg != "" {
-			return nil, nberrors.NewInvalidArgument(
-				nberrors.WithMessage("%s", err.Error()),
-				nberrors.WithDetails(verboseErrMsg),
-				nberrors.WithError(err),
-			)
-		} else {
-			return nil, nberrors.NewInvalidArgument(
-				nberrors.WithMessage("%s", err.Error()),
-				nberrors.WithError(err),
-			)
+			opts = append(opts, nberrors.WithDetails(verboseErrMsg))
 		}
+		return nil, nberrors.NewInvalidArgument(opts...)
 	}
 
 	_, pkg, app, reg, err := dp.GenerateDeploymentPackageResources(helm, req.ChartValues, req.Namespace, req.IncludeAuth)
 	if err != nil {
-		return nil, nberrors.NewInvalidArgument(
-			nberrors.WithMessage("%s", err.Error()),
-			nberrors.WithError(err),
-		)
+		opts := []nberrors.Option{nberrors.WithMessage("%s", err.Error()),
+			nberrors.WithError(err)}
+		verboseErrMsg := verboseerror.VerboseErrorAsString(err)
+		if verboseErrMsg != "" {
+			opts = append(opts, nberrors.WithDetails(verboseErrMsg))
+		}
+		return nil, nberrors.NewInvalidArgument(opts...)
 	}
 
 	tx, err := g.startTransaction(ctx)
