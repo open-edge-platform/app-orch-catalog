@@ -5,17 +5,18 @@
 package restproxy
 
 import (
+	"net"
+	"net/http"
+	"net/url"
+	"testing"
+	"time"
+
 	"github.com/gorilla/websocket"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
-	"net"
-	"net/http"
-	"net/url"
-	"testing"
-	"time"
 
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
 	ent "github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
@@ -153,7 +154,8 @@ func createServerConnection(t *testing.T, dbClient *ent.Client, opaClient openpo
 	}()
 
 	ctx := context.Background()
-	conn, err := grpc.DialContext(ctx, "localhost:6943", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	// TODO: Migrate from grpc.Dial/DialContext to grpc.NewClient. Deferred due to potential change in behavior.
+	conn, err := grpc.DialContext(ctx, "localhost:6943", grpc.WithTransportCredentials(insecure.NewCredentials())) //nolint:staticcheck
 	if err != nil {
 		t.Fatalf("Failed to dial bufnet: %v", err)
 	}

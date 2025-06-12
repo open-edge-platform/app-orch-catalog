@@ -67,7 +67,7 @@ func PrintVerboseError(err error) {
 // VerboseErrorAsString returns a string representation of the error's verbose message.
 // If the error does not implement VerboseError, it returns an empty string.
 
-func VerboseErrorAsString(err error) string {
+func VerboseErrorAsString(err error) string { // nolint:revive
 	if err != nil {
 		if e, ok := err.(VerboseError); ok {
 			var buf bytes.Buffer

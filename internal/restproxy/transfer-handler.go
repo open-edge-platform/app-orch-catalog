@@ -140,7 +140,8 @@ func NewFileHandler(endpoint string, opts []grpc.DialOption) (*FileHandler, erro
 	log.Infow("Creating FileHandler", dazl.String("grpcEndpoint", endpoint))
 
 	ctx := context.Background()
-	conn, err := grpc.Dial(endpoint, opts...)
+	// TODO: Migrate from grpc.Dial/DialContext to grpc.NewClient. Deferred due to potential change in behavior.
+	conn, err := grpc.Dial(endpoint, opts...) //nolint:staticcheck
 
 	if err != nil {
 		return nil, err
