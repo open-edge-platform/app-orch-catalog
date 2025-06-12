@@ -16,6 +16,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type CatalogClient struct {
@@ -346,7 +347,13 @@ func (c *CatalogClient) GetRegistries() []types.Registry {
 }
 
 func (c *CatalogClient) MakeHTTPRequest(method, endpoint string, body io.Reader) (*http.Response, error) {
-	requestURL := fmt.Sprintf("%s%s", c.CatalogRESTServerUrl, endpoint)
+	// Ensure the base URL ends with a `/` to avoid concatenation issues
+	baseURL := c.CatalogRESTServerUrl
+	if !strings.HasSuffix(baseURL, "/") {
+		baseURL += "/"
+	}
+
+	requestURL := fmt.Sprintf("%s%s", baseURL, endpoint)
 	req, err := http.NewRequest(method, requestURL, body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create HTTP request: %w", err)
@@ -360,17 +367,26 @@ func (c *CatalogClient) MakeHTTPRequest(method, endpoint string, body io.Reader)
 }
 
 func (c *CatalogClient) MakeHTTPRequestWithQuery(method, endpoint string, queryParams map[string]string) (*http.Response, error) {
-	requestURL := fmt.Sprintf("%s%s", c.CatalogRESTServerUrl, endpoint)
+	// Ensure the base URL ends with a `/` to avoid concatenation issues
+	baseURL := c.CatalogRESTServerUrl
+	if !strings.HasSuffix(baseURL, "/") {
+		baseURL += "/"
+	}
+
+	requestURL := fmt.Sprintf("%s%s", baseURL, endpoint)
 	req, err := http.NewRequest(method, requestURL, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create HTTP request: %w", err)
 	}
 	auth.AddRestAuthHeader(req, c.Token, c.ProjectID)
+
+	// Add query parameters if provided
 	query := req.URL.Query()
 	for key, value := range queryParams {
 		query.Add(key, value)
 	}
 	req.URL.RawQuery = query.Encode()
+
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to execute HTTP request: %w", err)
