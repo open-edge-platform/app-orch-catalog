@@ -27,17 +27,6 @@ type CatalogClient struct {
 	ProjectID            string
 }
 
-type ImportRequest struct {
-	URL                       string `json:"url"`
-	Username                  string `json:"username,omitempty"`
-	AuthToken                 string `json:"auth_token,omitempty"`
-	ChartValues               string `json:"chart_values,omitempty"`
-	IncludeAuth               bool   `json:"include_auth,omitempty"`
-	GenerateDefaultValues     bool   `json:"generate_default_values,omitempty"`
-	GenerateDefaultParameters bool   `json:"generate_default_parameters,omitempty"`
-	Namespace                 string `json:"namespace,omitempty"`
-}
-
 // Client Creation Functions
 func createCatalogClient(restServerURL, token, projectID string) (*restClient.ClientWithResponses, error) {
 	catalogClient, err := restClient.NewClientWithResponses(restServerURL, restClient.WithRequestEditorFn(func(_ context.Context, req *http.Request) error {
@@ -320,19 +309,10 @@ func (c *CatalogClient) UploadTarball(ctx context.Context, pathName string) (*ht
 	return http.DefaultClient.Do(req)
 }
 
-func (c *CatalogClient) ImportHelmChart(ctx context.Context, importRequest *ImportRequest) (int, string, error) {
+func (c *CatalogClient) ImportHelmChart(ctx context.Context, importRequest *restClient.CatalogServiceImportParams) (int, string, error) {
 	params := url.Values{}
-	params.Add("url", importRequest.URL)
-	res, err := c.Client.CatalogServiceImport(ctx, &restClient.CatalogServiceImportParams{
-		Url:                       &importRequest.URL,
-		Username:                  &importRequest.Username,
-		AuthToken:                 &importRequest.AuthToken,
-		ChartValues:               &importRequest.ChartValues,
-		IncludeAuth:               &importRequest.IncludeAuth,
-		GenerateDefaultValues:     &importRequest.GenerateDefaultValues,
-		GenerateDefaultParameters: &importRequest.GenerateDefaultParameters,
-		Namespace:                 &importRequest.Namespace,
-	})
+	params.Add("url", *importRequest.Url)
+	res, err := c.Client.CatalogServiceImport(ctx, importRequest)
 	if err != nil {
 		return 0, "", fmt.Errorf("failed to import Helm chart: %w", err)
 	}

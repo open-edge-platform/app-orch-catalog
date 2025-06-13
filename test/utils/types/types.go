@@ -10,9 +10,7 @@ import (
 )
 
 const (
-	ApplicationsEndpoint       = "/catalog.orchestrator.apis/v3/applications"
 	DeploymentPackagesEndpoint = "/catalog.orchestrator.apis/v3/deployment_packages"
-	RegistriesEndpoint         = "/catalog.orchestrator.apis/v3/registries"
 	UploadEndpoint             = "/catalog.orchestrator.apis/upload"
 
 	WordpressTarballPathName = "../testdata/wordpress.tar.gz"
@@ -35,11 +33,6 @@ const (
 	SampleOrg     = "sample-org"
 	SampleProject = "sample-project"
 )
-
-/* The reason for these Short* objects was to facilitate converting the existing
- * rest api tests to the more complex test framework that came from the mage e2e
- * tests, which have many more fields.
- */
 
 func GetPointerString(s string) *string {
 	return &s

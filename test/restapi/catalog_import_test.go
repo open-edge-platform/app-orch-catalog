@@ -6,15 +6,15 @@ package restapi
 
 import (
 	"context"
+	restclient "github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
+	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
 	"net/http"
-
-	"github.com/open-edge-platform/app-orch-catalog/test/utils/methods"
 )
 
 func (s *TestSuite) TestImportHelmChart() {
 	ctx := context.TODO()
-	importRequest := &methods.ImportRequest{
-		URL: "oci://ghcr.io/open-edge-platform/geti/helm/impt:2.9.0",
+	importRequest := &restclient.CatalogServiceImportParams{
+		Url: types.GetPointerString("oci://ghcr.io/open-edge-platform/geti/helm/impt:2.9.0"),
 	}
 
 	status, body, err := s.catalogClient.ImportHelmChart(ctx, importRequest)
@@ -61,8 +61,8 @@ func (s *TestSuite) TestImportHelmChart() {
 func (s *TestSuite) TestImportHelmChartBadURL() {
 
 	ctx := context.TODO()
-	importRequest := &methods.ImportRequest{
-		URL: "oci://ghcr.invalid/open-edge-platform/geti/helm/impt:2.9.0",
+	importRequest := &restclient.CatalogServiceImportParams{
+		Url: types.GetPointerString("oci://ghcr.invalid/open-edge-platform/geti/helm/impt:2.9.0"),
 	}
 
 	status, _, err := s.catalogClient.ImportHelmChart(ctx, importRequest)
@@ -75,8 +75,8 @@ func (s *TestSuite) TestImportHelmChartNotAURL() {
 
 	ctx := context.TODO()
 
-	importRequest := &methods.ImportRequest{
-		URL: "this is not a url",
+	importRequest := &restclient.CatalogServiceImportParams{
+		Url: types.GetPointerString("this is not a url"),
 	}
 
 	status, body, err := s.catalogClient.ImportHelmChart(ctx, importRequest)
@@ -88,8 +88,8 @@ func (s *TestSuite) TestImportHelmChartNotAURL() {
 func (s *TestSuite) TestImportHelmChartBadObject() {
 	ctx := context.TODO()
 
-	importRequest := &methods.ImportRequest{
-		URL: "oci://registry-rs.edgeorchestration.intel.com/edge-orch/en/file/cluster-extension-manifest:v1.1.2",
+	importRequest := &restclient.CatalogServiceImportParams{
+		Url: types.GetPointerString("oci://registry-rs.edgeorchestration.intel.com/edge-orch/en/file/cluster-extension-manifest:v1.1.2"),
 	}
 
 	status, _, err := s.catalogClient.ImportHelmChart(ctx, importRequest)
