@@ -68,6 +68,8 @@ func NewCatalogClient(catalogRESTServerUrl, token, projectID, orchDomain string)
 	return &CatalogClient{
 		OrchDomain: orchDomain,
 		Client:     client,
+		Token:      token,
+		ProjectID:  projectID,
 	}
 }
 
@@ -137,7 +139,6 @@ func (c *CatalogClient) GetDeploymentPackage(ctx context.Context, name, version 
 }
 
 func (c *CatalogClient) DeleteDeploymentPackage(ctx context.Context, name, version string, mustExist bool) error {
-
 	res, err := c.Client.CatalogServiceDeleteDeploymentPackage(ctx, name, version)
 	if err != nil {
 		return err
