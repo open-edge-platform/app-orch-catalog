@@ -326,11 +326,11 @@ func createMultipartBody(pathName string) (io.Reader, string, error) {
 
 // Import/Upload-related Functions
 func (c *CatalogClient) UploadTarball(ctx context.Context, pathName string) (*utilities.CatalogServiceBulkCatalogUploadResponse, int, error) {
-
 	body, contentType, err := createMultipartBody(pathName)
 	if err != nil {
 		return nil, 0, fmt.Errorf("failed to create multipart body: %w", err)
 	}
+
 	resp, err := c.UtilitiesClient.CatalogServiceBulkCatalogUploadWithBodyWithResponse(ctx, contentType, body)
 	if err != nil || resp == nil || resp.StatusCode() != 200 {
 		if err != nil {
@@ -340,13 +340,12 @@ func (c *CatalogClient) UploadTarball(ctx context.Context, pathName string) (*ut
 			return nil, 0, fmt.Errorf("%v", err)
 		}
 		if resp != nil {
-			return resp, resp.StatusCode(), fmt.Errorf("failed to list registries: %v", string(resp.Body))
+			return resp, resp.StatusCode(), fmt.Errorf("failed to upload tarball: %v", string(resp.Body))
 		}
-		return nil, 0, fmt.Errorf("failed to list registries: response is nil")
+		return nil, 0, fmt.Errorf("failed to upload tarball: response is nil")
 	}
 
 	return resp, resp.StatusCode(), nil
-
 }
 
 func (c *CatalogClient) GetCharts(ctx context.Context, params *utilities.CatalogServiceGetRegistryChartsParams) (*utilities.CatalogServiceGetRegistryChartsResponse, int, error) {
