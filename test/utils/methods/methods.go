@@ -295,12 +295,11 @@ func (c *CatalogClient) GetRegistries() []restClient.Registry {
 	return types.GetRegistryDefinitions(c.OrchDomain)
 }
 
-// Import/Upload-related Functions
-func (c *CatalogClient) UploadTarball(ctx context.Context, pathName string) (*utilities.CatalogServiceBulkCatalogUploadResponse, int, error) {
-
+// createMultipartBody creates a multipart form body from a file path
+func createMultipartBody(pathName string) (io.Reader, string, error) {
 	file, err := os.Open(pathName)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to open file %s: %w", pathName, err)
+		return nil, "", fmt.Errorf("failed to open file %s: %w", pathName, err)
 	}
 	defer file.Close()
 
@@ -310,18 +309,25 @@ func (c *CatalogClient) UploadTarball(ctx context.Context, pathName string) (*ut
 	writer := multipart.NewWriter(body)
 	part, err := writer.CreateFormFile("files", filename)
 	if err != nil {
-		return nil, 0, fmt.Errorf("failed to create form file for %s: %w", filename, err)
-	}
-	_, err = io.Copy(part, file)
-	if err != nil {
-		return nil, 0, fmt.Errorf("failed to copy file content for %s: %w", filename, err)
-	}
-	err = writer.Close()
-	if err != nil {
-		return nil, 0, err
+		return nil, "", fmt.Errorf("failed to create form file for %s: %w", filename, err)
 	}
 
-	resp, err := c.UtilitiesClient.CatalogServiceBulkCatalogUploadWithBodyWithResponse(ctx, writer.FormDataContentType(), body)
+	if _, err = io.Copy(part, file); err != nil {
+		return nil, "", fmt.Errorf("failed to copy file content for %s: %w", filename, err)
+	}
+
+	if err = writer.Close(); err != nil {
+		return nil, "", err
+	}
+
+	return body, writer.FormDataContentType(), nil
+}
+
+// Import/Upload-related Functions
+func (c *CatalogClient) UploadTarball(ctx context.Context, pathName string) (*utilities.CatalogServiceBulkCatalogUploadResponse, int, error) {
+
+	body, contentType, err := createMultipartBody(pathName)
+	resp, err := c.UtilitiesClient.CatalogServiceBulkCatalogUploadWithBodyWithResponse(ctx, contentType, body)
 	if err != nil || resp == nil || resp.StatusCode() != 200 {
 		if err != nil {
 			if resp != nil {
