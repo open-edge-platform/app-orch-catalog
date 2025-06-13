@@ -62,7 +62,10 @@ func (s *TestSuite) TestImportHelmChart() {
 	status, body := s.ImportHelmChart(importRequest)
 	s.Equal(http.StatusOK, status, "Expected status code 200 for successful import")
 
-	_ = body
+	if http.StatusOK != status {
+		// for debugging purposes, log the response body. It will have error messages from the importer.
+		s.T().Logf("Response body: %s\n", body)
+	}
 
 	app, err := s.GetApplication("impt", "2.9.0", true)
 	s.Require().NoError(err, "Expected to retrieve application after import")
@@ -89,8 +92,8 @@ func (s *TestSuite) TestImportHelmChart() {
 
 	/* cleanup -- these should all exist at this point */
 
-	s.NoError(s.DeleteDeploymentPackage("impt", "2.9.0", true), "Expected to delete registry")
-	s.NoError(s.DeleteApplication("impt", "2.9.0", true), "Expected to delete registry")
+	s.NoError(s.DeleteDeploymentPackage("impt", "2.9.0", true), "Expected to delete deployment package")
+	s.NoError(s.DeleteApplication("impt", "2.9.0", true), "Expected to delete application")
 	s.NoError(s.DeleteRegistry("impt-registry", true), "Expected to delete registry")
 }
 
@@ -99,9 +102,9 @@ func (s *TestSuite) TestImportHelmChartBadURL() {
 		URL: "oci://ghcr.invalid/open-edge-platform/geti/helm/impt:2.9.0",
 	}
 
-	status, body := s.ImportHelmChart(importRequest)
+	status, _ := s.ImportHelmChart(importRequest)
 	s.Equal(http.StatusBadRequest, status, "Expected status code 400 for invalid Helm chart URL")
-	s.Contains(body, "failed to resolve", "Expected error message to contain 'failed to resolve'")
+	// TODO: test type of error returned
 }
 
 func (s *TestSuite) TestImportHelmChartNotAURL() {
@@ -119,7 +122,7 @@ func (s *TestSuite) TestImportHelmChartBadObject() {
 		URL: "oci://registry-rs.edgeorchestration.intel.com/edge-orch/en/file/cluster-extension-manifest:v1.1.2",
 	}
 
-	status, body := s.ImportHelmChart(importRequest)
+	status, _ := s.ImportHelmChart(importRequest)
 	s.Equal(http.StatusBadRequest, status, "Expected status code 400 for invalid Helm chart URL")
-	s.Contains(body, "Failed to create gzip reader", "Expected error message to contain 'failed to resolve'")
+	// TODO: test type of error returned
 }

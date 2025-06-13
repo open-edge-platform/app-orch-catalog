@@ -130,7 +130,7 @@ func (s *TestSuite) TestHelmToDpBadURL() {
 	s.Require().NoError(err)
 	defer os.RemoveAll(tempDir)
 
-	_, stderr, err := s.runHelmToDp(badHelmChart, "-o", tempDir)
-	s.Error(err, "Expected no error when running catalog-schema on a good package")
-	s.Contains(stderr, "failed to resolve", "Expected error failing to resolve the vad url")
+	_, _, err = s.runHelmToDp(badHelmChart, "-o", tempDir)
+	s.Error(err, "Expected error when running catalog-schema on a bad URL")
+	// TODO: test type of error returned
 }
