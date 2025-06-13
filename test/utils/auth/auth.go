@@ -11,19 +11,16 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
 	nexus_client "github.com/open-edge-platform/orch-utils/tenancy-datamodel/build/nexus-client"
 	"github.com/stretchr/testify/assert"
 	"io"
 	"net/http"
 	"net/url"
 	ctrl "sigs.k8s.io/controller-runtime"
+
 	"strings"
 	"testing"
-)
-
-const (
-	SampleOrg     = "sample-org"
-	SampleProject = "sample-project"
 )
 
 func SetUpAccessToken(t *testing.T, server string) string {
@@ -32,7 +29,7 @@ func SetUpAccessToken(t *testing.T, server string) string {
 	}
 	data := url.Values{}
 	data.Set("client_id", "system-client")
-	data.Set("username", fmt.Sprintf("%s-edge-mgr", SampleProject))
+	data.Set("username", fmt.Sprintf("%s-edge-mgr", types.SampleProject))
 	data.Set("password", "ChangeMeOn1stLogin!")
 	data.Set("grant_type", "password")
 	url := "https://" + server + "/realms/master/protocol/openid-connect/token"
@@ -66,32 +63,32 @@ func AddRestAuthHeader(req *http.Request, token string, projectID string) {
 	req.Header.Set("Activeprojectid", fmt.Sprintf("%s", projectID))
 }
 
-func GetProjectId(ctx context.Context) (string, error) {
+func GetProjectId(ctx context.Context, sampleProject string, sampleOrg string) (string, error) {
 	config := ctrl.GetConfigOrDie()
 	nexusClient, err := nexus_client.NewForConfig(config)
 	if err != nil {
-		return "", fmt.Errorf("\nerror retrieving the project (%s). Error: %w", SampleProject, err)
+		return "", fmt.Errorf("\nerror retrieving the project (%s). Error: %w", sampleProject, err)
 	}
 	configNode := nexusClient.TenancyMultiTenancy().Config()
 	if configNode == nil {
-		return "", fmt.Errorf("\nerror retrieving the project (%s). Error: %w", SampleProject, err)
+		return "", fmt.Errorf("\nerror retrieving the project (%s). Error: %w", sampleProject, err)
 	}
 
-	org := configNode.Orgs(SampleOrg)
+	org := configNode.Orgs(sampleOrg)
 	if org == nil {
-		fmt.Printf("org %s does not exist.\n", SampleOrg)
+		fmt.Printf("org %s does not exist.\n", sampleOrg)
 		return "", nil
 	}
 
 	folder := org.Folders("default")
 	if folder == nil {
-		return "", fmt.Errorf("\nerror retrieving the project (%s). Error: %w", SampleProject, err)
+		return "", fmt.Errorf("\nerror retrieving the project (%s). Error: %w", sampleProject, err)
 	}
 
-	project := folder.Projects(SampleProject)
+	project := folder.Projects(sampleProject)
 	projectStatus, err := project.GetProjectStatus(ctx)
 	if projectStatus == nil || err != nil {
-		return "", fmt.Errorf("\nerror retrieving the project (%s). Error: %w", SampleProject, err)
+		return "", fmt.Errorf("\nerror retrieving the project (%s). Error: %w", sampleProject, err)
 	}
 
 	return projectStatus.UID, nil
