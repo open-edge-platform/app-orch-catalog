@@ -102,7 +102,7 @@ func (s *TestSuite) TestImportHelmChartBadURL() {
 		URL: "oci://ghcr.invalid/open-edge-platform/geti/helm/impt:2.9.0",
 	}
 
-	status, body := s.ImportHelmChart(importRequest)
+	status, _ := s.ImportHelmChart(importRequest)
 	s.Equal(http.StatusBadRequest, status, "Expected status code 400 for invalid Helm chart URL")
 	// TODO: test type of error returned
 }
@@ -122,7 +122,7 @@ func (s *TestSuite) TestImportHelmChartBadObject() {
 		URL: "oci://registry-rs.edgeorchestration.intel.com/edge-orch/en/file/cluster-extension-manifest:v1.1.2",
 	}
 
-	status, body := s.ImportHelmChart(importRequest)
+	status, _ := s.ImportHelmChart(importRequest)
 	s.Equal(http.StatusBadRequest, status, "Expected status code 400 for invalid Helm chart URL")
 	// TODO: test type of error returned
 }
