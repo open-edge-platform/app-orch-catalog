@@ -18,12 +18,12 @@ import (
 func (s *TestSuite) TestListBootStrapExtensions() {
 	ctx := context.TODO()
 	applications, status, err := s.catalogClient.GetApplicationList(ctx)
+
 	assert.NoError(s.T(), err)
 	assert.Equal(s.T(), http.StatusOK, status, "Expected HTTP status code 200 OK for application list")
-
 	assert.Equal(s.T(), len(types.GetApplications()), len(applications), "Mismatch in the number of applications")
-	// Log application details for debugging purposes
-	s.T().Log("Extensions:")
+
+	// Log application details
 	for _, app := range applications {
 		s.T().Logf("Name: %s, DisplayName: %s, Description: %s, Version: %s, Kind: %s, ChartName: %s, ChartVersion: %s, HelmRegistryName: %s",
 			app.Name, *app.DisplayName, *app.Description, app.Version, *app.Kind, app.ChartName, app.ChartVersion, app.HelmRegistryName)
@@ -47,11 +47,9 @@ func (s *TestSuite) TestListBootStrapDeploymentPackages() {
 	})
 	assert.NoError(s.T(), err)
 	assert.Equal(s.T(), http.StatusOK, status, "Expected HTTP status code 200 OK for deployment package list")
-
 	assert.Equal(s.T(), len(types.GetDeploymentPackages()), len(deploymentPackages), "Mismatch in the number of deployment packages")
 
 	// Log deployment package details for debugging purposes
-	s.T().Log("Deployment Packages:")
 	for _, pkg := range deploymentPackages {
 		s.T().Logf("Name: %s, Description: %s, Version: %s, Kind: %s",
 			pkg.Name, *pkg.Description, pkg.Version, *pkg.Kind)
@@ -78,7 +76,6 @@ func (s *TestSuite) TestListBootStrapRegistries() {
 	// Assert that the size of the result.Registries matches the size of getRegistries
 	assert.Equal(s.T(), len(s.catalogClient.GetRegistries()), len(registries), "Mismatch in the number of registries")
 	// Log registry details for debugging purposes
-	s.T().Log("Registries:")
 	for _, registry := range registries {
 		s.T().Logf("Name: %s, DisplayName: %s, Description: %s, RootURL: %s, Type: %s",
 			registry.Name, *registry.DisplayName, *registry.Description, registry.RootUrl, registry.Type)
