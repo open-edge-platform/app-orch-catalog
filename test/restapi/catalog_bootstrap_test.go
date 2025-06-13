@@ -115,21 +115,22 @@ func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
 	ctx := context.TODO()
 	for _, app := range types.GetApplications() {
-		result, status, err := s.catalogClient.GetApplication(ctx, app.Name, app.Version)
+		result, status, err := s.catalogClient.GetApplicationVersions(ctx, app.Name)
 		assert.NoError(s.T(), err)
 		assert.Equal(s.T(), http.StatusOK, status, "Expected HTTP status code 200 OK for application")
 		assert.NotEmpty(s.T(), result, "Expected application to be found")
+		gotApp := result[0]
 		switch {
-		case app.Name != result.Name:
-			assert.Equalf(s.T(), app.Name, result.Name, "Mismatch in 'Name' for application: %s", app.Name)
-		case app.DisplayName != result.DisplayName:
-			assert.Equalf(s.T(), app.DisplayName, result.DisplayName, "Mismatch in 'DisplayName' for application: %s", app.Name)
-		case app.ChartName != result.ChartName:
-			assert.Equalf(s.T(), app.ChartName, result.ChartName, "Mismatch in 'ChartName' for application: %s", app.Name)
-		case app.Kind != result.Kind:
-			assert.Equalf(s.T(), app.Kind, result.Kind, "Mismatch in 'Kind' for application: %s", app.Name)
-		case app.HelmRegistryName != result.HelmRegistryName:
-			assert.Equalf(s.T(), app.HelmRegistryName, result.HelmRegistryName, "Mismatch in 'HelmRegistryName' for application: %s", app.Name)
+		case app.Name != gotApp.Name:
+			assert.Equalf(s.T(), app.Name, gotApp.Name, "Mismatch in 'Name' for application: %s", app.Name)
+		case app.DisplayName != gotApp.DisplayName:
+			assert.Equalf(s.T(), app.DisplayName, gotApp.DisplayName, "Mismatch in 'DisplayName' for application: %s", app.Name)
+		case app.ChartName != gotApp.ChartName:
+			assert.Equalf(s.T(), app.ChartName, gotApp.ChartName, "Mismatch in 'ChartName' for application: %s", app.Name)
+		case app.Kind != gotApp.Kind:
+			assert.Equalf(s.T(), app.Kind, gotApp.Kind, "Mismatch in 'Kind' for application: %s", app.Name)
+		case app.HelmRegistryName != gotApp.HelmRegistryName:
+			assert.Equalf(s.T(), app.HelmRegistryName, gotApp.HelmRegistryName, "Mismatch in 'HelmRegistryName' for application: %s", app.Name)
 		}
 		//assert.Equal(s.T(), app.Description, result.Application.Description)
 	}
@@ -139,15 +140,16 @@ func (s *TestSuite) TestVerifyBootstrappedExtensionsExist() {
 func (s *TestSuite) TestVerifyBootstrappedDeploymentPackagesExist() {
 	ctx := context.TODO()
 	for _, pkg := range types.GetDeploymentPackages() {
-		result, status, err := s.catalogClient.GetDeploymentPackage(ctx, pkg.Name, pkg.Version)
+		result, status, err := s.catalogClient.GetDeploymentPackageVersions(ctx, pkg.Name)
 		assert.NoError(s.T(), err, "Expected to get deployment package without error")
 		assert.Equal(s.T(), http.StatusOK, status, "Expected HTTP status code 200 OK for deployment package")
 		assert.NotEmpty(s.T(), result, "Expected deployment package to be found")
+		gotPkg := result[0]
 		switch {
-		case pkg.Name != result.Name:
-			assert.Equalf(s.T(), pkg.Name, result.Name, "Mismatch in 'Name' for deployment package: %s", pkg.Name)
-		case pkg.Kind != result.Kind:
-			assert.Equalf(s.T(), pkg.Kind, result.Kind, "Mismatch in 'Kind' for deployment package: %s", pkg.Name)
+		case pkg.Name != gotPkg.Name:
+			assert.Equalf(s.T(), pkg.Name, gotPkg.Name, "Mismatch in 'Name' for deployment package: %s", pkg.Name)
+		case pkg.Kind != gotPkg.Kind:
+			assert.Equalf(s.T(), pkg.Kind, gotPkg.Kind, "Mismatch in 'Kind' for deployment package: %s", pkg.Name)
 		}
 
 	}
