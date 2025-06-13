@@ -8,6 +8,7 @@ import (
 	// Standard library imports
 
 	"archive/tar"
+	"bytes"
 	"compress/gzip"
 	"context"
 	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
@@ -19,18 +20,18 @@ import (
 func (s *TestSuite) TestExportDeploymentPackage() {
 	ctx := context.TODO()
 	// Before we can test export, first import the wordpress package
-	_, err := s.catalogClient.UploadTarball(ctx, types.WordpressTarballPathName)
+	_, status, err := s.catalogClient.UploadTarball(ctx, types.WordpressTarballPathName)
 	s.Require().NoError(err, "Expected to upload tarball before exporting")
+	s.Require().Equal(http.StatusOK, status, "Expected HTTP status code 200 for upload")
 
-	res, err := s.catalogClient.ExportDeploymentPackage("test-wordpress", "0.1.1")
-	s.Require().NoError(err)
-	s.Require().Equal(http.StatusOK, res.StatusCode)
-	defer res.Body.Close()
+	resp, status, err := s.catalogClient.ExportDeploymentPackage(ctx, "test-wordpress", "0.1.1")
+	s.Require().NoError(err, "Expected to export deployment package without error")
+	s.Require().Equal(http.StatusOK, status, "Expected HTTP status code 200 for export")
 
 	files := make(map[string][]byte)
 
 	// decompress the tarball
-	gzReader, err := gzip.NewReader(res.Body)
+	gzReader, err := gzip.NewReader(bytes.NewReader(resp.Body))
 	s.Require().NoError(err, "Expected to create gzip reader")
 	defer gzReader.Close()
 
@@ -73,8 +74,8 @@ func (s *TestSuite) TestExportDeploymentPackage() {
 }
 
 func (s *TestSuite) TestExportDeploymentPackageNoExist() {
-	res, err := s.catalogClient.ExportDeploymentPackage("not-a-real-package", "0.1.1")
+	ctx := context.TODO()
+	_, status, err := s.catalogClient.ExportDeploymentPackage(ctx, "not-a-real-package", "0.1.1")
 	s.Require().NoError(err)
-	s.Require().Equal(http.StatusNotFound, res.StatusCode, "Expected HTTP status code 404 for export")
-	defer res.Body.Close()
+	s.Require().Equal(http.StatusNotFound, status, "Expected HTTP status code 404 for export")
 }

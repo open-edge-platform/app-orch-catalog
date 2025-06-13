@@ -218,23 +218,22 @@ func (c *CatalogClient) DeleteDeploymentPackage(ctx context.Context, name, versi
 	return nil
 }
 
-func (c *CatalogClient) ExportDeploymentPackage(name string, version string) (*http.Response, error) {
-	requestURL := fmt.Sprintf("%s%s/%s/versions/%s/download", c.CatalogRESTServerUrl, types.DeploymentPackagesEndpoint, name, version)
-
-	req, err := http.NewRequest("GET", requestURL, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create HTTP request for exporting Deployment Package: %w", err)
+func (c *CatalogClient) ExportDeploymentPackage(ctx context.Context, name string, version string) (*utilities.CatalogServiceDownloadDeploymentPackageResponse, int, error) {
+	resp, err := c.UtilitiesClient.CatalogServiceDownloadDeploymentPackageWithResponse(ctx, name, version)
+	if err != nil || resp == nil || resp.StatusCode() != 200 {
+		if err != nil {
+			if resp != nil {
+				return nil, resp.StatusCode(), fmt.Errorf("%v", err)
+			}
+			return nil, 0, fmt.Errorf("%v", err)
+		}
+		if resp != nil {
+			return nil, resp.StatusCode(), fmt.Errorf("failed to export deployment package: %v", string(resp.Body))
+		}
+		return nil, 0, fmt.Errorf("failed to export deployment package: response is nil")
 	}
-	auth.AddRestAuthHeader(req, c.Token, c.ProjectID)
 
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute HTTP request for exporting Deployment Package: %w", err)
-	}
-
-	// Note: res.Body is intentionally not closed here, as the caller is expected to handle it.
-
-	return res, nil
+	return resp, resp.StatusCode(), nil
 }
 
 // Registry-related Functions
