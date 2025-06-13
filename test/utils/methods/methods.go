@@ -83,6 +83,23 @@ func (c *CatalogClient) GetApplicationList(ctx context.Context) ([]restClient.Ap
 	return resp.JSON200.Applications, resp.StatusCode(), nil
 }
 
+func (c *CatalogClient) GetApplication(ctx context.Context, name, version string) (*restClient.Application, int, error) {
+	resp, err := c.Client.CatalogServiceGetApplicationWithResponse(ctx, name, version)
+	if err != nil || resp == nil || resp.StatusCode() != 200 {
+		if err != nil {
+			if resp != nil {
+				return nil, resp.StatusCode(), fmt.Errorf("%v", err)
+			}
+			return nil, 0, fmt.Errorf("%v", err)
+		}
+		if resp != nil {
+			return nil, resp.StatusCode(), fmt.Errorf("failed to get application: %v", string(resp.Body))
+		}
+		return nil, 0, fmt.Errorf("failed to get application: response is nil")
+	}
+	return &resp.JSON200.Application, resp.StatusCode(), nil
+}
+
 func (c *CatalogClient) GetApplicationVersions(ctx context.Context, name string) ([]restClient.Application, int, error) {
 	resp, err := c.Client.CatalogServiceGetApplicationVersionsWithResponse(ctx, name)
 	if err != nil || resp == nil || resp.StatusCode() != 200 {
@@ -115,6 +132,24 @@ func (c *CatalogClient) DeleteApplication(ctx context.Context, name, version str
 		return fmt.Errorf("failed to delete application: %s", res.Status)
 	}
 	return nil
+}
+
+func (c *CatalogClient) GetDeploymentPackage(ctx context.Context, name, version string) (*restClient.DeploymentPackage, int, error) {
+	resp, err := c.Client.CatalogServiceGetDeploymentPackageWithResponse(ctx, name, version)
+	if err != nil || resp == nil || resp.StatusCode() != 200 {
+		if err != nil {
+			if resp != nil {
+				return nil, resp.StatusCode(), fmt.Errorf("%v", err)
+			}
+			return nil, 0, fmt.Errorf("%v", err)
+		}
+		if resp != nil {
+			return nil, resp.StatusCode(), fmt.Errorf("failed to get deployment package: %v", string(resp.Body))
+		}
+		return nil, 0, fmt.Errorf("failed to get deployment package: response is nil")
+	}
+
+	return &resp.JSON200.DeploymentPackage, resp.StatusCode(), nil
 }
 
 func (c *CatalogClient) GetDeploymentPackageVersions(ctx context.Context, name string) ([]restClient.DeploymentPackage, int, error) {
