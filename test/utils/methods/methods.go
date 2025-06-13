@@ -6,8 +6,10 @@ package methods
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
 	"github.com/open-edge-platform/app-orch-catalog/test/utils/auth"
 	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
 	"io"
@@ -19,10 +21,11 @@ import (
 )
 
 type CatalogClient struct {
+	OrchDomain           string
+	Client               *restClient.ClientWithResponses
 	CatalogRESTServerUrl string
 	Token                string
 	ProjectID            string
-	OrchDomain           string
 }
 
 type ShortRegistry struct {
@@ -44,16 +47,32 @@ type ImportRequest struct {
 	Namespace                 string `json:"namespace,omitempty"`
 }
 
-func (c *CatalogClient) GetApplication(name, version string, mustExist bool) (*types.Application, error) {
-	requestURL := fmt.Sprintf("%s%s/%s/versions/%s", c.CatalogRESTServerUrl, types.ApplicationsEndpoint, name, version)
-
-	req, err := http.NewRequest("GET", requestURL, nil)
+func createCatalogClient(restServerURL, token, projectID string) (*restClient.ClientWithResponses, error) {
+	catalogClient, err := restClient.NewClientWithResponses(restServerURL, restClient.WithRequestEditorFn(func(_ context.Context, req *http.Request) error {
+		auth.AddRestAuthHeader(req, token, projectID)
+		return nil
+	}))
 	if err != nil {
 		return nil, err
 	}
-	auth.AddRestAuthHeader(req, c.Token, c.ProjectID)
 
-	res, err := http.DefaultClient.Do(req)
+	return catalogClient, err
+}
+
+func NewCatalogClient(catalogRESTServerUrl, token, projectID, orchDomain string) *CatalogClient {
+	client, err := createCatalogClient(catalogRESTServerUrl, token, projectID)
+	if err != nil {
+		fmt.Printf("Failed to create catalog client: %v\n", err)
+		return nil
+	}
+	return &CatalogClient{
+		OrchDomain: orchDomain,
+		Client:     client,
+	}
+}
+
+func (c *CatalogClient) GetApplication(ctx context.Context, name, version string, mustExist bool) (*types.Application, error) {
+	res, err := c.Client.CatalogServiceGetApplication(ctx, name, version)
 	if err != nil {
 		return nil, err
 	}
@@ -76,21 +95,12 @@ func (c *CatalogClient) GetApplication(name, version string, mustExist bool) (*t
 	return &appResponse.Application, nil
 }
 
-func (c *CatalogClient) DeleteApplication(name, version string, mustExist bool) error {
-	requestURL := fmt.Sprintf("%s%s/%s/versions/%s", c.CatalogRESTServerUrl, types.ApplicationsEndpoint, name, version)
-
-	req, err := http.NewRequest("DELETE", requestURL, nil)
-	if err != nil {
-		return err
-	}
-	auth.AddRestAuthHeader(req, c.Token, c.ProjectID)
-
-	res, err := http.DefaultClient.Do(req)
+func (c *CatalogClient) DeleteApplication(ctx context.Context, name, version string, mustExist bool) error {
+	res, err := c.Client.CatalogServiceDeleteApplication(ctx, name, version)
 	if err != nil {
 		return err
 	}
 	defer res.Body.Close()
-
 	if res.StatusCode == http.StatusNotFound && !mustExist {
 		return nil
 	}
@@ -101,19 +111,12 @@ func (c *CatalogClient) DeleteApplication(name, version string, mustExist bool) 
 	return nil
 }
 
-func (c *CatalogClient) GetDeploymentPackage(name, version string, mustExist bool) (*types.DeploymentPackage, error) {
-	requestURL := fmt.Sprintf("%s%s/%s/versions/%s", c.CatalogRESTServerUrl, types.DeploymentPackagesEndpoint, name, version)
-
-	req, err := http.NewRequest("GET", requestURL, nil)
+func (c *CatalogClient) GetDeploymentPackage(ctx context.Context, name, version string, mustExist bool) (*types.DeploymentPackage, error) {
+	res, err := c.Client.CatalogServiceGetDeploymentPackage(ctx, name, version)
 	if err != nil {
 		return nil, err
 	}
-	auth.AddRestAuthHeader(req, c.Token, c.ProjectID)
 
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
 	defer res.Body.Close()
 
 	if res.StatusCode == http.StatusNotFound && !mustExist {
@@ -133,16 +136,9 @@ func (c *CatalogClient) GetDeploymentPackage(name, version string, mustExist boo
 	return &pkgResp.DeploymentPackage, nil
 }
 
-func (c *CatalogClient) DeleteDeploymentPackage(name, version string, mustExist bool) error {
-	requestURL := fmt.Sprintf("%s%s/%s/versions/%s", c.CatalogRESTServerUrl, types.DeploymentPackagesEndpoint, name, version)
+func (c *CatalogClient) DeleteDeploymentPackage(ctx context.Context, name, version string, mustExist bool) error {
 
-	req, err := http.NewRequest("DELETE", requestURL, nil)
-	if err != nil {
-		return err
-	}
-	auth.AddRestAuthHeader(req, c.Token, c.ProjectID)
-
-	res, err := http.DefaultClient.Do(req)
+	res, err := c.Client.CatalogServiceDeleteDeploymentPackage(ctx, name, version)
 	if err != nil {
 		return err
 	}
@@ -159,19 +155,12 @@ func (c *CatalogClient) DeleteDeploymentPackage(name, version string, mustExist 
 	return nil
 }
 
-func (c *CatalogClient) GetRegistry(name string, mustExist bool) (*types.Registry, error) {
-	requestURL := fmt.Sprintf("%s%s/%s", c.CatalogRESTServerUrl, types.RegistriesEndpoint, name)
-
-	req, err := http.NewRequest("GET", requestURL, nil)
+func (c *CatalogClient) GetRegistry(ctx context.Context, name string, mustExist bool) (*types.Registry, error) {
+	res, err := c.Client.CatalogServiceGetRegistry(ctx, name, &restClient.CatalogServiceGetRegistryParams{})
 	if err != nil {
 		return nil, err
 	}
-	auth.AddRestAuthHeader(req, c.Token, c.ProjectID)
 
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
 	defer res.Body.Close()
 
 	if res.StatusCode == http.StatusNotFound && !mustExist {
@@ -191,21 +180,13 @@ func (c *CatalogClient) GetRegistry(name string, mustExist bool) (*types.Registr
 	return &regResp.Registry, nil
 }
 
-func (c *CatalogClient) DeleteRegistry(name string, mustExist bool) error {
-	requestURL := fmt.Sprintf("%s%s/%s", c.CatalogRESTServerUrl, types.RegistriesEndpoint, name)
-
-	req, err := http.NewRequest("DELETE", requestURL, nil)
+func (c *CatalogClient) DeleteRegistry(ctx context.Context, name string, mustExist bool) error {
+	res, err := c.Client.CatalogServiceDeleteRegistry(ctx, name)
 	if err != nil {
 		return err
 	}
-	auth.AddRestAuthHeader(req, c.Token, c.ProjectID)
 
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return err
-	}
 	defer res.Body.Close()
-
 	if res.StatusCode == http.StatusNotFound && !mustExist {
 		return nil
 	}
@@ -217,28 +198,7 @@ func (c *CatalogClient) DeleteRegistry(name string, mustExist bool) error {
 	return nil
 }
 
-func (c *CatalogClient) Delete(url string) error {
-	req, err := http.NewRequest("DELETE", url, nil)
-	if err != nil {
-		return fmt.Errorf("failed to create DELETE request: %w", err)
-	}
-
-	auth.AddRestAuthHeader(req, c.Token, c.ProjectID)
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("failed to execute DELETE request: %w", err)
-	}
-	defer res.Body.Close()
-
-	if res.Status != "200 OK" {
-		return fmt.Errorf("unexpected response status: %s for DELETE on url %s", res.Status, url)
-	}
-
-	return nil
-}
-
-func (c *CatalogClient) UploadTarball(pathName string) (*http.Response, error) {
+func (c *CatalogClient) UploadTarball(ctx context.Context, pathName string) (*http.Response, error) {
 	file, err := os.Open(pathName)
 	if err != nil {
 		return nil, fmt.Errorf("failed to open file %s: %w", pathName, err)
@@ -272,6 +232,7 @@ func (c *CatalogClient) UploadTarball(pathName string) (*http.Response, error) {
 }
 
 func (c *CatalogClient) ExportDeploymentPackage(name string, version string) (*http.Response, error) {
+
 	requestURL := fmt.Sprintf("%s%s/%s/versions/%s/download", c.CatalogRESTServerUrl, types.DeploymentPackagesEndpoint, name, version)
 
 	req, err := http.NewRequest("GET", requestURL, nil)
@@ -290,23 +251,23 @@ func (c *CatalogClient) ExportDeploymentPackage(name string, version string) (*h
 	return res, nil
 }
 
-func (c *CatalogClient) ImportHelmChart(importRequest *ImportRequest) (int, string, error) {
+func (c *CatalogClient) ImportHelmChart(ctx context.Context, importRequest *ImportRequest) (int, string, error) {
 	params := url.Values{}
 	params.Add("url", importRequest.URL)
-
-	requestURL := fmt.Sprintf("%s%s?%s", c.CatalogRESTServerUrl, types.ImportEndpoint, params.Encode())
-	fmt.Println("requestURL:", requestURL)
-
-	req, err := http.NewRequest("POST", requestURL, nil)
+	res, err := c.Client.CatalogServiceImport(ctx, &restClient.CatalogServiceImportParams{
+		Url:                       &importRequest.URL,
+		Username:                  &importRequest.Username,
+		AuthToken:                 &importRequest.AuthToken,
+		ChartValues:               &importRequest.ChartValues,
+		IncludeAuth:               &importRequest.IncludeAuth,
+		GenerateDefaultValues:     &importRequest.GenerateDefaultValues,
+		GenerateDefaultParameters: &importRequest.GenerateDefaultParameters,
+		Namespace:                 &importRequest.Namespace,
+	})
 	if err != nil {
-		return 0, "", fmt.Errorf("failed to create HTTP request for importing Helm chart: %w", err)
+		return 0, "", fmt.Errorf("failed to import Helm chart: %w", err)
 	}
-	auth.AddRestAuthHeader(req, c.Token, c.ProjectID)
 
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return 0, "", fmt.Errorf("failed to execute HTTP request for importing Helm chart: %w", err)
-	}
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)

@@ -7,6 +7,7 @@ package restapi
 import (
 	// Standard library imports
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
@@ -253,7 +254,8 @@ func (s *TestSuite) Delete(url string) {
 }
 
 func (s *TestSuite) TestUploadTarball() {
-	res, err := s.catalogClient.UploadTarball(types.WordpressTarballPathName)
+	ctx := context.TODO()
+	res, err := s.catalogClient.UploadTarball(ctx, types.WordpressTarballPathName)
 	assert.NoError(s.T(), err, "Expected to upload tarball without error")
 	assert.Equal(s.T(), http.StatusOK, res.StatusCode, "Expected HTTP status code 200 OK for upload")
 
@@ -290,12 +292,13 @@ func (s *TestSuite) TestUploadTarball() {
 	// Note: Not verifying the application or registry, as the DP would fail without them
 
 	// Cleanup
-	s.NoError(s.catalogClient.DeleteDeploymentPackage(types.WordpressName, types.WordpressVersion, true), "Expected to delete deployment package after upload")
-	s.NoError(s.catalogClient.DeleteApplication(types.WordpressName, types.WordpressVersion, true), "Expected to delete application after upload")
-	s.NoError(s.catalogClient.DeleteRegistry(types.WordpressRegistryName, true), "Expected to delete registry after upload")
+	s.NoError(s.catalogClient.DeleteDeploymentPackage(ctx, types.WordpressName, types.WordpressVersion, true), "Expected to delete deployment package after upload")
+	s.NoError(s.catalogClient.DeleteApplication(ctx, types.WordpressName, types.WordpressVersion, true), "Expected to delete application after upload")
+	s.NoError(s.catalogClient.DeleteRegistry(ctx, types.WordpressRegistryName, true), "Expected to delete registry after upload")
 }
 
 func (s *TestSuite) TestUploadSeparateFiles() {
+	ctx := context.TODO()
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -359,9 +362,9 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 	// Note: Not verifying the application or registry, as the DP would fail without them
 
 	// Cleanup
-	s.NoError(s.catalogClient.DeleteDeploymentPackage(types.WordpressName, types.WordpressVersion, true), "Expected to delete deployment package after upload")
-	s.NoError(s.catalogClient.DeleteApplication(types.WordpressName, types.WordpressVersion, true), "Expected to delete application after upload")
-	s.NoError(s.catalogClient.DeleteRegistry(types.WordpressRegistryName, true), "Expected to delete registry after upload")
+	s.NoError(s.catalogClient.DeleteDeploymentPackage(ctx, types.WordpressName, types.WordpressVersion, true), "Expected to delete deployment package after upload")
+	s.NoError(s.catalogClient.DeleteApplication(ctx, types.WordpressName, types.WordpressVersion, true), "Expected to delete application after upload")
+	s.NoError(s.catalogClient.DeleteRegistry(ctx, types.WordpressRegistryName, true), "Expected to delete registry after upload")
 }
 
 func (s *TestSuite) TestGetCharts() {
