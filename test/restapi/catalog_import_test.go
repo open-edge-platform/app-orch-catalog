@@ -35,14 +35,14 @@ func (s *TestSuite) TestImportHelmChart() {
 	s.Equal("impt-registry", app.HelmRegistryName, "Expected application registry to be 'impt-registry'")
 	s.Equal("impt", app.ChartName, "Expected application chart name to be 'impt'")
 	s.Equal("2.9.0", app.ChartVersion, "Expected application chart version to be '2.9.0'")
-	s.Equal("default", app.DefaultProfileName, "Expected application default profile name to be 'default'")
+	s.Equal("default", *app.DefaultProfileName, "Expected application default profile name to be 'default'")
 
 	pkg, status, err := s.catalogClient.GetDeploymentPackage(ctx, "impt", "2.9.0")
 	s.Require().NoError(err, "Expected to retrieve deployment package after import")
 
 	s.Equal("impt", pkg.Name, "Expected deployment package name to be 'impt'")
 	s.Equal("2.9.0", pkg.Version, "Expected deployment package version to be '2.9.0'")
-	s.Equal("default", pkg.DefaultProfileName, "Expected deployment package default profile name to be 'default'")
+	s.Equal("default", *pkg.DefaultProfileName, "Expected deployment package default profile name to be 'default'")
 
 	reg, status, err := s.catalogClient.GetRegistry(ctx, "impt-registry")
 	s.Require().NoError(err, "Expected to retrieve registry")
