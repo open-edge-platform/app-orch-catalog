@@ -9,16 +9,17 @@ import (
 
 	"archive/tar"
 	"compress/gzip"
+	"context"
 	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
 	"io"
 	"log"
 	"net/http"
-	// Third-party imports
 )
 
 func (s *TestSuite) TestExportDeploymentPackage() {
+	ctx := context.TODO()
 	// Before we can test export, first import the wordpress package
-	_, err := s.catalogClient.UploadTarball(types.WordpressTarballPathName)
+	_, err := s.catalogClient.UploadTarball(ctx, types.WordpressTarballPathName)
 	s.Require().NoError(err, "Expected to upload tarball before exporting")
 
 	res, err := s.catalogClient.ExportDeploymentPackage("test-wordpress", "0.1.1")
@@ -66,9 +67,9 @@ func (s *TestSuite) TestExportDeploymentPackage() {
 	s.True(ok, "Expected to find 'values-wordpress-0.1.1-default.yaml' in the tarball")
 
 	// Cleanup
-	s.NoError(s.catalogClient.DeleteDeploymentPackage(types.WordpressName, types.WordpressVersion, true), "Expected to delete deployment package after export")
-	s.NoError(s.catalogClient.DeleteApplication(types.WordpressName, types.WordpressVersion, true), "Expected to delete application after export")
-	s.NoError(s.catalogClient.DeleteRegistry(types.WordpressRegistryName, true), "Expected to delete registry after export")
+	s.NoError(s.catalogClient.DeleteDeploymentPackage(ctx, types.WordpressName, types.WordpressVersion, true), "Expected to delete deployment package after export")
+	s.NoError(s.catalogClient.DeleteApplication(ctx, types.WordpressName, types.WordpressVersion, true), "Expected to delete application after export")
+	s.NoError(s.catalogClient.DeleteRegistry(ctx, types.WordpressRegistryName, true), "Expected to delete registry after export")
 }
 
 func (s *TestSuite) TestExportDeploymentPackageNoExist() {

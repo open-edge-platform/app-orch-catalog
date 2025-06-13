@@ -4,10 +4,13 @@
 
 package types
 
+import (
+	"fmt"
+	"github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
+)
+
 const (
-	ApplicationsEndpoint       = "/catalog.orchestrator.apis/v3/applications"
 	DeploymentPackagesEndpoint = "/catalog.orchestrator.apis/v3/deployment_packages"
-	RegistriesEndpoint         = "/catalog.orchestrator.apis/v3/registries"
 	UploadEndpoint             = "/catalog.orchestrator.apis/upload"
 
 	WordpressTarballPathName = "../testdata/wordpress.tar.gz"
@@ -31,136 +34,25 @@ const (
 	SampleProject = "sample-project"
 )
 
-const ImportEndpoint = "/catalog.orchestrator.apis/v3/import"
-
-/* The reason for these Short* objects was to facilitate converting the existing
- * rest api tests to the more complex test framework that came from the mage e2e
- * tests, which have many more fields.
- */
-
-type ShortApplication struct {
-	Name             string `json:"name"`
-	DisplayName      string `json:"displayName"`
-	Description      string `json:"description"`
-	Kind             string `json:"kind"`
-	ChartName        string `json:"chartName"`
-	HelmRegistryName string `json:"helmRegistryName"`
+func GetPointerString(s string) *string {
+	return &s
 }
 
-type ShortDeploymentPackage struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Kind        string `json:"kind"`
-}
-
-type (
-	DeploymentPackage struct {
-		ApplicationDependencies *[]ApplicationDependency `json:"applicationDependencies,omitempty"`
-		ApplicationReferences   []ApplicationReference   `json:"applicationReferences"`
-		Artifacts               []ArtifactReference      `json:"artifacts"`
-		DefaultNamespaces       *map[string]string       `json:"defaultNamespaces,omitempty"`
-		DefaultProfileName      string                   `json:"defaultProfileName,omitempty"`
-		Description             string                   `json:"description,omitempty"`
-		DisplayName             string                   `json:"displayName,omitempty"`
-		Extensions              []APIExtension           `json:"extensions"`
-		IsDeployed              bool                     `json:"isDeployed,omitempty"`
-		IsVisible               bool                     `json:"isVisible,omitempty"`
-		Name                    string                   `json:"name"`
-		Profiles                []Profile                `json:"profiles,omitempty"`
-		Version                 string                   `json:"version"`
-		Kind                    string                   `json:"kind"`
-	}
-
-	DeploymentPackages struct {
-		DeploymentPackages []DeploymentPackage `json:"DeploymentPackages"`
-	}
-
-	DeploymentPackageGetResponse struct {
-		DeploymentPackage DeploymentPackage `json:"deploymentPackage"`
-	}
-
-	Profile struct {
-		ChartValues string `json:"chartValues,omitempty"`
-		Description string `json:"description,omitempty"`
-		DisplayName string `json:"displayName,omitempty"`
-		Name        string `json:"name"`
-	}
-
-	Application struct {
-		ChartName          string    `json:"chartName"`
-		ChartVersion       string    `json:"chartVersion"`
-		DefaultProfileName string    `json:"defaultProfileName,omitempty"`
-		Description        string    `json:"description,omitempty"`
-		DisplayName        string    `json:"displayName,omitempty"`
-		HelmRegistryName   string    `json:"helmRegistryName"`
-		ImageRegistryName  string    `json:"imageRegistryName,omitempty"`
-		Name               string    `json:"name"`
-		Profiles           []Profile `json:"profiles,omitempty"`
-		Version            string    `json:"version"`
-		Kind               string    `json:"kind"`
-	}
-
-	ApplicationGetResponse struct {
-		Application Application `json:"application"`
-	}
-
-	ApplicationDependency struct{}
-	ApplicationReference  struct{}
-	ArtifactReference     struct{}
-	Endpoint              struct {
-		AuthType     string `json:"authType"`
-		ExternalPath string `json:"externalPath"`
-		InternalPath string `json:"internalPath"`
-		Scheme       string `json:"scheme"`
-		ServiceName  string `json:"serviceName"`
-	}
-
-	UIExtension struct{}
-
-	APIExtension struct {
-		Description string      `json:"description,omitempty"`
-		DisplayName string      `json:"displayName,omitempty"`
-		Endpoints   []Endpoint  `json:"endpoints,omitempty"`
-		Name        string      `json:"name"`
-		UiExtension UIExtension `json:"uiExtension,omitempty"`
-		Version     string      `json:"version"`
-	}
-
-	Applications struct {
-		Applications []Application `json:"applications"`
-	}
-
-	Registry struct {
-		AuthToken   string  `json:"authToken,omitempty"`
-		Cacerts     string  `json:"cacerts,omitempty"`
-		Description string  `json:"description,omitempty"`
-		DisplayName string  `json:"displayName,omitempty"`
-		Name        string  `json:"name"`
-		RootURL     string  `json:"rootUrl"`
-		SecretID    *string `json:"secretId,omitempty"`
-		Type        string  `json:"type"`
-		Username    string  `json:"username,omitempty"`
-	}
-
-	RegistryGetResponse struct {
-		Registry Registry `json:"registry"`
-	}
-)
-
-func GetDeploymentPackages() []DeploymentPackage {
-	pkgs := []DeploymentPackage{}
-	for _, dp := range []ShortDeploymentPackage{
-		{"base-extensions", "Base Extensions", "KIND_EXTENSION"},
-		{"intel-gpu", "Intel GPU K8S extension", "KIND_EXTENSION"},
-		{"kubernetes-dashboard", "kubernetes-dashboard", "KIND_EXTENSION"},
-		{"loadbalancer", "Enables load balancer and dns services on the edge", "KIND_EXTENSION"},
-		{"skupper", "Enables Skupper service on the edge", "KIND_EXTENSION"},
-		{"sriov", "Provisions and configures SR-IOV CNI plugin and Device plugin", "KIND_EXTENSION"},
-		{"trusted-compute", "Trusted Compute k8s plugin for trusted workloads. Requires cluster using a \"privilege\" template.", "KIND_EXTENSION"},
-		{"usb", "Brings USB allocation for containers/VMs running on k8s cluster", "KIND_EXTENSION"},
-		{"virtualization", "Virtualization support for k8s cluster", "KIND_EXTENSION"},
+func GetDeploymentPackages() []restClient.DeploymentPackage {
+	var pkgs []restClient.DeploymentPackage
+	extensionKind := restClient.DeploymentPackageKindKINDEXTENSION
+	for _, dp := range []restClient.DeploymentPackage{
+		{Name: "base-extensions", Description: GetPointerString("Base Extensions"), Kind: &extensionKind},
+		{Name: "intel-gpu", Description: GetPointerString("Intel GPU K8S extension"), Kind: &extensionKind},
+		{Name: "kubernetes-dashboard", Description: GetPointerString("kubernetes-dashboard"), Kind: &extensionKind},
+		{Name: "loadbalancer", Description: GetPointerString("Enables load balancer and dns services on the edge"), Kind: &extensionKind},
+		{Name: "skupper", Description: GetPointerString("Enables Skupper service on the edge"), Kind: &extensionKind},
+		{Name: "sriov", Description: GetPointerString("Provisions and configures SR-IOV CNI plugin and Device plugin"), Kind: &extensionKind},
+		{Name: "trusted-compute", Description: GetPointerString("Trusted Compute k8s plugin for trusted workloads. Requires cluster using a \"privilege\" template."), Kind: &extensionKind},
+		{Name: "usb", Description: GetPointerString("Brings USB allocation for containers/VMs running on k8s cluster"), Kind: &extensionKind},
+		{Name: "virtualization", Description: GetPointerString("Virtualization support for k8s cluster"), Kind: &extensionKind},
 	} {
-		pkgs = append(pkgs, DeploymentPackage{
+		pkgs = append(pkgs, restClient.DeploymentPackage{
 			Name:        dp.Name,
 			Description: dp.Description,
 			Kind:        dp.Kind,
@@ -169,31 +61,33 @@ func GetDeploymentPackages() []DeploymentPackage {
 	return pkgs
 }
 
-func GetApplications() []Application {
-	apps := []Application{}
-	for _, sa := range []ShortApplication{
-		{"gatekeeper-constraints", "gatekeeper-constraints", "Gatekeeper Constraints", "KIND_EXTENSION", "edge-orch/en/charts/gatekeeper-constraints", "intel-rs-helm"},
-		{"ingress-nginx", "ingress-nginx", "Edge Orchestrator EdgeDNS", "KIND_EXTENSION", "ingress-nginx", "kubernetes-ingress-helm"},
-		{"intel-device-operator", "intel-device-operator", "Intel Device Plugin Operator", "KIND_EXTENSION", "intel-device-plugins-operator", "intel-github-io"},
-		{"intel-gpu-plugin", "intel-gpu-plugin", "Intel GPU Device Plugin", "KIND_EXTENSION", "intel-device-plugins-gpu", "intel-github-io"},
-		{"kubernetes-dashboard", "kubernetes-dashboard", "kubernetes-dashboard", "KIND_EXTENSION", "kubernetes-dashboard", "kubernetes"},
-		{"metallb", "metallb", "Load balancer for bare metal k8s clusters", "KIND_EXTENSION", "metallb", "bitnami-helm-oci"},
-		{"metallb-base", "metallb-base", "Metallb base configuration", "KIND_EXTENSION", "edge-orch/en/charts/metallb-base", "intel-rs-helm"},
-		{"metallb-config", "metallb-config", "Load balancer configuration for bare metal k8s clusters", "KIND_EXTENSION", "edge-orch/en/charts/metallb-config", "intel-rs-helm"},
-		{"network-policies", "network-policies", "Network Policies", "KIND_EXTENSION", "edge-orch/en/charts/network-policies", "intel-rs-helm"},
-		{"cert-manager", "cert-manager", "Cert Manager", "KIND_EXTENSION", "cert-manager", "jetstack"},
-		{"edgedns", "edgedns", "Edge Orchestrator EdgeDNS", "KIND_EXTENSION", "edge-orch/en/charts/edgedns", "intel-rs-helm"},
-		{"fluent-bit", "fluent-bit", "Fluent Bit", "KIND_EXTENSION", "fluent-bit", "fluent-bit"},
-		{"gatekeeper", "gatekeeper", "Gatekeeper", "KIND_EXTENSION", "gatekeeper", "gatekeeper"},
-		{"akri", "akri", "akri base application", "KIND_EXTENSION", "akri", "akri-helm-registry"},
-		{"attestation-manager", "attestation-manager", "Workload prptection and continus monitoring add-on for Kubernetes", "KIND_EXTENSION", "edge-orch/trusted-compute/charts/attestation-manager", "intel-rs-helm"},
-		{"attestation-verifier", "attestation-verifier", "attestation verifier of trusted compute", "KIND_EXTENSION", "edge-orch/trusted-compute/charts/attestation-verifier", "intel-rs-helm"},
-		{"cdi", "cdi", "Persistent storage management add-on for Kubernetes", "KIND_EXTENSION", "edge-orch/en/charts/cdi", "intel-rs-helm"},
-		{"kubevirt", "kubevirt", "Virtual machine management add-on for Kubernetes", "KIND_EXTENSION", "edge-orch/en/charts/kubevirt", "intel-rs-helm"},
-		{"kubevirt-helper", "kubevirt-helper", "Automatically restart VM when editable VM spec is updated", "KIND_EXTENSION", "edge-orch/en/charts/kubevirt-helper", "intel-rs-helm"},
-		{"nfd", "nfd", "NFD", "KIND_EXTENSION", "node-feature-discovery", "node-feature-discovery"},
+func GetApplications() []restClient.Application {
+	var apps []restClient.Application
+	extensionKind := restClient.ApplicationKindKINDEXTENSION
+
+	for _, sa := range []restClient.Application{
+		{Name: "gatekeeper-constraints", DisplayName: GetPointerString("gatekeeper-constraints"), Description: GetPointerString("Gatekeeper Constraints"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/gatekeeper-constraints", HelmRegistryName: "intel-rs-helm"},
+		{Name: "ingress-nginx", DisplayName: GetPointerString("ingress-nginx"), Description: GetPointerString("Edge Orchestrator EdgeDNS"), Kind: &extensionKind, ChartName: "ingress-nginx", HelmRegistryName: "kubernetes-ingress-helm"},
+		{Name: "intel-device-operator", DisplayName: GetPointerString("intel-device-operator"), Description: GetPointerString("Intel Device Plugin Operator"), Kind: &extensionKind, ChartName: "intel-device-plugins-operator", HelmRegistryName: "intel-github-io"},
+		{Name: "intel-gpu-plugin", DisplayName: GetPointerString("intel-gpu-plugin"), Description: GetPointerString("Intel GPU Device Plugin"), Kind: &extensionKind, ChartName: "intel-device-plugins-gpu", HelmRegistryName: "intel-github-io"},
+		{Name: "kubernetes-dashboard", DisplayName: GetPointerString("kubernetes-dashboard"), Description: GetPointerString("kubernetes-dashboard"), Kind: &extensionKind, ChartName: "kubernetes-dashboard", HelmRegistryName: "kubernetes"},
+		{Name: "metallb", DisplayName: GetPointerString("metallb"), Description: GetPointerString("Load balancer for bare metal k8s clusters"), Kind: &extensionKind, ChartName: "metallb", HelmRegistryName: "bitnami-helm-oci"},
+		{Name: "metallb-base", DisplayName: GetPointerString("metallb-base"), Description: GetPointerString("Metallb base configuration"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/metallb-base", HelmRegistryName: "intel-rs-helm"},
+		{Name: "metallb-config", DisplayName: GetPointerString("metallb-config"), Description: GetPointerString("Load balancer configuration for bare metal k8s clusters"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/metallb-config", HelmRegistryName: "intel-rs-helm"},
+		{Name: "network-policies", DisplayName: GetPointerString("network-policies"), Description: GetPointerString("Network Policies"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/network-policies", HelmRegistryName: "intel-rs-helm"},
+		{Name: "cert-manager", DisplayName: GetPointerString("cert-manager"), Description: GetPointerString("Cert Manager"), Kind: &extensionKind, ChartName: "cert-manager", HelmRegistryName: "jetstack"},
+		{Name: "edgedns", DisplayName: GetPointerString("edgedns"), Description: GetPointerString("Edge Orchestrator EdgeDNS"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/edgedns", HelmRegistryName: "intel-rs-helm"},
+		{Name: "fluent-bit", DisplayName: GetPointerString("fluent-bit"), Description: GetPointerString("Fluent Bit"), Kind: &extensionKind, ChartName: "fluent-bit", HelmRegistryName: "fluent-bit"},
+		{Name: "gatekeeper", DisplayName: GetPointerString("gatekeeper"), Description: GetPointerString("Gatekeeper"), Kind: &extensionKind, ChartName: "gatekeeper", HelmRegistryName: "gatekeeper"},
+		{Name: "akri", DisplayName: GetPointerString("akri"), Description: GetPointerString("akri base application"), Kind: &extensionKind, ChartName: "akri", HelmRegistryName: "akri-helm-registry"},
+		{Name: "attestation-manager", DisplayName: GetPointerString("attestation-manager"), Description: GetPointerString("Workload prptection and continus monitoring add-on for Kubernetes"), Kind: &extensionKind, ChartName: "edge-orch/trusted-compute/charts/attestation-manager", HelmRegistryName: "intel-rs-helm"},
+		{Name: "attestation-verifier", DisplayName: GetPointerString("attestation-verifier"), Description: GetPointerString("attestation verifier of trusted compute"), Kind: &extensionKind, ChartName: "edge-orch/trusted-compute/charts/attestation-verifier", HelmRegistryName: "intel-rs-helm"},
+		{Name: "cdi", DisplayName: GetPointerString("cdi"), Description: GetPointerString("Persistent storage management add-on for Kubernetes"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/cdi", HelmRegistryName: "intel-rs-helm"},
+		{Name: "kubevirt", DisplayName: GetPointerString("kubevirt"), Description: GetPointerString("Virtual machine management add-on for Kubernetes"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/kubevirt", HelmRegistryName: "intel-rs-helm"},
+		{Name: "kubevirt-helper", DisplayName: GetPointerString("kubevirt-helper"), Description: GetPointerString("Automatically restart VM when editable VM spec is updated"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/kubevirt-helper", HelmRegistryName: "intel-rs-helm"},
+		{Name: "nfd", DisplayName: GetPointerString("nfd"), Description: GetPointerString("NFD"), Kind: &extensionKind, ChartName: "node-feature-discovery", HelmRegistryName: "node-feature-discovery"},
 	} {
-		apps = append(apps, Application{
+		apps = append(apps, restClient.Application{
 			Name:             sa.Name,
 			DisplayName:      sa.DisplayName,
 			Description:      sa.Description,
@@ -203,4 +97,22 @@ func GetApplications() []Application {
 		})
 	}
 	return apps
+}
+
+func GetRegistryDefinitions(orchDomain string) []restClient.Registry {
+	dockerURL := fmt.Sprintf("https://registry-oci.%s/", orchDomain)
+	helmURL := fmt.Sprintf("oci://registry-oci.%s/catalog-apps-sample-org-sample-project", orchDomain)
+
+	return []restClient.Registry{
+		{Name: "akri-helm-registry", DisplayName: GetPointerString("akri-helm-registry"), Description: GetPointerString("Public registry for akri chart"), RootUrl: "https://project-akri.github.io/akri/", Type: "HELM"},
+		{Name: "bitnami-helm-oci", DisplayName: GetPointerString("bitnami-helm-oci"), Description: GetPointerString("Bitnami helm registry"), RootUrl: "oci://registry-1.docker.io/bitnamicharts", Type: "HELM"},
+		{Name: "fluent-bit", DisplayName: GetPointerString("fluent-bit"), Description: GetPointerString("Public registry for fluent bit chart"), RootUrl: "https://fluent.github.io/helm-charts", Type: "HELM"},
+		{Name: "gatekeeper", DisplayName: GetPointerString("gatekeeper"), Description: GetPointerString("Public registry for gatekeeper chart"), RootUrl: "https://open-policy-agent.github.io/gatekeeper/charts", Type: "HELM"},
+		{Name: "harbor-docker-oci", DisplayName: GetPointerString("harbor oci docker"), Description: GetPointerString("Harbor OCI docker images registry"), RootUrl: dockerURL, Type: "IMAGE"},
+		{Name: "harbor-helm-oci", DisplayName: GetPointerString("harbor oci helm"), Description: GetPointerString("Harbor OCI helm charts registry"), RootUrl: helmURL, Type: "HELM"},
+		{Name: "intel-github-io", DisplayName: GetPointerString("intel-github-io"), Description: GetPointerString("Intel Public registry with device operator & plugins"), RootUrl: "https://intel.github.io/helm-charts", Type: "HELM"},
+		{Name: "intel-rs-helm", DisplayName: GetPointerString("intel-rs-helm"), Description: GetPointerString("Repo on registry registry-rs.edgeorchestration.intel.com"), RootUrl: "oci://rs-proxy.orch-platform.svc.cluster.local:8443", Type: "HELM"},
+		{Name: "intel-rs-images", DisplayName: GetPointerString("intel-rs-image"), Description: GetPointerString("Repo on registry registry-rs.edgeorchestration.intel.com"), RootUrl: "oci://registry-rs.edgeorchestration.intel.com", Type: "IMAGE"},
+		{Name: "jetstack", DisplayName: GetPointerString("jetstack"), Description: GetPointerString("Public registry for cert manager chart"), RootUrl: "https://charts.jetstack.io", Type: "HELM"},
+	}
 }

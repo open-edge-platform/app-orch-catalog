@@ -25,15 +25,12 @@ type TestSuite struct {
 	suite.Suite
 	orchDomain     string
 	KeycloakServer string
-	catalogClient  methods.CatalogClient
+	catalogClient  *methods.CatalogClient
 	cmd            *exec.Cmd
 }
 
 // SetupSuite sets-up the integration tests for the Catalog basic test suite
 func (s *TestSuite) SetupSuite() {
-	s.catalogClient = methods.CatalogClient{
-		CatalogRESTServerUrl: fmt.Sprintf("http://%s:%s", types.RestAddressPortForward, types.PortForwardRemotePort),
-	}
 
 	// To use the component-tests with a domain other than kind.internal, ensure
 	// the ORCH_DOMAIN and AUTO_CERT environment variables are set.
@@ -44,10 +41,12 @@ func (s *TestSuite) SetupSuite() {
 	}
 	s.T().Log("Orchestration domain set to:", s.orchDomain)
 	s.KeycloakServer = fmt.Sprintf("keycloak.%s", s.orchDomain)
+	catalogRESTServerUrl := fmt.Sprintf("http://%s:%s", types.RestAddressPortForward, types.PortForwardRemotePort)
+	token := auth.SetUpAccessToken(s.T(), s.KeycloakServer)
+	projectID, err := auth.GetProjectId(context.TODO(), types.SampleProject, types.SampleOrg)
 
-	s.catalogClient.Token = auth.SetUpAccessToken(s.T(), s.KeycloakServer)
-	s.catalogClient.ProjectID, err = auth.GetProjectId(context.TODO(), types.SampleProject, types.SampleOrg)
-	s.catalogClient.OrchDomain = s.orchDomain
+	s.catalogClient = methods.NewCatalogClient(catalogRESTServerUrl, token, projectID, s.orchDomain)
+
 	s.NoError(err)
 	s.cmd, err = portforward.PortForwardToCatalog()
 	s.NoError(err)
