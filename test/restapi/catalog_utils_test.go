@@ -5,18 +5,15 @@
 package restapi
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
+	"github.com/open-edge-platform/app-orch-catalog/pkg/restClient/utilities"
 	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
 	"github.com/stretchr/testify/assert"
+
 	"io"
-	"mime/multipart"
 	"net/http"
-	"os"
-	"strings"
 )
 
 // processResponse validates response status and returns body
@@ -38,39 +35,19 @@ func (s *TestSuite) unmarshalJSON(body []byte, result interface{}) error {
 
 func (s *TestSuite) TestUploadTarball() {
 	ctx := context.TODO()
-	res, err := s.catalogClient.UploadTarball(ctx, types.WordpressTarballPathName)
+	_, status, err := s.catalogClient.UploadTarball(ctx, types.WordpressTarballPathName)
 	assert.NoError(s.T(), err, "Expected to upload tarball without error")
-	assert.Equal(s.T(), http.StatusOK, res.StatusCode, "Expected HTTP status code 200 OK for upload")
-
-	defer res.Body.Close()
-	if res.Status != "200 OK" {
-		// print response message if something has gone wrong, for debugging
-		bodyBytes, err := io.ReadAll(res.Body)
-		assert.NoError(s.T(), err)
-		s.T().Logf("Response Body: %s", string(bodyBytes))
-	}
+	assert.Equal(s.T(), http.StatusOK, status, "Expected HTTP status code 200 OK for upload")
 
 	// Make sure the wordpress DP was created
-	endpoint := fmt.Sprintf("%s/test-wordpress/versions/0.1.1", types.DeploymentPackagesEndpoint)
-	queryParams := map[string]string{
-		"orderBy":  "name",
-		"pageSize": "10",
-		"offset":   "0",
-	}
 
-	res, err = s.catalogClient.MakeAuthenticatedRequest("GET", endpoint, nil, queryParams)
-	assert.NoError(s.T(), err)
+	dp, status, err := s.catalogClient.GetDeploymentPackage(ctx, types.WordpressName, types.WordpressVersion)
+	assert.NoError(s.T(), err, "Expected to retrieve deployment package after upload")
+	assert.Equal(s.T(), http.StatusOK, status, "Expected HTTP status code 200 OK for deployment package retrieval")
+	assert.NotNil(s.T(), dp, "Expected deployment package to be non-nil after upload")
 
-	body, err := s.processResponse(res)
-	assert.NoError(s.T(), err)
-
-	var result struct {
-		DeploymentPackage restClient.DeploymentPackage `json:"deploymentPackage"`
-	}
-	s.unmarshalJSON(body, &result)
-
-	assert.Equal(s.T(), types.WordpressName, result.DeploymentPackage.Name, "Mismatch in the name of the deployment package")
-	assert.Equal(s.T(), types.WordpressVersion, result.DeploymentPackage.Version, "Mismatch in the version of the deployment package")
+	assert.Equal(s.T(), types.WordpressName, dp.Name, "Mismatch in the name of the deployment package")
+	assert.Equal(s.T(), types.WordpressVersion, dp.Version, "Mismatch in the version of the deployment package")
 
 	// Note: Not verifying the application or registry, as the DP would fail without them
 
@@ -82,8 +59,6 @@ func (s *TestSuite) TestUploadTarball() {
 
 func (s *TestSuite) TestUploadSeparateFiles() {
 	ctx := context.TODO()
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
 
 	pathNames := []string{"../testdata/wordpress/app-wordpress-0.1.1.yaml",
 		"../testdata/wordpress/dp-wordpress-0.1.1.yaml",
@@ -92,55 +67,20 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 	}
 
 	for _, pathName := range pathNames {
-		file, err := os.Open(pathName)
-		assert.NoError(s.T(), err)
-		defer file.Close()
+		resp, status, err := s.catalogClient.UploadTarball(ctx, pathName)
+		assert.NoError(s.T(), err, fmt.Sprintf("Expected to upload file %s without error", pathName))
+		assert.Equal(s.T(), http.StatusOK, status, fmt.Sprintf("Expected HTTP status code 200 OK for upload of %s", pathName))
+		assert.NotNil(s.T(), resp, fmt.Sprintf("Expected response to be non-nil for upload of %s", pathName))
 
-		fileName := pathName[strings.LastIndex(pathName, "/")+1:]
-
-		part, _ := writer.CreateFormFile("files", fileName)
-		_, err = io.Copy(part, file)
-		assert.NoError(s.T(), err)
 	}
 
-	writer.Close()
+	dp, status, err := s.catalogClient.GetDeploymentPackage(ctx, types.WordpressName, types.WordpressVersion)
+	assert.NoError(s.T(), err, "Expected to retrieve deployment package after upload")
+	assert.Equal(s.T(), http.StatusOK, status, "Expected HTTP status code 200 OK for deployment package retrieval")
+	assert.NotNil(s.T(), dp, "Expected deployment package to be non-nil after upload")
 
-	headers := map[string]string{
-		"Content-Type": writer.FormDataContentType(),
-	}
-	res, err := s.catalogClient.MakeAuthenticatedRequest("POST", types.UploadEndpoint, body, nil, headers)
-	assert.NoError(s.T(), err)
-
-	defer res.Body.Close()
-	assert.Equalf(s.T(), "200 OK", res.Status, "Mismatch in 'Response' for upload")
-	if res.Status != "200 OK" {
-		// print response message if something has gone wrong, for debugging
-		bodyBytes, err := io.ReadAll(res.Body)
-		assert.NoError(s.T(), err)
-		s.T().Logf("Response Body: %s", string(bodyBytes))
-	}
-
-	// Make sure the wordpress DP was created
-	endpoint := fmt.Sprintf("%s/test-wordpress/versions/0.1.1", types.DeploymentPackagesEndpoint)
-	queryParams := map[string]string{
-		"orderBy":  "name",
-		"pageSize": "10",
-		"offset":   "0",
-	}
-
-	res, err = s.catalogClient.MakeAuthenticatedRequest("GET", endpoint, nil, queryParams)
-	assert.NoError(s.T(), err)
-
-	resBody, err := s.processResponse(res)
-	assert.NoError(s.T(), err)
-
-	var result struct {
-		DeploymentPackage restClient.DeploymentPackage `json:"deploymentPackage"`
-	}
-	s.unmarshalJSON(resBody, &result)
-
-	assert.Equal(s.T(), "test-wordpress", result.DeploymentPackage.Name, "Mismatch in the name of the deployment package")
-	assert.Equal(s.T(), "0.1.1", result.DeploymentPackage.Version, "Mismatch in the version of the deployment package")
+	assert.Equal(s.T(), "test-wordpress", dp.Name, "Mismatch in the name of the deployment package")
+	assert.Equal(s.T(), "0.1.1", dp.Version, "Mismatch in the version of the deployment package")
 
 	// Note: Not verifying the application or registry, as the DP would fail without them
 
@@ -151,12 +91,14 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 }
 
 func (s *TestSuite) TestGetCharts() {
-	res, err := s.catalogClient.MakeAuthenticatedRequest("GET", "/catalog.orchestrator.apis/charts", nil, map[string]string{"registry": "harbor-helm-oci"})
-	assert.NoError(s.T(), err)
+	ctx := context.TODO()
 
-	body, err := s.processResponse(res)
+	resp, status, err := s.catalogClient.GetCharts(ctx, &utilities.CatalogServiceGetRegistryChartsParams{
+		Registry: types.GetPointerString("harbor-helm-oci"),
+	})
 	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), http.StatusOK, status, "Expected HTTP status code 200 OK for getting charts")
 
 	// On a fresh orchestrator there should be no charts in the registry
-	assert.Equal(s.T(), "null", string(body), "Expected the response body to be empty")
+	assert.Equal(s.T(), "null", string(resp.Body), "Expected the response body to be empty")
 }

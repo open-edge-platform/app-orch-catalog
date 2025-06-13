@@ -9,6 +9,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
+	"github.com/open-edge-platform/app-orch-catalog/pkg/restClient/utilities"
+
 	"github.com/open-edge-platform/app-orch-catalog/test/utils/auth"
 	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
 	"io"
@@ -22,6 +24,7 @@ import (
 type CatalogClient struct {
 	OrchDomain           string
 	Client               *restClient.ClientWithResponses
+	UtilitiesClient      *utilities.ClientWithResponses
 	CatalogRESTServerUrl string
 	Token                string
 	ProjectID            string
@@ -40,15 +43,33 @@ func createCatalogClient(restServerURL, token, projectID string) (*restClient.Cl
 	return catalogClient, err
 }
 
+func createUtilitiesClient(restServerURL, token, projectID string) (*utilities.ClientWithResponses, error) {
+	utilitiesClient, err := utilities.NewClientWithResponses(restServerURL, utilities.WithRequestEditorFn(func(_ context.Context, req *http.Request) error {
+		auth.AddRestAuthHeader(req, token, projectID)
+		return nil
+	}))
+	if err != nil {
+		return nil, err
+	}
+
+	return utilitiesClient, err
+}
+
 func NewCatalogClient(catalogRESTServerUrl, token, projectID, orchDomain string) *CatalogClient {
 	client, err := createCatalogClient(catalogRESTServerUrl, token, projectID)
 	if err != nil {
 		fmt.Printf("Failed to create catalog client: %v\n", err)
 		return nil
 	}
+	utilitiesClient, err := createUtilitiesClient(catalogRESTServerUrl, token, projectID)
+	if err != nil {
+		fmt.Printf("Failed to create utilities client: %v\n", err)
+		return nil
+	}
 	return &CatalogClient{
 		OrchDomain:           orchDomain,
 		Client:               client,
+		UtilitiesClient:      utilitiesClient,
 		Token:                token,
 		ProjectID:            projectID,
 		CatalogRESTServerUrl: catalogRESTServerUrl,
@@ -276,10 +297,11 @@ func (c *CatalogClient) GetRegistries() []restClient.Registry {
 }
 
 // Import/Upload-related Functions
-func (c *CatalogClient) UploadTarball(ctx context.Context, pathName string) (*http.Response, error) {
+func (c *CatalogClient) UploadTarball(ctx context.Context, pathName string) (*utilities.CatalogServiceBulkCatalogUploadResponse, int, error) {
+
 	file, err := os.Open(pathName)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open file %s: %w", pathName, err)
+		return nil, 0, fmt.Errorf("failed to open file %s: %w", pathName, err)
 	}
 	defer file.Close()
 
@@ -289,24 +311,51 @@ func (c *CatalogClient) UploadTarball(ctx context.Context, pathName string) (*ht
 	writer := multipart.NewWriter(body)
 	part, err := writer.CreateFormFile("files", filename)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create form file for %s: %w", filename, err)
+		return nil, 0, fmt.Errorf("failed to create form file for %s: %w", filename, err)
 	}
 	_, err = io.Copy(part, file)
 	if err != nil {
-		return nil, fmt.Errorf("failed to copy file content for %s: %w", filename, err)
+		return nil, 0, fmt.Errorf("failed to copy file content for %s: %w", filename, err)
 	}
-	writer.Close()
-
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s%s", c.CatalogRESTServerUrl, types.UploadEndpoint), body)
+	err = writer.Close()
 	if err != nil {
-		return nil, fmt.Errorf("failed to create HTTP request for uploading tarball: %w", err)
+		return nil, 0, err
 	}
 
-	req.Header.Add("Content-Type", writer.FormDataContentType())
+	resp, err := c.UtilitiesClient.CatalogServiceBulkCatalogUploadWithBodyWithResponse(ctx, writer.FormDataContentType(), body)
+	if err != nil || resp == nil || resp.StatusCode() != 200 {
+		if err != nil {
+			if resp != nil {
+				return resp, resp.StatusCode(), fmt.Errorf("%v", err)
+			}
+			return nil, 0, fmt.Errorf("%v", err)
+		}
+		if resp != nil {
+			return resp, resp.StatusCode(), fmt.Errorf("failed to list registries: %v", string(resp.Body))
+		}
+		return nil, 0, fmt.Errorf("failed to list registries: response is nil")
+	}
 
-	auth.AddRestAuthHeader(req, c.Token, c.ProjectID)
+	return resp, resp.StatusCode(), nil
 
-	return http.DefaultClient.Do(req)
+}
+
+func (c *CatalogClient) GetCharts(ctx context.Context, params *utilities.CatalogServiceGetRegistryChartsParams) (*utilities.CatalogServiceGetRegistryChartsResponse, int, error) {
+	resp, err := c.UtilitiesClient.CatalogServiceGetRegistryChartsWithResponse(ctx, params)
+	if err != nil || resp == nil || resp.StatusCode() != 200 {
+		if err != nil {
+			if resp != nil {
+				return resp, resp.StatusCode(), fmt.Errorf("%v", err)
+			}
+			return nil, 0, fmt.Errorf("%v", err)
+		}
+		if resp != nil {
+			return resp, resp.StatusCode(), fmt.Errorf("failed to get charts: %v", string(resp.Body))
+		}
+		return nil, 0, fmt.Errorf("failed to get charts: response is nil")
+	}
+
+	return resp, resp.StatusCode(), nil
 }
 
 func (c *CatalogClient) ImportHelmChart(ctx context.Context, importRequest *restClient.CatalogServiceImportParams) (int, string, error) {
@@ -325,33 +374,4 @@ func (c *CatalogClient) ImportHelmChart(ctx context.Context, importRequest *rest
 	}
 
 	return res.StatusCode, string(body), nil
-}
-
-// Utility Functions
-func (c *CatalogClient) MakeAuthenticatedRequest(method, endpoint string, requestBody io.Reader, queryParams map[string]string, headers ...map[string]string) (*http.Response, error) {
-	requestURL := fmt.Sprintf("%s%s", c.CatalogRESTServerUrl, endpoint)
-	req, err := http.NewRequest(method, requestURL, requestBody)
-	if err != nil {
-		return nil, err
-	}
-
-	auth.AddRestAuthHeader(req, c.Token, c.ProjectID)
-
-	// Add custom headers if provided
-	if len(headers) > 0 && headers[0] != nil {
-		for key, value := range headers[0] {
-			req.Header.Set(key, value)
-		}
-	}
-
-	// Add query parameters if provided
-	if len(queryParams) > 0 {
-		query := req.URL.Query()
-		for key, value := range queryParams {
-			query.Add(key, value)
-		}
-		req.URL.RawQuery = query.Encode()
-	}
-
-	return http.DefaultClient.Do(req)
 }

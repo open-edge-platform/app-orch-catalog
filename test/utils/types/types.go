@@ -10,9 +10,6 @@ import (
 )
 
 const (
-	DeploymentPackagesEndpoint = "/catalog.orchestrator.apis/v3/deployment_packages"
-	UploadEndpoint             = "/catalog.orchestrator.apis/upload"
-
 	WordpressTarballPathName = "../testdata/wordpress.tar.gz"
 	WordpressName            = "test-wordpress"
 	WordpressVersion         = "0.1.1"
