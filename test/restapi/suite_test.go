@@ -28,7 +28,7 @@ type TestSuite struct {
 	KeycloakServer string
 	catalogClient  *methods.CatalogClient
 	cmd            *exec.Cmd
-	Token          string
+	token          string
 }
 
 // SetupSuite sets-up the integration tests for the Catalog basic test suite
@@ -44,7 +44,7 @@ func (s *TestSuite) SetupSuite() {
 	s.T().Log("Orchestration domain set to:", s.orchDomain)
 	s.KeycloakServer = fmt.Sprintf("keycloak.%s", s.orchDomain)
 	catalogRESTServerUrl := fmt.Sprintf("http://%s:%s", types.RestAddressPortForward, types.PortForwardRemotePort)
-	s.token := auth.SetUpAccessToken(s.T(), s.KeycloakServer)
+	s.token = auth.SetUpAccessToken(s.T(), s.KeycloakServer)
 	projectID, err := auth.GetProjectId(context.TODO(), types.SampleProject, types.SampleOrg)
 
 	s.catalogClient = methods.NewCatalogClient(catalogRESTServerUrl, s.token, projectID, s.orchDomain)
