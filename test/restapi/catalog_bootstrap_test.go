@@ -88,7 +88,7 @@ func (s *TestSuite) TestListBootStrapRegistries() {
 func (s *TestSuite) TestVerifyBootstrappedRegistriesExist() {
 	ctx := context.TODO()
 	for _, registry := range s.catalogClient.GetRegistries() {
-		result, status, err := s.catalogClient.GetRegistry(ctx, registry.Name, true)
+		result, status, err := s.catalogClient.GetRegistry(ctx, registry.Name)
 		assert.NoError(s.T(), err)
 		assert.Equal(s.T(), http.StatusOK, status, "Expected HTTP status code 200 OK for registry list")
 

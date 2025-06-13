@@ -154,7 +154,7 @@ func (c *CatalogClient) DeleteDeploymentPackage(ctx context.Context, name, versi
 	return nil
 }
 
-func (c *CatalogClient) GetRegistry(ctx context.Context, name string, mustExist bool) (*restClient.Registry, int, error) {
+func (c *CatalogClient) GetRegistry(ctx context.Context, name string) (*restClient.Registry, int, error) {
 	resp, err := c.Client.CatalogServiceGetRegistryWithResponse(ctx, name, &restClient.CatalogServiceGetRegistryParams{})
 	if err != nil || resp == nil || resp.StatusCode() != 200 {
 		if err != nil {

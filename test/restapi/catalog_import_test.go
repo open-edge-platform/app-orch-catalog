@@ -26,8 +26,9 @@ func (s *TestSuite) TestImportHelmChart() {
 		s.T().Logf("Response body: %s\n", body)
 	}
 
-	app, err := s.catalogClient.GetApplication(ctx, "impt", "2.9.0", true)
+	app, status, err := s.catalogClient.GetApplication(ctx, "impt", "2.9.0")
 	s.Require().NoError(err, "Expected to retrieve application after import")
+	s.Require().Equal(http.StatusOK, status, "Expected status code 200 for application retrieval")
 
 	s.Equal("impt", app.Name, "Expected application name to be 'impt'")
 	s.Equal("2.9.0", app.Version, "Expected application version to be '2.9.0'")
@@ -36,18 +37,19 @@ func (s *TestSuite) TestImportHelmChart() {
 	s.Equal("2.9.0", app.ChartVersion, "Expected application chart version to be '2.9.0'")
 	s.Equal("default", app.DefaultProfileName, "Expected application default profile name to be 'default'")
 
-	pkg, err := s.catalogClient.GetDeploymentPackage(ctx, "impt", "2.9.0", true)
+	pkg, status, err := s.catalogClient.GetDeploymentPackage(ctx, "impt", "2.9.0")
 	s.Require().NoError(err, "Expected to retrieve deployment package after import")
 
 	s.Equal("impt", pkg.Name, "Expected deployment package name to be 'impt'")
 	s.Equal("2.9.0", pkg.Version, "Expected deployment package version to be '2.9.0'")
 	s.Equal("default", pkg.DefaultProfileName, "Expected deployment package default profile name to be 'default'")
 
-	reg, err := s.catalogClient.GetRegistry(ctx, "impt-registry", true)
+	reg, status, err := s.catalogClient.GetRegistry(ctx, "impt-registry")
 	s.Require().NoError(err, "Expected to retrieve registry")
+	s.Require().Equal(http.StatusOK, status, "Expected status code 200 for registry retrieval")
 
 	s.Equal("impt-registry", reg.Name, "Expected registry name to be 'impt-registry'")
-	s.Equal("oci://ghcr.io/open-edge-platform/geti/helm", reg.RootURL, "Expected registry URL to match the input")
+	s.Equal("oci://ghcr.io/open-edge-platform/geti/helm", reg.RootUrl, "Expected registry URL to match the input")
 
 	/* cleanup -- these should all exist at this point */
 
