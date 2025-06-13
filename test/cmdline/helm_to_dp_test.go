@@ -12,6 +12,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 	"time"
 
 	// Third-party imports
@@ -130,7 +131,11 @@ func (s *TestSuite) TestHelmToDpBadURL() {
 	s.Require().NoError(err)
 	defer os.RemoveAll(tempDir)
 
-	_, _, err = s.runHelmToDp(badHelmChart, "-o", tempDir)
+	_, stderr, err := s.runHelmToDp(badHelmChart, "-o", tempDir)
 	s.Error(err, "Expected error when running catalog-schema on a bad URL")
-	// TODO: test type of error returned
+
+	if !(strings.Contains(stderr, "failed to resolve") || strings.Contains(stderr, "failed to verify certificate")) {
+		s.T().Logf("Unexpected error message: %s", stderr)
+		s.Fail("Expected error message to contain 'failed to resolve' or 'failed to verify certificate'")
+	}
 }

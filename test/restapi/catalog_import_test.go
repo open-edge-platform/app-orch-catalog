@@ -6,9 +6,11 @@ package restapi
 
 import (
 	"context"
+	"net/http"
+	"strings"
+
 	restclient "github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
 	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
-	"net/http"
 )
 
 func (s *TestSuite) TestImportHelmChart() {
@@ -65,10 +67,13 @@ func (s *TestSuite) TestImportHelmChartBadURL() {
 		Url: types.GetPointerString("oci://ghcr.invalid/open-edge-platform/geti/helm/impt:2.9.0"),
 	}
 
-	status, _, err := s.catalogClient.ImportHelmChart(ctx, importRequest)
+	status, body, err := s.catalogClient.ImportHelmChart(ctx, importRequest)
 	s.Require().NoError(err, "Expected no error when importing Helm chart with bad URL")
 	s.Equal(http.StatusBadRequest, status, "Expected status code 400 for invalid Helm chart URL")
-	// TODO: test type of error returned
+	if !(strings.Contains(body, "failed to resolve") || strings.Contains(body, "failed to verify certificate")) {
+		s.T().Logf("Unexpected error message: %s", body)
+		s.Fail("Expected error message to contain 'failed to resolve' or 'failed to verify certificate'")
+	}
 }
 
 func (s *TestSuite) TestImportHelmChartNotAURL() {
@@ -92,8 +97,11 @@ func (s *TestSuite) TestImportHelmChartBadObject() {
 		Url: types.GetPointerString("oci://registry-rs.edgeorchestration.intel.com/edge-orch/en/file/cluster-extension-manifest:v1.1.2"),
 	}
 
-	status, _, err := s.catalogClient.ImportHelmChart(ctx, importRequest)
+	status, body, err := s.catalogClient.ImportHelmChart(ctx, importRequest)
 	s.NoError(err)
 	s.Equal(http.StatusBadRequest, status, "Expected status code 400 for invalid Helm chart URL")
-	// TODO: test type of error returned
+	if !strings.Contains(body, "Failed to create gzip reader") {
+		s.T().Logf("Unexpected error message: %s", body)
+		s.Fail("Expected error message to contain 'failed to resolve' or 'failed to verify certificate'")
+	}
 }
