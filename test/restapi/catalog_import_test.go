@@ -6,15 +6,41 @@ package restapi
 
 import (
 	"context"
+	"fmt"
+	"net/http"
+	"os"
+	"path/filepath"
+
 	restclient "github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
 	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
-	"net/http"
+	"github.com/open-edge-platform/app-orch-deployment/test-common-utils/pkg/git"
+	"github.com/open-edge-platform/app-orch-deployment/test-common-utils/pkg/loader"
 )
 
+func (s *TestSuite) UploadChartToHarbor() string {
+	httpbinPath, err := git.CloneHttpbin()
+	if err != nil {
+		s.T().Fatalf("error: %v", err)
+	}
+	defer os.RemoveAll(filepath.Dir(filepath.Dir(httpbinPath))) // Clean up the temporary directory after upload
+	secret, _ := GetCliSecretHarbor(fmt.Sprintf("https://registry-oci.%s", s.orchDomain), s.Token)
+	err = loader.UploadHttpbinHelm(httpbinPath, secret)
+	if err != nil {
+		s.T().Fatalf("error: %v", err)
+	}
+	return fmt.Sprintf("oci://registry-oci.%s/catalog-apps-sample-org-sample-project/httpbin", s.orchDomain),
+		"sample-project-edge-mgr",
+		secret
+}
+
 func (s *TestSuite) TestImportHelmChart() {
+	ociURL, ociUsername, ociPassword := s.UploadCharToHarbor()
+
 	ctx := context.TODO()
 	importRequest := &restclient.CatalogServiceImportParams{
-		Url: types.GetPointerString("oci://ghcr.io/open-edge-platform/geti/helm/impt:2.9.0"),
+		Url:       types.GetPointerString(ocuURL),
+		Username:  types.GetPointerString(ociUsername),
+		AuthToken: types.GetPointerString(ociPassword),
 	}
 
 	status, body, err := s.catalogClient.ImportHelmChart(ctx, importRequest)

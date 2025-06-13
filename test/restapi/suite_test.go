@@ -8,14 +8,15 @@ package restapi
 import (
 	"context"
 	"fmt"
-	"github.com/open-edge-platform/app-orch-catalog/test/utils/auth"
-	"github.com/open-edge-platform/app-orch-catalog/test/utils/methods"
-	"github.com/open-edge-platform/app-orch-catalog/test/utils/portforward"
-	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
 	"os"
 	"os/exec"
 	"strconv"
 	"testing"
+
+	"github.com/open-edge-platform/app-orch-catalog/test/utils/auth"
+	"github.com/open-edge-platform/app-orch-catalog/test/utils/methods"
+	"github.com/open-edge-platform/app-orch-catalog/test/utils/portforward"
+	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
 
 	"github.com/stretchr/testify/suite"
 )
@@ -27,6 +28,7 @@ type TestSuite struct {
 	KeycloakServer string
 	catalogClient  *methods.CatalogClient
 	cmd            *exec.Cmd
+	Token          string
 }
 
 // SetupSuite sets-up the integration tests for the Catalog basic test suite
@@ -42,10 +44,10 @@ func (s *TestSuite) SetupSuite() {
 	s.T().Log("Orchestration domain set to:", s.orchDomain)
 	s.KeycloakServer = fmt.Sprintf("keycloak.%s", s.orchDomain)
 	catalogRESTServerUrl := fmt.Sprintf("http://%s:%s", types.RestAddressPortForward, types.PortForwardRemotePort)
-	token := auth.SetUpAccessToken(s.T(), s.KeycloakServer)
+	s.token := auth.SetUpAccessToken(s.T(), s.KeycloakServer)
 	projectID, err := auth.GetProjectId(context.TODO(), types.SampleProject, types.SampleOrg)
 
-	s.catalogClient = methods.NewCatalogClient(catalogRESTServerUrl, token, projectID, s.orchDomain)
+	s.catalogClient = methods.NewCatalogClient(catalogRESTServerUrl, s.token, projectID, s.orchDomain)
 
 	s.NoError(err)
 	s.cmd, err = portforward.PortForwardToCatalog()
