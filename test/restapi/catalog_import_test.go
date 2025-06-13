@@ -12,8 +12,6 @@ import (
 )
 
 func (s *TestSuite) TestImportHelmChart() {
-	s.T().Skip()
-
 	ctx := context.TODO()
 	importRequest := &methods.ImportRequest{
 		URL: "oci://ghcr.io/open-edge-platform/geti/helm/impt:2.9.0",
@@ -61,7 +59,6 @@ func (s *TestSuite) TestImportHelmChart() {
 }
 
 func (s *TestSuite) TestImportHelmChartBadURL() {
-	s.T().Skip()
 
 	ctx := context.TODO()
 	importRequest := &methods.ImportRequest{
@@ -75,7 +72,6 @@ func (s *TestSuite) TestImportHelmChartBadURL() {
 }
 
 func (s *TestSuite) TestImportHelmChartNotAURL() {
-	s.T().Skip()
 
 	ctx := context.TODO()
 
@@ -90,7 +86,6 @@ func (s *TestSuite) TestImportHelmChartNotAURL() {
 }
 
 func (s *TestSuite) TestImportHelmChartBadObject() {
-	s.T().Skip()
 	ctx := context.TODO()
 
 	importRequest := &methods.ImportRequest{
