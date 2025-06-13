@@ -76,6 +76,6 @@ func (s *TestSuite) TestExportDeploymentPackage() {
 func (s *TestSuite) TestExportDeploymentPackageNoExist() {
 	ctx := context.TODO()
 	_, status, err := s.catalogClient.ExportDeploymentPackage(ctx, "not-a-real-package", "0.1.1")
-	s.Require().NoError(err)
+	s.Require().Error(err)
 	s.Require().Equal(http.StatusNotFound, status, "Expected HTTP status code 404 for export")
 }
