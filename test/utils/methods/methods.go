@@ -38,6 +38,7 @@ type ImportRequest struct {
 	Namespace                 string `json:"namespace,omitempty"`
 }
 
+// Client Creation Functions
 func createCatalogClient(restServerURL, token, projectID string) (*restClient.ClientWithResponses, error) {
 	catalogClient, err := restClient.NewClientWithResponses(restServerURL, restClient.WithRequestEditorFn(func(_ context.Context, req *http.Request) error {
 		auth.AddRestAuthHeader(req, token, projectID)
@@ -65,6 +66,7 @@ func NewCatalogClient(catalogRESTServerUrl, token, projectID, orchDomain string)
 	}
 }
 
+// Application-related Functions
 func (c *CatalogClient) GetApplicationList(ctx context.Context) ([]restClient.Application, int, error) {
 	resp, err := c.Client.CatalogServiceListApplicationsWithResponse(ctx, &restClient.CatalogServiceListApplicationsParams{})
 	if err != nil || resp == nil || resp.StatusCode() != 200 {
@@ -115,7 +117,6 @@ func (c *CatalogClient) GetApplicationVersions(ctx context.Context, name string)
 		return nil, 0, fmt.Errorf("failed to get application: response is nil")
 	}
 	return resp.JSON200.Application, resp.StatusCode(), nil
-
 }
 
 func (c *CatalogClient) DeleteApplication(ctx context.Context, name, version string, mustExist bool) error {
@@ -134,6 +135,7 @@ func (c *CatalogClient) DeleteApplication(ctx context.Context, name, version str
 	return nil
 }
 
+// Deployment Package-related Functions
 func (c *CatalogClient) GetDeploymentPackage(ctx context.Context, name, version string) (*restClient.DeploymentPackage, int, error) {
 	resp, err := c.Client.CatalogServiceGetDeploymentPackageWithResponse(ctx, name, version)
 	if err != nil || resp == nil || resp.StatusCode() != 200 {
@@ -168,7 +170,24 @@ func (c *CatalogClient) GetDeploymentPackageVersions(ctx context.Context, name s
 	}
 
 	return resp.JSON200.DeploymentPackages, resp.StatusCode(), nil
+}
 
+func (c *CatalogClient) ListDeploymentPackages(ctx context.Context, params *restClient.CatalogServiceListDeploymentPackagesParams) ([]restClient.DeploymentPackage, int, error) {
+	resp, err := c.Client.CatalogServiceListDeploymentPackagesWithResponse(ctx, params)
+	if err != nil || resp == nil || resp.StatusCode() != 200 {
+		if err != nil {
+			if resp != nil {
+				return nil, resp.StatusCode(), fmt.Errorf("%v", err)
+			}
+			return nil, 0, fmt.Errorf("%v", err)
+		}
+		if resp != nil {
+			return nil, resp.StatusCode(), fmt.Errorf("failed to list deployment packages: %v", string(resp.Body))
+		}
+		return nil, 0, fmt.Errorf("failed to list deployment packages: response is nil")
+	}
+
+	return resp.JSON200.DeploymentPackages, resp.StatusCode(), nil
 }
 
 func (c *CatalogClient) DeleteDeploymentPackage(ctx context.Context, name, version string, mustExist bool) error {
@@ -189,6 +208,26 @@ func (c *CatalogClient) DeleteDeploymentPackage(ctx context.Context, name, versi
 	return nil
 }
 
+func (c *CatalogClient) ExportDeploymentPackage(name string, version string) (*http.Response, error) {
+	requestURL := fmt.Sprintf("%s%s/%s/versions/%s/download", c.CatalogRESTServerUrl, types.DeploymentPackagesEndpoint, name, version)
+
+	req, err := http.NewRequest("GET", requestURL, nil)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create HTTP request for exporting Deployment Package: %w", err)
+	}
+	auth.AddRestAuthHeader(req, c.Token, c.ProjectID)
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute HTTP request for exporting Deployment Package: %w", err)
+	}
+
+	// Note: res.Body is intentionally not closed here, as the caller is expected to handle it.
+
+	return res, nil
+}
+
+// Registry-related Functions
 func (c *CatalogClient) GetRegistry(ctx context.Context, name string) (*restClient.Registry, int, error) {
 	resp, err := c.Client.CatalogServiceGetRegistryWithResponse(ctx, name, &restClient.CatalogServiceGetRegistryParams{})
 	if err != nil || resp == nil || resp.StatusCode() != 200 {
@@ -205,6 +244,24 @@ func (c *CatalogClient) GetRegistry(ctx context.Context, name string) (*restClie
 	}
 
 	return &resp.JSON200.Registry, resp.StatusCode(), nil
+}
+
+func (c *CatalogClient) ListRegistries(ctx context.Context, params *restClient.CatalogServiceListRegistriesParams) ([]restClient.Registry, int, error) {
+	resp, err := c.Client.CatalogServiceListRegistriesWithResponse(ctx, params)
+	if err != nil || resp == nil || resp.StatusCode() != 200 {
+		if err != nil {
+			if resp != nil {
+				return nil, resp.StatusCode(), fmt.Errorf("%v", err)
+			}
+			return nil, 0, fmt.Errorf("%v", err)
+		}
+		if resp != nil {
+			return nil, resp.StatusCode(), fmt.Errorf("failed to list registries: %v", string(resp.Body))
+		}
+		return nil, 0, fmt.Errorf("failed to list registries: response is nil")
+	}
+
+	return resp.JSON200.Registries, resp.StatusCode(), nil
 }
 
 func (c *CatalogClient) DeleteRegistry(ctx context.Context, name string, mustExist bool) error {
@@ -225,6 +282,11 @@ func (c *CatalogClient) DeleteRegistry(ctx context.Context, name string, mustExi
 	return nil
 }
 
+func (c *CatalogClient) GetRegistries() []restClient.Registry {
+	return types.GetRegistryDefinitions(c.OrchDomain)
+}
+
+// Import/Upload-related Functions
 func (c *CatalogClient) UploadTarball(ctx context.Context, pathName string) (*http.Response, error) {
 	file, err := os.Open(pathName)
 	if err != nil {
@@ -258,62 +320,6 @@ func (c *CatalogClient) UploadTarball(ctx context.Context, pathName string) (*ht
 	return http.DefaultClient.Do(req)
 }
 
-func (c *CatalogClient) ListRegistries(ctx context.Context, params *restClient.CatalogServiceListRegistriesParams) ([]restClient.Registry, int, error) {
-	resp, err := c.Client.CatalogServiceListRegistriesWithResponse(ctx, params)
-	if err != nil || resp == nil || resp.StatusCode() != 200 {
-		if err != nil {
-			if resp != nil {
-				return nil, resp.StatusCode(), fmt.Errorf("%v", err)
-			}
-			return nil, 0, fmt.Errorf("%v", err)
-		}
-		if resp != nil {
-			return nil, resp.StatusCode(), fmt.Errorf("failed to list registries: %v", string(resp.Body))
-		}
-		return nil, 0, fmt.Errorf("failed to list registries: response is nil")
-	}
-
-	return resp.JSON200.Registries, resp.StatusCode(), nil
-}
-
-func (c *CatalogClient) ListDeploymentPackages(ctx context.Context, params *restClient.CatalogServiceListDeploymentPackagesParams) ([]restClient.DeploymentPackage, int, error) {
-	resp, err := c.Client.CatalogServiceListDeploymentPackagesWithResponse(ctx, params)
-	if err != nil || resp == nil || resp.StatusCode() != 200 {
-		if err != nil {
-			if resp != nil {
-				return nil, resp.StatusCode(), fmt.Errorf("%v", err)
-			}
-			return nil, 0, fmt.Errorf("%v", err)
-		}
-		if resp != nil {
-			return nil, resp.StatusCode(), fmt.Errorf("failed to list deployment packages: %v", string(resp.Body))
-		}
-		return nil, 0, fmt.Errorf("failed to list deployment packages: response is nil")
-	}
-
-	return resp.JSON200.DeploymentPackages, resp.StatusCode(), nil
-}
-
-func (c *CatalogClient) ExportDeploymentPackage(name string, version string) (*http.Response, error) {
-
-	requestURL := fmt.Sprintf("%s%s/%s/versions/%s/download", c.CatalogRESTServerUrl, types.DeploymentPackagesEndpoint, name, version)
-
-	req, err := http.NewRequest("GET", requestURL, nil)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create HTTP request for exporting Deployment Package: %w", err)
-	}
-	auth.AddRestAuthHeader(req, c.Token, c.ProjectID)
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, fmt.Errorf("failed to execute HTTP request for exporting Deployment Package: %w", err)
-	}
-
-	// Note: res.Body is intentionally not closed here, as the caller is expected to handle it.
-
-	return res, nil
-}
-
 func (c *CatalogClient) ImportHelmChart(ctx context.Context, importRequest *ImportRequest) (int, string, error) {
 	params := url.Values{}
 	params.Add("url", importRequest.URL)
@@ -341,36 +347,7 @@ func (c *CatalogClient) ImportHelmChart(ctx context.Context, importRequest *Impo
 	return res.StatusCode, string(body), nil
 }
 
-func (c *CatalogClient) GetRegistries() []restClient.Registry {
-	dockerURL := fmt.Sprintf("https://registry-oci.%s/", c.OrchDomain)
-	helmURL := fmt.Sprintf("oci://registry-oci.%s/catalog-apps-sample-org-sample-project", c.OrchDomain)
-
-	regs := []restClient.Registry{}
-	for _, ra := range []restClient.Registry{
-		{Name: "akri-helm-registry", DisplayName: types.GetPointerString("akri-helm-registry"), Description: types.GetPointerString("Public registry for akri chart"), RootUrl: "https://project-akri.github.io/akri/", Type: "HELM"},
-		{Name: "bitnami-helm-oci", DisplayName: types.GetPointerString("bitnami-helm-oci"), Description: types.GetPointerString("Bitnami helm registry"), RootUrl: "oci://registry-1.docker.io/bitnamicharts", Type: "HELM"},
-		{Name: "fluent-bit", DisplayName: types.GetPointerString("fluent-bit"), Description: types.GetPointerString("Public registry for fluent bit chart"), RootUrl: "https://fluent.github.io/helm-charts", Type: "HELM"},
-		{Name: "gatekeeper", DisplayName: types.GetPointerString("gatekeeper"), Description: types.GetPointerString("Public registry for gatekeeper chart"), RootUrl: "https://open-policy-agent.github.io/gatekeeper/charts", Type: "HELM"},
-		{Name: "harbor-docker-oci", DisplayName: types.GetPointerString("harbor oci docker"), Description: types.GetPointerString("Harbor OCI docker images registry"), RootUrl: dockerURL, Type: "IMAGE"},
-		{Name: "harbor-helm-oci", DisplayName: types.GetPointerString("harbor oci helm"), Description: types.GetPointerString("Harbor OCI helm charts registry"), RootUrl: helmURL, Type: "HELM"},
-		{Name: "intel-github-io", DisplayName: types.GetPointerString("intel-github-io"), Description: types.GetPointerString("Intel Public registry with device operator & plugins"), RootUrl: "https://intel.github.io/helm-charts", Type: "HELM"},
-		{Name: "intel-rs-helm", DisplayName: types.GetPointerString("intel-rs-helm"), Description: types.GetPointerString("Repo on registry registry-rs.edgeorchestration.intel.com"), RootUrl: "oci://rs-proxy.orch-platform.svc.cluster.local:8443", Type: "HELM"},
-		{Name: "intel-rs-images", DisplayName: types.GetPointerString("intel-rs-image"), Description: types.GetPointerString("Repo on registry registry-rs.edgeorchestration.intel.com"), RootUrl: "oci://registry-rs.edgeorchestration.intel.com", Type: "IMAGE"},
-		{Name: "jetstack", DisplayName: types.GetPointerString("jetstack"), Description: types.GetPointerString("Public registry for cert manager chart"), RootUrl: "https://charts.jetstack.io", Type: "HELM"},
-	} {
-		regs = append(regs, restClient.Registry{
-			Name:        ra.Name,
-			DisplayName: ra.DisplayName,
-			Description: ra.Description,
-			RootUrl:     ra.RootUrl,
-			Type:        ra.Type,
-		})
-	}
-
-	return regs
-}
-
-// MakeAuthenticatedRequest creates and sends an HTTP request with auth headers
+// Utility Functions
 func (c *CatalogClient) MakeAuthenticatedRequest(method, endpoint string, requestBody io.Reader, queryParams map[string]string, headers ...map[string]string) (*http.Response, error) {
 	requestURL := fmt.Sprintf("%s%s", c.CatalogRESTServerUrl, endpoint)
 	req, err := http.NewRequest(method, requestURL, requestBody)

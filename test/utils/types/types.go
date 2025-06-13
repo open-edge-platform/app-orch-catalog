@@ -4,7 +4,10 @@
 
 package types
 
-import "github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
+import (
+	"fmt"
+	"github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
+)
 
 const (
 	ApplicationsEndpoint       = "/catalog.orchestrator.apis/v3/applications"
@@ -101,4 +104,22 @@ func GetApplications() []restClient.Application {
 		})
 	}
 	return apps
+}
+
+func GetRegistryDefinitions(orchDomain string) []restClient.Registry {
+	dockerURL := fmt.Sprintf("https://registry-oci.%s/", orchDomain)
+	helmURL := fmt.Sprintf("oci://registry-oci.%s/catalog-apps-sample-org-sample-project", orchDomain)
+
+	return []restClient.Registry{
+		{Name: "akri-helm-registry", DisplayName: GetPointerString("akri-helm-registry"), Description: GetPointerString("Public registry for akri chart"), RootUrl: "https://project-akri.github.io/akri/", Type: "HELM"},
+		{Name: "bitnami-helm-oci", DisplayName: GetPointerString("bitnami-helm-oci"), Description: GetPointerString("Bitnami helm registry"), RootUrl: "oci://registry-1.docker.io/bitnamicharts", Type: "HELM"},
+		{Name: "fluent-bit", DisplayName: GetPointerString("fluent-bit"), Description: GetPointerString("Public registry for fluent bit chart"), RootUrl: "https://fluent.github.io/helm-charts", Type: "HELM"},
+		{Name: "gatekeeper", DisplayName: GetPointerString("gatekeeper"), Description: GetPointerString("Public registry for gatekeeper chart"), RootUrl: "https://open-policy-agent.github.io/gatekeeper/charts", Type: "HELM"},
+		{Name: "harbor-docker-oci", DisplayName: GetPointerString("harbor oci docker"), Description: GetPointerString("Harbor OCI docker images registry"), RootUrl: dockerURL, Type: "IMAGE"},
+		{Name: "harbor-helm-oci", DisplayName: GetPointerString("harbor oci helm"), Description: GetPointerString("Harbor OCI helm charts registry"), RootUrl: helmURL, Type: "HELM"},
+		{Name: "intel-github-io", DisplayName: GetPointerString("intel-github-io"), Description: GetPointerString("Intel Public registry with device operator & plugins"), RootUrl: "https://intel.github.io/helm-charts", Type: "HELM"},
+		{Name: "intel-rs-helm", DisplayName: GetPointerString("intel-rs-helm"), Description: GetPointerString("Repo on registry registry-rs.edgeorchestration.intel.com"), RootUrl: "oci://rs-proxy.orch-platform.svc.cluster.local:8443", Type: "HELM"},
+		{Name: "intel-rs-images", DisplayName: GetPointerString("intel-rs-image"), Description: GetPointerString("Repo on registry registry-rs.edgeorchestration.intel.com"), RootUrl: "oci://registry-rs.edgeorchestration.intel.com", Type: "IMAGE"},
+		{Name: "jetstack", DisplayName: GetPointerString("jetstack"), Description: GetPointerString("Public registry for cert manager chart"), RootUrl: "https://charts.jetstack.io", Type: "HELM"},
+	}
 }
