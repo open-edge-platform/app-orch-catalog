@@ -26,7 +26,7 @@ func (s *TestSuite) TestListBootStrapExtensions() {
 	s.T().Log("Extensions:")
 	for _, app := range applications {
 		s.T().Logf("Name: %s, DisplayName: %s, Description: %s, Version: %s, Kind: %s, ChartName: %s, ChartVersion: %s, HelmRegistryName: %s",
-			app.Name, app.DisplayName, *app.Description, app.Version, *app.Kind, app.ChartName, app.ChartVersion, app.HelmRegistryName)
+			app.Name, *app.DisplayName, *app.Description, app.Version, *app.Kind, app.ChartName, app.ChartVersion, app.HelmRegistryName)
 	}
 }
 
