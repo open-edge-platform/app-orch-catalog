@@ -296,6 +296,7 @@ func (c *CatalogClient) GetRegistries() []restClient.Registry {
 }
 
 // createMultipartBody creates a multipart form body from a file path
+// Returns io.Reader (request body), content-type string, and error
 func createMultipartBody(pathName string) (io.Reader, string, error) {
 	file, err := os.Open(pathName)
 	if err != nil {
@@ -317,7 +318,7 @@ func createMultipartBody(pathName string) (io.Reader, string, error) {
 	}
 
 	if err = writer.Close(); err != nil {
-		return nil, "", err
+		return nil, "", fmt.Errorf("failed to close multipart writer: %w", err)
 	}
 
 	return body, writer.FormDataContentType(), nil
@@ -327,6 +328,9 @@ func createMultipartBody(pathName string) (io.Reader, string, error) {
 func (c *CatalogClient) UploadTarball(ctx context.Context, pathName string) (*utilities.CatalogServiceBulkCatalogUploadResponse, int, error) {
 
 	body, contentType, err := createMultipartBody(pathName)
+	if err != nil {
+		return nil, 0, fmt.Errorf("failed to create multipart body: %w", err)
+	}
 	resp, err := c.UtilitiesClient.CatalogServiceBulkCatalogUploadWithBodyWithResponse(ctx, contentType, body)
 	if err != nil || resp == nil || resp.StatusCode() != 200 {
 		if err != nil {
