@@ -26,7 +26,7 @@ func (s *TestSuite) TestListBootStrapExtensions() {
 	s.T().Log("Extensions:")
 	for _, app := range applications {
 		s.T().Logf("Name: %s, DisplayName: %s, Description: %s, Version: %s, Kind: %s, ChartName: %s, ChartVersion: %s, HelmRegistryName: %s",
-			app.Name, app.DisplayName, app.Description, app.Version, app.Kind, app.ChartName, app.ChartVersion, app.HelmRegistryName)
+			app.Name, app.DisplayName, *app.Description, app.Version, *app.Kind, app.ChartName, app.ChartVersion, app.HelmRegistryName)
 	}
 }
 
@@ -54,7 +54,7 @@ func (s *TestSuite) TestListBootStrapDeploymentPackages() {
 	s.T().Log("Deployment Packages:")
 	for _, pkg := range deploymentPackages {
 		s.T().Logf("Name: %s, Description: %s, Version: %s, Kind: %s",
-			pkg.Name, pkg.Description, pkg.Version, pkg.Kind)
+			pkg.Name, *pkg.Description, pkg.Version, *pkg.Kind)
 	}
 }
 
@@ -81,7 +81,7 @@ func (s *TestSuite) TestListBootStrapRegistries() {
 	s.T().Log("Registries:")
 	for _, registry := range registries {
 		s.T().Logf("Name: %s, DisplayName: %s, Description: %s, RootURL: %s, Type: %s",
-			registry.Name, registry.DisplayName, registry.Description, registry.RootUrl, registry.Type)
+			registry.Name, *registry.DisplayName, *registry.Description, registry.RootUrl, registry.Type)
 	}
 }
 
