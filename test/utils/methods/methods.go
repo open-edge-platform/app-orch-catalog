@@ -66,10 +66,11 @@ func NewCatalogClient(catalogRESTServerUrl, token, projectID, orchDomain string)
 		return nil
 	}
 	return &CatalogClient{
-		OrchDomain: orchDomain,
-		Client:     client,
-		Token:      token,
-		ProjectID:  projectID,
+		OrchDomain:           orchDomain,
+		Client:               client,
+		Token:                token,
+		ProjectID:            projectID,
+		CatalogRESTServerUrl: catalogRESTServerUrl,
 	}
 }
 
