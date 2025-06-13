@@ -256,6 +256,8 @@ oapi-codegen: ## Install oapi-codegen
 rest-client-gen: ## Generate Rest client from the generated openapi spec.
 	oapi-codegen -generate client -old-config-style -package restClient -o pkg/restClient/client.go api/spec/openapi.yaml
 	oapi-codegen -generate types -old-config-style -package restClient -o pkg/restClient/types.go api/spec/openapi.yaml
+	oapi-codegen -generate client -old-config-style -package utilities -o pkg/restClient/utilities/client.go api/spec/utilities-openapi.yaml
+	oapi-codegen -generate types -old-config-style -package utilities -o pkg/restClient/utilities/types.go api/spec/utilities-openapi.yaml
 
 .PHONY: mod-update
 mod-update: ## Update Go modules
