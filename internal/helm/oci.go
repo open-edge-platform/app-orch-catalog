@@ -99,14 +99,13 @@ func extractFileFromTGZ(reader io.Reader, targetFileName string) ([]byte, error)
 
 		// Check if the current file is the one we want to extract
 		if header.Typeflag == tar.TypeReg && (filepath.Base(header.Name) == targetFileName) {
-			// Read the file content into a buffer
-			var buf strings.Builder
-			if _, err := io.CopyN(&buf, tarReader, MaxExtractedFileSize); err != nil && err != io.EOF {
-				return nil, &ExtractError{Msg: "Failed to copy file content while extracting", Filename: targetFileName, Err: err}
+			limFileReader := io.LimitReader(tarReader, MaxExtractedFileSize)
+			destData, err := io.ReadAll(limFileReader)
+			if err != nil {
+				return nil, &ExtractError{Msg: "Failed to read file contents while extracting", Filename: targetFileName, Err: err}
 			}
-
 			verboseerror.Infof("Extracted file: %s\n", targetFileName)
-			return []byte(buf.String()), nil
+			return destData, nil
 		}
 	}
 
