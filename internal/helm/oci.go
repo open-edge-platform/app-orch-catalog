@@ -10,6 +10,7 @@ import (
 	"context"
 	"io"
 	"net/url"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -20,6 +21,7 @@ import (
 
 const (
 	MaxExtractedFileSize = 10 * 1024 * 1024 // to limit the size of extracted files and mitigate decompression bomb lint message
+	MaxTarSize           = 10 * 1024 * 1024 // to limit the size of the intermediate gzip extraction
 )
 
 var orasClient OrasClientInterface = &OrasClient{} // for mocking
@@ -80,8 +82,10 @@ func extractFileFromTGZ(reader io.Reader, targetFileName string) ([]byte, error)
 	}
 	defer gzipReader.Close()
 
+	limReader := io.LimitReader(gzipReader, MaxTarSize)
+
 	// Create a tar reader
-	tarReader := tar.NewReader(gzipReader)
+	tarReader := tar.NewReader(limReader)
 
 	// Iterate through the files in the tar archive
 	for {
@@ -94,7 +98,7 @@ func extractFileFromTGZ(reader io.Reader, targetFileName string) ([]byte, error)
 		}
 
 		// Check if the current file is the one we want to extract
-		if header.Typeflag == tar.TypeReg && strings.HasSuffix(header.Name, targetFileName) {
+		if header.Typeflag == tar.TypeReg && (filepath.Base(header.Name) == targetFileName) {
 			// Read the file content into a buffer
 			var buf strings.Builder
 			if _, err := io.CopyN(&buf, tarReader, MaxExtractedFileSize); err != nil && err != io.EOF {
