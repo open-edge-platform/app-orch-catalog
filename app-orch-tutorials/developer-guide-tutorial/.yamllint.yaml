@@ -1,0 +1,38 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+---
+ignore: |
+  .cache
+  vendor
+  ci
+  .github/workflows
+  tutorial-web-ui/node_modules/
+  tutorial-chart/tutorial-server/templates/
+  tutorial-chart/tutorial-web-ui/templates/
+  venv-env
+  .github/
+extends: default
+rules:
+  line-length:
+    level: warning
+    max: 200
+  document-start:
+    level: warning
+  comments:
+    level: error
+  comments-indentation:
+    level: error
+  truthy:
+    level: error
+  empty-values: enable
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 5
+  brackets:
+    min-spaces-inside: 0
+    max-spaces-inside: 5
+  colons:
+    max-spaces-before: 1
+    max-spaces-after: 5
