@@ -108,22 +108,6 @@ func (c *CatalogClient) GetApplicationVersions(ctx context.Context, name string)
 	return resp.JSON200.Application, resp.StatusCode(), nil
 }
 
-func (c *CatalogClient) DeleteApplication(ctx context.Context, name, version string, mustExist bool) error {
-	res, err := c.Client.CatalogServiceDeleteApplication(ctx, name, version)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-	if res.StatusCode == http.StatusNotFound && !mustExist {
-		return nil
-	}
-
-	if res.StatusCode != http.StatusOK {
-		return fmt.Errorf("failed to delete application: %s", res.Status)
-	}
-	return nil
-}
-
 // Deployment Package-related Functions
 func (c *CatalogClient) GetDeploymentPackage(ctx context.Context, name, version string) (*restClient.DeploymentPackage, int, error) {
 	resp, err := c.Client.CatalogServiceGetDeploymentPackageWithResponse(ctx, name, version)

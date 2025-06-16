@@ -25,6 +25,9 @@ func (s *TestSuite) TestCreateApplicationValidParams() {
 		HelmRegistryName: "harbor-helm-oci",
 	}
 
+	err := s.catalogClient.DeleteApplication(ctx, app.Name, app.Version, false)
+	s.Require().NoError(err, "Expected to delete application successfully")
+
 	createdApp, status, err := s.catalogClient.CreateApplication(ctx, app)
 	s.Require().NoError(err, "Expected to create application successfully")
 	s.Require().Equal(http.StatusOK, status, "Expected status code 200 for application creation")
@@ -36,5 +39,8 @@ func (s *TestSuite) TestCreateApplicationValidParams() {
 	s.Require().Equal(app.ChartName, createdApp.ChartName, "Expected application chart name to match")
 	s.Require().Equal(app.ChartVersion, createdApp.ChartVersion, "Expected application chart version to match")
 	s.Require().Equal(app.HelmRegistryName, createdApp.HelmRegistryName, "Expected application helm registry name to match")
+
+	err = s.catalogClient.DeleteApplication(ctx, app.Name, app.Version, true)
+	s.Require().NoError(err, "Expected to delete application successfully")
 
 }

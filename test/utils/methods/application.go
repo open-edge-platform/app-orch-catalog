@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	restapi "github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
+	"net/http"
 )
 
 func (c *CatalogClient) CreateApplication(ctx context.Context, application *restapi.Application) (*restapi.Application, int, error) {
@@ -34,4 +35,20 @@ func (c *CatalogClient) CreateApplication(ctx context.Context, application *rest
 	}
 
 	return &resp.JSON200.Application, resp.StatusCode(), nil
+}
+
+func (c *CatalogClient) DeleteApplication(ctx context.Context, name, version string, mustExist bool) error {
+	res, err := c.Client.CatalogServiceDeleteApplication(ctx, name, version)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+	if res.StatusCode == http.StatusNotFound && !mustExist {
+		return nil
+	}
+
+	if res.StatusCode != http.StatusOK {
+		return fmt.Errorf("failed to delete application: %s", res.Status)
+	}
+	return nil
 }
