@@ -23,7 +23,7 @@ func (s *TestSuite) TestCreateApplicationValidParams() {
 		ChartName:          "test-app-chart",
 		ChartVersion:       "0.1.0",
 		DefaultProfileName: types.GetPointerString("default-profile"),
-		HelmRegistryName:   "test-registry",
+		HelmRegistryName:   "intel-rs-helm",
 	}
 
 	createdApp, status, err := s.catalogClient.CreateApplication(ctx, app)
