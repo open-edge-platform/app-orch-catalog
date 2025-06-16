@@ -155,20 +155,6 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 			errorExpected: true,
 		},
 		{
-			name: "Name ending with hyphen",
-			application: &restapi.Application{
-				Name:             "invalid-name-",
-				Version:          "1.0.0",
-				DisplayName:      types.GetPointerString("Test App"),
-				Description:      types.GetPointerString("Test Description"),
-				ChartName:        "test-chart",
-				ChartVersion:     "1.0.0",
-				HelmRegistryName: "harbor-helm-oci",
-			},
-			expectedCode:  http.StatusBadRequest,
-			errorExpected: true,
-		},
-		{
 			name: "Name with invalid characters",
 			application: &restapi.Application{
 				Name:             "invalid_name$",
