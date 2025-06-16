@@ -16,14 +16,13 @@ func (s *TestSuite) TestCreateApplicationValidParams() {
 
 	// Create a new application
 	app := &restapi.Application{
-		Name:               "httpbin",
-		Version:            "0.1.8",
-		DisplayName:        types.GetPointerString("HttpBin Go"),
-		Description:        types.GetPointerString("Helm chart to install httpbingo.org on Kubernetes."),
-		ChartName:          "httpbin",
-		ChartVersion:       "0.1.8",
-		DefaultProfileName: types.GetPointerString("without-envoy"),
-		HelmRegistryName:   "harbor-helm-oci",
+		Name:             "httpbin",
+		Version:          "0.1.8",
+		DisplayName:      types.GetPointerString("HttpBin Go"),
+		Description:      types.GetPointerString("Helm chart to install httpbingo.org on Kubernetes."),
+		ChartName:        "httpbin",
+		ChartVersion:     "0.1.8",
+		HelmRegistryName: "harbor-helm-oci",
 	}
 
 	createdApp, status, err := s.catalogClient.CreateApplication(ctx, app)
@@ -36,7 +35,6 @@ func (s *TestSuite) TestCreateApplicationValidParams() {
 	s.Require().Equal(*app.Description, *createdApp.Description, "Expected application description to match")
 	s.Require().Equal(app.ChartName, createdApp.ChartName, "Expected application chart name to match")
 	s.Require().Equal(app.ChartVersion, createdApp.ChartVersion, "Expected application chart version to match")
-	s.Require().Equal(*app.DefaultProfileName, *createdApp.DefaultProfileName, "Expected application default profile name to match")
 	s.Require().Equal(app.HelmRegistryName, createdApp.HelmRegistryName, "Expected application helm registry name to match")
 
 }
