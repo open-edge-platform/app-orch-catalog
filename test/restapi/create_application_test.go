@@ -66,7 +66,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 				HelmRegistryName: "harbor-helm-oci",
 			},
 			expectedCode:  http.StatusBadRequest,
-			errorExpected: false,
+			errorExpected: true,
 		},
 		{
 			name: "Empty version",
@@ -80,7 +80,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 				HelmRegistryName: "harbor-helm-oci",
 			},
 			expectedCode:  http.StatusBadRequest,
-			errorExpected: false,
+			errorExpected: true,
 		},
 		{
 			name: "Empty chart name",
@@ -94,7 +94,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 				HelmRegistryName: "harbor-helm-oci",
 			},
 			expectedCode:  http.StatusBadRequest,
-			errorExpected: false,
+			errorExpected: true,
 		},
 		{
 			name: "Empty chart version",
@@ -108,7 +108,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 				HelmRegistryName: "harbor-helm-oci",
 			},
 			expectedCode:  http.StatusBadRequest,
-			errorExpected: false,
+			errorExpected: true,
 		},
 		{
 			name: "Empty helm registry name",
@@ -122,7 +122,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 				HelmRegistryName: "",
 			},
 			expectedCode:  http.StatusBadRequest,
-			errorExpected: false,
+			errorExpected: true,
 		},
 	}
 
@@ -133,6 +133,8 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 
 			if tc.errorExpected {
 				s.Require().Error(err, "Expected error for invalid application parameters")
+				s.Require().Equal(tc.expectedCode, status, "Expected correct status code")
+				s.Require().Nil(createdApp, "Expected no application to be created")
 			} else {
 				s.Require().NoError(err, "Did not expect error for test case")
 				s.Require().Equal(tc.expectedCode, status, "Expected correct status code")
