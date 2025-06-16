@@ -47,6 +47,7 @@ func (s *TestSuite) TestCreateApplicationValidParams() {
 
 func (s *TestSuite) TestCreateApplicationInvalidParams() {
 	ctx := context.TODO()
+	var invalidKind restapi.ApplicationKind = "INVALID_KIND" // Only if this conversion is allowed
 
 	testCases := []struct {
 		name          string
@@ -120,6 +121,210 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 				ChartName:        "test-chart",
 				ChartVersion:     "1.0.0",
 				HelmRegistryName: "",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: true,
+		},
+		// Name validation test cases
+		{
+			name: "Name too long (exceeds 26 chars)",
+			application: &restapi.Application{
+				Name:             "this-name-is-way-too-long-for-app",
+				Version:          "1.0.0",
+				DisplayName:      types.GetPointerString("Test App"),
+				Description:      types.GetPointerString("Test Description"),
+				ChartName:        "test-chart",
+				ChartVersion:     "1.0.0",
+				HelmRegistryName: "harbor-helm-oci",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: true,
+		},
+		{
+			name: "Name starting with hyphen",
+			application: &restapi.Application{
+				Name:             "-invalid-name",
+				Version:          "1.0.0",
+				DisplayName:      types.GetPointerString("Test App"),
+				Description:      types.GetPointerString("Test Description"),
+				ChartName:        "test-chart",
+				ChartVersion:     "1.0.0",
+				HelmRegistryName: "harbor-helm-oci",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: true,
+		},
+		{
+			name: "Name ending with hyphen",
+			application: &restapi.Application{
+				Name:             "invalid-name-",
+				Version:          "1.0.0",
+				DisplayName:      types.GetPointerString("Test App"),
+				Description:      types.GetPointerString("Test Description"),
+				ChartName:        "test-chart",
+				ChartVersion:     "1.0.0",
+				HelmRegistryName: "harbor-helm-oci",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: true,
+		},
+		{
+			name: "Name with invalid characters",
+			application: &restapi.Application{
+				Name:             "invalid_name$",
+				Version:          "1.0.0",
+				DisplayName:      types.GetPointerString("Test App"),
+				Description:      types.GetPointerString("Test Description"),
+				ChartName:        "test-chart",
+				ChartVersion:     "1.0.0",
+				HelmRegistryName: "harbor-helm-oci",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: true,
+		},
+		// Version validation test cases
+		{
+			name: "Version too long (exceeds 20 chars)",
+			application: &restapi.Application{
+				Name:             "test-app",
+				Version:          "1.0.0-beta.1234567890.1",
+				DisplayName:      types.GetPointerString("Test App"),
+				Description:      types.GetPointerString("Test Description"),
+				ChartName:        "test-chart",
+				ChartVersion:     "1.0.0",
+				HelmRegistryName: "harbor-helm-oci",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: true,
+		},
+		{
+			name: "Version with invalid characters",
+			application: &restapi.Application{
+				Name:             "test-app",
+				Version:          "1.0.0_beta1",
+				DisplayName:      types.GetPointerString("Test App"),
+				Description:      types.GetPointerString("Test Description"),
+				ChartName:        "test-chart",
+				ChartVersion:     "1.0.0",
+				HelmRegistryName: "harbor-helm-oci",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: true,
+		},
+		{
+			name: "Version starting with hyphen",
+			application: &restapi.Application{
+				Name:             "test-app",
+				Version:          "-1.0.0",
+				DisplayName:      types.GetPointerString("Test App"),
+				Description:      types.GetPointerString("Test Description"),
+				ChartName:        "test-chart",
+				ChartVersion:     "1.0.0",
+				HelmRegistryName: "harbor-helm-oci",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: true,
+		},
+		// DisplayName validation test cases
+		{
+			name: "DisplayName too long (exceeds 40 chars)",
+			application: &restapi.Application{
+				Name:             "test-app",
+				Version:          "1.0.0",
+				DisplayName:      types.GetPointerString("This display name is too long for the application requirements"),
+				Description:      types.GetPointerString("Test Description"),
+				ChartName:        "test-chart",
+				ChartVersion:     "1.0.0",
+				HelmRegistryName: "harbor-helm-oci",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: true,
+		},
+		// Description validation test cases
+		{
+			name: "Description too long (exceeds 1000 chars)",
+			application: &restapi.Application{
+				Name:             "test-app",
+				Version:          "1.0.0",
+				DisplayName:      types.GetPointerString("Test App"),
+				Description:      types.GetPointerString(string(make([]byte, 1001))), // 1001 character string
+				ChartName:        "test-chart",
+				ChartVersion:     "1.0.0",
+				HelmRegistryName: "harbor-helm-oci",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: true,
+		},
+		// ChartName validation test cases
+		{
+			name: "ChartName too long (exceeds 200 chars)",
+			application: &restapi.Application{
+				Name:             "test-app",
+				Version:          "1.0.0",
+				DisplayName:      types.GetPointerString("Test App"),
+				Description:      types.GetPointerString("Test Description"),
+				ChartName:        string(make([]byte, 201)), // 201 character string
+				ChartVersion:     "1.0.0",
+				HelmRegistryName: "harbor-helm-oci",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: true,
+		},
+		{
+			name: "ChartName with invalid characters",
+			application: &restapi.Application{
+				Name:             "test-app",
+				Version:          "1.0.0",
+				DisplayName:      types.GetPointerString("Test App"),
+				Description:      types.GetPointerString("Test Description"),
+				ChartName:        "Invalid_Chart_Name",
+				ChartVersion:     "1.0.0",
+				HelmRegistryName: "harbor-helm-oci",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: true,
+		},
+		// ChartVersion validation test cases
+		{
+			name: "ChartVersion too long (exceeds 53 chars)",
+			application: &restapi.Application{
+				Name:             "test-app",
+				Version:          "1.0.0",
+				DisplayName:      types.GetPointerString("Test App"),
+				Description:      types.GetPointerString("Test Description"),
+				ChartName:        "test-chart",
+				ChartVersion:     "1.0.0-beta.1234567890.1234567890.1234567890.1234567890.123",
+				HelmRegistryName: "harbor-helm-oci",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: true,
+		},
+		{
+			name: "ChartVersion with invalid characters",
+			application: &restapi.Application{
+				Name:             "test-app",
+				Version:          "1.0.0",
+				DisplayName:      types.GetPointerString("Test App"),
+				Description:      types.GetPointerString("Test Description"),
+				ChartName:        "test-chart",
+				ChartVersion:     "1.0.0_beta1",
+				HelmRegistryName: "harbor-helm-oci",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: true,
+		},
+		// Kind validation test case
+		{
+			name: "Invalid kind value",
+			application: &restapi.Application{
+				Name:             "test-app",
+				Version:          "1.0.0",
+				DisplayName:      types.GetPointerString("Test App"),
+				Description:      types.GetPointerString("Test Description"),
+				ChartName:        "test-chart",
+				ChartVersion:     "1.0.0",
+				HelmRegistryName: "harbor-helm-oci",
+				Kind:             &invalidKind,
 			},
 			expectedCode:  http.StatusBadRequest,
 			errorExpected: true,
