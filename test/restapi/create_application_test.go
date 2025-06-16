@@ -47,7 +47,7 @@ func (s *TestSuite) TestCreateApplicationValidParams() {
 
 func (s *TestSuite) TestCreateApplicationInvalidParams() {
 	ctx := context.TODO()
-	var invalidKind restapi.ApplicationKind = "INVALID_KIND" // Only if this conversion is allowed
+	//var invalidKind restapi.ApplicationKind = "INVALID_KIND" // Only if this conversion is allowed
 
 	testCases := []struct {
 		name          string
