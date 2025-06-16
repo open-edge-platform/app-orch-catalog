@@ -72,7 +72,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 		{
 			name: "Empty version",
 			application: &restapi.Application{
-				Name:             "test-app",
+				Name:             "test-app-empty-version",
 				Version:          "",
 				DisplayName:      types.GetPointerString("Test App"),
 				Description:      types.GetPointerString("Test Description"),
@@ -86,7 +86,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 		{
 			name: "Empty chart name",
 			application: &restapi.Application{
-				Name:             "test-app",
+				Name:             "test-app-empty-chart-name",
 				Version:          "1.0.0",
 				DisplayName:      types.GetPointerString("Test App"),
 				Description:      types.GetPointerString("Test Description"),
@@ -100,7 +100,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 		{
 			name: "Empty chart version",
 			application: &restapi.Application{
-				Name:             "test-app",
+				Name:             "test-app-empty-chart-version",
 				Version:          "1.0.0",
 				DisplayName:      types.GetPointerString("Test App"),
 				Description:      types.GetPointerString("Test Description"),
@@ -114,7 +114,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 		{
 			name: "Empty helm registry name",
 			application: &restapi.Application{
-				Name:             "test-app",
+				Name:             "test-app-empty-registry",
 				Version:          "1.0.0",
 				DisplayName:      types.GetPointerString("Test App"),
 				Description:      types.GetPointerString("Test Description"),
@@ -186,7 +186,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 		{
 			name: "Version too long (exceeds 20 chars)",
 			application: &restapi.Application{
-				Name:             "test-app",
+				Name:             "test-app-long-version",
 				Version:          "1.0.0-beta.1234567890.1",
 				DisplayName:      types.GetPointerString("Test App"),
 				Description:      types.GetPointerString("Test Description"),
@@ -200,7 +200,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 		{
 			name: "Version with invalid characters",
 			application: &restapi.Application{
-				Name:             "test-app",
+				Name:             "test-app-invalid-version",
 				Version:          "1.0.0_beta1",
 				DisplayName:      types.GetPointerString("Test App"),
 				Description:      types.GetPointerString("Test Description"),
@@ -214,7 +214,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 		{
 			name: "Version starting with hyphen",
 			application: &restapi.Application{
-				Name:             "test-app",
+				Name:             "test-app-invalid-version",
 				Version:          "-1.0.0",
 				DisplayName:      types.GetPointerString("Test App"),
 				Description:      types.GetPointerString("Test Description"),
@@ -229,7 +229,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 		{
 			name: "DisplayName too long (exceeds 40 chars)",
 			application: &restapi.Application{
-				Name:             "test-app",
+				Name:             "test-app-long-display-name",
 				Version:          "1.0.0",
 				DisplayName:      types.GetPointerString("This display name is too long for the application requirements"),
 				Description:      types.GetPointerString("Test Description"),
@@ -244,7 +244,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 		{
 			name: "Description too long (exceeds 1000 chars)",
 			application: &restapi.Application{
-				Name:             "test-app",
+				Name:             "test-app-long-description",
 				Version:          "1.0.0",
 				DisplayName:      types.GetPointerString("Test App"),
 				Description:      types.GetPointerString(string(make([]byte, 1001))), // 1001 character string
@@ -259,7 +259,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 		{
 			name: "ChartName too long (exceeds 200 chars)",
 			application: &restapi.Application{
-				Name:             "test-app",
+				Name:             "test-app-long-chart-name",
 				Version:          "1.0.0",
 				DisplayName:      types.GetPointerString("Test App"),
 				Description:      types.GetPointerString("Test Description"),
@@ -273,7 +273,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 		{
 			name: "ChartName with invalid characters",
 			application: &restapi.Application{
-				Name:             "test-app",
+				Name:             "test-app-invalid-chart-name",
 				Version:          "1.0.0",
 				DisplayName:      types.GetPointerString("Test App"),
 				Description:      types.GetPointerString("Test Description"),
@@ -288,7 +288,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 		{
 			name: "ChartVersion too long (exceeds 53 chars)",
 			application: &restapi.Application{
-				Name:             "test-app",
+				Name:             "test-app-long-chart-version",
 				Version:          "1.0.0",
 				DisplayName:      types.GetPointerString("Test App"),
 				Description:      types.GetPointerString("Test Description"),
@@ -302,7 +302,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 		{
 			name: "ChartVersion with invalid characters",
 			application: &restapi.Application{
-				Name:             "test-app",
+				Name:             "test-app-invalid",
 				Version:          "1.0.0",
 				DisplayName:      types.GetPointerString("Test App"),
 				Description:      types.GetPointerString("Test Description"),
@@ -317,7 +317,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 		{
 			name: "Invalid kind value",
 			application: &restapi.Application{
-				Name:             "test-app",
+				Name:             "test-app-invalid-kind",
 				Version:          "1.0.0",
 				DisplayName:      types.GetPointerString("Test App"),
 				Description:      types.GetPointerString("Test Description"),
