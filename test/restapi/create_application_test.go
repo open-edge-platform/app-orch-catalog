@@ -16,14 +16,14 @@ func (s *TestSuite) TestCreateApplicationValidParams() {
 
 	// Create a new application
 	app := &restapi.Application{
-		Name:               "test-app",
-		Version:            "0.1.0",
-		DisplayName:        types.GetPointerString("Test Application"),
-		Description:        types.GetPointerString("This is a test application"),
-		ChartName:          "test-app-chart",
-		ChartVersion:       "0.1.0",
-		DefaultProfileName: types.GetPointerString("default-profile"),
-		HelmRegistryName:   "intel-rs-helm",
+		Name:               "httpbin",
+		Version:            "0.1.8",
+		DisplayName:        types.GetPointerString("HttpBin Go"),
+		Description:        types.GetPointerString("Helm chart to install httpbingo.org on Kubernetes."),
+		ChartName:          "httpbin",
+		ChartVersion:       "0.1.8",
+		DefaultProfileName: types.GetPointerString("without-envoy"),
+		HelmRegistryName:   "harbor-helm-oci",
 	}
 
 	createdApp, status, err := s.catalogClient.CreateApplication(ctx, app)
