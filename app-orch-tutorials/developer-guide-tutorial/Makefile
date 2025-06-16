@@ -75,20 +75,6 @@ $(VENV_NAME): tutorial-server/requirements.txt ## Create Python venv
   python -m pip install yamllint;\
   python -m pip install -r tutorial-server/requirements.txt
 
-.PHONY: openapi-spec-validate
-openapi-spec-validate: $(VENV_NAME) ## Install openapi-spec-validator
-	set +u; . ./$</bin/activate; set -u ;\
-	openapi-spec-validator api/spec/openapi.yaml
-
-.PHONY: oapi-codegen
-oapi-codegen: ## Install oapi-codegen
-	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@${OAPI_CODEGEN_VERSION}
-
-.PHONY: rest-client-gen
-rest-client-gen: ## Generate Rest client from the generated openapi spec.
-	oapi-codegen -generate client -old-config-style -package restClient -o pkg/restClient/client.go api/spec/openapi.yaml
-	oapi-codegen -generate types -old-config-style -package restClient -o pkg/restClient/types.go api/spec/openapi.yaml
-
 .PHONY: license
 license: $(VENV_NAME) ## Check licensing with the reuse tool.
 	. ./$</bin/activate; set -u;\
@@ -162,7 +148,7 @@ hadolint: ## lint Dockerfiles
     )
 
 .PHONY: docker-build-server
-docker-build-server: ##Builds the docker image for the tutorial server
+docker-build-server: ## Builds the docker image for the tutorial server
 	@echo "---MAKEFILE DOCKER BUILD TUTORIAL SERVER---"
 	$(DOCKER_BUILD_COMMAND) $(TUTORIAL_IMAGE_NAME_PREFIX)-server -f tutorial-server/Dockerfile \
 	$(PLATFORM) \
@@ -170,7 +156,7 @@ docker-build-server: ##Builds the docker image for the tutorial server
 	$(DOCKER_BUILD_ARGS)
 	docker tag $(TUTORIAL_IMAGE_NAME_PREFIX)-server:$(DOCKER_VERSION) $(DOCKER_TAG_SERVER)
 
-docker-build-web-ui: ##Builds the docker image for the tutorial web UI
+docker-build-web-ui: ## Builds the docker image for the tutorial web UI
 	@echo "---MAKEFILE DOCKER BUILD TUTORIAL WEB UI---"
 	$(DOCKER_BUILD_COMMAND) $(TUTORIAL_IMAGE_NAME_PREFIX)-web-ui -f tutorial-web-ui/Dockerfile \
 	$(PLATFORM) \
@@ -180,7 +166,7 @@ docker-build-web-ui: ##Builds the docker image for the tutorial web UI
 
 
 .PHONY: docker-build
-docker-build: docker-build-server docker-build-web-ui ##Builds the docker images
+docker-build: docker-build-server docker-build-web-ui ## Builds the docker images
 
 .PHONY: docker-push
 docker-push: docker-build ## Push the docker image to ghcr.io
@@ -249,12 +235,7 @@ list: help ## displays make targets
 
 .PHONY: clean ## removes go artifacts and test results
 clean:
-	go clean -testcache
-	rm -rf vendor release test/vendor build/_output/* $(VENV_NAME)
-
-.PHONY: dependency-check
-dependency-check: ## Unsupported target
-	echo '"make $@" is unsupported'
+	rm -rf $(VENV_NAME)
 
 .PHONY: help
 help: ## Print help for each target
