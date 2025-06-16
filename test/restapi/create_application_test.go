@@ -44,3 +44,100 @@ func (s *TestSuite) TestCreateApplicationValidParams() {
 	s.Require().NoError(err, "Expected to delete application successfully")
 
 }
+
+func (s *TestSuite) TestCreateApplicationInvalidParams() {
+	ctx := context.TODO()
+
+	testCases := []struct {
+		name          string
+		application   *restapi.Application
+		expectedCode  int
+		errorExpected bool
+	}{
+		{
+			name: "Empty application name",
+			application: &restapi.Application{
+				Name:             "",
+				Version:          "1.0.0",
+				DisplayName:      types.GetPointerString("Test App"),
+				Description:      types.GetPointerString("Test Description"),
+				ChartName:        "test-chart",
+				ChartVersion:     "1.0.0",
+				HelmRegistryName: "harbor-helm-oci",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: false,
+		},
+		{
+			name: "Empty version",
+			application: &restapi.Application{
+				Name:             "test-app",
+				Version:          "",
+				DisplayName:      types.GetPointerString("Test App"),
+				Description:      types.GetPointerString("Test Description"),
+				ChartName:        "test-chart",
+				ChartVersion:     "1.0.0",
+				HelmRegistryName: "harbor-helm-oci",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: false,
+		},
+		{
+			name: "Empty chart name",
+			application: &restapi.Application{
+				Name:             "test-app",
+				Version:          "1.0.0",
+				DisplayName:      types.GetPointerString("Test App"),
+				Description:      types.GetPointerString("Test Description"),
+				ChartName:        "",
+				ChartVersion:     "1.0.0",
+				HelmRegistryName: "harbor-helm-oci",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: false,
+		},
+		{
+			name: "Empty chart version",
+			application: &restapi.Application{
+				Name:             "test-app",
+				Version:          "1.0.0",
+				DisplayName:      types.GetPointerString("Test App"),
+				Description:      types.GetPointerString("Test Description"),
+				ChartName:        "test-chart",
+				ChartVersion:     "",
+				HelmRegistryName: "harbor-helm-oci",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: false,
+		},
+		{
+			name: "Empty helm registry name",
+			application: &restapi.Application{
+				Name:             "test-app",
+				Version:          "1.0.0",
+				DisplayName:      types.GetPointerString("Test App"),
+				Description:      types.GetPointerString("Test Description"),
+				ChartName:        "test-chart",
+				ChartVersion:     "1.0.0",
+				HelmRegistryName: "",
+			},
+			expectedCode:  http.StatusBadRequest,
+			errorExpected: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			// Try to create application with invalid parameters
+			createdApp, status, err := s.catalogClient.CreateApplication(ctx, tc.application)
+
+			if tc.errorExpected {
+				s.Require().Error(err, "Expected error for invalid application parameters")
+			} else {
+				s.Require().NoError(err, "Did not expect error for test case")
+				s.Require().Equal(tc.expectedCode, status, "Expected correct status code")
+				s.Require().Nil(createdApp, "Expected no application to be created")
+			}
+		})
+	}
+}
