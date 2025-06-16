@@ -132,7 +132,7 @@ func (s *TestSuite) TestCreateApplicationInvalidParams() {
 			createdApp, status, err := s.catalogClient.CreateApplication(ctx, tc.application)
 
 			if tc.errorExpected {
-				s.T().Log(tc.expectedCode, ":", status)
+				s.T().Log(tc.expectedCode, ":", status, ":", err.Error())
 				s.Require().Error(err, "Expected error for invalid application parameters")
 				s.Require().Equal(tc.expectedCode, status, "Expected correct status code")
 				s.Require().Nil(createdApp, "Expected no application to be created")
