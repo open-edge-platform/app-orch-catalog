@@ -36,7 +36,7 @@ func TestGenerateDeploymentPackage(t *testing.T) {
 		Password:    "testpassword",
 	}
 
-	err = GenerateDeploymentPackage(h, "", tempDir, "", false)
+	err = GenerateDeploymentPackage(h, "", tempDir, "", false, false, false)
 	assert.NoError(t, err)
 
 	dpFileName := fmt.Sprintf("%s/%s-deployment-package.yaml", tempDir, h.Name)
@@ -119,7 +119,7 @@ func TestGenerateDeploymentPackageWithAuth(t *testing.T) {
 		Password:    "testpassword",
 	}
 
-	err = GenerateDeploymentPackage(h, "", tempDir, "", true)
+	err = GenerateDeploymentPackage(h, "", tempDir, "", true, false, false)
 	assert.NoError(t, err)
 
 	regFileName := fmt.Sprintf("%s/%s-registry.yaml", tempDir, h.Name)
@@ -170,7 +170,7 @@ service:
 	err = os.WriteFile(inputValuesFileName, []byte(sampleValues), 0600)
 	assert.NoError(t, err)
 
-	err = GenerateDeploymentPackage(h, inputValuesFileName, tempDir, "", false)
+	err = GenerateDeploymentPackage(h, inputValuesFileName, tempDir, "", false, false, false)
 	assert.NoError(t, err)
 
 	valFileName := fmt.Sprintf("%s/values-%s-%s-default.yaml", tempDir, h.Name, h.Version)
@@ -196,7 +196,7 @@ func TestGenerateDeploymentPackageWithNamespace(t *testing.T) {
 		Password:    "testpassword",
 	}
 
-	err = GenerateDeploymentPackage(h, "", tempDir, "testnamespace", false)
+	err = GenerateDeploymentPackage(h, "", tempDir, "testnamespace", false, false, false)
 	assert.NoError(t, err)
 
 	dpFileName := fmt.Sprintf("%s/%s-deployment-package.yaml", tempDir, h.Name)
