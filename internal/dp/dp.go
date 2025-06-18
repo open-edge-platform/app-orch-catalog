@@ -155,5 +155,7 @@ func GenerateDeploymentPackage(helm helm.HelmInfo, valuesFile string, outputDir 
 		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fileName, Msg: "Failed to export deployment package", Err: err}
 	}
 
+	verboseerror.Infof("Created deployment package for %s in directory '%s'\n", name, outputDir)
+
 	return nil
 }
