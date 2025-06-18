@@ -88,6 +88,7 @@ func extractFilesFromTGZ(reader io.Reader, targetFileNames []string) (map[string
 	// Create a tar reader
 	tarReader := tar.NewReader(limReader)
 
+	fullNames := make(map[string]string) // to track the longest full path for each target file
 	extractedFiles := make(map[string][]byte)
 
 	// Iterate through the files in the tar archive
@@ -107,6 +108,17 @@ func extractFilesFromTGZ(reader io.Reader, targetFileNames []string) (map[string
 
 		for _, targetFileName := range targetFileNames {
 			if filepath.Base(header.Name) == targetFileName {
+				// Make sure we get the match with the shortest name.
+				// For example, in the jupyterhub helm chart, we have:
+				// - jupyterhub/Chart.yaml   								<--- we want this one
+				// - jupyterhub/charts/common/Chart.yaml
+				// - jupyterhub/charts/postgresql/charts/common/Chart.yaml
+				fullName, ok := fullNames[targetFileName]
+				if ok && (len(header.Name) > len(fullName)) {
+					continue
+				}
+				fullNames[targetFileName] = header.Name
+
 				limFileReader := io.LimitReader(tarReader, MaxExtractedFileSize)
 				destData, err := io.ReadAll(limFileReader)
 				if err != nil {
