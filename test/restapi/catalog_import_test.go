@@ -6,9 +6,10 @@ package restapi
 
 import (
 	"context"
+	"net/http"
+
 	restclient "github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
 	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
-	"net/http"
 )
 
 func (s *TestSuite) TestImportHelmChart() {
@@ -56,6 +57,57 @@ func (s *TestSuite) TestImportHelmChart() {
 	s.NoError(s.catalogClient.DeleteDeploymentPackage(ctx, "impt", "2.9.0", true), "Expected to delete deployment package")
 	s.NoError(s.catalogClient.DeleteApplication(ctx, "impt", "2.9.0", true), "Expected to delete application")
 	s.NoError(s.catalogClient.DeleteRegistry(ctx, "impt-registry", true), "Expected to delete registry")
+}
+
+func (s *TestSuite) TestImportHelmChartWithGeneration() {
+	ctx := context.TODO()
+	importRequest := &restclient.CatalogServiceImportParams{
+		Url:                       types.GetPointerString("oci://ghcr.io/open-edge-platform/geti/helm/impt:2.9.0"),
+		GenerateDefaultValues:     true,
+		GenerateDefaultParameters: true,
+	}
+
+	status, body, err := s.catalogClient.ImportHelmChart(ctx, importRequest)
+	s.Require().NoError(err)
+	s.Equal(http.StatusOK, status, "Expected status code 200 for successful import")
+
+	if http.StatusOK != status {
+		// for debugging purposes, log the response body. It will have error messages from the importer.
+		s.T().Logf("Response body: %s\n", body)
+	}
+
+	app, status, err := s.catalogClient.GetApplication(ctx, "impt", "2.9.0")
+	s.Require().NoError(err, "Expected to retrieve application after import")
+	s.Require().Equal(http.StatusOK, status, "Expected status code 200 for application retrieval")
+
+	s.Equal("impt", app.Name, "Expected application name to be 'impt'")
+	s.Equal("2.9.0", app.Version, "Expected application version to be '2.9.0'")
+	s.Equal("impt-registry", app.HelmRegistryName, "Expected application registry to be 'impt-registry'")
+	s.Equal("impt", app.ChartName, "Expected application chart name to be 'impt'")
+	s.Equal("2.9.0", app.ChartVersion, "Expected application chart version to be '2.9.0'")
+	s.Equal("default", *app.DefaultProfileName, "Expected application default profile name to be 'default'")
+
+	pkg, status, err := s.catalogClient.GetDeploymentPackage(ctx, "impt", "2.9.0")
+	s.Require().NoError(err, "Expected to retrieve deployment package after import")
+
+	s.Equal("impt", pkg.Name, "Expected deployment package name to be 'impt'")
+	s.Equal("2.9.0", pkg.Version, "Expected deployment package version to be '2.9.0'")
+	s.Equal("default", *pkg.DefaultProfileName, "Expected deployment package default profile name to be 'default'")
+
+	reg, status, err := s.catalogClient.GetRegistry(ctx, "impt-registry")
+	s.Require().NoError(err, "Expected to retrieve registry")
+	s.Require().Equal(http.StatusOK, status, "Expected status code 200 for registry retrieval")
+
+	s.Equal("impt-registry", reg.Name, "Expected registry name to be 'impt-registry'")
+	s.Equal("oci://ghcr.io/open-edge-platform/geti/helm", reg.RootUrl, "Expected registry URL to match the input")
+
+	/* cleanup -- these should all exist at this point */
+
+	s.NoError(s.catalogClient.DeleteDeploymentPackage(ctx, "impt", "2.9.0", true), "Expected to delete deployment package")
+	s.NoError(s.catalogClient.DeleteApplication(ctx, "impt", "2.9.0", true), "Expected to delete application")
+	s.NoError(s.catalogClient.DeleteRegistry(ctx, "impt-registry", true), "Expected to delete registry")
+
+	// TODO: test that default values and parameters were generated
 }
 
 func (s *TestSuite) TestImportHelmChartBadURL() {

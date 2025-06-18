@@ -129,7 +129,7 @@ func extractFilesFromTGZ(reader io.Reader, targetFileNames []string) (map[string
 		}
 	}
 
-	return extractedFiles, nil //, &ExtractError{Msg: "Failed to find file while extracting", Filename: targetFileName}
+	return extractedFiles, nil
 }
 
 // FetchHelmChartOCI fetches a Helm Chart from an OCI registry and extracts some useful info

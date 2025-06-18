@@ -148,11 +148,11 @@ func GenerateDefaultParametersFromYaml(parent string, yamlContent map[interface{
 		}
 		if svalue, ok := yamlContent[key].(string); ok {
 			if len(svalue) >= 100 || strings.Contains(svalue, "{{") || strings.Contains(svalue, "\n") {
-				svalue = ""
+				continue
 			}
 			pt := &catalogv3.ParameterTemplate{
 				Name:        fullName,
-				DisplayName: fullName,
+				DisplayName: key, // TODO: handle collisions in display names
 				Default:     svalue,
 				Type:        "string",
 				Secret:      false,
@@ -174,7 +174,8 @@ func GenerateDefaultParametersFromYaml(parent string, yamlContent map[interface{
 
 // GenerateDefaultParametersFromYaml generates parameter templates from a values.yaml file.
 // It does this by recursively parsing the YAML. It builds up names in dotted notations and also supplies the default value.
-// If a default value is problematic (e.g., too long, contains templating syntax, or has newlines), then no default will be used.
+// If a default value is problematic (e.g., too long, contains templating syntax, or has newlines), the value is determined
+// to be too complex and is not included in the parameters.
 // For some charts, like Bitnami Charts, this may result in a very large number of parameters, so this should be used with care.
 func GenerateDefaultParameters(values string) ([]*catalogv3.ParameterTemplate, error) {
 	var yamlContent map[interface{}]interface{}
@@ -186,7 +187,7 @@ func GenerateDefaultParameters(values string) ([]*catalogv3.ParameterTemplate, e
 	return GenerateDefaultParametersFromYaml("", yamlContent)
 }
 
-// GenerateDeploytmentPackage generates a deployment package from a Helm chart.
+// GenerateDeploymentPackage generates a deployment package from a Helm chart.
 func GenerateDeploymentPackage(helm helm.HelmInfo, valuesFile string, outputDir string, namespace string, includeAuth bool, generateDefaultValues bool, generateDefaultParameters bool) error {
 	err := os.MkdirAll(outputDir, os.ModePerm)
 	if err != nil {
