@@ -29,12 +29,13 @@ var orasClient OrasClientInterface = &OrasClient{} // for mocking
 /* HelmInfo contains information about the Helm Chart. */
 
 type HelmInfo struct { // nolint:revive
-	Name        string /* Name of the Helm Chart */
-	Version     string /* Version of the Helm Chart */
-	Description string /* Description of the Helm Chart, extracted from Chart.yaml */
-	OCIRegistry string /* OCI Registry URL */
-	Username    string /* Username used to fetch chart */
-	Password    string /* Password used to fetch chart */
+	Name        string  /* Name of the Helm Chart */
+	Version     string  /* Version of the Helm Chart */
+	Description string  /* Description of the Helm Chart, extracted from Chart.yaml */
+	OCIRegistry string  /* OCI Registry URL */
+	Username    string  /* Username used to fetch chart */
+	Password    string  /* Password used to fetch chart */
+	Values      *[]byte /* Default values.yaml content; nil = no values.yaml file present */
 }
 
 func parseOrasURL(ociurl string) (string, string, string, string, error) {
@@ -74,11 +75,11 @@ func parseOrasURL(ociurl string) (string, string, string, string, error) {
 	return parsedURL.Host, path, fullName, tag, nil
 }
 
-func extractFileFromTGZ(reader io.Reader, targetFileName string) ([]byte, error) {
+func extractFilesFromTGZ(reader io.Reader, targetFileNames []string) (map[string][]byte, error) {
 	// Create a gzip reader
 	gzipReader, err := gzip.NewReader(reader)
 	if err != nil {
-		return nil, &ExtractError{Msg: "Failed to create gzip reader while extracting", Filename: targetFileName, Err: err}
+		return nil, &ExtractError{Msg: "Failed to create gzip reader while extracting", Err: err}
 	}
 	defer gzipReader.Close()
 
@@ -87,6 +88,8 @@ func extractFileFromTGZ(reader io.Reader, targetFileName string) ([]byte, error)
 	// Create a tar reader
 	tarReader := tar.NewReader(limReader)
 
+	extractedFiles := make(map[string][]byte)
+
 	// Iterate through the files in the tar archive
 	for {
 		header, err := tarReader.Next()
@@ -94,22 +97,27 @@ func extractFileFromTGZ(reader io.Reader, targetFileName string) ([]byte, error)
 			break // End of archive
 		}
 		if err != nil {
-			return nil, &ExtractError{Msg: "Failed to read tar header while extracting", Filename: targetFileName, Err: err}
+			return nil, &ExtractError{Msg: "Failed to read tar header while extracting", Err: err}
 		}
 
 		// Check if the current file is the one we want to extract
-		if header.Typeflag == tar.TypeReg && (filepath.Base(header.Name) == targetFileName) {
-			limFileReader := io.LimitReader(tarReader, MaxExtractedFileSize)
-			destData, err := io.ReadAll(limFileReader)
-			if err != nil {
-				return nil, &ExtractError{Msg: "Failed to read file contents while extracting", Filename: targetFileName, Err: err}
+		if header.Typeflag != tar.TypeReg {
+			continue
+		}
+
+		for _, targetFileName := range targetFileNames {
+			if filepath.Base(header.Name) == targetFileName {
+				limFileReader := io.LimitReader(tarReader, MaxExtractedFileSize)
+				destData, err := io.ReadAll(limFileReader)
+				if err != nil {
+					return nil, &ExtractError{Msg: "Failed to read file contents while extracting", Filename: targetFileName, Err: err}
+				}
+				extractedFiles[targetFileName] = destData
 			}
-			verboseerror.Infof("Extracted file: %s\n", targetFileName)
-			return destData, nil
 		}
 	}
 
-	return nil, &ExtractError{Msg: "Failed to find file while extracting", Filename: targetFileName}
+	return extractedFiles, nil //, &ExtractError{Msg: "Failed to find file while extracting", Filename: targetFileName}
 }
 
 // FetchHelmChartOCI fetches a Helm Chart from an OCI registry and extracts some useful info
@@ -176,9 +184,14 @@ func FetchHelmChartOCI(ociurl string, user string, password string) (HelmInfo, e
 
 	/* From the tarball, we can finally extract the Chart.yaml file */
 
-	chart, err := extractFileFromTGZ(contentReader, "Chart.yaml")
+	extractedFiles, err := extractFilesFromTGZ(contentReader, []string{"Chart.yaml", "values.yaml"})
 	if err != nil {
 		return HelmInfo{}, err
+	}
+
+	chart, ok := extractedFiles["Chart.yaml"]
+	if !ok {
+		return HelmInfo{}, &ExtractError{Msg: "Failed to find file while extracting", Filename: "Chart.yaml"}
 	}
 
 	var chartData map[string]interface{}
@@ -200,6 +213,11 @@ func FetchHelmChartOCI(ociurl string, user string, password string) (HelmInfo, e
 	}
 	if password != "" {
 		hi.Password = password
+	}
+
+	values, ok := extractedFiles["values.yaml"]
+	if ok {
+		hi.Values = &values
 	}
 
 	return hi, nil

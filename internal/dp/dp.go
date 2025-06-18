@@ -96,20 +96,58 @@ func GenerateDeploymentPackageResources(helm helm.HelmInfo, values string, names
 	return name, dp, app, registry, nil
 }
 
-func GenerateDeploymentPackage(helm helm.HelmInfo, valuesFile string, outputDir string, namespace string, includeAuth bool) error {
+func GetValuesFromFile(valuesFile string) (string, error) {
+	content, err := os.ReadFile(valuesFile)
+	if err != nil {
+		return "", &InputError{InputFile: valuesFile, Msg: "Failed to read values file", Err: err}
+	}
+
+	// Ensure the content is valid YAML
+	var yamlContent map[string]interface{}
+	err = yaml.Unmarshal(content, &yamlContent)
+	if err != nil {
+		return "", &InputError{InputFile: valuesFile, Msg: "Invalid YAML content in values file", Err: err}
+	}
+
+	return string(content), nil
+}
+
+func GetValuesFromChart(helm helm.HelmInfo) (string, error) {
+	if helm.Values == nil {
+		return "", &InputError{Helm: helm, Msg: "Default values requested but no values provided in Helm chart"}
+	}
+
+	// Ensure the content is valid YAML
+	var yamlContent map[string]interface{}
+	err := yaml.Unmarshal(*helm.Values, &yamlContent)
+	if err != nil {
+		return "", &InputError{Helm: helm, Msg: "Invalid YAML content in Helm chart values", Err: err}
+	}
+
+	return string(*helm.Values), nil
+}
+
+func GenerateDeploymentPackage(helm helm.HelmInfo, valuesFile string, outputDir string, namespace string, includeAuth bool, includeDefaultValues bool) error {
 	err := os.MkdirAll(outputDir, os.ModePerm)
 	if err != nil {
 		return &OutputError{Helm: helm, OutputDir: outputDir, Msg: "Failed to create output directory", Err: err}
 	}
 
 	var values string
-	if valuesFile != "" {
-		content, err := os.ReadFile(valuesFile)
-		if err != nil {
-			return &InputError{Helm: helm, InputFile: valuesFile, Msg: "Failed to read values file", Err: err}
-		}
+	if includeDefaultValues && valuesFile != "" {
+		return &InputError{Helm: helm, InputFile: valuesFile, Msg: "Cannot specify both to use chart values and a values file"}
+	}
 
-		values = string(content)
+	if includeDefaultValues {
+		values, err = GetValuesFromChart(helm)
+		if err != nil {
+			return err
+		}
+	} else if valuesFile != "" {
+		values, err = GetValuesFromFile(valuesFile)
+		if err != nil {
+			return err
+		}
 	} else {
 		values = "# this file intentionally left blank\n"
 	}
