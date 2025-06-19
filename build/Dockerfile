@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-FROM golang:1.24.2@sha256:d9db32125db0c3a680cfb7a1afcaefb89c898a075ec148fdc2f0f646cc2ed509 AS base
+FROM golang:1.24.4@sha256:10c131810f80a4802c49cab0961bbe18a16f4bb2fb99ef16deaa23e4246fc817 AS base
 
 ENV CGO_ENABLED=0
 
@@ -13,7 +13,7 @@ ARG no_proxy
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ENV ATLAS_VERSION=v0.32.1-9f69a85-canary
+ENV ATLAS_VERSION=v0.35.0
 ENV ATLAS_GO=/tmp/atlasgo.sh
 ENV ATLAS_URL=https://atlasgo.sh
 RUN curl -sSf $ATLAS_URL > $ATLAS_GO
