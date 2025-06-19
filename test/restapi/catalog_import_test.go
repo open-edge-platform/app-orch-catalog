@@ -61,10 +61,11 @@ func (s *TestSuite) TestImportHelmChart() {
 
 func (s *TestSuite) TestImportHelmChartWithGeneration() {
 	ctx := context.TODO()
+	trueValue := true
 	importRequest := &restclient.CatalogServiceImportParams{
 		Url:                       types.GetPointerString("oci://ghcr.io/open-edge-platform/geti/helm/impt:2.9.0"),
-		GenerateDefaultValues:     true,
-		GenerateDefaultParameters: true,
+		GenerateDefaultValues:     &trueValue,
+		GenerateDefaultParameters: &trueValue,
 	}
 
 	status, body, err := s.catalogClient.ImportHelmChart(ctx, importRequest)
