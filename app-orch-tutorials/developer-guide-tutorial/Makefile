@@ -46,16 +46,8 @@ CHART_NAME					?= httpbin
 ## CHART_PATHs is given based on repo structure
 CHART_PATH					?= "./helm"
 
-## CHART_TEST is specified in test-connection.yaml
-CHART_TEST					?= test-connection
 ## CHART_BUILD_DIR is given based on repo structure
 CHART_BUILD_DIR				?= ./build/_output/
-
-API_DIR                     = api
-TMP_DIR                     = /tmp
-
-HELM_REPOSITORY    		?=
-HELM_REGISTRY      		?=
 
 DOCKER_TAG_SERVER       := $(PUBLISH_REGISTRY)/$(PUBLISH_REPOSITORY)/$(PUBLISH_SUB_PROJ)/$(TUTORIAL_IMAGE_NAME_PREFIX)-server-$(TUTORIAL_IMAGE_NAME_SUFFIX):$(DOCKER_VERSION)
 DOCKER_TAG_UI           := $(PUBLISH_REGISTRY)/$(PUBLISH_REPOSITORY)/$(PUBLISH_SUB_PROJ)/$(TUTORIAL_IMAGE_NAME_PREFIX)-web-ui-$(TUTORIAL_IMAGE_NAME_SUFFIX):$(DOCKER_VERSION)
@@ -114,29 +106,8 @@ trivyfsscan: ## run Trivy scan locally
 	trivy --version ;\
 	trivy fs --scanners vuln,misconfig,secret -s HIGH,CRITICAL .
 
-ENVOY_FILES := app-orch-tutorials/httpbin/helm/files/envoy-config.yaml
-PHONY: envoy-lint
-envoy-lint: ## Lint envoy config files
-	@echo "---MAKEFILE LINT ENVOY---"
-	set -e ;\
-	$(foreach file,$(ENVOY_FILES),\
-		docker run -v $(shell pwd):/config --rm envoyproxy/envoy:${ENVOY_VERSION} \
-			--mode validate -c /config/$(file) ;\
-	)
-	@echo "---END MAKEFILE LINT ENVOY---"
-
-
 .PHONY: test
-test: mod-update opa-test go-test ## Runs test stage
-
-PHONY: validate-dp
-validate-dp: ## Validate the deployment package
-	@echo "---MAKEFILE VALIDATE DP---"
-	set -e ;\
-	$(foreach folder,$(DP_FOLDERS),\
-		$(GOCMD) run cmd/schema/schema.go validate $(folder) ;\
-	)
-	@echo "---END MAKEFILE VALIDATE DP---"
+test: ## Runs test stage
 
 DOCKERFILES := $(shell find . -type f -name 'Dockerfile' | grep -v vendor/;)
 .PHONY: hadolint
@@ -190,20 +161,19 @@ chart-clean: ## Cleans the build directory of the helm chart
 	yq eval -i 'del(.annotations.revision)' ${CHART_PATH}/Chart.yaml
 	yq eval -i 'del(.annotations.created)' ${CHART_PATH}/Chart.yaml
 
+HELM_CHARTS := $(shell find . -type f -name 'Chart.yaml' -exec dirname {} \;)
 .PHONY: helm-build
-helm-build: chart ## builds the helm charts release
-
-.PHONY: chart
-chart: chart-clean ## Builds the application catalog helm chart
+helm-build: ## builds the helm charts release
 	@echo "---MAKEFILE CHART---"
-	yq eval -i '.version = "${CHART_VERSION}"' ${CHART_PATH}/Chart.yaml; \
-	yq eval -i '.appVersion = "${DOCKER_VERSION}"' ${CHART_PATH}/Chart.yaml; \
-	yq eval -i '.annotations.revision = "${DOCKER_LABEL_REVISION}"' ${CHART_PATH}/Chart.yaml; \
-	yq eval -i '.annotations.created = "${DOCKER_LABEL_BUILD_DATE}"' ${CHART_PATH}/Chart.yaml; \
-	helm package --app-version=${DOCKER_VERSION} --version=${CHART_VERSION} --dependency-update --destination ${CHART_BUILD_DIR} ${CHART_PATH}
+	$(foreach file,$(HELM_CHARTS),\
+		yq eval -i '.version = "${CHART_VERSION}"' $(file)/Chart.yaml; \
+		yq eval -i '.appVersion = "${DOCKER_VERSION}"' $(file)/Chart.yaml; \
+		yq eval -i '.annotations.revision = "${DOCKER_LABEL_REVISION}"' $(file)/Chart.yaml; \
+		yq eval -i '.annotations.created = "${DOCKER_LABEL_BUILD_DATE}"' $(file)/Chart.yaml; \
+		helm package --dependency-update --destination ${CHART_BUILD_DIR} $(file) ;\
+    )
 	@echo "---END MAKEFILE CHART---"
 
-HELM_CHARTS := $(shell find . -type f -name 'Chart.yaml' -exec dirname {} \;)
 .PHONY: helmlint
 helmlint: ## lint helm charts
 	@echo "Linting helm charts"
