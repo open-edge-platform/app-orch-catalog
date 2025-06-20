@@ -7,6 +7,7 @@ package dp
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/open-edge-platform/app-orch-catalog/internal/helm"
 	"github.com/open-edge-platform/app-orch-catalog/internal/shared/verboseerror"
@@ -96,20 +97,118 @@ func GenerateDeploymentPackageResources(helm helm.HelmInfo, values string, names
 	return name, dp, app, registry, nil
 }
 
-func GenerateDeploymentPackage(helm helm.HelmInfo, valuesFile string, outputDir string, namespace string, includeAuth bool) error {
+// GetValuesFromFile reads a values.yaml file and returns its content as a string.
+// It performs validation to ensure the content is valid YAML.
+func GetValuesFromFile(valuesFile string) (string, error) {
+	content, err := os.ReadFile(valuesFile)
+	if err != nil {
+		return "", &InputError{InputFile: valuesFile, Msg: "Failed to read values file", Err: err}
+	}
+
+	// Ensure the content is valid YAML
+	var yamlContent map[string]interface{}
+	err = yaml.Unmarshal(content, &yamlContent)
+	if err != nil {
+		return "", &InputError{InputFile: valuesFile, Msg: "Invalid YAML content in values file", Err: err}
+	}
+
+	return string(content), nil
+}
+
+// GetValuesFromChart uses the values.yaml from a chart, performing validation to ensure it is valid YAML.
+func GetValuesFromChart(helm helm.HelmInfo) (string, error) {
+	if helm.Values == nil {
+		return "", &InputError{Helm: helm, Msg: "Default values requested but no values provided in Helm chart"}
+	}
+
+	// Ensure the content is valid YAML
+	var yamlContent map[string]interface{}
+	err := yaml.Unmarshal(*helm.Values, &yamlContent)
+	if err != nil {
+		return "", &InputError{Helm: helm, Msg: "Invalid YAML content in Helm chart values", Err: err}
+	}
+
+	return string(*helm.Values), nil
+}
+
+// GenerateDefaultParametersFromYaml is the helper function for GenerateDefaultParameters. It works on a yaml tree that
+// has already been parsed into a map[interface{}]interface{}.
+func GenerateDefaultParametersFromYaml(parent string, yamlContent map[interface{}]interface{}) ([]*catalogv3.ParameterTemplate, error) {
+	pts := make([]*catalogv3.ParameterTemplate, 0)
+	for keyInterface := range yamlContent {
+		key, ok := keyInterface.(string)
+		if !ok {
+			continue
+		}
+		var fullName string
+		if parent != "" {
+			fullName = fmt.Sprintf("%s.%s", parent, key)
+		} else {
+			fullName = key
+		}
+		if svalue, ok := yamlContent[key].(string); ok {
+			if len(svalue) >= 100 || strings.Contains(svalue, "{{") || strings.Contains(svalue, "\n") {
+				continue
+			}
+			pt := &catalogv3.ParameterTemplate{
+				Name:        fullName,
+				DisplayName: key, // TODO: handle collisions in display names
+				Default:     svalue,
+				Type:        "string",
+				Secret:      false,
+				Mandatory:   false,
+			}
+			pts = append(pts, pt)
+		} else if mvalue, ok := yamlContent[key].(map[interface{}]interface{}); ok {
+			// Recursively process nested maps
+			thisPts, err := GenerateDefaultParametersFromYaml(fullName, mvalue)
+			if err != nil {
+				return nil, err
+			}
+			pts = append(pts, thisPts...)
+		}
+	}
+
+	return pts, nil
+}
+
+// GenerateDefaultParametersFromYaml generates parameter templates from a values.yaml file.
+// It does this by recursively parsing the YAML. It builds up names in dotted notations and also supplies the default value.
+// If a default value is problematic (e.g., too long, contains templating syntax, or has newlines), the value is determined
+// to be too complex and is not included in the parameters.
+// For some charts, like Bitnami Charts, this may result in a very large number of parameters, so this should be used with care.
+func GenerateDefaultParameters(values string) ([]*catalogv3.ParameterTemplate, error) {
+	var yamlContent map[interface{}]interface{}
+	err := yaml.Unmarshal([]byte(values), &yamlContent)
+	if err != nil {
+		// This probably can't happen, because we probably already ensured it was valid YAML
+		return nil, fmt.Errorf("Invalid YAML content in values: %v", err)
+	}
+	return GenerateDefaultParametersFromYaml("", yamlContent)
+}
+
+// GenerateDeploymentPackage generates a deployment package from a Helm chart.
+func GenerateDeploymentPackage(helm helm.HelmInfo, valuesFile string, outputDir string, namespace string, includeAuth bool, generateDefaultValues bool, generateDefaultParameters bool) error {
 	err := os.MkdirAll(outputDir, os.ModePerm)
 	if err != nil {
 		return &OutputError{Helm: helm, OutputDir: outputDir, Msg: "Failed to create output directory", Err: err}
 	}
 
 	var values string
-	if valuesFile != "" {
-		content, err := os.ReadFile(valuesFile)
-		if err != nil {
-			return &InputError{Helm: helm, InputFile: valuesFile, Msg: "Failed to read values file", Err: err}
-		}
+	if generateDefaultValues && valuesFile != "" {
+		return &InputError{Helm: helm, InputFile: valuesFile, Msg: "Cannot specify both to use chart values and a values file"}
+	}
 
-		values = string(content)
+	if generateDefaultValues {
+		values, err = GetValuesFromChart(helm)
+		if err != nil {
+			return err
+		}
+	} else if valuesFile != "" {
+		values, err = GetValuesFromFile(valuesFile)
+		if err != nil {
+			return err
+		}
 	} else {
 		values = "# this file intentionally left blank\n"
 	}
@@ -117,6 +216,14 @@ func GenerateDeploymentPackage(helm helm.HelmInfo, valuesFile string, outputDir 
 	name, dp, app, registry, err := GenerateDeploymentPackageResources(helm, values, namespace, includeAuth)
 	if err != nil {
 		return err
+	}
+
+	if generateDefaultParameters {
+		pts, err := GenerateDefaultParameters(values)
+		if err != nil {
+			return err
+		}
+		app.Profiles[0].ParameterTemplates = pts // all autogenerated apps contain exactly one profile
 	}
 
 	e := exporter.NewExporter()
@@ -154,6 +261,8 @@ func GenerateDeploymentPackage(helm helm.HelmInfo, valuesFile string, outputDir 
 	if err != nil {
 		return &OutputError{Helm: helm, OutputDir: outputDir, OutputFile: fileName, Msg: "Failed to export deployment package", Err: err}
 	}
+
+	verboseerror.Infof("Created deployment package for %s in directory '%s'\n", name, outputDir)
 
 	return nil
 }
