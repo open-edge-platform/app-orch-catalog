@@ -8,10 +8,11 @@
     "ghcr.io/devcontainers-extra/features/markdownlint-cli:1": {},
     "ghcr.io/devcontainers-extra/features/shellcheck:1": {},
     "ghcr.io/devcontainers-extra/features/asdf-package:1": {
-      "plugin": "hadolint",
-      "pluginRepo": "https://github.com/devlincashman/asdf-hadolint.git"
+      "plugin": "buf",
+      "pluginRepo": "https://github.com/truepay/asdf-buf.git"
     },
   },
+  "remoteUser": "root",
   "runArgs": [
     "--network=host"
   ],
@@ -24,8 +25,13 @@
         "ms-kubernetes-tools.vscode-kubernetes-tools",
         "ms-azuretools.vscode-docker"
       ]
+    },
+    "jetbrains": {
+      "plugins": [
+        "org.intellij.plugins.go",
+      ]
     }
   },
   // Post-create command to install kubebuilder and other dependencies
-  "onCreateCommand": "bash .devcontainer/post-install.sh"
+  "onCreateCommand": "bash ./.devcontainer/post-install.sh"
 }

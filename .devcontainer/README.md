@@ -7,7 +7,7 @@
 
 There are many ways to use this **Devcontainer**
 
-- VS Code Remote Containers. https://code.visualstudio.com/docs/devcontainers/create-dev-container
+- VS Code Remote Containers. https://code.visualstudio.com/docs/devcontainers/containers
 - IntelliJ IDEA Remote Development. https://www.jetbrains.com/help/idea/connect-to-devcontainer.html
 - devcontainer CLI. https://github.com/devcontainers/cli?tab=readme-ov-file#npm-install
 
@@ -30,3 +30,6 @@ If you need to rebuild the devcontainer, you can use the following command:
 ```bash
 devcontainer up --remove-existing-container --workspace-folder .
 ```
+
+> Note: sometimes this can get stuck on the docker build - restart the docker daemon and try again
+
