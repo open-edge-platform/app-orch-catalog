@@ -8,13 +8,13 @@ golangci-lint 1.64.7
 hadolint 2.12.0
 helm 3.11.1
 helm-docs 1.11.0
+jq 1.7.1
 kind 0.29.0
 kubectl 1.33.2
 k9s 0.50.6
 oapi-codegen 2.4.1
 opa 1.5.1
 protoc 22.0
+trivy 0.63.0
 yamllint 1.26.3
 yq 4.45.4
-jq 1.7.1
-mage 1.15.0
