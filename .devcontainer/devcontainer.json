@@ -1,0 +1,31 @@
+{
+  "name": "Application Catalog",
+  "image": "python:bookworm",
+  "features": {
+    "ghcr.io/devcontainers-extra/features/cmake:1": {},
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {},
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers-extra/features/markdownlint-cli:1": {},
+    "ghcr.io/devcontainers-extra/features/shellcheck:1": {},
+    "ghcr.io/devcontainers-extra/features/asdf-package:1": {
+      "plugin": "hadolint",
+      "pluginRepo": "https://github.com/devlincashman/asdf-hadolint.git"
+    },
+  },
+  "runArgs": [
+    "--network=host"
+  ],
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash"
+      },
+      "extensions": [
+        "ms-kubernetes-tools.vscode-kubernetes-tools",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  },
+  // Post-create command to install kubebuilder and other dependencies
+  "onCreateCommand": "bash .devcontainer/post-install.sh"
+}
