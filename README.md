@@ -8,6 +8,7 @@
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Component Test](https://github.com/open-edge-platform/app-orch-catalog/actions/workflows/component-test.yml/badge.svg)](https://github.com/open-edge-platform/app-orch-catalog/actions/workflows/component-test.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/open-edge-platform/app-orch-catalog/badge)](https://scorecard.dev/viewer/?uri=github.com/open-edge-platform/app-orch-catalog)
+[![Open in Dev Containers](https://img.shields.io/static/v1?label=Dev%20Containers&message=Open&color=blue)](https://vscode.dev/redirect?url=vscode://ms-vscode-remote.remote-containers/cloneInVolume?url=https://github.com/open-edge-platform/app-orch-catalog)
 
 ## Overview
 
@@ -84,6 +85,9 @@ This code requires the following tools to be installed on your development machi
 - [Helm](https://helm.sh/docs/intro/install/) for install helm charts for end-to-end tests
 
 ## Build
+
+This repo supports Devcontainers for easy access to development tools.
+See the [Dev Container README](.devcontainer/README.md) for more information.
 
 Below are some of important make targets which developer should be aware about.
 
