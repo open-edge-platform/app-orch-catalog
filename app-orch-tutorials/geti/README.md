@@ -1,3 +1,8 @@
+<!---
+  SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+  SPDX-License-Identifier: Apache-2.0
+-->
+
 # Intel® Geti™ Computer Vision Platform
 
 This repo contains a Deployment Package to deploy [Intel® Geti™](https://github.com/open-edge-platform/geti) 2.10.1
