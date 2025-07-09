@@ -164,7 +164,7 @@ ent-describe: ## Describe ENT assets
 
 
 # Define the target for installing all plugins
-# This approach is deprecated - see .dev-containers/README.md instead
+# This approach is deprecated - see .devcontainer/README.md instead
 install-protoc-plugins:
 	@echo "Installing protoc-gen-doc..."
 	@go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest

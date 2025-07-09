@@ -13,7 +13,7 @@ and extends it to the Edge Node environment.
 
 ## Overview
 
-The EMF Edge Node is more secure than a standard Kubernetes cluster, and with its own Cert Manager, and
+The EMF Edge Node is more secure than a standard Kubernetes cluster, with its own Cert Manager, and
 Network Policies and Gatekeeper enforcing security policies.
 
 ```mermaid
@@ -39,7 +39,7 @@ Network Policies and Gatekeeper enforcing security policies.
 ```
 
 The goal of this integration is to preserve the integrity of the security measures that Geti has
-in it's on-prem installed form, while also keeping the security measures of the EMF Edge Node.
+in its on-prem installed form, while also keeping the security measures of the EMF Edge Node.
 
 Geti's service mesh in Istio and the Istio Gateway are maintained, while reusing the Cert Manager
 of the Edge Node. Edge Node Calico network policies are maintained. Edge Node's Metallb load balancer
@@ -73,7 +73,7 @@ The Edge Node should be on-boarded properly in to the EMF Platform and appear in
 of "Provisioned Hosts" in Infrastructure. Either **Edge Microvisor** or **Ubuntu** can
 be used as the OS.
 
-It is recommended to [add an SSH](https://docs.openedgeplatform.intel.com/edge-manage-docs/main/user_guide/additional_howtos/configure_ssh_public_keys.html)
+It is recommended to [add an SSH](https://docs.openedgeplatform.intel.com/edge-manage-docs/dev/user_guide/advanced_functionality/configure_ssh_public_keys.html)
 key to the Edge Node to allow for easier access.
 
 ### Cluster deletion
