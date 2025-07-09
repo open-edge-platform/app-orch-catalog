@@ -1,7 +1,3 @@
 # SPDX-FileCopyrightText: 2025 Intel Corporation
 #
 # SPDX-License-Identifier: Apache-2.0
-
-# Accept risk in Open Policy Agent until new verison is released.
-# Risk involves certificate chain features that we do not use.
-CVE-2025-22874 exp:2025-07-01

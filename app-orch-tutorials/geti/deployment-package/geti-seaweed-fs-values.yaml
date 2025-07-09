@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+---
+global:
+  registry_address: ghcr.io
+  docker_namespace: open-edge-platform/geti
+jobs:
+  backoffLimit: 15
