@@ -50,7 +50,7 @@ openpolicyagent:
   image: openpolicyagent/opa
   # -- tag is the name of the OPA image tag - must be -static to work on
   # arm64 (e.g. M1 MacBook)
-  tag: 1.5.1-static
+  tag: 1.6.0-static
   # --
   enabled: true
   port: 8181
