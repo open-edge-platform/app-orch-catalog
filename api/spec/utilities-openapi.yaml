@@ -31,6 +31,7 @@ paths:
             application/json:
               schema:
                 type: array
+                maxItems: 100
                 items:
                   type: string
   /catalog.orchestrator.apis/upload:
@@ -49,6 +50,7 @@ paths:
               properties:
                 files:
                   type: array
+                  maxItems: 100
                   items:
                     type: string
                     format: binary
@@ -59,6 +61,7 @@ paths:
             application/json:
               schema:
                 type: array
+                maxItems: 100
                 items:
                   type: object
                   properties:
@@ -68,6 +71,7 @@ paths:
                       type: integer
                     errorMessages:
                       type: array
+                      maxItems: 100
                       items:
                         type: string
   /catalog.orchestrator.apis/v3/deployment_packages/{deploymentPackageName}/versions/{version}/download:

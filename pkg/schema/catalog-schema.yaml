@@ -100,6 +100,7 @@ $defs:
         description: One or more API endpoints provided by the API extension.
         items:
           $ref: '#/$defs/Endpoint'
+        maxItems: 100
         type: array
       name:
         description: Name is a human-readable unique identifier for the API extension and must be unique for all extensions of a given deployment package.
@@ -156,6 +157,7 @@ $defs:
         description: List of Kubernetes resources that must be ignored during the application deployment.
         items:
           $ref: '#/$defs/ResourceReference'
+        maxItems: 100
         type: array
       imageRegistry:
         description: ID of the project's registry where the Docker image of the application is available for download.
@@ -178,6 +180,7 @@ $defs:
         description: Set of profiles that can be used when deploying the application.
         items:
           $ref: '#/$defs/Profile'
+        maxItems: 100
         type: array
       updateTime:
         description: The last update time of the application.
@@ -297,11 +300,13 @@ $defs:
         description: Optional set of application deployment dependencies, expressed as (name, requires) pairs of edges in the deployment order dependency graph.
         items:
           $ref: '#/$defs/ApplicationDependency'
+        maxItems: 100
         type: array
       applications:
         description: List of applications comprising this deployment package. Expressed as (name, version) pairs.
         items:
           $ref: '#/$defs/ApplicationReference'
+        maxItems: 1000
         type: array
       artifacts:
         description: Optional list of artifacts required for displaying or deploying this package. For example, icon or thumbnail artifacts can be used by the UI; Grafana\* dashboard definitions can be used by the deployment manager.
@@ -325,6 +330,7 @@ $defs:
         description: Set of deployment profiles to choose from when deploying this package.
         items:
           $ref: '#/$defs/DeploymentProfile'
+        maxItems: 100
         type: array
       description:
         description: Description of the deployment package. Displayed on user interfaces.
@@ -367,6 +373,7 @@ $defs:
         description: Namespace definitions to be created before resources are deployed. This allows complex namespaces to be defined with predefined labels and annotations. If not defined, simple namespaces will be created as needed.
         items:
           $ref: '#/$defs/Namespace'
+        maxItems: 100
         type: array
       updateTime:
         description: The last update time of the deployment package.
@@ -567,6 +574,7 @@ $defs:
         description: List of deployment requirements for this profile.
         items:
           $ref: '#/$defs/DeploymentRequirement'
+        maxItems: 100
         type: array
       description:
         description: Description of the profile. Displayed on user interfaces.
@@ -586,6 +594,7 @@ $defs:
         description: Parameter templates available for this profile.
         items:
           $ref: '#/$defs/ParameterTemplate'
+        maxItems: 100
         type: array
       updateTime:
         description: The last update time of the profile.

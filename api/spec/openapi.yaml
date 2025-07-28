@@ -42,6 +42,7 @@ paths:
           description: List of application kinds to be returned; empty list means all kinds.
           schema:
             type: array
+            maxItems: 100
             items:
               enum:
                 - KIND_NORMAL
@@ -356,6 +357,7 @@ paths:
           description: List of deployment package kinds to be returned; empty list means all kinds.
           schema:
             type: array
+            maxItems: 100
             items:
               enum:
                 - KIND_NORMAL
@@ -753,6 +755,7 @@ components:
           description: Description of the API extension. Displayed on user interfaces.
         endpoints:
           type: array
+          maxItems: 100
           items:
             $ref: '#/components/schemas/Endpoint'
           description: One or more API endpoints provided by the API extension.
@@ -814,6 +817,7 @@ components:
           description: ID of the project's registry where the Helm chart of the application is available for download.
         profiles:
           type: array
+          maxItems: 100
           items:
             $ref: '#/components/schemas/Profile'
           description: Set of profiles that can be used when deploying the application.
@@ -825,6 +829,7 @@ components:
           description: ID of the project's registry where the Docker image of the application is available for download.
         ignoredResources:
           type: array
+          maxItems: 100
           items:
             $ref: '#/components/schemas/ResourceReference'
           description: List of Kubernetes resources that must be ignored during the application deployment.
@@ -1010,6 +1015,7 @@ components:
           format: enum
         applicationReferences:
           type: array
+          maxItems: 1000
           items:
             $ref: '#/components/schemas/ApplicationReference'
           description: List of applications comprising this deployment package. Expressed as (name, version) pairs.
@@ -1021,6 +1027,7 @@ components:
           description: Flag indicating whether the deployment package is visible in the UI. Some deployment packages can be classified as auxiliary platform extensions and therefore are to be deployed indirectly only when specified as deployment requirements, rather than directly by the platform operator.
         profiles:
           type: array
+          maxItems: 100
           items:
             $ref: '#/components/schemas/DeploymentProfile'
           description: Set of deployment profiles to choose from when deploying this package.
@@ -1029,6 +1036,7 @@ components:
           description: Name of the default deployment profile to be used by default when deploying this package.
         applicationDependencies:
           type: array
+          maxItems: 100
           items:
             $ref: '#/components/schemas/ApplicationDependency'
           description: Optional set of application deployment dependencies, expressed as (name, requires) pairs of edges in the deployment order dependency graph.
@@ -1054,6 +1062,7 @@ components:
           description: Optional flag indicating whether multiple deployments of this package are forbidden within the same realm.
         namespaces:
           type: array
+          maxItems: 100
           items:
             $ref: '#/components/schemas/Namespace'
           description: Namespace definitions to be created before resources are deployed. This allows complex namespaces to be defined with predefined labels and annotations. If not defined, simple namespaces will be created as needed.
@@ -1191,6 +1200,7 @@ components:
       properties:
         application:
           type: array
+          maxItems: 1000
           items:
             $ref: '#/components/schemas/Application'
           description: A list of applications with the same project and name.
@@ -1218,6 +1228,7 @@ components:
       properties:
         deploymentPackages:
           type: array
+          maxItems: 1000
           items:
             $ref: '#/components/schemas/DeploymentPackage'
           description: A list of DeploymentPackages with the same project and name.
@@ -1235,6 +1246,7 @@ components:
       properties:
         errorMessages:
           type: array
+          maxItems: 100
           items:
             type: string
           description: Any error messages encountered either during chart parsing or entity creation or update.
@@ -1247,6 +1259,7 @@ components:
       properties:
         applications:
           type: array
+          maxItems: 1000
           items:
             $ref: '#/components/schemas/Application'
           description: A list of applications.
@@ -1263,6 +1276,7 @@ components:
       properties:
         artifacts:
           type: array
+          maxItems: 1000
           items:
             $ref: '#/components/schemas/Artifact'
           description: A list of artifacts.
@@ -1279,6 +1293,7 @@ components:
       properties:
         deploymentPackages:
           type: array
+          maxItems: 1000
           items:
             $ref: '#/components/schemas/DeploymentPackage'
           description: A list of DeploymentPackages.
@@ -1295,6 +1310,7 @@ components:
       properties:
         registries:
           type: array
+          maxItems: 1000
           items:
             $ref: '#/components/schemas/Registry'
           description: A list of registries.
@@ -1394,11 +1410,13 @@ components:
           description: Raw byte value containing the chart values as raw YAML bytes.
         parameterTemplates:
           type: array
+          maxItems: 100
           items:
             $ref: '#/components/schemas/ParameterTemplate'
           description: Parameter templates available for this profile.
         deploymentRequirement:
           type: array
+          maxItems: 100
           items:
             $ref: '#/components/schemas/DeploymentRequirement'
           description: List of deployment requirements for this profile.
@@ -1573,6 +1591,7 @@ components:
           format: uint32
         errorMessages:
           type: array
+          maxItems: 100
           items:
             type: string
           description: Any error messages encountered either during YAML parsing or entity creation or update.
