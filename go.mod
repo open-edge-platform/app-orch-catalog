@@ -22,7 +22,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.15.2
 	github.com/hashicorp/vault/api v1.14.0
 	github.com/lib/pq v1.10.7
-	github.com/mattn/go-sqlite3 v1.14.16
+	github.com/mattn/go-sqlite3 v1.14.29
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/open-edge-platform/orch-library/go v0.6.0
 	github.com/open-edge-platform/orch-library/go/dazl v0.5.4
