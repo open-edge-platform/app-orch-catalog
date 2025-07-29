@@ -9,8 +9,8 @@ go 1.23.0
 toolchain go1.24.0
 
 require (
-	entgo.io/contrib v0.4.5
-	entgo.io/ent v0.12.5
+	entgo.io/contrib v0.6.0
+	entgo.io/ent v0.13.2-0.20240717044502-34158f2c129b
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/blang/semver/v4 v4.0.0
 	github.com/envoyproxy/protoc-gen-validate v1.2.1
