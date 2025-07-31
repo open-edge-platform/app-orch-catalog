@@ -39,7 +39,7 @@ jobs:
       - name: Deploy Kind Orchestrator
         id: deploy-kind-orchestrator
         uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@a949b22c2c512881615533b12ef50804690c6b03
-        timeout-minutes: 30
+        timeout-minutes: 45
         with:
           orch_version: ${{ inputs.emf-branch || 'main' }}
           orch_password: ${{ secrets.ORCH_DEFAULT_PASSWORD }}
@@ -128,6 +128,16 @@ jobs:
           input: app-orch-catalog/test/test-report.json
           output: app-orch-catalog/test/${{ github.event_name }}-${{ github.event.number }}-test-report.html
           template: app-orch-catalog/test/template.html
+
+      - name: list all argo applications
+        if: failure()
+        run: |
+          kubectl get applications.argoproj.io -o wide -A
+
+      - name: describe all argo applications
+        if: failure()
+        run: |
+          kubectl describe applications.argoproj.io -A
 
       - name: get all pods
         if: failure()
