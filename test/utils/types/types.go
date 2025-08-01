@@ -84,6 +84,12 @@ func GetApplications() []restClient.Application {
 		{Name: "kubevirt", DisplayName: GetPointerString("kubevirt"), Description: GetPointerString("Virtual machine management add-on for Kubernetes"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/kubevirt", HelmRegistryName: "intel-rs-helm"},
 		{Name: "kubevirt-helper", DisplayName: GetPointerString("kubevirt-helper"), Description: GetPointerString("Automatically restart VM when editable VM spec is updated"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/kubevirt-helper", HelmRegistryName: "intel-rs-helm"},
 		{Name: "nfd", DisplayName: GetPointerString("nfd"), Description: GetPointerString("NFD"), Kind: &extensionKind, ChartName: "node-feature-discovery", HelmRegistryName: "node-feature-discovery"},
+		{Name: "node-exporter", DisplayName: GetPointerString("node-exporter"), Description: GetPointerString("Node Exporter"), Kind: &extensionKind, ChartName: "prometheus-node-exporter", HelmRegistryName: "node-exporter"},
+		{Name: "observability-config", DisplayName: GetPointerString("observability-config"), Description: GetPointerString("Observability Config"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/observability-config", HelmRegistryName: "intel-rs-helm"},
+		{Name: "prometheus", DisplayName: GetPointerString("prometheus"), Description: GetPointerString("Prometheus"), Kind: &extensionKind, ChartName: "kube-prometheus-stack", HelmRegistryName: "prometheus"},
+		{Name: "telegraf", DisplayName: GetPointerString("telegraf"), Description: GetPointerString("Telegraf"), Kind: &extensionKind, ChartName: "telegraf", HelmRegistryName: "telegraf"},
+		{Name: "trusted-workload", DisplayName: GetPointerString("trusted-workload"), Description: GetPointerString("Deploys the necessary CRD and runtime class to enable trusted compute workloads within virtual machines."), Kind: &extensionKind, ChartName: "edge-orch/trusted-compute/charts/trusted-workload", HelmRegistryName: "intel-rs-helm"},
+		{Name: "usb-device-plugin", DisplayName: GetPointerString("usb-device-plugin"), Description: GetPointerString("Telegraf"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/akri", HelmRegistryName: "intel-rs-helm"},
 	} {
 		apps = append(apps, restClient.Application{
 			Name:             sa.Name,
@@ -111,5 +117,6 @@ func GetRegistryDefinitions(orchDomain string) []restClient.Registry {
 		{Name: "intel-rs-helm", DisplayName: GetPointerString("intel-rs-helm"), Description: GetPointerString("Repo on registry registry-rs.edgeorchestration.intel.com"), RootUrl: "oci://rs-proxy.orch-platform.svc.cluster.local:8443", Type: "HELM"},
 		{Name: "intel-rs-images", DisplayName: GetPointerString("intel-rs-image"), Description: GetPointerString("Repo on registry registry-rs.edgeorchestration.intel.com"), RootUrl: "oci://registry-rs.edgeorchestration.intel.com", Type: "IMAGE"},
 		{Name: "jetstack", DisplayName: GetPointerString("jetstack"), Description: GetPointerString("Public registry for cert manager chart"), RootUrl: "https://charts.jetstack.io", Type: "HELM"},
+		{Name: "kubernetes", DisplayName: GetPointerString("kubernetes"), Description: GetPointerString("Kubernetes dashboard registry"), RootUrl: "https://kubernetes.github.io/dashboard/", Type: "HELM"},
 	}
 }

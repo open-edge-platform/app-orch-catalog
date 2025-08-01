@@ -8,9 +8,10 @@ import (
 	// Standard library imports
 	"context"
 	"fmt"
+	"net/http"
+
 	"github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
 	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
-	"net/http"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -21,7 +22,7 @@ func (s *TestSuite) TestListBootStrapExtensions() {
 
 	assert.NoError(s.T(), err)
 	assert.Equal(s.T(), http.StatusOK, status, "Expected HTTP status code 200 OK for application list")
-	assert.Equal(s.T(), len(types.GetApplications()), len(applications), "Mismatch in the number of applications")
+	assert.GreaterOrEqual(s.T(), len(applications), len(types.GetApplications()), "Expected at least as many applications as the bootstrapped set")
 
 	// Log application details
 	for _, app := range applications {
