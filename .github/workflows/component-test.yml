@@ -83,9 +83,10 @@ jobs:
         run: |
           make build
 
-      - name: catalog needs a different kind
+      - name: install catalog build tools
         run: |
           asdf install kind 0.29.0
+          asdf install kubectl 1.30.10
 
       - name: Redeploy and Rebuild app-orch-catalog
         working-directory: app-orch-catalog
