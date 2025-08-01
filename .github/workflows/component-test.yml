@@ -83,6 +83,10 @@ jobs:
         run: |
           make build
 
+      - name: catalog needs a different kind
+        run: |
+          asdf install kind 0.29.0
+
       - name: Redeploy and Rebuild app-orch-catalog
         working-directory: app-orch-catalog
         run: |
