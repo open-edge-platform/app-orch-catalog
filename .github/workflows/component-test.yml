@@ -129,6 +129,12 @@ jobs:
           output: app-orch-catalog/test/${{ github.event_name }}-${{ github.event.number }}-test-report.html
           template: app-orch-catalog/test/template.html
 
+      - name: what is wrong with tool-versions
+        if: failure()
+        run: |
+          cat /home/runner/work/app-orch-catalog/app-orch-catalog/app-orch-catalog/.tool-versions
+          ls -alR /home/runner/work/app-orch-catalog
+
       - name: list all argo applications
         if: failure()
         run: |
