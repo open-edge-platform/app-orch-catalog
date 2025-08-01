@@ -87,6 +87,7 @@ jobs:
         run: |
           asdf install kind 0.29.0
           asdf install kubectl 1.33.2
+          asdf install yq 4.45.4
 
       - name: Redeploy and Rebuild app-orch-catalog
         working-directory: app-orch-catalog
