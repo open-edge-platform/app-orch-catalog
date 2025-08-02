@@ -69,7 +69,6 @@ jobs:
           GIT_HASH_CHARTS: ${{ github.event.pull_request.head.sha }}
         run: echo "GIT_HASH_CHARTS=$GIT_HASH_CHARTS" >> "$GITHUB_ENV"
 
-
       - name: Setup users and project/org
         shell: bash
         run: |
@@ -83,7 +82,9 @@ jobs:
         run: |
           make build
 
-      - name: install catalog build tools
+      # Install versions of the build tools that are different from what is in
+      # the runner. These must match the .tool-versions file in the app-orch-catalog repo.
+      - name: Install catalog build tools
         run: |
           asdf install kind 0.29.0
           asdf install kubectl 1.33.2
@@ -135,11 +136,8 @@ jobs:
           output: app-orch-catalog/test/${{ github.event_name }}-${{ github.event.number }}-test-report.html
           template: app-orch-catalog/test/template.html
 
-      - name: what is wrong with tool-versions
-        if: failure()
-        run: |
-          cat /home/runner/work/app-orch-catalog/app-orch-catalog/app-orch-catalog/.tool-versions
-          ls -alR /home/runner/work/app-orch-catalog
+      # Several diagnostic commands to run in case of failure. Collect all the argo
+      # application state and describe all the pods.
 
       - name: list all argo applications
         if: failure()
@@ -170,6 +168,7 @@ jobs:
           retention-days: 14
 
       # collect app orch catalog logs in case of failure
+      # TODO: now sure how/where these artifacts are collected. Not able to see them in github UI.
       - name: Get app-orch-catalog diagnostic information
         if: failure()
         id: get-app-orch-catalog-diag-info
