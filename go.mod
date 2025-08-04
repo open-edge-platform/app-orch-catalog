@@ -9,7 +9,7 @@ go 1.23.0
 toolchain go1.24.0
 
 require (
-	entgo.io/contrib v0.4.5
+	entgo.io/contrib v0.6.0
 	entgo.io/ent v0.14.5
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/blang/semver/v4 v4.0.0
