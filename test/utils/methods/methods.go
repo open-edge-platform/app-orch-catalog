@@ -8,15 +8,16 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
-	"github.com/open-edge-platform/app-orch-catalog/test/utils/auth"
-	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
+
+	"github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
+	"github.com/open-edge-platform/app-orch-catalog/test/utils/auth"
+	"github.com/open-edge-platform/app-orch-catalog/test/utils/types"
 )
 
 type CatalogClient struct {
@@ -57,7 +58,8 @@ func NewCatalogClient(catalogRESTServerUrl, token, projectID, orchDomain string)
 
 // Application-related Functions
 func (c *CatalogClient) GetApplicationList(ctx context.Context) ([]restClient.Application, int, error) {
-	resp, err := c.Client.CatalogServiceListApplicationsWithResponse(ctx, &restClient.CatalogServiceListApplicationsParams{})
+	var pageSize int32 = 100
+	resp, err := c.Client.CatalogServiceListApplicationsWithResponse(ctx, &restClient.CatalogServiceListApplicationsParams{PageSize: &pageSize})
 	if err != nil || resp == nil || resp.StatusCode() != 200 {
 		if err != nil {
 			if resp != nil {

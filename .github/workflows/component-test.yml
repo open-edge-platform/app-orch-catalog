@@ -19,7 +19,7 @@ on:
         description: 'The branch, tag or SHA to checkout EMF'
         required: true
         type: string
-        default: '53e430f45faaee7671fa3c25f6acc3945aba2065'
+        default: 'ed0de70b9080465711c587a3ed7a75e51aa1fcb9'
 
 permissions:
   contents: read
@@ -38,15 +38,15 @@ jobs:
     steps:
       - name: Deploy Kind Orchestrator
         id: deploy-kind-orchestrator
-        uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@a949b22c2c512881615533b12ef50804690c6b03
-        timeout-minutes: 30
+        uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@ed0de70b9080465711c587a3ed7a75e51aa1fcb9
+        timeout-minutes: 45
         with:
           orch_version: ${{ inputs.emf-branch || 'main' }}
           orch_password: ${{ secrets.ORCH_DEFAULT_PASSWORD }}
           docker_username: ${{ secrets.SYS_DOCKERHUB_USERNAME }}
           docker_password: ${{ secrets.SYS_DOCKERHUB_RO }}
           token: ${{ secrets.SYS_ORCH_GITHUB }}
-          deployment_type: 'minimal'
+          deployment_type: 'all'
 
       - name: Set up Go
         uses: actions/setup-go@v5
@@ -69,7 +69,6 @@ jobs:
           GIT_HASH_CHARTS: ${{ github.event.pull_request.head.sha }}
         run: echo "GIT_HASH_CHARTS=$GIT_HASH_CHARTS" >> "$GITHUB_ENV"
 
-
       - name: Setup users and project/org
         shell: bash
         run: |
@@ -82,6 +81,14 @@ jobs:
         working-directory: app-orch-catalog
         run: |
           make build
+
+      # Install versions of the build tools that are different from what is in
+      # the runner. These must match the .tool-versions file in the app-orch-catalog repo.
+      - name: Install catalog build tools
+        run: |
+          asdf install kind 0.29.0
+          asdf install kubectl 1.33.2
+          asdf install yq 4.45.4
 
       - name: Redeploy and Rebuild app-orch-catalog
         working-directory: app-orch-catalog
@@ -129,6 +136,29 @@ jobs:
           output: app-orch-catalog/test/${{ github.event_name }}-${{ github.event.number }}-test-report.html
           template: app-orch-catalog/test/template.html
 
+      # Several diagnostic commands to run in case of failure. Collect all the argo
+      # application state and describe all the pods.
+
+      - name: list all argo applications
+        if: failure()
+        run: |
+          kubectl get applications.argoproj.io -o wide -A
+
+      - name: describe all argo applications
+        if: failure()
+        run: |
+          kubectl describe applications.argoproj.io -A
+
+      - name: get all pods
+        if: failure()
+        run: |
+          kubectl get pods -A -o wide
+
+      - name: describe all pods
+        if: failure()
+        run: |
+          kubectl describe pods -A
+
       - name: Upload Test Report
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -138,6 +168,7 @@ jobs:
           retention-days: 14
 
       # collect app orch catalog logs in case of failure
+      # TODO: now sure how/where these artifacts are collected. Not able to see them in github UI.
       - name: Get app-orch-catalog diagnostic information
         if: failure()
         id: get-app-orch-catalog-diag-info
