@@ -15,6 +15,8 @@ global:
   http_proxy: http://proxy-dmz.intel.com:912
   https_proxy: http://proxy-dmz.intel.com:912
   no_proxy: "127.0.0.1,localhost,.impt,.svc,.cluster.local"
+  debian:
+    name: os-shell:12-debian-12-r47
 
 spice-db:
   fullnameOverride: impt-spice-db
@@ -74,3 +76,8 @@ modelmesh-serving:
   certificate:
     issuerRef:
       name: edge-node-cluster-issuer
+
+etcd:
+  volumePermissions:
+    image:
+      name: os-shell:12-debian-12-r47
