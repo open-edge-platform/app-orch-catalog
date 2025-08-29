@@ -4,9 +4,7 @@
 
 module github.com/open-edge-platform/app-orch-catalog
 
-go 1.23.0
-
-toolchain go1.24.0
+go 1.24.6
 
 require (
 	entgo.io/contrib v0.6.0
