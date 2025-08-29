@@ -16,7 +16,7 @@ require (
 	github.com/gin-contrib/secure v0.0.1
 	github.com/gin-gonic/gin v1.10.1
 	github.com/google/uuid v1.6.0
-	github.com/gorilla/websocket v1.5.0
+	github.com/gorilla/websocket v1.5.3
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.1
 	github.com/hashicorp/vault/api v1.14.0
 	github.com/lib/pq v1.10.7
