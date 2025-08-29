@@ -28,3 +28,4 @@ app-orch-tutorials/developer-guide-tutorial/tutorial-server/venv
 app-orch-tutorials/developer-guide-tutorial/tutorial-web-ui/node_modules
 app-orch-tutorials/developer-guide-tutorial/tutorial-web-ui/.next
 *.tgz
+.devcontainer/.features.temp.dockerfile

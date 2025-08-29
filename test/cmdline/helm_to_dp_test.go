@@ -134,3 +134,34 @@ func (s *TestSuite) TestHelmToDpBadURL() {
 	s.Error(err, "Expected error when running catalog-schema on a bad URL")
 	// TODO: test type of error returned
 }
+
+func (s *TestSuite) TestHelmToDpGoodURLWithGeneration() {
+	tempDir, err := os.MkdirTemp("", "catalog_test_*")
+	s.Require().NoError(err)
+	defer os.RemoveAll(tempDir)
+
+	_, stderr, err := s.runHelmToDp(getiHelmChart, "-o", tempDir, "--generate-default-values", "--generate-default-parameters")
+	s.NoError(err, "Expected no error when running catalog-schema on a good package")
+	s.Equal("", stderr, "Expected no error output when running catalog-schema on a good package")
+
+	// Now load a deployment package from the temp directory and verify it is correct.
+
+	dp, app, reg := s.LoadDeploymentPackage(tempDir)
+	s.Require().NotNil(dp, "Expected Deployment Package to be loaded")
+	s.Require().NotNil(app, "Expected Application to be loaded")
+	s.Require().NotNil(reg, "Expected Registry to be loaded")
+
+	s.Equal("impt", dp.Name, "Expected Deployment Package name to be 'impt'")
+	s.Equal("2.9.0", dp.Version, "Expected Deployment Package version to be '2.9.0'")
+
+	s.Equal("impt", app.Name, "Expected Application name to be 'impt'")
+	s.Equal("2.9.0", app.Version, "Expected Application version to be '2.9.0'")
+	s.Equal("impt-registry", app.HelmRegistryName, "Expected Application registry to be 'impt-registry'")
+	s.Equal("impt", app.ChartName, "Expected Application chart name to be 'impt'")
+	s.Equal("2.9.0", app.ChartVersion, "Expected Application chart version to be '2.9.0'")
+
+	s.Equal("impt-registry", reg.Name, "Expected Registry name to be 'impt-registry'")
+	s.Equal("oci://ghcr.io/open-edge-platform/geti/helm", reg.RootUrl, "Expected Registry URL to match the input")
+
+	// TODO: Test the generated default values and parameters
+}

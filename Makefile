@@ -8,7 +8,7 @@ VERSION            := $(shell cat VERSION)
 CHART_VERSION      := $(shell cat VERSION)
 VERSION_DEV_SUFFIX := -dev
 GIT_COMMIT         ?= $(shell git rev-parse --short HEAD)
-OPA_IMAGE_VER       = 1.5.0-static
+OPA_IMAGE_VER       = edge-static
 
 
 ifeq ($(patsubst %$(VERSION_DEV_SUFFIX),,$(lastword $(VERSION))),)
@@ -137,7 +137,7 @@ EXCLUDE_PKGS_TEST := grep -v $(PKG)/pkg/restClient | grep -v $(PKG)/pkg/api | gr
 
 .PHONY: build lint test all
 
-all: build lint test ## Runs build, lint, test stages
+all: build lint test scan ## Runs build, lint, test stages
 
 .PHONY: ent-generate
 ent-generate: ## Regenerate ENT assets from schema.go
@@ -164,6 +164,7 @@ ent-describe: ## Describe ENT assets
 
 
 # Define the target for installing all plugins
+# This approach is deprecated - see .devcontainer/README.md instead
 install-protoc-plugins:
 	@echo "Installing protoc-gen-doc..."
 	@go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
@@ -292,7 +293,7 @@ yamllint: $(VENV_NAME) ## Lint YAML files
   yamllint --version ;\
   yamllint -s .
 
-docker-opa:
+docker-opa: ## Pulls the OPA docker image
 	docker pull openpolicyagent/opa:$(OPA_IMAGE_VER)
 
 .PHONY: lint
@@ -321,11 +322,21 @@ shelllint:
 	)
 	@echo "---END MAKEFILE LINT SCRIPTS---"
 
+PHONY: scan
+scan: trivyfsscan trivyimagescan ## run Trivy scan on the filesystem and docker images
 
+PHONY: trivyfsscan
 trivyfsscan: ## run Trivy scan locally
 	@echo "Running Trivy scan on the filesystem"
 	trivy --version ;\
 	trivy fs --scanners vuln,misconfig,secret -s HIGH,CRITICAL .
+
+PHONY: trivyimagescan
+trivyimagescan: ## run Trivy scan on the docker image
+	@echo "Running Trivy scan on docker images"
+	trivy --version ;\
+	trivy image --scanners vuln,misconfig,secret -s HIGH,CRITICAL openpolicyagent/opa:$(OPA_IMAGE_VER)
+	trivy image --scanners vuln,misconfig,secret -s HIGH,CRITICAL envoyproxy/envoy:$(ENVOY_VERSION)
 
 ENVOY_FILES := app-orch-tutorials/httpbin/helm/files/envoy-config.yaml
 PHONY: envoy-lint
