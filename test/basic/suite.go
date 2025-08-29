@@ -8,23 +8,31 @@ package basic
 import (
 	"context"
 	"fmt"
+	"path/filepath"
+	"testing"
+
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	restapi "github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
-	"github.com/open-edge-platform/app-orch-catalog/test/auth"
 	auth2 "github.com/open-edge-platform/app-orch-catalog/test/utils/auth"
 	"github.com/open-edge-platform/orch-library/go/pkg/grpc/retry"
 	"github.com/stretchr/testify/suite"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
-	"path/filepath"
-	"testing"
 )
 
 const (
 	ActiveProjectID = "ActiveProjectID"
 	restAddress     = "catalog-service-rest-proxy:8081/"
 )
+
+func addGrpcAuthHeader(ctx context.Context, token string, projectUUID string) context.Context {
+	md := metadata.New(map[string]string{
+		"Authorization":   fmt.Sprintf("Bearer %s", token),
+		"ActiveProjectID": projectUUID,
+	})
+	return metadata.NewOutgoingContext(ctx, md)
+}
 
 // TestSuite is the basic test suite
 type TestSuite struct {
@@ -97,7 +105,7 @@ func (s *TestSuite) CheckStatus(name string) {
 
 // AddHeaders adds authentication and project ID headers
 func (s *TestSuite) AddHeaders(projectUUID string) context.Context {
-	return auth.AddGrpcAuthHeader(s.Context(), s.token, projectUUID)
+	return addGrpcAuthHeader(s.Context(), s.token, projectUUID)
 }
 
 // ProjectID adds project UUID to the context metadata
