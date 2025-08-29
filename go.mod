@@ -20,7 +20,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.1
 	github.com/hashicorp/vault/api v1.14.0
 	github.com/lib/pq v1.10.7
-	github.com/mattn/go-sqlite3 v1.14.29
+	github.com/mattn/go-sqlite3 v1.14.32
 	github.com/oapi-codegen/runtime v1.1.1
 	github.com/open-edge-platform/orch-library/go v0.6.0
 	github.com/open-edge-platform/orch-library/go/dazl v0.5.4
@@ -39,7 +39,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/apimachinery v0.29.0
 	k8s.io/client-go v0.29.0
-	oras.land/oras-go/v2 v2.5.0
+	oras.land/oras-go/v2 v2.6.0
 )
 
 require (
