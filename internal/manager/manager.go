@@ -180,7 +180,7 @@ func (m *Manager) startNorthboundServer() error {
 	kasp := keepalive.ServerParameters{
 		MaxConnectionIdle: 120 * time.Second, // If a client is idle for 2 minutes, send a GOAWAY
 		Time:              30 * time.Second,  // Server pings client after 30s of inactivity
-		Timeout:           15 * time.Second,  // Server waits 10s for client ACK
+		Timeout:           15 * time.Second,  // Server waits 15s for client ACK
 	}
 
 	doneCh := make(chan error)
