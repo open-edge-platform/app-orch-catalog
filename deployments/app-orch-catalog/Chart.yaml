@@ -28,7 +28,7 @@ version: 0.15.0-dev
 # It is recommended to use it with quotes.
 #
 # appVersion is populated by invoking command: make chart
-appVersion: "0.15.0-dev-b2ccf87"
+appVersion: "0.15.0-dev-e4bb530"
 annotations:
   revision: ""
-  created: "2025-08-21T23:09:57Z"
+  created: "2025-09-05T17:10:34Z"

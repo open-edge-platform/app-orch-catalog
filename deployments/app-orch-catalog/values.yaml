@@ -200,3 +200,6 @@ catalogServer:
   httpProxy: ""
   httpsProxy: ""
   noProxy: ""
+  metrics:
+    enabled: true
+    port: 8082

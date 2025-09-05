@@ -6,15 +6,17 @@ package main
 
 import (
 	"flag"
+	"os"
+	"strconv"
+
 	"github.com/open-edge-platform/app-orch-catalog/internal/manager"
+	"github.com/open-edge-platform/app-orch-catalog/internal/metrics"
 	"github.com/open-edge-platform/app-orch-catalog/internal/northbound"
 	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
 	"github.com/open-edge-platform/app-orch-catalog/internal/shared/version"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/malware"
 	"github.com/open-edge-platform/orch-library/go/dazl"
 	_ "github.com/open-edge-platform/orch-library/go/dazl/zap"
-	"os"
-	"strconv"
 )
 
 const (
@@ -39,10 +41,14 @@ func main() {
 	migrationsDir := flag.String("migrationsDir", "/usr/share/migrations", "directory containing database schema migrations")
 	defaultProjectUUID := flag.String("defaultProjectUUID", "28e65b24-522d-4462-9477-79d9c0bf6e8f", "default project UUID")
 	vaultServerAddress := flag.String("vaultServerAddress", "", "vault server address")
+	metricsAddr := flag.String("metrics-bind-address", ":8082", "The address the metric endpoint binds to.")
 
 	ready := make(chan bool)
 	flag.Parse()
 	errors.Init()
+	if metricsAddr != nil && *metricsAddr != "" {
+		metrics.Init(*metricsAddr)
+	}
 
 	if malwareScannerAddress := os.Getenv(malwareScannerAddressEnv); malwareScannerAddress != "" {
 		permissive := false

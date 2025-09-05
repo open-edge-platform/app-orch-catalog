@@ -67,7 +67,7 @@ spec:
             - name: GIN_MODE
               value: {{ .Values.gin.mode }}
           resources:
-          {{- toYaml .Values.resources | nindent 12 }}
+          {{- toYaml .Values.resources | nindent 12 }}   
           volumeMounts:
             - name: config
               mountPath: /opt/rest-proxy
@@ -82,6 +82,11 @@ spec:
             - name: grpc
               containerPort: 8080
               protocol: TCP
+          {{- if .Values.catalogServer.metrics.enabled }}
+            - name: http-metrics
+              containerPort: 8082
+              protocol: TCP
+          {{- end }}                  
           command: ["/usr/local/bin/application-catalog"]
           args:
             - "-databaseHostname=$(PGHOST)"
@@ -92,6 +97,9 @@ spec:
             - "-useSecretsService=$(USESECRET)"
             - "-defaultProjectUUID=$(MT_UPGRADE_PROJECT_ID)"
             - "-vaultServerAddress=$(VAULT_SERVER_ADDRESS)"
+          {{- if .Values.catalogServer.metrics.enabled }}
+            - "-metrics-bind-address=:8082"
+          {{- end }}            
           envFrom:
             - secretRef:
                 name: {{ .Values.postgres.secrets }}
