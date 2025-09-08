@@ -29,7 +29,7 @@ func Init(metricsAddr string) {
 	mux.Handle("/metrics", promhttp.HandlerFor(Reg, promhttp.HandlerOpts{}))
 	go func() {
 		if err := http.ListenAndServe(metricsAddr, mux); !errors.Is(err, http.ErrServerClosed) {
-			log.Errorf("Error while starting metrics server: %v", err)
+			log.Errorf("Failed to start metrics server on %s: %v", metricsAddr, err)
 		}
 	}()
 }
