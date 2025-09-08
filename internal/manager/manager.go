@@ -6,6 +6,9 @@ package manager
 import (
 	"context"
 	"fmt"
+	"os"
+	"time"
+
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/migrate"
 	"github.com/open-edge-platform/orch-library/go/dazl"
 	"github.com/open-edge-platform/orch-library/go/pkg/northbound"
@@ -13,7 +16,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
 	"google.golang.org/grpc/health/grpc_health_v1"
-	"os"
+	"google.golang.org/grpc/keepalive"
 
 	// pq is Postgres driver for the database/sql package
 	_ "github.com/lib/pq"
@@ -168,12 +171,24 @@ func (m *Manager) startNorthboundServer() error {
 	s.AddService(service.NewService(m.dbClient, opaClient))
 	s.AddService(HealthCheck{})
 
+	// It's observed that idle connections are leading to lingering goroutines for as long as
+	// two hours. The keepalive settings below will send keepalive requests after 30 seconds
+	// of idle time. Even if a client is responding to keepalives (there is some evidence the
+	// rest-proxy may be doing this on idle connections), then we will still terminate the
+	// connection after 2 minutes of idle time.
+
+	kasp := keepalive.ServerParameters{
+		MaxConnectionIdle: 120 * time.Second, // If a client is idle for 2 minutes, send a GOAWAY
+		Time:              30 * time.Second,  // Server pings client after 30s of inactivity
+		Timeout:           15 * time.Second,  // Server waits 15s for client ACK
+	}
+
 	doneCh := make(chan error)
 	go func() {
 		err := s.Serve(func(started string) {
 			log.Info("Started NBI on ", started)
 			close(doneCh)
-		})
+		}, grpc.KeepaliveParams(kasp))
 		if err != nil {
 			m.dbClient.Close()
 			doneCh <- err
