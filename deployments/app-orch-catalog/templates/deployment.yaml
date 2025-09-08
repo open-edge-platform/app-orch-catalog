@@ -86,7 +86,7 @@ spec:
             - name: http-metrics
               containerPort: 8082
               protocol: TCP
-          {{- end }}                  
+          {{- end }}
           command: ["/usr/local/bin/application-catalog"]
           args:
             - "-databaseHostname=$(PGHOST)"
