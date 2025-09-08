@@ -7,9 +7,7 @@ package main
 import (
 	"flag"
 	"os"
-	"runtime"
 	"strconv"
-	"time"
 
 	"github.com/open-edge-platform/app-orch-catalog/internal/manager"
 	"github.com/open-edge-platform/app-orch-catalog/internal/metrics"
@@ -27,16 +25,6 @@ const (
 )
 
 var log = dazl.GetLogger()
-
-func dumper() {
-	for {
-		buf := make([]byte, 1*1024*1024)
-		n := runtime.Stack(buf, true)
-		log.Infof("=== BEGIN goroutine dump ===\n%s\n=== END goroutine dump ===", string(buf[:n]))
-		runtime.Gosched()
-		time.Sleep(30 * time.Second)
-	}
-}
 
 func main() {
 	var err error
@@ -100,8 +88,6 @@ func main() {
 		MigrationsDir:            *migrationsDir,
 		DefaultProjectUUID:       *defaultProjectUUID,
 	}
-
-	go dumper()
 
 	mgr := manager.NewManager(cfg)
 	mgr.Run()
