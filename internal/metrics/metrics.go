@@ -5,11 +5,16 @@
 package metrics
 
 import (
+	"errors"
 	"net/http"
+
+	"github.com/open-edge-platform/orch-library/go/dazl"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
+
+var log = dazl.GetPackageLogger()
 
 var (
 	Reg = prometheus.NewRegistry()
@@ -22,5 +27,9 @@ func Init(metricsAddr string) {
 
 	mux := http.NewServeMux()
 	mux.Handle("/metrics", promhttp.HandlerFor(Reg, promhttp.HandlerOpts{}))
-	go http.ListenAndServe(metricsAddr, mux)
+	go func() {
+		if err := http.ListenAndServe(metricsAddr, mux); !errors.Is(err, http.ErrServerClosed) {
+			log.Errorf("Error while starting metrics server: %v", err)
+		}
+	}()
 }
