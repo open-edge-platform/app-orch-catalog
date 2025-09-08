@@ -99,7 +99,7 @@ spec:
             - "-vaultServerAddress=$(VAULT_SERVER_ADDRESS)"
           {{- if .Values.catalogServer.metrics.enabled }}
             - "-metrics-bind-address=:8082"
-          {{- end }}            
+          {{- end }}
           envFrom:
             - secretRef:
                 name: {{ .Values.postgres.secrets }}
