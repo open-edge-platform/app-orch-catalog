@@ -13,7 +13,7 @@ import (
 
 var (
 	Reg = prometheus.NewRegistry()
-	// TO-DO this is where we would implement a custom collector
+	// TODO: this is where we would implement a custom collector
 )
 
 func Init(metricsAddr string) {
