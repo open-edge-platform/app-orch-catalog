@@ -20,6 +20,7 @@ func Init(metricsAddr string) {
 	Reg.MustRegister(prometheus.NewGoCollector())
 	Reg.MustRegister(prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{}))
 
-	http.Handle("/metrics", promhttp.Handler())
-	go http.ListenAndServe(metricsAddr, nil)
+	mux := http.NewServeMux()
+	mux.Handle("/metrics", promhttp.HandlerFor(Reg, promhttp.HandlerOpts{}))
+	go http.ListenAndServe(metricsAddr, mux)
 }
