@@ -13,7 +13,7 @@ ARG no_proxy
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ENV ATLAS_VERSION=v0.36.0
+ENV ATLAS_VERSION=v0.37.0
 ENV ATLAS_GO=/tmp/atlasgo.sh
 ENV ATLAS_URL=https://atlasgo.sh
 RUN curl -sSf $ATLAS_URL > $ATLAS_GO
