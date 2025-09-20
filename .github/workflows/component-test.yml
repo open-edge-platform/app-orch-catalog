@@ -49,7 +49,7 @@ jobs:
           deployment_type: 'all'
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: '1.24.1'
           cache: true
