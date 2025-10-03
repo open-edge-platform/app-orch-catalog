@@ -86,8 +86,9 @@ func (g *Server) Import(ctx context.Context, req *catalogv3.ImportRequest) (*cat
 		return nil, errors.NewDBError(errors.WithError(err))
 	}
 
+	allowOverwriteRegistry := !g.IsSystemRegistry(reg.Name)
 	registryEvents := &RegistryEvents{}
-	err = g.createOrUpdateRegistry(ctx, tx, projectUUID, reg, registryEvents)
+	err = g.createOrUpdateRegistry(ctx, tx, projectUUID, reg, registryEvents, allowOverwriteRegistry)
 	if err != nil {
 		g.rollbackTransaction(tx)
 		return nil, errors.NewDBError(errors.WithError(err))
