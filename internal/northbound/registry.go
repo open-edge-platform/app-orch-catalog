@@ -34,6 +34,8 @@ const (
 	dynamicCACertsName = "use-dynamic-cacert"
 
 	// System registries that are managed by app-orch-tenant-controller
+	// NOTE: Ensure app-orch-tenant-controller and app-orch-catalog are updated at the same time,
+	//       if these registry names change.
 	SystemRegistryHarborHelm   = "harbor-helm-oci"
 	SystemRegistryHarborDocker = "harbor-docker-oci"
 )
