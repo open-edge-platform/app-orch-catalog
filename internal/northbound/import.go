@@ -91,7 +91,7 @@ func (g *Server) Import(ctx context.Context, req *catalogv3.ImportRequest) (*cat
 	}
 
 	registryEvents := &RegistryEvents{}
-	err = g.createOrUpdateRegistry(ctx, tx, projectUUID, reg, registryEvents)
+	err = g.createOrUpdateRegistry(ctx, tx, projectUUID, reg, registryEvents, false)
 	if err != nil {
 		g.rollbackTransaction(tx)
 		return nil, errors.NewDBError(errors.WithError(err))

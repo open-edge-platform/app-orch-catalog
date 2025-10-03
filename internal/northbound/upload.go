@@ -249,7 +249,7 @@ func (u *uploadSession) ProcessFiles(ctx context.Context, files yamlreader.FileS
 }
 
 func (u *uploadSession) loadRegistry(ctx context.Context, tx *generated.Tx, reg *catalogv3.Registry) error {
-	return u.g.createOrUpdateRegistry(ctx, tx, u.projectUUID, reg, u.registryEvents)
+	return u.g.createOrUpdateRegistry(ctx, tx, u.projectUUID, reg, u.registryEvents, false)
 }
 
 func (u *uploadSession) loadArtifact(ctx context.Context, tx *generated.Tx, art *catalogv3.Artifact) error {
