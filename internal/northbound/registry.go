@@ -32,6 +32,17 @@ const (
 
 	// Registries with this value for CA certs trigger use of a dynamically loaded CA
 	dynamicCACertsName = "use-dynamic-cacert"
+
+	// System registries that are managed by app-orch-tenant-controller
+	SystemRegistryHarborHelm   = "harbor-helm-oci"
+	SystemRegistryHarborDocker = "harbor-docker-oci"
+)
+
+var (
+	systemRegistries = []string{
+		SystemRegistryHarborHelm,
+		SystemRegistryHarborDocker,
+	}
 )
 
 type RegistrySecretData interface {
@@ -241,6 +252,15 @@ func (g *Server) checkRegistryUniqueness(ctx context.Context, tx *generated.Tx, 
 		}
 	}
 	return nil
+}
+
+func (g *Server) IsSystemRegistry(name string) bool {
+	for _, r := range systemRegistries {
+		if r == name {
+			return true
+		}
+	}
+	return false
 }
 
 // ListRegistries gets a list of all registries through gRPC
