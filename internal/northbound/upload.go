@@ -253,7 +253,7 @@ func (u *uploadSession) loadRegistry(ctx context.Context, tx *generated.Tx, reg 
 		return nberrors.NewInvalidArgument(
 			nberrors.WithResourceType(nberrors.RegistryType),
 			nberrors.WithResourceName(reg.Name),
-			nberrors.WithMessage("cannot upload over existing system-managerd registry "+reg.Name))
+			nberrors.WithMessage("cannot upload over existing system-managed registry "+reg.Name))
 	}
 
 	return u.g.createOrUpdateRegistry(ctx, tx, u.projectUUID, reg, u.registryEvents)
