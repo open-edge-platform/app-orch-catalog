@@ -979,3 +979,10 @@ func (s *NorthBoundTestSuite) TestOCIRegistry() {
 	s.NoError(err)
 	s.NotNil(resp)
 }
+
+func (s *NorthBoundTestSuite) TestIsSystemRegistry() {
+	server := Server{}
+	s.True(server.IsSystemRegistry("harbor-helm-oci"))
+	s.True(server.IsSystemRegistry("harbor-docker-oci"))
+	s.False(server.IsSystemRegistry("harbor-something-else"))
+}
