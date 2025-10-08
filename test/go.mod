@@ -4,9 +4,7 @@
 
 module github.com/open-edge-platform/app-orch-catalog/test
 
-go 1.23.2
-
-toolchain go1.24.0
+go 1.24.6
 
 require (
 	github.com/open-edge-platform/app-orch-catalog v0.0.0
@@ -21,7 +19,7 @@ require (
 replace github.com/open-edge-platform/app-orch-catalog => ../
 
 require (
-	ariga.io/atlas v0.32.1-0.20250325101103-175b25e1c1b9 // indirect
+	ariga.io/atlas v0.37.0 // indirect
 	cloud.google.com/go/compute/metadata v0.7.0 // indirect
 	entgo.io/ent v0.14.5 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
