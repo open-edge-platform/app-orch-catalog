@@ -9,7 +9,7 @@ go 1.24.6
 require (
 	entgo.io/contrib v0.7.0
 	entgo.io/ent v0.14.5
-	github.com/DATA-DOG/go-sqlmock v1.5.0
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/blang/semver/v4 v4.0.0
 	github.com/envoyproxy/protoc-gen-validate v1.2.1
 	github.com/gin-contrib/cors v1.7.6
