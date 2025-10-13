@@ -169,8 +169,11 @@ func NewRESTProxy(cfg *Config) (*RESTProxy, error) {
 	engine.Use(secure.New(secure.Config{ContentTypeNosniff: true}))
 	engine.Use(ginutils.UnicodePrintableCharsChecker())
 	engine.Use(ginutils.PathParamUnicodeCheckerMiddleware())
+	// Add query parameter validation middleware for registry endpoints
+	engine.Use(QueryParameterValidationMiddleware())
 	engine.StaticFile(fmt.Sprintf("%scatalog.orchestrator.apis/api/v3", cfg.BasePath), cfg.SpecFilePath)
 	engine.Group(fmt.Sprintf("%scatalog.orchestrator.apis/v3/*{grpc_gateway}", cfg.BasePath)).Match(allowedMethods, "", gin.WrapH(mux))
+
 	engine.GET("/test", func(c *gin.Context) {
 		c.String(http.StatusOK, "Ok")
 	})

@@ -23,6 +23,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -46,6 +47,28 @@ var (
 		SystemRegistryHarborDocker,
 	}
 )
+
+// validateRegistryName validates the registry name according to the specified rules
+func validateRegistryName(name string) error {
+	if len(name) < 1 {
+		return fmt.Errorf("registry name must be at least 1 character long")
+	}
+	if len(name) > 40 {
+		return fmt.Errorf("registry name must be at most 40 characters long")
+	}
+
+	// Pattern: ^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$
+	// This means: start with alphanumeric, middle can have hyphens, end with alphanumeric (if more than 1 char)
+	matched, err := regexp.MatchString("^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$", name)
+	if err != nil {
+		return fmt.Errorf("error validating registry name pattern: %v", err)
+	}
+	if !matched {
+		return fmt.Errorf("registry name must match pattern: start with a-z0-9, can contain hyphens, end with a-z0-9")
+	}
+
+	return nil
+}
 
 type RegistrySecretData interface {
 	RootURL() string
@@ -131,6 +154,13 @@ func (g *Server) CreateRegistry(ctx context.Context, req *catalogv3.CreateRegist
 			errors.WithResourceType(errors.RegistryType),
 			errors.WithMessage("incomplete request"))
 	} else if err := req.Registry.Validate(); err != nil {
+		return nil, errors.NewInvalidArgument(
+			errors.WithResourceType(errors.RegistryType),
+			errors.WithMessage(err.Error()))
+	}
+
+	// Additional validation for registry name
+	if err := validateRegistryName(req.Registry.Name); err != nil {
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.RegistryType),
 			errors.WithMessage(err.Error()))
@@ -521,11 +551,22 @@ func (g *Server) UpdateRegistry(ctx context.Context, req *catalogv3.UpdateRegist
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.RegistryType),
 			errors.WithMessage("incomplete request"))
-	} else if err := req.Registry.Validate(); err != nil {
+	}
+
+	// Validate registry name
+	if err := validateRegistryName(req.RegistryName); err != nil {
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.RegistryType),
 			errors.WithMessage(err.Error()))
-	} else if req.RegistryName != req.Registry.Name {
+	}
+
+	if err := req.Registry.Validate(); err != nil {
+		return nil, errors.NewInvalidArgument(
+			errors.WithResourceType(errors.RegistryType),
+			errors.WithMessage(err.Error()))
+	}
+
+	if req.RegistryName != req.Registry.Name {
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.RegistryType),
 			errors.WithMessage("name cannot be changed %s != %s", req.RegistryName, req.Registry.Name))
