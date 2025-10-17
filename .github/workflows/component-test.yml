@@ -7,7 +7,7 @@ on:
   pull_request:
     types: [labeled]
   schedule:
-    - cron: "0 0 * * *" # Run every day at midnight
+    - cron: "0 0 * * *"  # Run every day at midnight
   workflow_dispatch:  # Run on manual trigger
     inputs:
       run-component-tests:
@@ -29,7 +29,7 @@ jobs:
     name: Deploy Kind Orchestrator and Run Component Tests
     if: |
       ${{ inputs.run-component-tests || github.event_name == 'schedule' || github.event.label.name == 'run-component-tests' }}
-    runs-on: ubuntu-24.04-16core-64GB # ubuntu-24.04-4core-16GB ubuntu-22.04-32core-128GB & ubuntu-24.04-16core-64GB
+    runs-on: ubuntu-24.04-16core-64GB  # ubuntu-24.04-4core-16GB ubuntu-22.04-32core-128GB & ubuntu-24.04-16core-64GB
     timeout-minutes: 60
     env:
       ORCH_DEFAULT_PASSWORD: ${{ secrets.ORCH_DEFAULT_PASSWORD }}
@@ -55,7 +55,7 @@ jobs:
           cache: true
 
       - name: Checkout app-orch-catalog repository
-        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
         with:
           repository: open-edge-platform/app-orch-catalog
           path: app-orch-catalog
@@ -94,7 +94,7 @@ jobs:
         working-directory: app-orch-catalog
         run: |
           make coder-redeploy
-          make coder-rebuild 
+          make coder-rebuild
 
       - name: Describe app-orch-catalog
         run: kubectl describe deployments.app -n orch-app app-orch-catalog
@@ -120,7 +120,7 @@ jobs:
             echo "Pod did not reach Running state within time limit."
             kubectl describe pod $POD_NAME -n orch-app
             exit 1
-          fi  
+          fi
 
       - name: Run Catalog Component Tests
         working-directory: app-orch-catalog/test
@@ -161,7 +161,7 @@ jobs:
 
       - name: Upload Test Report
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4.6.2
         with:
           name: test-report
           path: app-orch-catalog/test/${{ github.event_name }}-${{ github.event.number }}-test-report.html
@@ -174,5 +174,4 @@ jobs:
         id: get-app-orch-catalog-diag-info
         run: |
           kubectl logs -n orch-app -l app=app-orch-catalog -c app-orch-catalog-server --tail=-1 > app-orch-catalog-server.log || echo "No current logs for app-orch-catalog-server"
-          kubectl logs -n orch-app -l app=app-orch-catalog -c app-orch-catalog-rest-proxy --tail=-1 > app-orch-catalog-rest-proxy.log || echo "No current logs for app-orch-catalog-rest-proxy" 
-
+          kubectl logs -n orch-app -l app=app-orch-catalog -c app-orch-catalog-rest-proxy --tail=-1 > app-orch-catalog-rest-proxy.log || echo "No current logs for app-orch-catalog-rest-proxy"

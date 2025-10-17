@@ -18,14 +18,14 @@ jobs:
   pre-checks:
     runs-on: ${{ github.repository_owner == 'intel' && 'intel-ubuntu-latest' || 'ubuntu-latest' }}
     steps:
-      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8  # v5.0.0
         with:
           persist-credentials: false
       - name: "Verify Branch Name"
-        uses: open-edge-platform/orch-ci/verify-branch-name@76700c2fb6d547733b9218d9638dca43f5296399 # 0.1.52
+        uses: open-edge-platform/orch-ci/verify-branch-name@76700c2fb6d547733b9218d9638dca43f5296399  # 0.1.52
   pre-merge-pipeline:
     needs: pre-checks
-    uses: open-edge-platform/orch-ci/.github/workflows/pre-merge.yml@76700c2fb6d547733b9218d9638dca43f5296399 # 0.1.52
+    uses: open-edge-platform/orch-ci/.github/workflows/pre-merge.yml@76700c2fb6d547733b9218d9638dca43f5296399  # 0.1.52
     with:
       bootstrap_tools: "go,gotools,golang-lint,nodejs,buf,hadolint,opa"
       run_version_check: true
@@ -53,4 +53,4 @@ jobs:
           else
             echo "Pre-merge checks failed. PR can't get merged"
             exit 1
-          fi 
+          fi
