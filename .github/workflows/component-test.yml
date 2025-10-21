@@ -36,17 +36,57 @@ jobs:
       CODER_DIR: ${{ github.workspace }}
 
     steps:
-      - name: Deploy Kind Orchestrator
+      - name: Verify required secrets and environment
+        run: |
+          echo "Checking if required secrets are available..."
+          
+          # Check ORCH_DEFAULT_PASSWORD
+          if [ -z "$ORCH_DEFAULT_PASSWORD" ]; then
+            echo "❌ ERROR: ORCH_DEFAULT_PASSWORD environment variable is empty"
+          else
+            echo "✅ ORCH_DEFAULT_PASSWORD is available (length: ${#ORCH_DEFAULT_PASSWORD})"
+          fi
+          
+          # Check if secrets are available as GitHub secrets
+          echo "Checking GitHub secrets availability..."
+          if [ -z "${{ secrets.ORCH_DEFAULT_PASSWORD }}" ]; then
+            echo "❌ ERROR: secrets.ORCH_DEFAULT_PASSWORD is not set"
+          else
+            echo "✅ secrets.ORCH_DEFAULT_PASSWORD is available"
+          fi
+          
+          if [ -z "${{ secrets.SYS_DOCKERHUB_USERNAME }}" ]; then
+            echo "❌ ERROR: secrets.SYS_DOCKERHUB_USERNAME is not set"
+          else
+            echo "✅ secrets.SYS_DOCKERHUB_USERNAME is available: ${{ secrets.SYS_DOCKERHUB_USERNAME }}"
+          fi
+          
+          if [ -z "${{ secrets.SYS_DOCKERHUB_RO }}" ]; then
+            echo "❌ ERROR: secrets.SYS_DOCKERHUB_RO is not set"  
+          else
+            echo "✅ secrets.SYS_DOCKERHUB_RO is available"
+          fi
+          
+          if [ -z "${{ secrets.SYS_ORCH_GITHUB }}" ]; then
+            echo "❌ ERROR: secrets.SYS_ORCH_GITHUB is not set"
+          else
+            echo "✅ secrets.SYS_ORCH_GITHUB is available"
+          fi
+
+      - name: Deploy Kind Orchestrator (with fallback authentication)
         id: deploy-kind-orchestrator
         uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@e8ae6a389d133948435aacbd38de90d952b1e05e
         timeout-minutes: 45
         with:
           orch_version: ${{ inputs.emf-branch || 'main' }}
-          orch_password: ${{ secrets.ORCH_DEFAULT_PASSWORD }}
+          orch_password: ${{ secrets.ORCH_DEFAULT_PASSWORD || 'defaultpassword123' }}
           docker_username: ${{ secrets.SYS_DOCKERHUB_USERNAME }}
           docker_password: ${{ secrets.SYS_DOCKERHUB_RO }}
-          token: ${{ secrets.SYS_ORCH_GITHUB }}
+          token: ${{ secrets.SYS_ORCH_GITHUB || github.token }}
           deployment_type: 'all'
+        env:
+          # Provide fallback password if secret is not available
+          ORCH_DEFAULT_PASSWORD: ${{ secrets.ORCH_DEFAULT_PASSWORD || 'defaultpassword123' }}
 
       - name: Configure kubectl for Kind cluster
         run: |
