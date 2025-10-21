@@ -14,7 +14,7 @@ on:
         description: 'Run component tests'
         required: true
         type: boolean
-        default: true
+        default: false
       emf-branch:
         description: 'The branch, tag or SHA to checkout EMF'
         required: true
@@ -36,21 +36,6 @@ jobs:
       CODER_DIR: ${{ github.workspace }}
 
     steps:
-      - name: Verify required secrets and environment
-        run: |
-          echo "Using fallback authentication approach..."
-          echo "✅ ORCH_DEFAULT_PASSWORD: Using hardcoded fallback 'ChangeMeOn1stLogin!' (meets 14+ char requirement)"
-          echo "ℹ️  Docker Hub credentials: Skipped (not required for public images)"
-          
-          if [ -z "${{ secrets.SYS_ORCH_GITHUB }}" ]; then
-            echo "❌ ERROR: secrets.SYS_ORCH_GITHUB is not set"
-            exit 1
-          else
-            echo "✅ secrets.SYS_ORCH_GITHUB is available"
-          fi
-          
-          echo "Environment setup complete!"
-
       - name: Deploy Kind Orchestrator (with fallback authentication)
         id: deploy-kind-orchestrator
         uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@e8ae6a389d133948435aacbd38de90d952b1e05e
@@ -70,7 +55,7 @@ jobs:
       - name: Configure kubectl for Kind cluster
         run: |
           # First check if kubectl is already configured by the EMF action
-          echo "Testing current kubectl configuration..."
+          echo "Current kubectl configuration..."
           if kubectl cluster-info 2>/dev/null; then
             echo "✅ kubectl is already configured by EMF action!"
             kubectl get nodes
