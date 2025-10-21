@@ -48,10 +48,20 @@ jobs:
           token: ${{ secrets.SYS_ORCH_GITHUB }}
           deployment_type: 'all'
 
+      - name: Configure kubectl for Kind cluster
+        run: |
+          # Ensure kubectl is configured for the Kind cluster
+          kind get kubeconfig --name orch > /tmp/kubeconfig
+          export KUBECONFIG=/tmp/kubeconfig
+          echo "KUBECONFIG=/tmp/kubeconfig" >> $GITHUB_ENV
+          # Verify connection
+          kubectl cluster-info
+          kubectl get nodes
+
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: '1.24.4'
+          go-version: '1.24.6'
           cache: true
 
       - name: Checkout app-orch-catalog repository
