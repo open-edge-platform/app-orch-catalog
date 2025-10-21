@@ -134,6 +134,9 @@ jobs:
       - name: Build binaries
         working-directory: app-orch-catalog
         run: |
+          echo "Updating Go module dependencies..."
+          go mod tidy
+          echo "Building binaries..."
           make build
 
       # Install versions of the build tools that are different from what is in
@@ -181,6 +184,9 @@ jobs:
         env:
           PATH: ${{ env.PATH }}:${{ env.GOPATH }}/bin
         run: |
+          echo "Updating Go module dependencies..."
+          go mod tidy
+          echo "Running component tests..."
           make component-tests
           echo "Component tests done!"
       - name: Report
