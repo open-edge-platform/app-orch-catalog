@@ -39,7 +39,7 @@ jobs:
       - name: Verify required secrets and environment
         run: |
           echo "Using fallback authentication approach..."
-          echo "✅ ORCH_DEFAULT_PASSWORD: Using hardcoded fallback 'DefaultOrchPass123!' (meets 14+ char requirement)"
+          echo "✅ ORCH_DEFAULT_PASSWORD: Using hardcoded fallback 'ChangeMeOn1stLogin!' (meets 14+ char requirement)"
           echo "ℹ️  Docker Hub credentials: Skipped (not required for public images)"
           
           if [ -z "${{ secrets.SYS_ORCH_GITHUB }}" ]; then
@@ -57,7 +57,7 @@ jobs:
         timeout-minutes: 45
         with:
           orch_version: ${{ inputs.emf-branch || 'main' }}
-          orch_password: 'DefaultOrchPass123!'
+          orch_password: 'ChangeMeOn1stLogin!'
           # Skip Docker Hub credentials since they're not available
           # docker_username: ${{ secrets.SYS_DOCKERHUB_USERNAME }}
           # docker_password: ${{ secrets.SYS_DOCKERHUB_RO }}
@@ -69,13 +69,38 @@ jobs:
 
       - name: Configure kubectl for Kind cluster
         run: |
-          # Ensure kubectl is configured for the Kind cluster
-          kind get kubeconfig --name orch > /tmp/kubeconfig
-          export KUBECONFIG=/tmp/kubeconfig
-          echo "KUBECONFIG=/tmp/kubeconfig" >> $GITHUB_ENV
-          # Verify connection
-          kubectl cluster-info
-          kubectl get nodes
+          # First check if kubectl is already configured by the EMF action
+          echo "Testing current kubectl configuration..."
+          if kubectl cluster-info 2>/dev/null; then
+            echo "✅ kubectl is already configured by EMF action!"
+            kubectl get nodes
+          else
+            echo "kubectl not configured, trying to configure manually..."
+            
+            # List all Kind clusters to see what's available
+            echo "Available Kind clusters:"
+            kind get clusters
+            
+            # Try to find the cluster name automatically
+            CLUSTER_NAME=$(kind get clusters | head -n 1)
+            if [ -z "$CLUSTER_NAME" ]; then
+              echo "❌ No Kind clusters found!"
+              exit 1
+            fi
+            
+            echo "Using Kind cluster: $CLUSTER_NAME"
+            
+            # Configure kubectl for the Kind cluster
+            kind get kubeconfig --name "$CLUSTER_NAME" > /tmp/kubeconfig
+            export KUBECONFIG=/tmp/kubeconfig
+            echo "KUBECONFIG=/tmp/kubeconfig" >> $GITHUB_ENV
+            
+            # Verify connection
+            echo "Verifying kubectl connection..."
+            kubectl cluster-info
+            kubectl get nodes
+          fi
+          echo "kubectl configuration successful!"
 
       - name: Set up Go
         uses: actions/setup-go@v6
