@@ -145,8 +145,8 @@ func (s *NorthBoundTestSuite) TestCreateDeploymentPackageInvalidName() {
 			Name: "Another DeploymentPackage", Version: "v0.1.0",
 		},
 	})
-	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`deployment-package invalid: invalid DeploymentPackage.Name: value does not match regex pattern "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"`))
+	s.Error(err)
+	s.Contains(err.Error(), "deployment_package.name: value does not match regex pattern")
 
 	// Create one with invalid version
 	_, err = s.client.CreateDeploymentPackage(s.ProjectID(footen), &catalogv3.CreateDeploymentPackageRequest{
@@ -154,8 +154,8 @@ func (s *NorthBoundTestSuite) TestCreateDeploymentPackageInvalidName() {
 			Name: "bar", Version: "V 1",
 		},
 	})
-	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`deployment-package invalid: invalid DeploymentPackage.Version: value does not match regex pattern "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"`))
+	s.Error(err)
+	s.Contains(err.Error(), "deployment_package.version: value does not match regex pattern")
 
 	// Create one with invalid application
 	_, err = s.client.CreateDeploymentPackage(s.ProjectID(footen), &catalogv3.CreateDeploymentPackageRequest{
@@ -544,6 +544,9 @@ func (s *NorthBoundTestSuite) TestUpdateDeploymentPackage() {
 
 	//================
 
+	// Set deployed to false for the "no changes" update test
+	pkg.IsDeployed = false
+
 	// Update with no changes - other than deployment status - should succeed
 	update, err = s.client.UpdateDeploymentPackage(s.ProjectID(footen), &catalogv3.UpdateDeploymentPackageRequest{
 		DeploymentPackageName: "ca-gigi", Version: "v0.3.4", DeploymentPackage: pkg,
@@ -552,6 +555,15 @@ func (s *NorthBoundTestSuite) TestUpdateDeploymentPackage() {
 	s.validateDeploymentPkg(resp.DeploymentPackage, "ca-gigi", "v0.3.4", "Deployment Package ca-gigi",
 		"This is deployment package ca-gigi", "icon", "thumb", 3, 2, 2, "cp-2", 2, true)
 	s.Less(resp.DeploymentPackage.CreateTime.AsTime(), resp.DeploymentPackage.UpdateTime.AsTime())
+
+	// Set deployed to true to test the failure case
+	pkg.IsDeployed = true
+
+	// First update to set the deployed status
+	_, err = s.client.UpdateDeploymentPackage(s.ProjectID(footen), &catalogv3.UpdateDeploymentPackageRequest{
+		DeploymentPackageName: "ca-gigi", Version: "v0.3.4", DeploymentPackage: pkg,
+	})
+	s.NoError(err)
 
 	// Update with a change should fail when deployed
 	pkg.Description = "Boom"
@@ -1275,13 +1287,12 @@ new line`, "v1.0.0")
 			},
 		})
 		if err != nil || created == nil {
-			if err.Error() != `rpc error: code = InvalidArgument desc = deployment-package invalid: invalid DeploymentPackage.Name: value does not match regex pattern "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"` &&
-				err.Error() != `rpc error: code = InvalidArgument desc = deployment-package invalid: invalid DeploymentPackage.DisplayName: value length must be between 0 and 40 runes, inclusive` &&
-				err.Error() != `rpc error: code = InvalidArgument desc = deployment-package invalid: display name cannot contain leading or trailing spaces` &&
-				err.Error() != `rpc error: code = InvalidArgument desc = deployment-package invalid: invalid DeploymentPackage.Name: value length must be between 1 and 40 runes, inclusive` &&
-				err.Error() != `rpc error: code = InvalidArgument desc = deployment-package invalid: invalid DeploymentPackage.DisplayName: value does not match regex pattern "^\\PC*$"` &&
-				err.Error() != `rpc error: code = InvalidArgument desc = deployment-package invalid: invalid DeploymentPackage.Version: value length must be between 1 and 20 runes, inclusive` &&
-				err.Error() != `rpc error: code = InvalidArgument desc = deployment-package invalid: invalid DeploymentPackage.Version: value does not match regex pattern "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"` {
+			// Check for known validation error patterns with protovalidate
+			errStr := err.Error()
+			if !strings.Contains(errStr, "value does not match regex pattern") &&
+				!strings.Contains(errStr, "value length must be at least") &&
+				!strings.Contains(errStr, "value length must be at most") &&
+				!strings.Contains(errStr, "display name cannot contain leading or trailing spaces") {
 				t.Errorf("%v Name: %v DisplayName: %v", err.Error(), name, displayName)
 			}
 		}

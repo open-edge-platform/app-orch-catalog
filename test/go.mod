@@ -4,9 +4,7 @@
 
 module github.com/open-edge-platform/app-orch-catalog/test
 
-go 1.23.2
-
-toolchain go1.24.0
+go 1.24.6
 
 require (
 	github.com/open-edge-platform/app-orch-catalog v0.0.0

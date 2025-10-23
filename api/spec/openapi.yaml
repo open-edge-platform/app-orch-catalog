@@ -505,23 +505,17 @@ paths:
             type: string
         - name: includeAuth
           in: query
-          description: |-
-            If true and a username/auth_token is specified then they will be included
-             in the generated Registry object.
+          description: If true and a username/auth_token is specified then they will be included in the generated Registry object.
           schema:
             type: boolean
         - name: generateDefaultValues
           in: query
-          description: |-
-            If true and chart_values is not set, then the values.yaml will be extracted and
-             used to generate default profile values.
+          description: If true and chart_values is not set, then the values.yaml will be extracted and used to generate default profile values.
           schema:
             type: boolean
         - name: generateDefaultParameters
           in: query
-          description: |-
-            Generates default parameters from the values, from chart_values or from
-             generate_default_values as appropriate.
+          description: Generates default parameters from the values, from chart_values or from generate_default_values as appropriate.
           schema:
             type: boolean
         - name: namespace
@@ -671,9 +665,7 @@ paths:
       parameters:
         - name: sessionId
           in: query
-          description: |-
-            First upload request in the batch must not specify session ID. Subsequent upload requests must copy
-             the session ID from the previously issued response.
+          description: First upload request in the batch must not specify session ID. Subsequent upload requests must copy the session ID from the previously issued response.
           schema:
             type: string
         - name: uploadNumber
@@ -710,17 +702,13 @@ components:
       properties:
         name:
           type: string
-          description: |-
-            Name is a human-readable unique identifier for the API extension and must be unique for all extensions of a
-             given deployment package.
+          description: Name is a human-readable unique identifier for the API extension and must be unique for all extensions of a given deployment package.
         version:
           type: string
           description: Version of the API extension.
         displayName:
           type: string
-          description: |-
-            Display name is an optional human-readable name for the API extension. When specified, it must be unique among all
-             extensions of a given deployment package. It is used for display purposes on user interfaces.
+          description: Display name is an optional human-readable name for the API extension. When specified, it must be unique among all extensions of a given deployment package. It is used for display purposes on user interfaces.
         description:
           type: string
           description: Description of the API extension. Displayed on user interfaces.
@@ -730,9 +718,7 @@ components:
             $ref: '#/components/schemas/Endpoint'
           description: One or more API endpoints provided by the API extension.
         uiExtension:
-          allOf:
-            - $ref: '#/components/schemas/UIExtension'
-          description: Additional information specific to UI extensions.
+          $ref: '#/components/schemas/UIExtension'
       description: APIExtensions represents some form of an extension to the external API provided by deployment package.
     Application:
       required:
@@ -745,14 +731,10 @@ components:
       properties:
         name:
           type: string
-          description: |-
-            Name is a human readable unique identifier for the application and must be unique for all applications of a
-             given project. Used in network URIs.
+          description: Name is a human readable unique identifier for the application and must be unique for all applications of a given project. Used in network URIs.
         displayName:
           type: string
-          description: |-
-            Display name is an optional human-readable name for the application. When specified, it must be unique among all
-             applications within a project. It is used for display purposes on user interfaces.
+          description: Display name is an optional human-readable name for the application. When specified, it must be unique among all applications within a project. It is used for display purposes on user interfaces.
         description:
           type: string
           description: Description of the application. Displayed on user interfaces.
@@ -784,9 +766,7 @@ components:
           description: Set of profiles that can be used when deploying the application.
         defaultProfileName:
           type: string
-          description: |-
-            Name of the profile to be used by default when deploying this application.
-             If at least one profile is available, this field must be set.
+          description: Name of the profile to be used by default when deploying this application. If at least one profile is available, this field must be set.
         imageRegistryName:
           type: string
           description: ID of the project's registry where the Docker image of the application is available for download.
@@ -818,10 +798,7 @@ components:
         requires:
           type: string
           description: Name of the application that is required by the other.
-      description: |-
-        ApplicationDependency represents the dependency of one application on another within the context of a deployment package.
-         This dependency is specified as the name of the application that has the dependency, and the name of the application
-         that is the dependency.
+      description: ApplicationDependency represents the dependency of one application on another within the context of a deployment package. This dependency is specified as the name of the application that has the dependency, and the name of the application that is the dependency.
     ApplicationReference:
       required:
         - name
@@ -847,18 +824,13 @@ components:
           description: Name is a human-readable unique identifier for the artifact and must be unique for all artifacts within a project.
         displayName:
           type: string
-          description: |-
-            Display name is an optional human-readable name for the artifact. When specified, it must be unique among all
-             artifacts within a project. It is used for display purposes on user interfaces.
+          description: Display name is an optional human-readable name for the artifact. When specified, it must be unique among all artifacts within a project. It is used for display purposes on user interfaces.
         description:
           type: string
           description: Description of the artifact. Displayed on user interfaces.
         mimeType:
           type: string
-          description: |-
-            Artifact's MIME type. Only text/plain, application/json, application/yaml, image/png, and image/jpeg are allowed at this time.
-
-             MIME types are defined and standardized in IETF's RFC 6838.
+          description: Artifact's MIME type. Only text/plain, application/json, application/yaml, image/png, and image/jpeg are allowed at this time. MIME types are defined and standardized in IETF's RFC 6838.
         artifact:
           type: string
           description: Raw byte content of the artifact encoded as base64. The limits refer to the number of raw bytes.
@@ -873,10 +845,7 @@ components:
           type: string
           description: The last update time of the artifact.
           format: date-time
-      description: |-
-        Artifact represents a binary artifact that can be used for various purposes, e.g. icon or thumbnail for UI display, or
-         auxiliary artifacts for integration with various platform services such as Grafana dashboard and similar. An artifact may be
-         used by multiple deployment packages.
+      description: Artifact represents a binary artifact that can be used for various purposes, e.g. icon or thumbnail for UI display, or auxiliary artifacts for integration with various platform services such as Grafana dashboard and similar. An artifact may be used by multiple deployment packages.
     ArtifactReference:
       required:
         - name
@@ -896,9 +865,7 @@ components:
       type: object
       properties:
         application:
-          allOf:
-            - $ref: '#/components/schemas/Application'
-          description: The application created.
+          $ref: '#/components/schemas/Application'
       description: Response message for the CreateApplication method.
     CreateArtifactResponse:
       required:
@@ -906,9 +873,7 @@ components:
       type: object
       properties:
         artifact:
-          allOf:
-            - $ref: '#/components/schemas/Artifact'
-          description: The artifact created.
+          $ref: '#/components/schemas/Artifact'
       description: Response message for the CreateArtifact method.
     CreateDeploymentPackageResponse:
       required:
@@ -916,9 +881,7 @@ components:
       type: object
       properties:
         deploymentPackage:
-          allOf:
-            - $ref: '#/components/schemas/DeploymentPackage'
-          description: The deployment package created.
+          $ref: '#/components/schemas/DeploymentPackage'
       description: Response message for the CreateDeploymentPackage method.
     CreateRegistryResponse:
       required:
@@ -926,9 +889,7 @@ components:
       type: object
       properties:
         registry:
-          allOf:
-            - $ref: '#/components/schemas/Registry'
-          description: The created registry.
+          $ref: '#/components/schemas/Registry'
       description: Response message for the CreateRegistry method.
     DeploymentPackage:
       required:
@@ -941,14 +902,10 @@ components:
       properties:
         name:
           type: string
-          description: |-
-            Name is a human-readable unique identifier for the deployment package and must be unique for all packages of a
-             given project.
+          description: Name is a human-readable unique identifier for the deployment package and must be unique for all packages of a given project.
         displayName:
           type: string
-          description: |-
-            Display name is an optional human-readable name for the deployment package. When specified, it must be unique among all
-             packages within a project. It is used for display purposes on user interfaces.
+          description: Display name is an optional human-readable name for the deployment package. When specified, it must be unique among all packages within a project. It is used for display purposes on user interfaces.
         description:
           type: string
           description: Description of the deployment package. Displayed on user interfaces.
@@ -971,17 +928,10 @@ components:
           description: List of applications comprising this deployment package. Expressed as (name, version) pairs.
         isDeployed:
           type: boolean
-          description: |-
-            Flag indicating whether the deployment package has been deployed.
-             The mutability of the deployment package entity can be limited when this flag is true. For example, one may
-             not be able to update when an application is removed from a package after it has been marked as
-             deployed.
+          description: Flag indicating whether the deployment package has been deployed. The mutability of the deployment package entity can be limited when this flag is true. For example, one may not be able to update when an application is removed from a package after it has been marked as deployed.
         isVisible:
           type: boolean
-          description: |-
-            Flag indicating whether the deployment package is visible in the UI.
-             Some deployment packages can be classified as auxiliary platform extensions and therefore are to be deployed
-             indirectly only when specified as deployment requirements, rather than directly by the platform operator.
+          description: Flag indicating whether the deployment package is visible in the UI. Some deployment packages can be classified as auxiliary platform extensions and therefore are to be deployed indirectly only when specified as deployment requirements, rather than directly by the platform operator.
         profiles:
           type: array
           items:
@@ -994,9 +944,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ApplicationDependency'
-          description: |-
-            Optional set of application deployment dependencies, expressed as (name, requires) pairs of edges in the
-             deployment order dependency graph.
+          description: Optional set of application deployment dependencies, expressed as (name, requires) pairs of edges in the deployment order dependency graph.
         extensions:
           type: array
           items:
@@ -1006,18 +954,12 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ArtifactReference'
-          description: |-
-            Optional list of artifacts required for displaying or deploying this package. For example, icon or thumbnail
-             artifacts can be used by the UI; Grafana\* dashboard definitions can be used by the deployment manager.
+          description: Optional list of artifacts required for displaying or deploying this package. For example, icon or thumbnail artifacts can be used by the UI; Grafana\* dashboard definitions can be used by the deployment manager.
         defaultNamespaces:
           type: object
           additionalProperties:
             type: string
-          description: |-
-            Optional map of application-to-namespace bindings to be used as a default when deploying the applications that
-             comprise the package.
-             If a namespace is not defined in the set of "namespaces" in this Deployment Package,
-             it will be inferred that it is a simple namespace with no predefined labels or annotations.
+          description: Optional map of application-to-namespace bindings to be used as a default when deploying the applications that comprise the package. If a namespace is not defined in the set of "namespaces" in this Deployment Package, it will be inferred that it is a simple namespace with no predefined labels or annotations.
         forbidsMultipleDeployments:
           type: boolean
           description: Optional flag indicating whether multiple deployments of this package are forbidden within the same realm.
@@ -1025,10 +967,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Namespace'
-          description: |-
-            Namespace definitions to be created before resources are deployed.
-             This allows complex namespaces to be defined with predefined labels and annotations.
-             If not defined, simple namespaces will be created as needed.
+          description: Namespace definitions to be created before resources are deployed. This allows complex namespaces to be defined with predefined labels and annotations. If not defined, simple namespaces will be created as needed.
         createTime:
           readOnly: true
           type: string
@@ -1039,14 +978,7 @@ components:
           type: string
           description: The last update time of the deployment package.
           format: date-time
-      description: |-
-        DeploymentPackage represents a collection of applications (referenced by their name and a version) that are
-         deployed together. The package can define one or more deployment profiles that specify the individual application
-         profiles to be used when deploying each application. If applications need to be deployed in a particular order, the
-         package can also define any startup dependencies between its constituent applications as a set of dependency graph edges.
-
-         The deployment package can also refer to a set of artifacts used for miscellaneous purposes,
-         e.g. a thumbnail, icon, or a Grafana extension.
+      description: DeploymentPackage represents a collection of applications (referenced by their name and a version) that are deployed together. The package can define one or more deployment profiles that specify the individual application profiles to be used when deploying each application. If applications need to be deployed in a particular order, the package can also define any startup dependencies between its constituent applications as a set of dependency graph edges. The deployment package can also refer to a set of artifacts used for miscellaneous purposes, e.g. a thumbnail, icon, or a Grafana extension.
     DeploymentProfile:
       required:
         - name
@@ -1055,14 +987,10 @@ components:
       properties:
         name:
           type: string
-          description: |-
-            Name is a human-readable unique identifier for the profile and must be unique for all profiles of a
-             given deployment package.
+          description: Name is a human-readable unique identifier for the profile and must be unique for all profiles of a given deployment package.
         displayName:
           type: string
-          description: |-
-            Display name is an optional human-readable name for the registry. When specified, it must be unique among all
-             profiles of a given package. It is used for display purposes on user interfaces.
+          description: Display name is an optional human-readable name for the registry. When specified, it must be unique among all profiles of a given package. It is used for display purposes on user interfaces.
         description:
           type: string
           description: Description of the deployment profile. Displayed on user interfaces.
@@ -1070,9 +998,7 @@ components:
           type: object
           additionalProperties:
             type: string
-          description: |-
-            Application profiles map application names to the names of its profile, to be used when deploying the application
-             as part of the deployment package together with the deployment profile.
+          description: Application profiles map application names to the names of its profile, to be used when deploying the application as part of the deployment package together with the deployment profile.
         createTime:
           readOnly: true
           type: string
@@ -1099,9 +1025,7 @@ components:
         deploymentProfileName:
           type: string
           description: Optional name of the deployment profile to be used. When not provided, the default deployment profile will be used.
-      description: |-
-        DeploymentRequirement is a reference to the deployment package that must be deployed first,
-         as a requirement for an application to be deployed.
+      description: DeploymentRequirement is a reference to the deployment package that must be deployed first, as a requirement for an application to be deployed.
     Endpoint:
       required:
         - serviceName
@@ -1145,9 +1069,7 @@ components:
       type: object
       properties:
         application:
-          allOf:
-            - $ref: '#/components/schemas/Application'
-          description: The requested application.
+          $ref: '#/components/schemas/Application'
       description: Response message for the GetApplication method.
     GetApplicationVersionsResponse:
       required:
@@ -1166,9 +1088,7 @@ components:
       type: object
       properties:
         artifact:
-          allOf:
-            - $ref: '#/components/schemas/Artifact'
-          description: The requested artifact.
+          $ref: '#/components/schemas/Artifact'
       description: Response message for the GetArtifact method.
     GetDeploymentPackageResponse:
       required:
@@ -1176,9 +1096,7 @@ components:
       type: object
       properties:
         deploymentPackage:
-          allOf:
-            - $ref: '#/components/schemas/DeploymentPackage'
-          description: The DeploymentPackage requested.
+          $ref: '#/components/schemas/DeploymentPackage'
       description: Response message for the GetDeploymentPackage method.
     GetDeploymentPackageVersionsResponse:
       required:
@@ -1279,10 +1197,7 @@ components:
       properties:
         name:
           type: string
-          description: |-
-            namespace names must be valid RFC 1123 DNS labels.
-             Avoid creating namespaces with the prefix `kube-`, since it is reserved for Kubernetes\* system namespaces.
-             Avoid `default` - will already exist
+          description: namespace names must be valid RFC 1123 DNS labels. Avoid creating namespaces with the prefix `kube-`, since it is reserved for Kubernetes\* system namespaces. Avoid `default` - will already exist
         labels:
           type: object
           additionalProperties:
@@ -1291,9 +1206,7 @@ components:
           type: object
           additionalProperties:
             type: string
-      description: |-
-        Namespace represents a complex namespace definition with predefined labels and annotations.
-         They are created before any other resources in the deployment.
+      description: Namespace represents a complex namespace definition with predefined labels and annotations. They are created before any other resources in the deployment.
     ParameterTemplate:
       required:
         - name
@@ -1337,9 +1250,7 @@ components:
           description: Human-readable name for the profile. Unique among all profiles of the same application.
         displayName:
           type: string
-          description: |-
-            Display name is an optional human-readable name for the profile. When specified, it must be unique among all
-             profiles of a given application. It is used for display purposes on user interfaces.
+          description: Display name is an optional human-readable name for the profile. When specified, it must be unique among all profiles of a given application. It is used for display purposes on user interfaces.
         description:
           type: string
           description: Description of the profile. Displayed on user interfaces.
@@ -1376,14 +1287,10 @@ components:
       properties:
         name:
           type: string
-          description: |-
-            Name is a human-readable unique identifier for the registry and must be unique for all registries of a
-             given project.
+          description: Name is a human-readable unique identifier for the registry and must be unique for all registries of a given project.
         displayName:
           type: string
-          description: |-
-            Display name is an optional human-readable name for the registry. When specified, it must be unique among all
-             registries within a project. It is used for display purposes on user interfaces.
+          description: Display name is an optional human-readable name for the registry. When specified, it must be unique among all registries within a project. It is used for display purposes on user interfaces.
         description:
           type: string
           description: Description of the registry. Displayed on user interfaces.
@@ -1418,9 +1325,7 @@ components:
           type: string
           description: The last update time of the registry.
           format: date-time
-      description: |-
-        Registry represents a repository from which various artifacts, such as application Docker\* images or Helm\* charts
-         can be retrieved. As such, the registry entity holds information used for finding and accessing the represented repository.
+      description: Registry represents a repository from which various artifacts, such as application Docker\* images or Helm\* charts can be retrieved. As such, the registry entity holds information used for finding and accessing the represented repository.
     ResourceReference:
       required:
         - name

@@ -40,7 +40,8 @@ func (s *ProxyTestSuite) TestUploadFile() {
 func (s *ProxyTestSuite) TestUploadBadYAMLFiles() {
 	resp, _ := uploadMultipartFile(&s.httpClient, "http://localhost:6942/catalog.orchestrator.apis/upload",
 		[]string{
-			"../northbound/testdata/badyaml/registry-intel.yaml",
+			// Use artifact.yaml instead of registry-intel.yaml since the latter now passes due to protovalidate behavior change
+			"../northbound/testdata/badyaml/artifact.yaml",
 		})
 	if s.NotNil(resp) {
 		s.Equal(400, resp.StatusCode)

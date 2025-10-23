@@ -51,8 +51,8 @@ func (s *NorthBoundTestSuite) TestCreateArtifact() {
 func (s *NorthBoundTestSuite) TestCreateArtifactInvalidName() {
 	// Create one with invalid name
 	_, err := s.client.CreateArtifact(s.ProjectID(footen), &catalogv3.CreateArtifactRequest{Artifact: &catalogv3.Artifact{Name: "Bad name"}})
-	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`artifact Bad name invalid: invalid Artifact.Name: value does not match regex pattern "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"`))
+	s.Error(err)
+	s.Contains(err.Error(), "artifact.name: value does not match regex pattern `^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$` [string.pattern]")
 }
 
 func (s *NorthBoundTestSuite) TestCreateArtifactMimeType() {
@@ -60,22 +60,22 @@ func (s *NorthBoundTestSuite) TestCreateArtifactMimeType() {
 	_, err := s.client.CreateArtifact(s.ProjectID(footen), &catalogv3.CreateArtifactRequest{
 		Artifact: &catalogv3.Artifact{Name: "test-artifact", MimeType: "image/pngbad"},
 	})
-	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`artifact test-artifact invalid: invalid Artifact.MimeType: value does not match regex pattern "^(text/plain)$|^(application/json)$|^(application/yaml)$|^(image/png)$|^(image/jpeg)$"`))
+	s.Error(err)
+	s.Contains(err.Error(), "value does not match regex pattern")
 
 	// Create one with invalid mime-type
 	_, err = s.client.CreateArtifact(s.ProjectID(footen), &catalogv3.CreateArtifactRequest{
 		Artifact: &catalogv3.Artifact{Name: "test-artifact", MimeType: "image"},
 	})
-	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`artifact test-artifact invalid: invalid Artifact.MimeType: value does not match regex pattern "^(text/plain)$|^(application/json)$|^(application/yaml)$|^(image/png)$|^(image/jpeg)$"`))
+	s.Error(err)
+	s.Contains(err.Error(), "value does not match regex pattern")
 
 	// Create one with no mime-type
 	_, err = s.client.CreateArtifact(s.ProjectID(footen), &catalogv3.CreateArtifactRequest{
 		Artifact: &catalogv3.Artifact{Name: "test-artifact", MimeType: ""},
 	})
-	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`artifact test-artifact invalid: invalid Artifact.MimeType: value length must be between 1 and 40 runes, inclusive`))
+	s.Error(err)
+	s.Contains(err.Error(), "value length must be at least 1 characters")
 }
 
 func (s *NorthBoundTestSuite) TestCreateArtifactDataPlain() {
@@ -88,8 +88,8 @@ func (s *NorthBoundTestSuite) TestCreateArtifactDataPlain() {
 	_, err = s.client.CreateArtifact(s.ProjectID(footen), &catalogv3.CreateArtifactRequest{
 		Artifact: &catalogv3.Artifact{Name: "test-artifact", MimeType: "text/plain", Artifact: []byte("abc")},
 	})
-	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`artifact test-artifact invalid: invalid Artifact.Artifact: value length must be between 4 and 4000000 bytes, inclusive`))
+	s.Error(err)
+	s.Contains(err.Error(), "value length must be at least 4 bytes")
 
 }
 
@@ -109,8 +109,8 @@ func (s *NorthBoundTestSuite) TestCreateArtifactDataJson() {
 	_, err = s.client.CreateArtifact(s.ProjectID(footen), &catalogv3.CreateArtifactRequest{
 		Artifact: &catalogv3.Artifact{Name: "test-artifact", MimeType: "application/json", Artifact: []byte("{}")},
 	})
-	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`artifact test-artifact invalid: invalid Artifact.Artifact: value length must be between 4 and 4000000 bytes, inclusive`))
+	s.Error(err)
+	s.Contains(err.Error(), "value length must be at least 4 bytes")
 }
 
 func (s *NorthBoundTestSuite) TestCreateArtifactDataYaml() {
@@ -136,8 +136,8 @@ func (s *NorthBoundTestSuite) TestCreateArtifactDataYaml() {
 	_, err = s.client.CreateArtifact(s.ProjectID(footen), &catalogv3.CreateArtifactRequest{
 		Artifact: &catalogv3.Artifact{Name: "test-artifact", MimeType: "application/yaml", Artifact: []byte("{}")},
 	})
-	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`artifact test-artifact invalid: invalid Artifact.Artifact: value length must be between 4 and 4000000 bytes, inclusive`))
+	s.Error(err)
+	s.Contains(err.Error(), "value length must be at least 4 bytes")
 }
 
 func (s *NorthBoundTestSuite) TestCreateArtifactDataPng() {
@@ -158,8 +158,8 @@ func (s *NorthBoundTestSuite) TestCreateArtifactDataPng() {
 	_, err = s.client.CreateArtifact(s.ProjectID(footen), &catalogv3.CreateArtifactRequest{
 		Artifact: &catalogv3.Artifact{Name: "test-artifact", MimeType: "image/png", Artifact: []byte{0x11, 0x11, 0x11}},
 	})
-	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`artifact test-artifact invalid: invalid Artifact.Artifact: value length must be between 4 and 4000000 bytes, inclusive`))
+	s.Error(err)
+	s.Contains(err.Error(), "value length must be at least 4 bytes")
 }
 
 func (s *NorthBoundTestSuite) TestCreateArtifactDataJpeg() {
@@ -180,8 +180,8 @@ func (s *NorthBoundTestSuite) TestCreateArtifactDataJpeg() {
 	_, err = s.client.CreateArtifact(s.ProjectID(footen), &catalogv3.CreateArtifactRequest{
 		Artifact: &catalogv3.Artifact{Name: "test-artifact", MimeType: "image/jpeg", Artifact: []byte{0x11, 0x11, 0x11}},
 	})
-	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`artifact test-artifact invalid: invalid Artifact.Artifact: value length must be between 4 and 4000000 bytes, inclusive`))
+	s.Error(err)
+	s.Contains(err.Error(), "value length must be at least 4 bytes")
 }
 
 func (s *NorthBoundTestSuite) TestCreateArtifactDisplayName() {
@@ -576,13 +576,13 @@ new line`)
 			},
 		})
 
-		nameSpacesPatternRE, _ := regexp.Compile(`invalid: invalid Artifact.Name: value does not match regex pattern .*`)
-		nameLenRE, _ := regexp.Compile(` invalid: invalid Artifact.Name: value length must be between 1 and 40 runes, inclusive`)
-		displayNameSpacesRE, _ := regexp.Compile(`rpc error: code = InvalidArgument desc = artifact invalid: display name cannot contain leading or trailing spaces`)
-		displayNameLenRE, _ := regexp.Compile(`rpc error: code = InvalidArgument desc = artifact .* invalid: invalid Artifact.DisplayName: value length must be between 0 and 40 runes, inclusive`)
-		displayNamePatternRE, _ := regexp.Compile(`rpc error: code = InvalidArgument desc = artifact .* invalid: invalid Artifact.DisplayName: value does not match regex pattern .*`)
-		valueLenRE, _ := regexp.Compile(`rpc error: code = InvalidArgument desc = artifact [a-z0-9\-]+ invalid: invalid Artifact.Artifact: value length must be between 4 and 4000000 bytes, inclusive`)
-		invalidCharRE, _ := regexp.Compile(`rpc error: code = InvalidArgument desc = artifact [a-z0-9\-]+ invalid: artifact data is not valid Plain Text.*`)
+		nameSpacesPatternRE, _ := regexp.Compile(`value does not match regex pattern`)
+		nameLenRE, _ := regexp.Compile(`value length must be at least 1 characters|value length must be at most 40 characters`)
+		displayNameSpacesRE, _ := regexp.Compile(`display name cannot contain leading or trailing spaces`)
+		displayNameLenRE, _ := regexp.Compile(`value length must be at most 40 characters`)
+		displayNamePatternRE, _ := regexp.Compile(`value does not match regex pattern`)
+		valueLenRE, _ := regexp.Compile(`value length must be at least 4 bytes`)
+		invalidCharRE, _ := regexp.Compile(`artifact data is not valid Plain Text`)
 
 		if err != nil || created == nil {
 			if !nameSpacesPatternRE.Match([]byte(err.Error())) &&

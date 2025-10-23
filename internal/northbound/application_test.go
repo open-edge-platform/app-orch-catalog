@@ -150,15 +150,15 @@ func (s *NorthBoundTestSuite) TestCreateApplicationInvalidName() {
 	_, err := s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
 		Application: &catalogv3.Application{Name: "Another Application", Version: ""},
 	})
-	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`application invalid: invalid Application.Name: value does not match regex pattern "^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$"`))
+	s.Error(err)
+	s.Contains(err.Error(), "application.name: value does not match regex pattern `^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$` [string.pattern]")
 
 	// Create one with invalid version
 	_, err = s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
 		Application: &catalogv3.Application{Name: "another-application", Version: "V 1"},
 	})
-	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`application invalid: invalid Application.Version: value does not match regex pattern "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"`))
+	s.Error(err)
+	s.Contains(err.Error(), "application.version: value does not match regex pattern `^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$` [string.pattern]")
 
 	// Create one with invalid registry
 	_, err = s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
