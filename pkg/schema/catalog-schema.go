@@ -96,11 +96,9 @@ $defs:
     properties:
       description:
         description: Description of the API extension. Displayed on user interfaces.
-        maxLength: 1000
         type: string
       displayName:
         description: Display name is an optional human-readable name for the API extension. When specified, it must be unique among all extensions of a given deployment package. It is used for display purposes on user interfaces.
-        maxLength: 40
         type: string
       endpoints:
         description: One or more API endpoints provided by the API extension.
@@ -109,17 +107,11 @@ $defs:
         type: array
       name:
         description: Name is a human-readable unique identifier for the API extension and must be unique for all extensions of a given deployment package.
-        maxLength: 40
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$
         type: string
       uiExtension:
         $ref: '#/$defs/UIExtension'
       version:
         description: Version of the API extension.
-        maxLength: 20
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$
         type: string
     required:
       - name
@@ -130,15 +122,9 @@ $defs:
     properties:
       chartName:
         description: Helm chart name.
-        maxLength: 200
-        minLength: 1
-        pattern: ^[0-9a-z-/]*$
         type: string
       chartVersion:
         description: Helm chart version.
-        maxLength: 53
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-.]{0,51}[a-z0-9]{0,1}$
         type: string
       createTime:
         description: The creation time of the application.
@@ -149,11 +135,9 @@ $defs:
         type: string
       description:
         description: Description of the application. Displayed on user interfaces.
-        maxLength: 1000
         type: string
       displayName:
         description: Display name is an optional human-readable name for the application. When specified, it must be unique among all applications within a project. It is used for display purposes on user interfaces.
-        maxLength: 40
         type: string
       helmRegistry:
         description: ID of the project's registry where the Helm chart of the application is available for download.
@@ -169,6 +153,7 @@ $defs:
       kind:
         description: Field designating whether the application is a system add-on, system extension, or a normal application.
         enum:
+          - KIND_UNSPECIFIED
           - normal
           - extension
           - addon
@@ -176,9 +161,6 @@ $defs:
         type: string
       name:
         description: Name is a human readable unique identifier for the application and must be unique for all applications of a given project. Used in network URIs.
-        maxLength: 26
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$
         type: string
       profiles:
         description: Set of profiles that can be used when deploying the application.
@@ -191,9 +173,6 @@ $defs:
         type: string
       version:
         description: Version of the application. Used in combination with the name to identify a unique application within a project.
-        maxLength: 20
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$
         type: string
     required:
       - name
@@ -207,15 +186,9 @@ $defs:
     properties:
       name:
         description: Name of the application that has the dependency on the other.
-        maxLength: 26
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$
         type: string
       requires:
         description: Name of the application that is required by the other.
-        maxLength: 26
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$
         type: string
     required:
       - name
@@ -226,15 +199,9 @@ $defs:
     properties:
       name:
         description: Name of the referenced application.
-        maxLength: 40
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$
         type: string
       version:
         description: Version of the referenced application.
-        maxLength: 20
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$
         type: string
     required:
       - name
@@ -252,23 +219,15 @@ $defs:
         type: string
       description:
         description: Description of the artifact. Displayed on user interfaces.
-        maxLength: 1000
         type: string
       displayName:
         description: Display name is an optional human-readable name for the artifact. When specified, it must be unique among all artifacts within a project. It is used for display purposes on user interfaces.
-        maxLength: 40
         type: string
       mimeType:
         description: Artifact's MIME type. Only text/plain, application/json, application/yaml, image/png, and image/jpeg are allowed at this time. MIME types are defined and standardized in IETF's RFC 6838.
-        maxLength: 40
-        minLength: 1
-        pattern: ^(text/plain)$|^(application/json)$|^(application/yaml)$|^(image/png)$|^(image/jpeg)$
         type: string
       name:
         description: Name is a human-readable unique identifier for the artifact and must be unique for all artifacts within a project.
-        maxLength: 40
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$
         type: string
       updateTime:
         description: The last update time of the artifact.
@@ -284,13 +243,9 @@ $defs:
     properties:
       name:
         description: Name of the artifact.
-        maxLength: 40
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$
         type: string
       purpose:
         description: Purpose of the artifact, e.g. icon, thumbnail, Grafana dashboard, etc.
-        maxLength: 20
         type: string
     required:
       - name
@@ -313,7 +268,6 @@ $defs:
         description: Optional list of artifacts required for displaying or deploying this package. For example, icon or thumbnail artifacts can be used by the UI; Grafana\* dashboard definitions can be used by the deployment manager.
         items:
           $ref: '#/$defs/ArtifactReference'
-        maxItems: 100
         type: array
       createTime:
         description: The creation time of the deployment package.
@@ -334,17 +288,14 @@ $defs:
         type: array
       description:
         description: Description of the deployment package. Displayed on user interfaces.
-        maxLength: 1000
         type: string
       displayName:
         description: Display name is an optional human-readable name for the deployment package. When specified, it must be unique among all packages within a project. It is used for display purposes on user interfaces.
-        maxLength: 40
         type: string
       extensions:
         description: Optional list of API and UI extensions.
         items:
           $ref: '#/$defs/APIExtension'
-        maxItems: 100
         type: array
       forbidsMultipleDeployments:
         description: Optional flag indicating whether multiple deployments of this package are forbidden within the same realm.
@@ -358,6 +309,7 @@ $defs:
       kind:
         description: Field designating whether the deployment package is a system add-on, system extension, or a normal package.
         enum:
+          - KIND_UNSPECIFIED
           - normal
           - extension
           - addon
@@ -365,9 +317,6 @@ $defs:
         type: string
       name:
         description: Name is a human-readable unique identifier for the deployment package and must be unique for all packages of a given project.
-        maxLength: 40
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$
         type: string
       namespaces:
         description: Namespace definitions to be created before resources are deployed. This allows complex namespaces to be defined with predefined labels and annotations. If not defined, simple namespaces will be created as needed.
@@ -380,9 +329,6 @@ $defs:
         type: string
       version:
         description: Version of the deployment package.
-        maxLength: 20
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$
         type: string
     required:
       - name
@@ -412,17 +358,12 @@ $defs:
         type: string
       description:
         description: Description of the deployment profile. Displayed on user interfaces.
-        maxLength: 1000
         type: string
       displayName:
         description: Display name is an optional human-readable name for the registry. When specified, it must be unique among all profiles of a given package. It is used for display purposes on user interfaces.
-        maxLength: 40
         type: string
       name:
         description: Name is a human-readable unique identifier for the profile and must be unique for all profiles of a given deployment package.
-        maxLength: 40
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$
         type: string
       updateTime:
         description: The last update time of the deployment profile.
@@ -440,15 +381,9 @@ $defs:
         type: string
       name:
         description: Name of the required deployment package.
-        maxLength: 40
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$
         type: string
       version:
         description: Version of the required deployment package.
-        maxLength: 20
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$
         type: string
     required:
       - name
@@ -459,33 +394,21 @@ $defs:
     properties:
       appName:
         description: The name of the application providing this endpoint.
-        maxLength: 40
         type: string
       authType:
         description: Authentication type expected by the endpoint.
-        maxLength: 16
-        pattern: ^[a-z]{0,16}$
         type: string
       externalPath:
         description: Externally accessible path to the endpoint.
-        maxLength: 128
-        minLength: 1
         type: string
       internalPath:
         description: Internally accessible path to the endpoint.
-        maxLength: 128
-        minLength: 1
         type: string
       scheme:
         description: Protocol scheme provided by the endpoint.
-        maxLength: 32
-        pattern: ^([a-z][a-z0-9-]{0,30}[a-z0-9]){0,1}$
         type: string
       serviceName:
         description: The name of the service hosted by the endpoint.
-        maxLength: 40
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$
         type: string
     required:
       - serviceName
@@ -507,9 +430,6 @@ $defs:
         type: object
       name:
         description: namespace names must be valid RFC 1123 DNS labels. Avoid creating namespaces with the prefix kube-, since it is reserved for Kubernetes\* system namespaces. Avoid default - will already exist
-        maxLength: 40
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$
         type: string
     required:
       - name
@@ -519,20 +439,15 @@ $defs:
     properties:
       default:
         description: Default value for the parameter.
-        maxLength: 4096
         type: string
       displayName:
         description: Display name is an optional human-readable name for the template. It is used for display purposes on user interfaces.
-        maxLength: 100
         type: string
       mandatory:
         description: Optional mandatory flag for the parameter.
         type: boolean
       name:
         description: Human-readable name for the parameter template.
-        maxLength: 4096
-        minLength: 1
-        pattern: ^[A-Za-z0-9-/_\[\]\.\\]*$
         type: string
       secret:
         description: Optional secret flag for the parameter.
@@ -540,19 +455,13 @@ $defs:
       suggestedValues:
         description: List of suggested values to use, to override the default value.
         items:
-          maxLength: 4096
-          minLength: 1
           type: string
-        maxItems: 100
         type: array
       type:
         description: 'Type of parameter: string, number, or boolean.'
-        minLength: 1
-        pattern: ^(string)$|^(number)$|^(boolean)$
         type: string
       validator:
         description: Optional validator for the parameter. Usage TBD.
-        maxLength: 40
         type: string
     required:
       - name
@@ -563,7 +472,6 @@ $defs:
     properties:
       chartValues:
         description: Raw byte value containing the chart values as raw YAML bytes.
-        maxLength: 4000000
         type: string
       createTime:
         description: The creation time of the profile.
@@ -576,17 +484,12 @@ $defs:
         type: array
       description:
         description: Description of the profile. Displayed on user interfaces.
-        maxLength: 1000
         type: string
       displayName:
         description: Display name is an optional human-readable name for the profile. When specified, it must be unique among all profiles of a given application. It is used for display purposes on user interfaces.
-        maxLength: 40
         type: string
       name:
         description: Human-readable name for the profile. Unique among all profiles of the same application.
-        maxLength: 40
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$
         type: string
       parameterTemplates:
         description: Parameter templates available for this profile.
@@ -605,17 +508,12 @@ $defs:
     properties:
       apiType:
         description: Optional type of the API used to obtain inventory of the articles hosted by the registry.
-        maxLength: 16
-        pattern: ^\PC*$
         type: string
       authToken:
         description: Optional authentication token or password for accessing the registry.
-        maxLength: 4500
-        pattern: ^\PC*$
         type: string
       caCerts:
         description: Optional CA certificates for accessing the registry using secure channels, such as HTTPS.
-        maxLength: 16384
         type: string
       createTime:
         description: The creation time of the registry.
@@ -623,33 +521,21 @@ $defs:
         type: string
       description:
         description: Description of the registry. Displayed on user interfaces.
-        maxLength: 1000
         type: string
       displayName:
         description: Display name is an optional human-readable name for the registry. When specified, it must be unique among all registries within a project. It is used for display purposes on user interfaces.
-        maxLength: 40
         type: string
       inventoryUrl:
         description: Optional URL of the API for accessing inventory of artifacts hosted by the registry.
-        maxLength: 1000
         type: string
       name:
         description: Name is a human-readable unique identifier for the registry and must be unique for all registries of a given project.
-        maxLength: 40
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$
         type: string
       rootUrl:
         description: Root URL for retrieving artifacts, e.g. Docker images and Helm charts, from the registry.
-        maxLength: 1000
-        minLength: 1
-        pattern: ^(https?|oci)://[a-z0-9-]+(.[a-z0-9-]+)+([/?][\w_\-@:%.+~#?&/=]*)?$
         type: string
       type:
         description: Type indicates whether the registry holds Docker images or Helm charts; defaults to Helm charts.
-        maxLength: 40
-        minLength: 1
-        pattern: ^(HELM)$|^(IMAGE)$
         type: string
       updateTime:
         description: The last update time of the registry.
@@ -657,8 +543,6 @@ $defs:
         type: string
       userName:
         description: Optional username for accessing the registry.
-        maxLength: 1000
-        pattern: ^\PC*$
         type: string
     required:
       - name
@@ -668,17 +552,14 @@ $defs:
   ResourceReference:
     description: ResourceReference represents a Kubernetes resource identifier.
     properties:
+      ignore:
+        description: Ignore whole resource if true. Will use "remove" if false or not present.
+        type: boolean
       kind:
         description: Kubernetes resource kind, e.g. ConfigMap.
-        maxLength: 40
-        minLength: 1
-        pattern: ^[a-zA-Z0-9][a-zA-Z0-9._-]{0,38}[a-zA-Z0-9]{0,1}$
         type: string
       name:
         description: Kubernetes resource name.
-        maxLength: 40
-        minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-._-]{0,38}[a-z0-9]{0,1}$
         type: string
       namespace:
         description: Kubernetes namespace where the ignored resource resides. When empty, the application namespace will be used.
@@ -692,32 +573,21 @@ $defs:
     properties:
       appName:
         description: The name of the application corresponding to this UI extension.
-        maxLength: 40
-        minLength: 1
         type: string
       description:
         description: Description of the API extension, used on the main UI dashboard.
-        maxLength: 1000
-        minLength: 1
         type: string
       fileName:
         description: The name of the main file to load this specific UI extension.
-        maxLength: 40
-        minLength: 1
         type: string
       label:
         description: Label is a human readable text used for display in the main UI dashboard
-        maxLength: 40
         type: string
       moduleName:
         description: Name of the application module to be loaded.
-        maxLength: 40
-        minLength: 1
         type: string
       serviceName:
         description: The name of the API extension endpoint.
-        maxLength: 40
-        minLength: 1
         type: string
     required:
       - label

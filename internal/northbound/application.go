@@ -11,6 +11,7 @@ import (
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/predicate"
 	"strings"
 
+	protovalidate "buf.build/go/protovalidate"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/application"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/deploymentpackage"
@@ -69,7 +70,7 @@ func (g *Server) CreateApplication(ctx context.Context, req *catalogv3.CreateApp
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.ApplicationType),
 			errors.WithMessage("incomplete request"))
-	} else if err := req.Application.Validate(); err != nil {
+	} else if err := protovalidate.Validate(req); err != nil {
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.ApplicationType),
 			errors.WithMessage(err.Error()))
@@ -681,7 +682,7 @@ func (g *Server) UpdateApplication(ctx context.Context, req *catalogv3.UpdateApp
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.ApplicationType),
 			errors.WithMessage("incomplete request"))
-	} else if err := req.Application.Validate(); err != nil {
+	} else if err := protovalidate.Validate(req); err != nil {
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.ApplicationType),
 			errors.WithMessage(err.Error()))

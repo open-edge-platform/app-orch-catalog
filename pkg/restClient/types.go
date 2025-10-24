@@ -9,30 +9,34 @@ import (
 
 // Defines values for ApplicationKind.
 const (
-	ApplicationKindKINDADDON     ApplicationKind = "KIND_ADDON"
-	ApplicationKindKINDEXTENSION ApplicationKind = "KIND_EXTENSION"
-	ApplicationKindKINDNORMAL    ApplicationKind = "KIND_NORMAL"
+	ApplicationKindKINDADDON       ApplicationKind = "KIND_ADDON"
+	ApplicationKindKINDEXTENSION   ApplicationKind = "KIND_EXTENSION"
+	ApplicationKindKINDNORMAL      ApplicationKind = "KIND_NORMAL"
+	ApplicationKindKINDUNSPECIFIED ApplicationKind = "KIND_UNSPECIFIED"
 )
 
 // Defines values for DeploymentPackageKind.
 const (
-	DeploymentPackageKindKINDADDON     DeploymentPackageKind = "KIND_ADDON"
-	DeploymentPackageKindKINDEXTENSION DeploymentPackageKind = "KIND_EXTENSION"
-	DeploymentPackageKindKINDNORMAL    DeploymentPackageKind = "KIND_NORMAL"
+	DeploymentPackageKindKINDADDON       DeploymentPackageKind = "KIND_ADDON"
+	DeploymentPackageKindKINDEXTENSION   DeploymentPackageKind = "KIND_EXTENSION"
+	DeploymentPackageKindKINDNORMAL      DeploymentPackageKind = "KIND_NORMAL"
+	DeploymentPackageKindKINDUNSPECIFIED DeploymentPackageKind = "KIND_UNSPECIFIED"
 )
 
 // Defines values for CatalogServiceListApplicationsParamsKinds.
 const (
-	CatalogServiceListApplicationsParamsKindsKINDADDON     CatalogServiceListApplicationsParamsKinds = "KIND_ADDON"
-	CatalogServiceListApplicationsParamsKindsKINDEXTENSION CatalogServiceListApplicationsParamsKinds = "KIND_EXTENSION"
-	CatalogServiceListApplicationsParamsKindsKINDNORMAL    CatalogServiceListApplicationsParamsKinds = "KIND_NORMAL"
+	CatalogServiceListApplicationsParamsKindsKINDADDON       CatalogServiceListApplicationsParamsKinds = "KIND_ADDON"
+	CatalogServiceListApplicationsParamsKindsKINDEXTENSION   CatalogServiceListApplicationsParamsKinds = "KIND_EXTENSION"
+	CatalogServiceListApplicationsParamsKindsKINDNORMAL      CatalogServiceListApplicationsParamsKinds = "KIND_NORMAL"
+	CatalogServiceListApplicationsParamsKindsKINDUNSPECIFIED CatalogServiceListApplicationsParamsKinds = "KIND_UNSPECIFIED"
 )
 
 // Defines values for CatalogServiceListDeploymentPackagesParamsKinds.
 const (
-	CatalogServiceListDeploymentPackagesParamsKindsKINDADDON     CatalogServiceListDeploymentPackagesParamsKinds = "KIND_ADDON"
-	CatalogServiceListDeploymentPackagesParamsKindsKINDEXTENSION CatalogServiceListDeploymentPackagesParamsKinds = "KIND_EXTENSION"
-	CatalogServiceListDeploymentPackagesParamsKindsKINDNORMAL    CatalogServiceListDeploymentPackagesParamsKinds = "KIND_NORMAL"
+	CatalogServiceListDeploymentPackagesParamsKindsKINDADDON       CatalogServiceListDeploymentPackagesParamsKinds = "KIND_ADDON"
+	CatalogServiceListDeploymentPackagesParamsKindsKINDEXTENSION   CatalogServiceListDeploymentPackagesParamsKinds = "KIND_EXTENSION"
+	CatalogServiceListDeploymentPackagesParamsKindsKINDNORMAL      CatalogServiceListDeploymentPackagesParamsKinds = "KIND_NORMAL"
+	CatalogServiceListDeploymentPackagesParamsKindsKINDUNSPECIFIED CatalogServiceListDeploymentPackagesParamsKinds = "KIND_UNSPECIFIED"
 )
 
 // APIExtension APIExtensions represents some form of an extension to the external API provided by deployment package.
@@ -125,7 +129,7 @@ type ApplicationReference struct {
 // Artifact Artifact represents a binary artifact that can be used for various purposes, e.g. icon or thumbnail for UI display, or auxiliary artifacts for integration with various platform services such as Grafana dashboard and similar. An artifact may be used by multiple deployment packages.
 type Artifact struct {
 	// Artifact Raw byte content of the artifact encoded as base64. The limits refer to the number of raw bytes.
-	Artifact []byte `json:"artifact"`
+	Artifact string `json:"artifact"`
 
 	// CreateTime The creation time of the artifact.
 	CreateTime *time.Time `json:"createTime,omitempty"`
@@ -480,6 +484,9 @@ type Registry struct {
 
 // ResourceReference ResourceReference represents a Kubernetes resource identifier.
 type ResourceReference struct {
+	// Ignore Ignore whole resource if true. Will use "remove" if false or not present.
+	Ignore *bool `json:"ignore,omitempty"`
+
 	// Kind Kubernetes resource kind, e.g. ConfigMap.
 	Kind string `json:"kind"`
 
@@ -514,7 +521,7 @@ type UIExtension struct {
 // Upload Upload represents a single file-upload record.
 type Upload struct {
 	// Artifact Raw bytes content of the file being uploaded.
-	Artifact []byte `json:"artifact"`
+	Artifact string `json:"artifact"`
 
 	// FileName Name of the file being uploaded.
 	FileName string `json:"fileName"`

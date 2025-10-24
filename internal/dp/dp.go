@@ -5,6 +5,7 @@
 package dp
 
 import (
+	"buf.build/go/protovalidate"
 	"fmt"
 	"os"
 	"strings"
@@ -59,6 +60,11 @@ func GenerateDeploymentPackageResources(helm helm.HelmInfo, values string, names
 		DefaultProfileName: "default",
 	}
 
+	// Validate the application object
+	if err := protovalidate.Validate(app); err != nil {
+		return "", nil, nil, nil, &InputError{Helm: helm, Msg: "Generated application is invalid", Err: err}
+	}
+
 	dp := &catalogv3.DeploymentPackage{
 		Name:    name,
 		Version: helm.Version,
@@ -81,6 +87,11 @@ func GenerateDeploymentPackageResources(helm helm.HelmInfo, values string, names
 		dp.DefaultNamespaces = map[string]string{name: namespace}
 	}
 
+	// Validate the deployment package object
+	if err := protovalidate.Validate(dp); err != nil {
+		return "", nil, nil, nil, &InputError{Helm: helm, Msg: "Generated deployment package is invalid", Err: err}
+	}
+
 	registry := &catalogv3.Registry{
 		Name:        registryName,
 		Description: "OCI registry for " + name,
@@ -92,6 +103,11 @@ func GenerateDeploymentPackageResources(helm helm.HelmInfo, values string, names
 		verboseerror.Infof("      Please ensure that the deployment package is stored securely.\n")
 		registry.Username = helm.Username
 		registry.AuthToken = helm.Password
+	}
+
+	// Validate the registry object
+	if err := protovalidate.Validate(registry); err != nil {
+		return "", nil, nil, nil, &InputError{Helm: helm, Msg: "Generated registry is invalid", Err: err}
 	}
 
 	return name, dp, app, registry, nil
@@ -158,6 +174,14 @@ func GenerateDefaultParametersFromYaml(parent string, yamlContent map[interface{
 				Secret:      false,
 				Mandatory:   false,
 			}
+
+			// Validate the parameter template object
+			if err := protovalidate.Validate(pt); err != nil {
+				// If validation fails, skip this parameter template instead of failing entirely
+				verboseerror.Infof("Skipping invalid parameter template %s: %v\n", fullName, err)
+				continue
+			}
+
 			pts = append(pts, pt)
 		} else if mvalue, ok := yamlContent[key].(map[interface{}]interface{}); ok {
 			// Recursively process nested maps

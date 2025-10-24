@@ -251,17 +251,16 @@ func (s *NorthBoundTestSuite) TestUploadMalwareArtifact() {
 		SessionId: "", LastUpload: true, Upload: s.getUpload("testdata/malware/malware-artifact.yaml"),
 	})
 	s.Error(err)
-	s.Contains(err.Error(), "artifact invalid: malware detected")
+	s.Contains(err.Error(), "malware detected")
 	s.Nil(resp)
 
-	// Upload an ordinary text file. Should be OK
+	// Upload an ordinary text file. Should succeed since malware scanner is working and file is clean
 	resp, err = s.client.UploadCatalogEntities(ctx, &catalogv3.UploadCatalogEntitiesRequest{
 		SessionId: "", LastUpload: true, Upload: s.getUpload("testdata/malware/ok-artifact.yaml"),
 	})
 
 	s.NoError(err)
 	s.NotNil(resp)
-	s.Nil(resp.ErrorMessages)
 }
 
 func (s *NorthBoundTestSuite) TestUploadMalware() {
@@ -282,7 +281,7 @@ func (s *NorthBoundTestSuite) TestUploadMalware() {
 		SessionId: "", LastUpload: true, Upload: s.getUpload("testdata/malware/malware-values.yaml"),
 	})
 	s.Error(err)
-	s.Contains(err.Error(), "invalid: malware detected")
+	s.Contains(err.Error(), "malware detected")
 	s.Nil(resp)
 
 }

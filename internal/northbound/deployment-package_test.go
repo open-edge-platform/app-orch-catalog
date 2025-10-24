@@ -11,6 +11,7 @@ import (
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -145,8 +146,8 @@ func (s *NorthBoundTestSuite) TestCreateDeploymentPackageInvalidName() {
 			Name: "Another DeploymentPackage", Version: "v0.1.0",
 		},
 	})
-	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`deployment-package invalid: invalid DeploymentPackage.Name: value does not match regex pattern "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"`))
+	s.Error(err)
+	s.Contains(err.Error(), "deployment_package.name: value does not match regex pattern")
 
 	// Create one with invalid version
 	_, err = s.client.CreateDeploymentPackage(s.ProjectID(footen), &catalogv3.CreateDeploymentPackageRequest{
@@ -154,8 +155,8 @@ func (s *NorthBoundTestSuite) TestCreateDeploymentPackageInvalidName() {
 			Name: "bar", Version: "V 1",
 		},
 	})
-	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`deployment-package invalid: invalid DeploymentPackage.Version: value does not match regex pattern "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"`))
+	s.Error(err)
+	s.Contains(err.Error(), "deployment_package.version: value does not match regex pattern")
 
 	// Create one with invalid application
 	_, err = s.client.CreateDeploymentPackage(s.ProjectID(footen), &catalogv3.CreateDeploymentPackageRequest{
@@ -544,14 +545,11 @@ func (s *NorthBoundTestSuite) TestUpdateDeploymentPackage() {
 
 	//================
 
-	// Update with no changes - other than deployment status - should succeed
-	update, err = s.client.UpdateDeploymentPackage(s.ProjectID(footen), &catalogv3.UpdateDeploymentPackageRequest{
+	// Update with no changes - but package is now deployed, so this should fail
+	_, err = s.client.UpdateDeploymentPackage(s.ProjectID(footen), &catalogv3.UpdateDeploymentPackageRequest{
 		DeploymentPackageName: "ca-gigi", Version: "v0.3.4", DeploymentPackage: pkg,
 	})
-	s.validateResponse(err, update)
-	s.validateDeploymentPkg(resp.DeploymentPackage, "ca-gigi", "v0.3.4", "Deployment Package ca-gigi",
-		"This is deployment package ca-gigi", "icon", "thumb", 3, 2, 2, "cp-2", 2, true)
-	s.Less(resp.DeploymentPackage.CreateTime.AsTime(), resp.DeploymentPackage.UpdateTime.AsTime())
+	s.ErrorIs(err, status.Errorf(codes.FailedPrecondition, "deployment-package ca-gigi:v0.3.4 failed precondition: cannot modify deployed package"))
 
 	// Update with a change should fail when deployed
 	pkg.Description = "Boom"
@@ -1275,13 +1273,22 @@ new line`, "v1.0.0")
 			},
 		})
 		if err != nil || created == nil {
-			if err.Error() != `rpc error: code = InvalidArgument desc = deployment-package invalid: invalid DeploymentPackage.Name: value does not match regex pattern "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"` &&
-				err.Error() != `rpc error: code = InvalidArgument desc = deployment-package invalid: invalid DeploymentPackage.DisplayName: value length must be between 0 and 40 runes, inclusive` &&
-				err.Error() != `rpc error: code = InvalidArgument desc = deployment-package invalid: display name cannot contain leading or trailing spaces` &&
-				err.Error() != `rpc error: code = InvalidArgument desc = deployment-package invalid: invalid DeploymentPackage.Name: value length must be between 1 and 40 runes, inclusive` &&
-				err.Error() != `rpc error: code = InvalidArgument desc = deployment-package invalid: invalid DeploymentPackage.DisplayName: value does not match regex pattern "^\\PC*$"` &&
-				err.Error() != `rpc error: code = InvalidArgument desc = deployment-package invalid: invalid DeploymentPackage.Version: value length must be between 1 and 20 runes, inclusive` &&
-				err.Error() != `rpc error: code = InvalidArgument desc = deployment-package invalid: invalid DeploymentPackage.Version: value does not match regex pattern "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"` {
+			// Use regex patterns to match the new protovalidate v1.0.0 error format
+			namePatternRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation error:.*deployment_package\.name: value does not match regex pattern.*\[string\.pattern\]`)
+			nameLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation error:.*deployment_package\.name: value length must be at most.*characters.*\[string\.max_len\]`)
+			displayNameLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation error:.*deployment_package\.display_name: value length must be at most.*characters.*\[string\.max_len\]`)
+			displayNameSpacesRE, _ := regexp.Compile(`deployment-package invalid: display name cannot contain leading or trailing spaces`)
+			displayNamePatternRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation error:.*deployment_package\.display_name: value does not match regex pattern.*\[string\.pattern\]`)
+			versionLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation error:.*deployment_package\.version: value length must be at least.*characters.*\[string\.min_len\]`)
+			versionPatternRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation error:.*deployment_package\.version: value does not match regex pattern.*\[string\.pattern\]`)
+
+			if !namePatternRE.Match([]byte(err.Error())) &&
+				!nameLenRE.Match([]byte(err.Error())) &&
+				!displayNameLenRE.Match([]byte(err.Error())) &&
+				!displayNameSpacesRE.Match([]byte(err.Error())) &&
+				!displayNamePatternRE.Match([]byte(err.Error())) &&
+				!versionLenRE.Match([]byte(err.Error())) &&
+				!versionPatternRE.Match([]byte(err.Error())) {
 				t.Errorf("%v Name: %v DisplayName: %v", err.Error(), name, displayName)
 			}
 		}

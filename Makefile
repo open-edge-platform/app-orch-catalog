@@ -251,12 +251,12 @@ openapi-spec-validate: $(VENV_NAME) ## Install openapi-spec-validator
 
 .PHONY: oapi-codegen
 oapi-codegen: ## Install oapi-codegen
-	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@${OAPI_CODEGEN_VERSION}
+	go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@${OAPI_CODEGEN_VERSION}
 
 .PHONY: rest-client-gen
 rest-client-gen: ## Generate Rest client from the generated openapi spec.
-	oapi-codegen -generate client -old-config-style -package restClient -o pkg/restClient/client.go api/spec/openapi.yaml
-	oapi-codegen -generate types -old-config-style -package restClient -o pkg/restClient/types.go api/spec/openapi.yaml
+	PATH="$(shell go env GOBIN):$$PATH" oapi-codegen -generate client -old-config-style -package restClient -o pkg/restClient/client.go api/spec/openapi.yaml
+	PATH="$(shell go env GOBIN):$$PATH" oapi-codegen -generate types -old-config-style -package restClient -o pkg/restClient/types.go api/spec/openapi.yaml
 
 .PHONY: mod-update
 mod-update: ## Update Go modules
