@@ -7,6 +7,7 @@ modules:
 deps:
   - buf.build/bufbuild/protovalidate:v1.0.0
   - buf.build/googleapis/googleapis
+  - buf.build/gnostic/gnostic
 lint:
   use:
     - COMMENT_MESSAGE

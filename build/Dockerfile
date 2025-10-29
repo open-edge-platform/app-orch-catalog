@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-FROM golang:1.24.6@sha256:a18e9e0d94dcc4fffb5c6fa5ec8580edd2e8adcf6541e53304f2bfcaafafd52e AS base
+FROM golang:1.24.9@sha256:5034fa44b36163a4109b71ed75c67dbdcb52c3cd9750953befe00054315d9fd2 AS base
 
 ENV CGO_ENABLED=0
 

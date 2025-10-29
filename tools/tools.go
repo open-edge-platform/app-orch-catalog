@@ -26,6 +26,7 @@
 //	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
 //	go install entgo.io/contrib/entproto/cmd/protoc-gen-ent@latest
 //	go install entgo.io/ent/cmd/ent@latest
+//	go install github.com/sudorandom/protoc-gen-connect-openapi@main
 package tools
 
 import (
@@ -33,9 +34,11 @@ import (
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway"
 	_ "github.com/lib/pq"
 
+	_ "connectrpc.com/connect/cmd/protoc-gen-connect-go"
 	_ "entgo.io/contrib/entproto/cmd/protoc-gen-ent"
 	_ "entgo.io/ent/cmd/ent"
 	_ "github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2"
+	_ "github.com/sudorandom/protoc-gen-connect-openapi"
 	_ "google.golang.org/grpc/cmd/protoc-gen-go-grpc"
 	_ "google.golang.org/protobuf/cmd/protoc-gen-go"
 )

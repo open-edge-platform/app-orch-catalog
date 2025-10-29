@@ -750,7 +750,7 @@ func NewCatalogServiceGetApplicationVersionsRequest(server string, applicationNa
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "applicationName", runtime.ParamLocationPath, applicationName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
 	if err != nil {
 		return nil, err
 	}
@@ -784,7 +784,7 @@ func NewCatalogServiceDeleteApplicationRequest(server string, applicationName st
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "applicationName", runtime.ParamLocationPath, applicationName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
 	if err != nil {
 		return nil, err
 	}
@@ -825,7 +825,7 @@ func NewCatalogServiceGetApplicationRequest(server string, applicationName strin
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "applicationName", runtime.ParamLocationPath, applicationName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
 	if err != nil {
 		return nil, err
 	}
@@ -877,7 +877,7 @@ func NewCatalogServiceUpdateApplicationRequestWithBody(server string, applicatio
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "applicationName", runtime.ParamLocationPath, applicationName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
 	if err != nil {
 		return nil, err
 	}
@@ -920,7 +920,7 @@ func NewCatalogServiceGetApplicationReferenceCountRequest(server string, applica
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "applicationName", runtime.ParamLocationPath, applicationName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
 	if err != nil {
 		return nil, err
 	}
@@ -1098,7 +1098,7 @@ func NewCatalogServiceDeleteArtifactRequest(server string, artifactName string) 
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "artifactName", runtime.ParamLocationPath, artifactName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "artifact_name", runtime.ParamLocationPath, artifactName)
 	if err != nil {
 		return nil, err
 	}
@@ -1132,7 +1132,7 @@ func NewCatalogServiceGetArtifactRequest(server string, artifactName string) (*h
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "artifactName", runtime.ParamLocationPath, artifactName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "artifact_name", runtime.ParamLocationPath, artifactName)
 	if err != nil {
 		return nil, err
 	}
@@ -1177,7 +1177,7 @@ func NewCatalogServiceUpdateArtifactRequestWithBody(server string, artifactName 
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "artifactName", runtime.ParamLocationPath, artifactName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "artifact_name", runtime.ParamLocationPath, artifactName)
 	if err != nil {
 		return nil, err
 	}
@@ -1366,7 +1366,7 @@ func NewCatalogServiceGetDeploymentPackageVersionsRequest(server string, deploym
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deploymentPackageName", runtime.ParamLocationPath, deploymentPackageName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deployment_package_name", runtime.ParamLocationPath, deploymentPackageName)
 	if err != nil {
 		return nil, err
 	}
@@ -1400,7 +1400,7 @@ func NewCatalogServiceDeleteDeploymentPackageRequest(server string, deploymentPa
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deploymentPackageName", runtime.ParamLocationPath, deploymentPackageName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deployment_package_name", runtime.ParamLocationPath, deploymentPackageName)
 	if err != nil {
 		return nil, err
 	}
@@ -1441,7 +1441,7 @@ func NewCatalogServiceGetDeploymentPackageRequest(server string, deploymentPacka
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deploymentPackageName", runtime.ParamLocationPath, deploymentPackageName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deployment_package_name", runtime.ParamLocationPath, deploymentPackageName)
 	if err != nil {
 		return nil, err
 	}
@@ -1493,7 +1493,7 @@ func NewCatalogServiceUpdateDeploymentPackageRequestWithBody(server string, depl
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deploymentPackageName", runtime.ParamLocationPath, deploymentPackageName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deployment_package_name", runtime.ParamLocationPath, deploymentPackageName)
 	if err != nil {
 		return nil, err
 	}
@@ -1552,20 +1552,16 @@ func NewCatalogServiceImportRequest(server string, params *CatalogServiceImportP
 	if params != nil {
 		queryValues := queryURL.Query()
 
-		if params.Url != nil {
-
-			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "url", runtime.ParamLocationQuery, *params.Url); err != nil {
-				return nil, err
-			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
-				return nil, err
-			} else {
-				for k, v := range parsed {
-					for _, v2 := range v {
-						queryValues.Add(k, v2)
-					}
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "url", runtime.ParamLocationQuery, params.Url); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
 				}
 			}
-
 		}
 
 		if params.Username != nil {
@@ -1850,7 +1846,7 @@ func NewCatalogServiceDeleteRegistryRequest(server string, registryName string) 
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "registryName", runtime.ParamLocationPath, registryName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "registry_name", runtime.ParamLocationPath, registryName)
 	if err != nil {
 		return nil, err
 	}
@@ -1884,7 +1880,7 @@ func NewCatalogServiceGetRegistryRequest(server string, registryName string, par
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "registryName", runtime.ParamLocationPath, registryName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "registry_name", runtime.ParamLocationPath, registryName)
 	if err != nil {
 		return nil, err
 	}
@@ -1951,7 +1947,7 @@ func NewCatalogServiceUpdateRegistryRequestWithBody(server string, registryName 
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "registryName", runtime.ParamLocationPath, registryName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "registry_name", runtime.ParamLocationPath, registryName)
 	if err != nil {
 		return nil, err
 	}
@@ -2215,7 +2211,7 @@ type ClientWithResponsesInterface interface {
 type CatalogServiceListApplicationsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ListApplicationsResponse
+	JSON200      *CatalogV3ListApplicationsResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -2237,7 +2233,7 @@ func (r CatalogServiceListApplicationsResponse) StatusCode() int {
 type CatalogServiceCreateApplicationResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *CreateApplicationResponse
+	JSON200      *CatalogV3CreateApplicationResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -2259,7 +2255,7 @@ func (r CatalogServiceCreateApplicationResponse) StatusCode() int {
 type CatalogServiceGetApplicationVersionsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *GetApplicationVersionsResponse
+	JSON200      *CatalogV3GetApplicationVersionsResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -2281,6 +2277,7 @@ func (r CatalogServiceGetApplicationVersionsResponse) StatusCode() int {
 type CatalogServiceDeleteApplicationResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *GoogleProtobufEmpty
 }
 
 // Status returns HTTPResponse.Status
@@ -2302,7 +2299,7 @@ func (r CatalogServiceDeleteApplicationResponse) StatusCode() int {
 type CatalogServiceGetApplicationResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *GetApplicationResponse
+	JSON200      *CatalogV3GetApplicationResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -2324,6 +2321,7 @@ func (r CatalogServiceGetApplicationResponse) StatusCode() int {
 type CatalogServiceUpdateApplicationResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *GoogleProtobufEmpty
 }
 
 // Status returns HTTPResponse.Status
@@ -2345,7 +2343,7 @@ func (r CatalogServiceUpdateApplicationResponse) StatusCode() int {
 type CatalogServiceGetApplicationReferenceCountResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *GetApplicationReferenceCountResponse
+	JSON200      *CatalogV3GetApplicationReferenceCountResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -2367,7 +2365,7 @@ func (r CatalogServiceGetApplicationReferenceCountResponse) StatusCode() int {
 type CatalogServiceListArtifactsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ListArtifactsResponse
+	JSON200      *CatalogV3ListArtifactsResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -2389,7 +2387,7 @@ func (r CatalogServiceListArtifactsResponse) StatusCode() int {
 type CatalogServiceCreateArtifactResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *CreateArtifactResponse
+	JSON200      *CatalogV3CreateArtifactResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -2411,6 +2409,7 @@ func (r CatalogServiceCreateArtifactResponse) StatusCode() int {
 type CatalogServiceDeleteArtifactResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *GoogleProtobufEmpty
 }
 
 // Status returns HTTPResponse.Status
@@ -2432,7 +2431,7 @@ func (r CatalogServiceDeleteArtifactResponse) StatusCode() int {
 type CatalogServiceGetArtifactResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *GetArtifactResponse
+	JSON200      *CatalogV3GetArtifactResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -2454,6 +2453,7 @@ func (r CatalogServiceGetArtifactResponse) StatusCode() int {
 type CatalogServiceUpdateArtifactResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *GoogleProtobufEmpty
 }
 
 // Status returns HTTPResponse.Status
@@ -2475,7 +2475,7 @@ func (r CatalogServiceUpdateArtifactResponse) StatusCode() int {
 type CatalogServiceListDeploymentPackagesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ListDeploymentPackagesResponse
+	JSON200      *CatalogV3ListDeploymentPackagesResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -2497,7 +2497,7 @@ func (r CatalogServiceListDeploymentPackagesResponse) StatusCode() int {
 type CatalogServiceCreateDeploymentPackageResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *CreateDeploymentPackageResponse
+	JSON200      *CatalogV3CreateDeploymentPackageResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -2519,7 +2519,7 @@ func (r CatalogServiceCreateDeploymentPackageResponse) StatusCode() int {
 type CatalogServiceGetDeploymentPackageVersionsResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *GetDeploymentPackageVersionsResponse
+	JSON200      *CatalogV3GetDeploymentPackageVersionsResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -2541,6 +2541,7 @@ func (r CatalogServiceGetDeploymentPackageVersionsResponse) StatusCode() int {
 type CatalogServiceDeleteDeploymentPackageResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *GoogleProtobufEmpty
 }
 
 // Status returns HTTPResponse.Status
@@ -2562,7 +2563,7 @@ func (r CatalogServiceDeleteDeploymentPackageResponse) StatusCode() int {
 type CatalogServiceGetDeploymentPackageResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *GetDeploymentPackageResponse
+	JSON200      *CatalogV3GetDeploymentPackageResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -2584,6 +2585,7 @@ func (r CatalogServiceGetDeploymentPackageResponse) StatusCode() int {
 type CatalogServiceUpdateDeploymentPackageResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *GoogleProtobufEmpty
 }
 
 // Status returns HTTPResponse.Status
@@ -2605,7 +2607,7 @@ func (r CatalogServiceUpdateDeploymentPackageResponse) StatusCode() int {
 type CatalogServiceImportResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ImportResponse
+	JSON200      *CatalogV3ImportResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -2627,7 +2629,7 @@ func (r CatalogServiceImportResponse) StatusCode() int {
 type CatalogServiceListRegistriesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *ListRegistriesResponse
+	JSON200      *CatalogV3ListRegistriesResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -2649,7 +2651,7 @@ func (r CatalogServiceListRegistriesResponse) StatusCode() int {
 type CatalogServiceCreateRegistryResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *CreateRegistryResponse
+	JSON200      *CatalogV3CreateRegistryResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -2671,6 +2673,7 @@ func (r CatalogServiceCreateRegistryResponse) StatusCode() int {
 type CatalogServiceDeleteRegistryResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *GoogleProtobufEmpty
 }
 
 // Status returns HTTPResponse.Status
@@ -2692,7 +2695,7 @@ func (r CatalogServiceDeleteRegistryResponse) StatusCode() int {
 type CatalogServiceGetRegistryResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *GetRegistryResponse
+	JSON200      *CatalogV3GetRegistryResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -2714,6 +2717,7 @@ func (r CatalogServiceGetRegistryResponse) StatusCode() int {
 type CatalogServiceUpdateRegistryResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
+	JSON200      *GoogleProtobufEmpty
 }
 
 // Status returns HTTPResponse.Status
@@ -2735,7 +2739,7 @@ func (r CatalogServiceUpdateRegistryResponse) StatusCode() int {
 type CatalogServiceUploadCatalogEntitiesResponse struct {
 	Body         []byte
 	HTTPResponse *http.Response
-	JSON200      *UploadCatalogEntitiesResponse
+	JSON200      *CatalogV3UploadCatalogEntitiesResponse
 }
 
 // Status returns HTTPResponse.Status
@@ -3066,7 +3070,7 @@ func ParseCatalogServiceListApplicationsResponse(rsp *http.Response) (*CatalogSe
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ListApplicationsResponse
+		var dest CatalogV3ListApplicationsResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3092,7 +3096,7 @@ func ParseCatalogServiceCreateApplicationResponse(rsp *http.Response) (*CatalogS
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest CreateApplicationResponse
+		var dest CatalogV3CreateApplicationResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3118,7 +3122,7 @@ func ParseCatalogServiceGetApplicationVersionsResponse(rsp *http.Response) (*Cat
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest GetApplicationVersionsResponse
+		var dest CatalogV3GetApplicationVersionsResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3142,6 +3146,16 @@ func ParseCatalogServiceDeleteApplicationResponse(rsp *http.Response) (*CatalogS
 		HTTPResponse: rsp,
 	}
 
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GoogleProtobufEmpty
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
 	return response, nil
 }
 
@@ -3160,7 +3174,7 @@ func ParseCatalogServiceGetApplicationResponse(rsp *http.Response) (*CatalogServ
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest GetApplicationResponse
+		var dest CatalogV3GetApplicationResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3184,6 +3198,16 @@ func ParseCatalogServiceUpdateApplicationResponse(rsp *http.Response) (*CatalogS
 		HTTPResponse: rsp,
 	}
 
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GoogleProtobufEmpty
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
 	return response, nil
 }
 
@@ -3202,7 +3226,7 @@ func ParseCatalogServiceGetApplicationReferenceCountResponse(rsp *http.Response)
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest GetApplicationReferenceCountResponse
+		var dest CatalogV3GetApplicationReferenceCountResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3228,7 +3252,7 @@ func ParseCatalogServiceListArtifactsResponse(rsp *http.Response) (*CatalogServi
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ListArtifactsResponse
+		var dest CatalogV3ListArtifactsResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3254,7 +3278,7 @@ func ParseCatalogServiceCreateArtifactResponse(rsp *http.Response) (*CatalogServ
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest CreateArtifactResponse
+		var dest CatalogV3CreateArtifactResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3278,6 +3302,16 @@ func ParseCatalogServiceDeleteArtifactResponse(rsp *http.Response) (*CatalogServ
 		HTTPResponse: rsp,
 	}
 
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GoogleProtobufEmpty
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
 	return response, nil
 }
 
@@ -3296,7 +3330,7 @@ func ParseCatalogServiceGetArtifactResponse(rsp *http.Response) (*CatalogService
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest GetArtifactResponse
+		var dest CatalogV3GetArtifactResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3320,6 +3354,16 @@ func ParseCatalogServiceUpdateArtifactResponse(rsp *http.Response) (*CatalogServ
 		HTTPResponse: rsp,
 	}
 
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GoogleProtobufEmpty
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
 	return response, nil
 }
 
@@ -3338,7 +3382,7 @@ func ParseCatalogServiceListDeploymentPackagesResponse(rsp *http.Response) (*Cat
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ListDeploymentPackagesResponse
+		var dest CatalogV3ListDeploymentPackagesResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3364,7 +3408,7 @@ func ParseCatalogServiceCreateDeploymentPackageResponse(rsp *http.Response) (*Ca
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest CreateDeploymentPackageResponse
+		var dest CatalogV3CreateDeploymentPackageResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3390,7 +3434,7 @@ func ParseCatalogServiceGetDeploymentPackageVersionsResponse(rsp *http.Response)
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest GetDeploymentPackageVersionsResponse
+		var dest CatalogV3GetDeploymentPackageVersionsResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3414,6 +3458,16 @@ func ParseCatalogServiceDeleteDeploymentPackageResponse(rsp *http.Response) (*Ca
 		HTTPResponse: rsp,
 	}
 
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GoogleProtobufEmpty
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
 	return response, nil
 }
 
@@ -3432,7 +3486,7 @@ func ParseCatalogServiceGetDeploymentPackageResponse(rsp *http.Response) (*Catal
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest GetDeploymentPackageResponse
+		var dest CatalogV3GetDeploymentPackageResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3456,6 +3510,16 @@ func ParseCatalogServiceUpdateDeploymentPackageResponse(rsp *http.Response) (*Ca
 		HTTPResponse: rsp,
 	}
 
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GoogleProtobufEmpty
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
 	return response, nil
 }
 
@@ -3474,7 +3538,7 @@ func ParseCatalogServiceImportResponse(rsp *http.Response) (*CatalogServiceImpor
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ImportResponse
+		var dest CatalogV3ImportResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3500,7 +3564,7 @@ func ParseCatalogServiceListRegistriesResponse(rsp *http.Response) (*CatalogServ
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest ListRegistriesResponse
+		var dest CatalogV3ListRegistriesResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3526,7 +3590,7 @@ func ParseCatalogServiceCreateRegistryResponse(rsp *http.Response) (*CatalogServ
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest CreateRegistryResponse
+		var dest CatalogV3CreateRegistryResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3550,6 +3614,16 @@ func ParseCatalogServiceDeleteRegistryResponse(rsp *http.Response) (*CatalogServ
 		HTTPResponse: rsp,
 	}
 
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GoogleProtobufEmpty
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
 	return response, nil
 }
 
@@ -3568,7 +3642,7 @@ func ParseCatalogServiceGetRegistryResponse(rsp *http.Response) (*CatalogService
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest GetRegistryResponse
+		var dest CatalogV3GetRegistryResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
@@ -3592,6 +3666,16 @@ func ParseCatalogServiceUpdateRegistryResponse(rsp *http.Response) (*CatalogServ
 		HTTPResponse: rsp,
 	}
 
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GoogleProtobufEmpty
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
 	return response, nil
 }
 
@@ -3610,7 +3694,7 @@ func ParseCatalogServiceUploadCatalogEntitiesResponse(rsp *http.Response) (*Cata
 
 	switch {
 	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
-		var dest UploadCatalogEntitiesResponse
+		var dest CatalogV3UploadCatalogEntitiesResponse
 		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
 			return nil, err
 		}
