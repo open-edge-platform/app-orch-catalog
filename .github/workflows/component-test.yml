@@ -19,7 +19,7 @@ on:
         description: 'The branch, tag or SHA to checkout EMF'
         required: true
         type: string
-        default: 'ed0de70b9080465711c587a3ed7a75e51aa1fcb9'
+        default: main
 
 permissions:
   contents: read
@@ -32,26 +32,65 @@ jobs:
     runs-on: ubuntu-24.04-16core-64GB # ubuntu-24.04-4core-16GB ubuntu-22.04-32core-128GB & ubuntu-24.04-16core-64GB
     timeout-minutes: 60
     env:
-      ORCH_DEFAULT_PASSWORD: ${{ secrets.ORCH_DEFAULT_PASSWORD }}
+      ORCH_DEFAULT_PASSWORD: 'ChangeMeOn1stLogin!'
       CODER_DIR: ${{ github.workspace }}
 
     steps:
-      - name: Deploy Kind Orchestrator
+      - name: Deploy Kind Orchestrator (with fallback authentication)
         id: deploy-kind-orchestrator
-        uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@2c42a7c3c0649deaef5841f79a97958a4211b33a
+        uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@e8ae6a389d133948435aacbd38de90d952b1e05e
         timeout-minutes: 45
         with:
           orch_version: ${{ inputs.emf-branch || 'main' }}
-          orch_password: ${{ secrets.ORCH_DEFAULT_PASSWORD }}
-          docker_username: ${{ secrets.SYS_DOCKERHUB_USERNAME }}
-          docker_password: ${{ secrets.SYS_DOCKERHUB_RO }}
+          orch_password: 'ChangeMeOn1stLogin!'
+          # Skip Docker Hub credentials since they're not available
+          # docker_username: ${{ secrets.SYS_DOCKERHUB_USERNAME }}
+          # docker_password: ${{ secrets.SYS_DOCKERHUB_RO }}
           token: ${{ secrets.SYS_ORCH_GITHUB }}
           deployment_type: 'all'
+        env:
+          # Provide a default password since secret is not available
+          ORCH_DEFAULT_PASSWORD: 'ChangeMeOn1stLogin!'
+
+      - name: Configure kubectl for Kind cluster
+        run: |
+          # First check if kubectl is already configured by the EMF action
+          echo "Current kubectl configuration..."
+          if kubectl cluster-info 2>/dev/null; then
+            echo "✅ kubectl is already configured by EMF action!"
+            kubectl get nodes
+          else
+            echo "kubectl not configured, trying to configure manually..."
+            
+            # List all Kind clusters to see what's available
+            echo "Available Kind clusters:"
+            kind get clusters
+            
+            # Try to find the cluster name automatically
+            CLUSTER_NAME=$(kind get clusters | head -n 1)
+            if [ -z "$CLUSTER_NAME" ]; then
+              echo "❌ No Kind clusters found!"
+              exit 1
+            fi
+            
+            echo "Using Kind cluster: $CLUSTER_NAME"
+            
+            # Configure kubectl for the Kind cluster
+            kind get kubeconfig --name "$CLUSTER_NAME" > /tmp/kubeconfig
+            export KUBECONFIG=/tmp/kubeconfig
+            echo "KUBECONFIG=/tmp/kubeconfig" >> $GITHUB_ENV
+            
+            # Verify connection
+            echo "Verifying kubectl connection..."
+            kubectl cluster-info
+            kubectl get nodes
+          fi
+          echo "kubectl configuration successful!"
 
       - name: Set up Go
         uses: actions/setup-go@v6
         with:
-          go-version: '1.24.1'
+          go-version: '1.24.6'
           cache: true
 
       - name: Checkout app-orch-catalog repository
@@ -80,6 +119,9 @@ jobs:
       - name: Build binaries
         working-directory: app-orch-catalog
         run: |
+          echo "Updating Go module dependencies..."
+          go mod tidy
+          echo "Building binaries..."
           make build
 
       # Install versions of the build tools that are different from what is in
@@ -127,6 +169,9 @@ jobs:
         env:
           PATH: ${{ env.PATH }}:${{ env.GOPATH }}/bin
         run: |
+          echo "Updating Go module dependencies..."
+          go mod tidy
+          echo "Running component tests..."
           make component-tests
           echo "Component tests done!"
       - name: Report
@@ -161,7 +206,7 @@ jobs:
 
       - name: Upload Test Report
         if: always()
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4 # v5.0.0
         with:
           name: test-report
           path: app-orch-catalog/test/${{ github.event_name }}-${{ github.event.number }}-test-report.html
