@@ -241,15 +241,18 @@ customise-openapi: ## Customise the generated OpenAPI spec for REST clients
 	@yq eval 'del(.paths["/catalog.v3.CatalogService/WatchDeploymentPackages"])' -i api/spec/openapi.yaml
 	@yq eval 'del(.paths["/catalog.v3.CatalogService/WatchRegistries"])' -i api/spec/openapi.yaml
 	@echo "Removing Connect-specific schemas..."
-	@yq eval 'del(.components.schemas["connect.error"])' -i api/spec/openapi.yaml
 	@yq eval 'del(.components.schemas["connect-protocol-version"])' -i api/spec/openapi.yaml
 	@yq eval 'del(.components.schemas["connect-timeout-header"])' -i api/spec/openapi.yaml
 	@echo "Removing paths with undefined schema references..."
 	@yq eval 'del(.paths."/catalog.v3.CatalogService/DownloadDeploymentPackage")' -i api/spec/openapi.yaml
 	@echo "Removing examples property from Timestamp schema..."
 	@yq eval 'del(.components.schemas."google.protobuf.Timestamp".examples)' -i api/spec/openapi.yaml
+	@echo "Removing examples property from connect.error schema..."
+	@yq eval 'del(.components.schemas."connect.error".properties.code.examples)' -i api/spec/openapi.yaml
 	@echo "Removing const property from all schemas..."
 	@sed -i '/const:/d' api/spec/openapi.yaml
+	@echo "Fixing OpenAPI info section..."
+	@yq eval '.info = {"title": "Application Catalog API", "version": "v3.0.0", "description": "REST API for managing applications, deployment packages, registries, and artifacts"}' -i api/spec/openapi.yaml
 
 .PHONY: openapi-spec-validate
 openapi-spec-validate: $(VENV_NAME) ## Install openapi-spec-validator

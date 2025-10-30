@@ -193,9 +193,7 @@ $defs:
        used by multiple deployment packages.
     properties:
       artifact:
-        description: |
-          Raw byte content of the artifact encoded as base64. The limits refer to the number of raw bytes.
-          bytes.const = []
+        description: Raw byte content of the artifact encoded as base64. The limits refer to the number of raw bytes.
         maxLength: 4000000
         minLength: 4
         title: artifact
@@ -669,9 +667,7 @@ $defs:
        used by multiple deployment packages.
     properties:
       artifact:
-        description: |
-          Raw byte content of the artifact encoded as base64. The limits refer to the number of raw bytes.
-          bytes.const = []
+        description: Raw byte content of the artifact encoded as base64. The limits refer to the number of raw bytes.
         maxLength: 4000000
         minLength: 4
         title: artifact
@@ -1431,25 +1427,47 @@ $defs:
       - artifact
     title: Upload
     type: object
-  connect.error_details.Any:
+  connect.error:
     additionalProperties: true
-    description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message, with an additional debug field for ConnectRPC error details.
+    description: 'Error type returned by Connect: https://connectrpc.com/docs/go/errors/#http-representation'
+    properties:
+      code:
+        description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+        enum:
+          - canceled
+          - unknown
+          - invalid_argument
+          - deadline_exceeded
+          - not_found
+          - already_exists
+          - permission_denied
+          - resource_exhausted
+          - failed_precondition
+          - aborted
+          - out_of_range
+          - unimplemented
+          - internal
+          - unavailable
+          - data_loss
+          - unauthenticated
+        type: string
+      detail:
+        $ref: '#/$defs/google.protobuf.Any'
+      message:
+        description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+        type: string
+    title: Connect Error
+    type: object
+  google.protobuf.Any:
+    additionalProperties: true
+    description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
     properties:
       debug:
-        description: Deserialized error detail payload. The 'type' field indicates the schema. This field is for easier debugging and should not be relied upon for application logic.
-        discriminator:
-          propertyName: type
-        oneOf:
-          - additionalProperties: true
-            description: Detailed error information.
-            title: Any
-            type: object
-        title: Debug
+        additionalProperties: true
+        type: object
       type:
-        description: 'A URL that acts as a globally unique identifier for the type of the serialized message. For example: type.googleapis.com/google.rpc.ErrorInfo. This is used to determine the schema of the data in the value field and is the discriminator for the debug field.'
         type: string
       value:
-        description: The Protobuf message, serialized as bytes and base64-encoded. The specific message type is identified by the type field.
         format: binary
         type: string
     type: object
