@@ -25,5 +25,4 @@ deploymentProfiles:
 
 artifacts:
   - name: "librespeed-thumbnail"
-    publisher: "intel"
     purpose: "thumbnail"

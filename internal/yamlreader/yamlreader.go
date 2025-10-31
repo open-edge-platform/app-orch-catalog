@@ -23,6 +23,7 @@ import (
 	"github.com/open-edge-platform/app-orch-catalog/pkg/schema/upload"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/schema/validator"
 
+	"buf.build/go/protovalidate"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/malware"
 	"github.com/open-edge-platform/orch-library/go/dazl"
@@ -276,6 +277,13 @@ func (u *YamlReader) ReadRegistry(d upload.YamlSpec) (*catalogv3.Registry, error
 		Cacerts:      d.CACerts,
 	}
 
+	// Validate the registry object using protovalidate
+	if err := protovalidate.Validate(reg); err != nil {
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithMessage("registry validation failed for file %s: %v", d.FileName, err),
+			nberrors.WithError(err))
+	}
+
 	return reg, nil
 }
 
@@ -312,6 +320,14 @@ func (u *YamlReader) ReadArtifact(d upload.YamlSpec) (*catalogv3.Artifact, error
 		Description: d.Description,
 		MimeType:    d.MimeType,
 		Artifact:    artifactBinary,
+	}
+
+	// Validate the artifact object using protovalidate
+	if err := protovalidate.Validate(art); err != nil {
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.ArtifactType),
+			nberrors.WithMessage("artifact validation failed for file %s: %v", d.FileName, err),
+			nberrors.WithError(err))
 	}
 
 	return art, nil
@@ -357,6 +373,13 @@ func (u *YamlReader) ReadApplication(d upload.YamlSpec, f FileSet) (*catalogv3.A
 		}
 	}
 
+	// Validate the application object using protovalidate
+	if err := protovalidate.Validate(app); err != nil {
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithMessage("application validation failed for file %s: %v", d.FileName, err),
+			nberrors.WithError(err))
+	}
+
 	return app, nil
 }
 
@@ -397,14 +420,23 @@ func (u *YamlReader) readProfile(appFileName string, p upload.Profile, f FileSet
 	}
 
 	yamlString := string(fileBytes)
-	return &catalogv3.Profile{
+	profile := &catalogv3.Profile{
 		Name:                  p.Name,
 		DisplayName:           p.DisplayName,
 		Description:           p.Description,
 		ChartValues:           yamlString,
 		DeploymentRequirement: requirements,
 		ParameterTemplates:    parameterTemplates,
-	}, nil
+	}
+
+	// Validate the profile object
+	if err := protovalidate.Validate(profile); err != nil {
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.ProfileType),
+			nberrors.WithMessage(err.Error()))
+	}
+
+	return profile, nil
 }
 
 // ReadDeploymentPackage converts an upload.YamlSpec into a DeploymentPackage object.
@@ -506,7 +538,11 @@ func (u *YamlReader) ReadDeploymentPackage(d upload.YamlSpec) (*catalogv3.Deploy
 
 	if len(d.DeploymentProfiles) > 0 {
 		for _, profile := range d.DeploymentProfiles {
-			pkg.Profiles = append(pkg.Profiles, u.deploymentProfile(profile))
+			deployProfile, err := u.deploymentProfile(profile)
+			if err != nil {
+				return nil, err
+			}
+			pkg.Profiles = append(pkg.Profiles, deployProfile)
 		}
 		if pkg.DefaultProfileName == "" {
 			pkg.DefaultProfileName = d.DeploymentProfiles[0].Name
@@ -517,11 +553,18 @@ func (u *YamlReader) ReadDeploymentPackage(d upload.YamlSpec) (*catalogv3.Deploy
 	pkg.IsDeployed = d.IsDeployed
 	pkg.ForbidsMultipleDeployments = d.ForbidsMultipleDeployments
 
+	// Validate the deployment package object using protovalidate
+	if err := protovalidate.Validate(pkg); err != nil {
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithMessage("deployment package validation failed for file %s: %v", d.FileName, err),
+			nberrors.WithError(err))
+	}
+
 	return pkg, nil
 }
 
 // deploymentProfile converts an upload.DeploymentProfile into a DeploymentProfile object.
-func (u *YamlReader) deploymentProfile(deploymentProfile upload.DeploymentProfile) *catalogv3.DeploymentProfile {
+func (u *YamlReader) deploymentProfile(deploymentProfile upload.DeploymentProfile) (*catalogv3.DeploymentProfile, error) {
 	prof := &catalogv3.DeploymentProfile{
 		Name:                deploymentProfile.Name,
 		DisplayName:         deploymentProfile.DisplayName,
@@ -532,5 +575,13 @@ func (u *YamlReader) deploymentProfile(deploymentProfile upload.DeploymentProfil
 	for _, p := range deploymentProfile.ApplicationProfiles {
 		prof.ApplicationProfiles[p.ApplicationName] = p.ProfileName
 	}
-	return prof
+
+	// Validate the deployment profile object
+	if err := protovalidate.Validate(prof); err != nil {
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentProfileType),
+			nberrors.WithMessage(err.Error()))
+	}
+
+	return prof, nil
 }

@@ -394,6 +394,7 @@ ResourceReference represents a Kubernetes resource identifier.
 | name | [string](#string) |  | Kubernetes resource name. |
 | kind | [string](#string) |  | Kubernetes resource kind, e.g. ConfigMap. |
 | namespace | [string](#string) |  | Kubernetes namespace where the ignored resource resides. When empty, the application namespace will be used. |
+| ignore | [bool](#bool) |  | Ignore whole resource if true. Will use "remove" if false or not present. |
 
 <a name="catalog-v3-UIExtension"></a>
 

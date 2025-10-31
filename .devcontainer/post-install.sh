@@ -33,9 +33,8 @@ echo "export PATH=$PATH:$(go env GOBIN)" >> /etc/profile
 #docker network create -d=bridge --subnet=172.19.0.0/24 kind
 
 go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@v1.5.1
-go install github.com/envoyproxy/protoc-gen-validate@v1.2.1
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1
-go install github.com/kollalabs/protoc-gen-openapi@v0.0.27
+go install github.com/connectrpc/connect-openapi-go/cmd/protoc-gen-connect-openapi@latest
 
 asdf version
 buf --version
