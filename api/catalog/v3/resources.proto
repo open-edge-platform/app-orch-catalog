@@ -5,9 +5,9 @@ syntax = "proto3";
 
 package catalog.v3;
 
+import "buf/validate/validate.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/timestamp.proto";
-import "validate/validate.proto";
 
 // Event message carries the event type detected by the catalog service during the invocation of
 // the "watch" RPC.
@@ -16,7 +16,7 @@ message Event {
   // to annotate entities during the replay phase of the watch RPC.
   string type = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 7
       max_len: 7
       pattern: "^(replayed)$|^(created)$|^(updated)$|^(deleted)$"
@@ -34,7 +34,7 @@ message Registry {
   // given project.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
@@ -45,7 +45,7 @@ message Registry {
   // registries within a project. It is used for display purposes on user interfaces.
   string display_name = 2 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 40
       pattern: "^\\PC*$"
@@ -55,7 +55,7 @@ message Registry {
   // Description of the registry. Displayed on user interfaces.
   string description = 3 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 1000
     }
@@ -64,7 +64,7 @@ message Registry {
   // Root URL for retrieving artifacts, e.g. Docker images and Helm charts, from the registry.
   string root_url = 4 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 1000
       pattern: "^(https?|oci)://[a-z0-9-]+(.[a-z0-9-]+)+([/?][\\w_\\-@:%.+~#?&/=]*)?$"
@@ -72,14 +72,14 @@ message Registry {
   ];
 
   // Optional username for accessing the registry.
-  string username = 5 [(validate.rules).string = {
+  string username = 5 [(buf.validate.field).string = {
     min_len: 0
     max_len: 1000
     pattern: "^\\PC*$"
   }];
 
   // Optional authentication token or password for accessing the registry.
-  string auth_token = 6 [(validate.rules).string = {
+  string auth_token = 6 [(buf.validate.field).string = {
     min_len: 0
     max_len: 4500
     pattern: "^\\PC*$"
@@ -88,7 +88,7 @@ message Registry {
   // Type indicates whether the registry holds Docker images or Helm charts; defaults to Helm charts.
   string type = 7 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
       pattern: "^(HELM)$|^(IMAGE)$"
@@ -98,7 +98,7 @@ message Registry {
   // Optional CA certificates for accessing the registry using secure channels, such as HTTPS.
   string cacerts = 8 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 16384
     }
@@ -107,7 +107,7 @@ message Registry {
   // Optional type of the API used to obtain inventory of the articles hosted by the registry.
   string api_type = 9 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 16
       pattern: "^\\PC*$"
@@ -117,7 +117,7 @@ message Registry {
   // Optional URL of the API for accessing inventory of artifacts hosted by the registry.
   string inventory_url = 10 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 1000
     }
@@ -150,7 +150,7 @@ message DeploymentPackage {
   // given project.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
@@ -161,7 +161,7 @@ message DeploymentPackage {
   // packages within a project. It is used for display purposes on user interfaces.
   string display_name = 2 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 40
       pattern: "^\\PC*$"
@@ -171,7 +171,7 @@ message DeploymentPackage {
   // Description of the deployment package. Displayed on user interfaces.
   string description = 3 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 1000
     }
@@ -180,7 +180,7 @@ message DeploymentPackage {
   // Version of the deployment package.
   string version = 4 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 20
       pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
@@ -191,7 +191,10 @@ message DeploymentPackage {
   Kind kind = 5 [(google.api.field_behavior) = OPTIONAL];
 
   // List of applications comprising this deployment package. Expressed as (name, version) pairs.
-  repeated catalog.v3.ApplicationReference application_references = 6 [(google.api.field_behavior) = REQUIRED];
+  repeated catalog.v3.ApplicationReference application_references = 6 [
+    (google.api.field_behavior) = REQUIRED,
+    (buf.validate.field).repeated = {max_items: 100}
+  ];
 
   // Flag indicating whether the deployment package has been deployed.
   // The mutability of the deployment package entity can be limited when this flag is true. For example, one may
@@ -205,26 +208,29 @@ message DeploymentPackage {
   bool is_visible = 8 [(google.api.field_behavior) = OPTIONAL];
 
   // Set of deployment profiles to choose from when deploying this package.
-  repeated DeploymentProfile profiles = 9;
+  repeated DeploymentProfile profiles = 9 [(buf.validate.field).repeated = {max_items: 50}];
 
   // Name of the default deployment profile to be used by default when deploying this package.
   string default_profile_name = 10 [(google.api.field_behavior) = OPTIONAL];
 
   // Optional set of application deployment dependencies, expressed as (name, requires) pairs of edges in the
   // deployment order dependency graph.
-  repeated catalog.v3.ApplicationDependency application_dependencies = 11 [(google.api.field_behavior) = OPTIONAL];
+  repeated catalog.v3.ApplicationDependency application_dependencies = 11 [
+    (google.api.field_behavior) = OPTIONAL,
+    (buf.validate.field).repeated = {max_items: 100}
+  ];
 
   // Optional list of API and UI extensions.
   repeated catalog.v3.APIExtension extensions = 12 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).repeated = {max_items: 100}
+    (buf.validate.field).repeated = {max_items: 100}
   ];
 
   // Optional list of artifacts required for displaying or deploying this package. For example, icon or thumbnail
   // artifacts can be used by the UI; Grafana\* dashboard definitions can be used by the deployment manager.
   repeated catalog.v3.ArtifactReference artifacts = 13 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).repeated = {max_items: 100}
+    (buf.validate.field).repeated = {max_items: 100}
   ];
 
   // Optional map of application-to-namespace bindings to be used as a default when deploying the applications that
@@ -239,7 +245,10 @@ message DeploymentPackage {
   // Namespace definitions to be created before resources are deployed.
   // This allows complex namespaces to be defined with predefined labels and annotations.
   // If not defined, simple namespaces will be created as needed.
-  repeated Namespace namespaces = 16 [(google.api.field_behavior) = OPTIONAL];
+  repeated Namespace namespaces = 16 [
+    (google.api.field_behavior) = OPTIONAL,
+    (buf.validate.field).repeated = {max_items: 50}
+  ];
 
   // The creation time of the deployment package.
   google.protobuf.Timestamp create_time = 17 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -254,7 +263,7 @@ message DeploymentProfile {
   // given deployment package.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
@@ -265,7 +274,7 @@ message DeploymentProfile {
   // profiles of a given package. It is used for display purposes on user interfaces.
   string display_name = 2 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 40
       pattern: "^\\PC*$"
@@ -275,7 +284,7 @@ message DeploymentProfile {
   // Description of the deployment profile. Displayed on user interfaces.
   string description = 3 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 1000
     }
@@ -297,7 +306,7 @@ message ApplicationReference {
   // Name of the referenced application.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
@@ -307,7 +316,7 @@ message ApplicationReference {
   // Version of the referenced application.
   string version = 2 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 20
       pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
@@ -322,7 +331,7 @@ message ApplicationDependency {
   // Name of the application that has the dependency on the other.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 26
       pattern: "^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$"
@@ -332,7 +341,7 @@ message ApplicationDependency {
   // Name of the application that is required by the other.
   string requires = 2 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 26
       pattern: "^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$"
@@ -346,7 +355,7 @@ message APIExtension {
   // given deployment package.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
@@ -355,7 +364,7 @@ message APIExtension {
   // Version of the API extension.
   string version = 2 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 20
       pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
@@ -366,7 +375,7 @@ message APIExtension {
   // extensions of a given deployment package. It is used for display purposes on user interfaces.
   string display_name = 3 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 40
       pattern: "^\\PC*$"
@@ -376,14 +385,14 @@ message APIExtension {
   // Description of the API extension. Displayed on user interfaces.
   string description = 4 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 1000
     }
   ];
 
   // One or more API endpoints provided by the API extension.
-  repeated catalog.v3.Endpoint endpoints = 5;
+  repeated catalog.v3.Endpoint endpoints = 5 [(buf.validate.field).repeated = {max_items: 50}];
 
   // Additional information specific to UI extensions.
   catalog.v3.UIExtension ui_extension = 6 [(google.api.field_behavior) = OPTIONAL];
@@ -394,7 +403,7 @@ message UIExtension {
   // Label is a human readable text used for display in the main UI dashboard
   string label = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 40
       pattern: "^\\PC*$"
@@ -404,7 +413,7 @@ message UIExtension {
   // The name of the API extension endpoint.
   string service_name = 2 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
     }
@@ -413,7 +422,7 @@ message UIExtension {
   // Description of the API extension, used on the main UI dashboard.
   string description = 3 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 1000
     }
@@ -422,7 +431,7 @@ message UIExtension {
   // The name of the main file to load this specific UI extension.
   string file_name = 4 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
     }
@@ -431,7 +440,7 @@ message UIExtension {
   // The name of the application corresponding to this UI extension.
   string app_name = 5 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
     }
@@ -440,7 +449,7 @@ message UIExtension {
   // Name of the application module to be loaded.
   string module_name = 6 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
     }
@@ -452,7 +461,7 @@ message Endpoint {
   // The name of the service hosted by the endpoint.
   string service_name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
@@ -462,7 +471,7 @@ message Endpoint {
   // Externally accessible path to the endpoint.
   string external_path = 2 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 128
     }
@@ -471,7 +480,7 @@ message Endpoint {
   // Internally accessible path to the endpoint.
   string internal_path = 3 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 128
     }
@@ -480,7 +489,7 @@ message Endpoint {
   // Protocol scheme provided by the endpoint.
   string scheme = 4 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 32
       pattern: "^([a-z][a-z0-9-]{0,30}[a-z0-9]){0,1}$"
@@ -490,7 +499,7 @@ message Endpoint {
   // Authentication type expected by the endpoint.
   string auth_type = 5 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 16
       pattern: "^[a-z]{0,16}$"
@@ -500,7 +509,7 @@ message Endpoint {
   // The name of the application providing this endpoint.
   string app_name = 6 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 40
     }
@@ -512,7 +521,7 @@ message ArtifactReference {
   // Name of the artifact.
   string name = 2 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
@@ -522,7 +531,7 @@ message ArtifactReference {
   // Purpose of the artifact, e.g. icon, thumbnail, Grafana dashboard, etc.
   string purpose = 3 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 20
       pattern: "^\\PC*$"
@@ -538,7 +547,7 @@ message Namespace {
   // Avoid `default` - will already exist
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
@@ -556,7 +565,7 @@ message Application {
   // given project. Used in network URIs.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 26
       pattern: "^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$"
@@ -567,7 +576,7 @@ message Application {
   // applications within a project. It is used for display purposes on user interfaces.
   string display_name = 2 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 40
       pattern: "^\\PC*$"
@@ -577,7 +586,7 @@ message Application {
   // Description of the application. Displayed on user interfaces.
   string description = 3 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 1000
     }
@@ -586,7 +595,7 @@ message Application {
   // Version of the application. Used in combination with the name to identify a unique application within a project.
   string version = 4 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 20
       pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
@@ -599,7 +608,7 @@ message Application {
   // Helm chart name.
   string chart_name = 6 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 200
       pattern: "^[0-9a-z-/]*$"
@@ -609,7 +618,7 @@ message Application {
   // Helm chart version.
   string chart_version = 7 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 53
       pattern: "^[a-z0-9][a-z0-9-.]{0,51}[a-z0-9]{0,1}$"
@@ -620,7 +629,7 @@ message Application {
   string helm_registry_name = 8 [(google.api.field_behavior) = REQUIRED];
 
   // Set of profiles that can be used when deploying the application.
-  repeated Profile profiles = 9;
+  repeated Profile profiles = 9 [(buf.validate.field).repeated = {max_items: 50}];
 
   // Name of the profile to be used by default when deploying this application.
   // If at least one profile is available, this field must be set.
@@ -630,7 +639,10 @@ message Application {
   string image_registry_name = 11 [(google.api.field_behavior) = OPTIONAL];
 
   // List of Kubernetes resources that must be ignored during the application deployment.
-  repeated ResourceReference ignored_resources = 12 [(google.api.field_behavior) = OPTIONAL];
+  repeated ResourceReference ignored_resources = 12 [
+    (google.api.field_behavior) = OPTIONAL,
+    (buf.validate.field).repeated = {max_items: 100}
+  ];
 
   // The creation time of the application.
   google.protobuf.Timestamp create_time = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -644,7 +656,7 @@ message ResourceReference {
   // Kubernetes resource name.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
       pattern: "^[a-z0-9][a-z0-9-._-]{0,38}[a-z0-9]{0,1}$"
@@ -654,7 +666,7 @@ message ResourceReference {
   // Kubernetes resource kind, e.g. ConfigMap.
   string kind = 2 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
       pattern: "^[a-zA-Z0-9][a-zA-Z0-9._-]{0,38}[a-zA-Z0-9]{0,1}$"
@@ -663,6 +675,9 @@ message ResourceReference {
 
   // Kubernetes namespace where the ignored resource resides. When empty, the application namespace will be used.
   string namespace = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Ignore whole resource if true. Will use "remove" if false or not present.
+  bool ignore = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // ParameterTemplate describes override values for Helm chart values
@@ -670,7 +685,7 @@ message ParameterTemplate {
   // Human-readable name for the parameter template.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 4096
       pattern: "^[A-Za-z0-9-/_\\[\\]\\.\\\\]*$"
@@ -680,7 +695,7 @@ message ParameterTemplate {
   // Display name is an optional human-readable name for the template. It is used for display purposes on user interfaces.
   string display_name = 2 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 100
       pattern: "^\\PC*$"
@@ -690,7 +705,7 @@ message ParameterTemplate {
   // Default value for the parameter.
   string default = 3 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 4096
     }
@@ -699,7 +714,7 @@ message ParameterTemplate {
   // Type of parameter: string, number, or boolean.
   string type = 4 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       pattern: "^(string)$|^(number)$|^(boolean)$"
     }
@@ -708,7 +723,7 @@ message ParameterTemplate {
   // Optional validator for the parameter. Usage TBD.
   string validator = 5 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 40
     }
@@ -717,7 +732,7 @@ message ParameterTemplate {
   // List of suggested values to use, to override the default value.
   repeated string suggested_values = 6 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).repeated = {
+    (buf.validate.field).repeated = {
       max_items: 100
       unique: true
       items: {
@@ -741,7 +756,7 @@ message Profile {
   // Human-readable name for the profile. Unique among all profiles of the same application.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
@@ -752,7 +767,7 @@ message Profile {
   // profiles of a given application. It is used for display purposes on user interfaces.
   string display_name = 2 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 40
       pattern: "^\\PC*$"
@@ -762,7 +777,7 @@ message Profile {
   // Description of the profile. Displayed on user interfaces.
   string description = 3 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 1000
     }
@@ -771,16 +786,22 @@ message Profile {
   // Raw byte value containing the chart values as raw YAML bytes.
   string chart_values = 4 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 4000000
     }
   ];
   // Parameter templates available for this profile.
-  repeated ParameterTemplate parameter_templates = 5 [(google.api.field_behavior) = OPTIONAL];
+  repeated ParameterTemplate parameter_templates = 5 [
+    (google.api.field_behavior) = OPTIONAL,
+    (buf.validate.field).repeated = {max_items: 100}
+  ];
 
   // List of deployment requirements for this profile.
-  repeated DeploymentRequirement deployment_requirement = 6 [(google.api.field_behavior) = OPTIONAL];
+  repeated DeploymentRequirement deployment_requirement = 6 [
+    (google.api.field_behavior) = OPTIONAL,
+    (buf.validate.field).repeated = {max_items: 100}
+  ];
 
   // The creation time of the profile.
   google.protobuf.Timestamp create_time = 7 [(google.api.field_behavior) = OUTPUT_ONLY];
@@ -795,7 +816,7 @@ message DeploymentRequirement {
   // Name of the required deployment package.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
@@ -805,7 +826,7 @@ message DeploymentRequirement {
   // Version of the required deployment package.
   string version = 2 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 20
       pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
@@ -823,7 +844,7 @@ message Artifact {
   // Name is a human-readable unique identifier for the artifact and must be unique for all artifacts within a project.
   string name = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
@@ -834,7 +855,7 @@ message Artifact {
   // artifacts within a project. It is used for display purposes on user interfaces.
   string display_name = 2 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 40
       pattern: "^\\PC*$"
@@ -844,7 +865,7 @@ message Artifact {
   // Description of the artifact. Displayed on user interfaces.
   string description = 3 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 1000
     }
@@ -855,7 +876,7 @@ message Artifact {
   // MIME types are defined and standardized in IETF's RFC 6838.
   string mime_type = 4 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 1
       max_len: 40
       pattern: "^(text/plain)$|^(application/json)$|^(application/yaml)$|^(image/png)$|^(image/jpeg)$"
@@ -865,7 +886,7 @@ message Artifact {
   // Raw byte content of the artifact encoded as base64. The limits refer to the number of raw bytes.
   bytes artifact = 5 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).bytes = {
+    (buf.validate.field).bytes = {
       min_len: 4
       max_len: 4000000
     }

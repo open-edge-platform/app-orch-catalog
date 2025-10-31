@@ -5,11 +5,11 @@ syntax = "proto3";
 
 package catalog.v3;
 
+import "buf/validate/validate.proto";
 import "catalog/v3/resources.proto";
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/empty.proto";
-import "validate/validate.proto";
 
 // See reference example.
 //  https://github.com/google/gnostic/blob/main/cmd/protoc-gen-openapi/examples/google/example/library/v1/library.proto
@@ -219,12 +219,15 @@ message UploadCatalogEntitiesResponse {
   uint32 upload_number = 2 [(google.api.field_behavior) = REQUIRED];
 
   // Any error messages encountered either during YAML parsing or entity creation or update.
-  repeated string error_messages = 3;
+  repeated string error_messages = 3 [(buf.validate.field).repeated = {max_items: 100}];
 }
 
 // Response message when multiple files are uploaded at the same time through rest-proxy.
 message UploadMultipleCatalogEntitiesResponse {
-  repeated UploadCatalogEntitiesResponse responses = 1 [(google.api.field_behavior) = REQUIRED];
+  repeated UploadCatalogEntitiesResponse responses = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (buf.validate.field).repeated = {max_items: 100}
+  ];
 }
 
 // === Import Messages ===
@@ -234,21 +237,21 @@ message ImportRequest {
   // Required URL of Helm Chart to import
   string url = 1 [
     (google.api.field_behavior) = REQUIRED,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 1000
     }
   ];
 
   // Optional username for downloading from the URL
-  string username = 2 [(validate.rules).string = {
+  string username = 2 [(buf.validate.field).string = {
     min_len: 0
     max_len: 1000
     pattern: "^\\PC*$"
   }];
 
   // Optional authentication token or password for downloading from the URL
-  string auth_token = 3 [(validate.rules).string = {
+  string auth_token = 3 [(buf.validate.field).string = {
     min_len: 0
     max_len: 4500
     pattern: "^\\PC*$"
@@ -257,7 +260,7 @@ message ImportRequest {
   // Optional raw byte value containing the chart values as raw YAML bytes.
   string chart_values = 4 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 4000000
     }
@@ -278,7 +281,7 @@ message ImportRequest {
   // Optional namespace
   string namespace = 10 [
     (google.api.field_behavior) = OPTIONAL,
-    (validate.rules).string = {
+    (buf.validate.field).string = {
       min_len: 0
       max_len: 40
     }
@@ -288,7 +291,7 @@ message ImportRequest {
 // Response message for the Import method
 message ImportResponse {
   // Any error messages encountered either during chart parsing or entity creation or update.
-  repeated string error_messages = 3;
+  repeated string error_messages = 3 [(buf.validate.field).repeated = {max_items: 100}];
 }
 
 // === Registry Messages ===
@@ -323,7 +326,10 @@ message ListRegistriesRequest {
 // Response message for the ListRegistries method.
 message ListRegistriesResponse {
   // A list of registries.
-  repeated catalog.v3.Registry registries = 1 [(google.api.field_behavior) = REQUIRED];
+  repeated catalog.v3.Registry registries = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (buf.validate.field).repeated = {max_items: 500}
+  ];
   // Count of items in the entire list, regardless of pagination.
   int32 total_elements = 2 [(google.api.field_behavior) = REQUIRED];
 }
@@ -331,7 +337,14 @@ message ListRegistriesResponse {
 // Request message for the GetRegistry method.
 message GetRegistryRequest {
   // Name of the registry.
-  string registry_name = 1 [(google.api.field_behavior) = REQUIRED];
+  string registry_name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (buf.validate.field).string = {
+      min_len: 1
+      max_len: 40
+      pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
+    }
+  ];
 
   // Request that sensitive information, such as username, auth_token, and CA certificates are included in the response.
   bool show_sensitive_info = 2 [(google.api.field_behavior) = OPTIONAL];
@@ -345,7 +358,14 @@ message GetRegistryResponse {
 // Request message for the UpdateRegistry method.
 message UpdateRegistryRequest {
   // Name of the Registry.
-  string registry_name = 1 [(google.api.field_behavior) = REQUIRED];
+  string registry_name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (buf.validate.field).string = {
+      min_len: 1
+      max_len: 40
+      pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
+    }
+  ];
   // The Registry update.
   catalog.v3.Registry registry = 2 [(google.api.field_behavior) = REQUIRED];
 }
@@ -353,7 +373,14 @@ message UpdateRegistryRequest {
 // Request message for the DeleteRegistry method.
 message DeleteRegistryRequest {
   // Name of the registry.
-  string registry_name = 1 [(google.api.field_behavior) = REQUIRED];
+  string registry_name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (buf.validate.field).string = {
+      min_len: 1
+      max_len: 40
+      pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
+    }
+  ];
 }
 
 // Request message for the WatchRegistries method.
@@ -400,13 +427,19 @@ message ListDeploymentPackagesRequest {
   int32 offset = 4 [(google.api.field_behavior) = OPTIONAL];
 
   // List of deployment package kinds to be returned; empty list means all kinds.
-  repeated catalog.v3.Kind kinds = 5 [(google.api.field_behavior) = OPTIONAL];
+  repeated catalog.v3.Kind kinds = 5 [
+    (google.api.field_behavior) = OPTIONAL,
+    (buf.validate.field).repeated = {max_items: 20}
+  ];
 }
 
 // Response message for the ListDeploymentPackages method.
 message ListDeploymentPackagesResponse {
   // A list of DeploymentPackages.
-  repeated catalog.v3.DeploymentPackage deployment_packages = 1 [(google.api.field_behavior) = REQUIRED];
+  repeated catalog.v3.DeploymentPackage deployment_packages = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (buf.validate.field).repeated = {max_items: 500}
+  ];
   // Count of items in the entire list, regardless of pagination.
   int32 total_elements = 2 [(google.api.field_behavior) = REQUIRED];
 }
@@ -443,7 +476,10 @@ message GetDeploymentPackageVersionsRequest {
 // Response message for the GetDeploymentPackageVersions method.
 message GetDeploymentPackageVersionsResponse {
   // A list of DeploymentPackages with the same project and name.
-  repeated catalog.v3.DeploymentPackage deployment_packages = 1 [(google.api.field_behavior) = REQUIRED];
+  repeated catalog.v3.DeploymentPackage deployment_packages = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (buf.validate.field).repeated = {max_items: 500}
+  ];
 }
 
 // Request message for the UpdateDeploymentPackage method.
@@ -473,7 +509,10 @@ message WatchDeploymentPackagesRequest {
   bool no_replay = 2 [(google.api.field_behavior) = OPTIONAL];
 
   // Deployment package kinds to be watched; empty list means all kinds.
-  repeated catalog.v3.Kind kinds = 3 [(google.api.field_behavior) = OPTIONAL];
+  repeated catalog.v3.Kind kinds = 3 [
+    (google.api.field_behavior) = OPTIONAL,
+    (buf.validate.field).repeated = {max_items: 20}
+  ];
 }
 
 // Response message for the WatchDeploymentPackages method.
@@ -514,13 +553,19 @@ message ListApplicationsRequest {
   int32 offset = 4 [(google.api.field_behavior) = OPTIONAL];
 
   // List of application kinds to be returned; empty list means all kinds.
-  repeated catalog.v3.Kind kinds = 5 [(google.api.field_behavior) = OPTIONAL];
+  repeated catalog.v3.Kind kinds = 5 [
+    (google.api.field_behavior) = OPTIONAL,
+    (buf.validate.field).repeated = {max_items: 20}
+  ];
 }
 
 // Response message for the ListApplications method.
 message ListApplicationsResponse {
   // A list of applications.
-  repeated catalog.v3.Application applications = 1 [(google.api.field_behavior) = REQUIRED];
+  repeated catalog.v3.Application applications = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (buf.validate.field).repeated = {max_items: 500}
+  ];
   // Count of items in the entire list, regardless of pagination.
   int32 total_elements = 2 [(google.api.field_behavior) = REQUIRED];
 }
@@ -561,7 +606,10 @@ message GetApplicationVersionsRequest {
 // Response message for the GetApplication method.
 message GetApplicationVersionsResponse {
   // A list of applications with the same project and name.
-  repeated catalog.v3.Application application = 1 [(google.api.field_behavior) = REQUIRED]; // TODO rename to 'applications'
+  repeated catalog.v3.Application application = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (buf.validate.field).repeated = {max_items: 500}
+  ]; // TODO rename to 'applications'
 }
 
 // Request message for the UpdateApplication method.
@@ -591,7 +639,10 @@ message WatchApplicationsRequest {
   bool no_replay = 2 [(google.api.field_behavior) = OPTIONAL];
 
   // Application kinds to be watched; empty list means all kinds.
-  repeated catalog.v3.Kind kinds = 3 [(google.api.field_behavior) = OPTIONAL];
+  repeated catalog.v3.Kind kinds = 3 [
+    (google.api.field_behavior) = OPTIONAL,
+    (buf.validate.field).repeated = {max_items: 20}
+  ];
 }
 
 // Response message for the WatchApplications method.
@@ -629,7 +680,10 @@ message ListArtifactsRequest {
 // Response message for the ListArtifacts method.
 message ListArtifactsResponse {
   // A list of artifacts.
-  repeated catalog.v3.Artifact artifacts = 1 [(google.api.field_behavior) = REQUIRED];
+  repeated catalog.v3.Artifact artifacts = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (buf.validate.field).repeated = {max_items: 500}
+  ];
   // Count of items in the entire list, regardless of pagination.
   int32 total_elements = 2 [(google.api.field_behavior) = REQUIRED];
 }

@@ -19,11 +19,15 @@ paths:
           description: Names the HELM registry to be queried
           schema:
             type: string
+            maxLength: 100
+            pattern: '^[a-zA-Z0-9][a-zA-Z0-9\-\.]*[a-zA-Z0-9]$'
         - name: chart
           in: query
           description: Optional name of the chart whose version list is desired.
           schema:
             type: string
+            maxLength: 100
+            pattern: '^[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9]$'
       responses:
         "200":
           description: OK
@@ -49,6 +53,7 @@ paths:
               properties:
                 files:
                   type: array
+                  maxItems: 50
                   items:
                     type: string
                     format: binary
@@ -64,12 +69,17 @@ paths:
                   properties:
                     sessionID:
                       type: string
+                      maxLength: 100
                     uploadNumber:
                       type: integer
+                      minimum: 0
+                      maximum: 1000
                     errorMessages:
                       type: array
+                      maxItems: 100
                       items:
                         type: string
+                        maxLength: 500
   /catalog.orchestrator.apis/v3/deployment_packages/{deploymentPackageName}/versions/{version}/download:
     get:
       tags:
@@ -84,12 +94,16 @@ paths:
           required: true
           schema:
             type: string
+            maxLength: 100
+            pattern: '^[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9]$'
         - name: version
           in: path
           description: Version of the DeploymentPackage.
           required: true
           schema:
             type: string
+            maxLength: 50
+            pattern: '^[a-zA-Z0-9][a-zA-Z0-9\-\.]*[a-zA-Z0-9]$'
       responses:
         "200":
           description: OK

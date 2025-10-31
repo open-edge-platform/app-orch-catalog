@@ -399,7 +399,7 @@ func computePageRange(pageSize int32, offset int32, totalCount int) (int, int, i
 	if pageSize == 0 {
 		endIndex = totalCount - 1
 	} else {
-		if startIndex+int(offset) > totalCount || int(offset+pageSize) > totalCount {
+		if startIndex >= totalCount || int(offset+pageSize) > totalCount {
 			endIndex = totalCount - 1
 		} else {
 			endIndex = (startIndex + int(pageSize)) - 1
