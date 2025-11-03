@@ -99,7 +99,7 @@ $defs:
         description: Helm chart version.
         maxLength: 53
         minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-.]{0,51}[a-z0-9]{0,1}$
+        pattern: ^[a-zA-Z0-9][a-zA-Z0-9-.+]{0,51}[a-zA-Z0-9]{0,1}$
         title: chart_version
         type: string
       createTime:
@@ -526,7 +526,7 @@ $defs:
         description: Helm chart version.
         maxLength: 53
         minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-.]{0,51}[a-z0-9]{0,1}$
+        pattern: ^[a-zA-Z0-9][a-zA-Z0-9-.+]{0,51}[a-zA-Z0-9]{0,1}$
         title: chart_version
         type: string
       createTime:
