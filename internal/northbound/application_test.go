@@ -146,19 +146,29 @@ func (s *NorthBoundTestSuite) TestCreateApplication() {
 }
 
 func (s *NorthBoundTestSuite) TestCreateApplicationInvalidName() {
-	// Create one with invalid name
+	// Create one with invalid name but valid other fields
 	_, err := s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
-		Application: &catalogv3.Application{Name: "Another Application", Version: ""},
+		Application: &catalogv3.Application{
+			Name:         "Another Application", // Invalid: contains spaces
+			Version:      "v1.0.0",              // Valid
+			ChartName:    "valid-chart",         // Valid
+			ChartVersion: "1.0.0",               // Valid
+		},
 	})
 	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`application invalid: invalid Application.Name: value does not match regex pattern "^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$"`))
+		"application invalid: validation error:\n - application.name: value does not match regex pattern `^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$` [string.pattern]"))
 
-	// Create one with invalid version
+	// Create one with invalid version but valid other fields
 	_, err = s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
-		Application: &catalogv3.Application{Name: "another-application", Version: "V 1"},
+		Application: &catalogv3.Application{
+			Name:         "valid-app",   // Valid
+			Version:      "V 1",         // Invalid: contains spaces
+			ChartName:    "valid-chart", // Valid
+			ChartVersion: "1.0.0",       // Valid
+		},
 	})
 	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`application invalid: invalid Application.Version: value does not match regex pattern "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"`))
+		"application invalid: validation error:\n - application.version: value does not match regex pattern `^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$` [string.pattern]"))
 
 	// Create one with invalid registry
 	_, err = s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{

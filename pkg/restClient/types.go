@@ -4,108 +4,293 @@
 package restClient
 
 import (
+	"encoding/json"
+	"fmt"
 	"time"
+
+	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
-// Defines values for ApplicationKind.
+// Defines values for CatalogV3Kind.
 const (
-	ApplicationKindKINDADDON     ApplicationKind = "KIND_ADDON"
-	ApplicationKindKINDEXTENSION ApplicationKind = "KIND_EXTENSION"
-	ApplicationKindKINDNORMAL    ApplicationKind = "KIND_NORMAL"
+	KINDADDON       CatalogV3Kind = "KIND_ADDON"
+	KINDEXTENSION   CatalogV3Kind = "KIND_EXTENSION"
+	KINDNORMAL      CatalogV3Kind = "KIND_NORMAL"
+	KINDUNSPECIFIED CatalogV3Kind = "KIND_UNSPECIFIED"
 )
 
-// Defines values for DeploymentPackageKind.
+// Defines values for ConnectErrorCode.
 const (
-	DeploymentPackageKindKINDADDON     DeploymentPackageKind = "KIND_ADDON"
-	DeploymentPackageKindKINDEXTENSION DeploymentPackageKind = "KIND_EXTENSION"
-	DeploymentPackageKindKINDNORMAL    DeploymentPackageKind = "KIND_NORMAL"
+	Aborted            ConnectErrorCode = "aborted"
+	AlreadyExists      ConnectErrorCode = "already_exists"
+	Canceled           ConnectErrorCode = "canceled"
+	DataLoss           ConnectErrorCode = "data_loss"
+	DeadlineExceeded   ConnectErrorCode = "deadline_exceeded"
+	FailedPrecondition ConnectErrorCode = "failed_precondition"
+	Internal           ConnectErrorCode = "internal"
+	InvalidArgument    ConnectErrorCode = "invalid_argument"
+	NotFound           ConnectErrorCode = "not_found"
+	OutOfRange         ConnectErrorCode = "out_of_range"
+	PermissionDenied   ConnectErrorCode = "permission_denied"
+	ResourceExhausted  ConnectErrorCode = "resource_exhausted"
+	Unauthenticated    ConnectErrorCode = "unauthenticated"
+	Unavailable        ConnectErrorCode = "unavailable"
+	Unimplemented      ConnectErrorCode = "unimplemented"
+	Unknown            ConnectErrorCode = "unknown"
 )
 
-// Defines values for CatalogServiceListApplicationsParamsKinds.
-const (
-	CatalogServiceListApplicationsParamsKindsKINDADDON     CatalogServiceListApplicationsParamsKinds = "KIND_ADDON"
-	CatalogServiceListApplicationsParamsKindsKINDEXTENSION CatalogServiceListApplicationsParamsKinds = "KIND_EXTENSION"
-	CatalogServiceListApplicationsParamsKindsKINDNORMAL    CatalogServiceListApplicationsParamsKinds = "KIND_NORMAL"
-)
-
-// Defines values for CatalogServiceListDeploymentPackagesParamsKinds.
-const (
-	CatalogServiceListDeploymentPackagesParamsKindsKINDADDON     CatalogServiceListDeploymentPackagesParamsKinds = "KIND_ADDON"
-	CatalogServiceListDeploymentPackagesParamsKindsKINDEXTENSION CatalogServiceListDeploymentPackagesParamsKinds = "KIND_EXTENSION"
-	CatalogServiceListDeploymentPackagesParamsKindsKINDNORMAL    CatalogServiceListDeploymentPackagesParamsKinds = "KIND_NORMAL"
-)
-
-// APIExtension APIExtensions represents some form of an extension to the external API provided by deployment package.
-type APIExtension struct {
-	// Description Description of the API extension. Displayed on user interfaces.
+// CatalogV3APIExtension APIExtensions represents some form of an extension to the external API provided by deployment package.
+type CatalogV3APIExtension struct {
+	// Description (OPTIONAL) Description of the API extension. Displayed on user interfaces.
 	Description *string `json:"description,omitempty"`
 
-	// DisplayName Display name is an optional human-readable name for the API extension. When specified, it must be unique among all extensions of a given deployment package. It is used for display purposes on user interfaces.
+	// DisplayName (OPTIONAL) Display name is an optional human-readable name for the API extension. When specified, it must be unique among all
+	//  extensions of a given deployment package. It is used for display purposes on user interfaces.
 	DisplayName *string `json:"displayName,omitempty"`
 
 	// Endpoints One or more API endpoints provided by the API extension.
-	Endpoints *[]Endpoint `json:"endpoints,omitempty"`
+	Endpoints *[]CatalogV3Endpoint `json:"endpoints,omitempty"`
 
-	// Name Name is a human-readable unique identifier for the API extension and must be unique for all extensions of a given deployment package.
+	// Name Name is a human-readable unique identifier for the API extension and must be unique for all extensions of a
+	//  given deployment package.
 	Name string `json:"name"`
 
 	// UiExtension UIExtension is an augmentation of an API extension.
-	UiExtension *UIExtension `json:"uiExtension,omitempty"`
+	UiExtension *CatalogV3UIExtension `json:"uiExtension,omitempty"`
 
 	// Version Version of the API extension.
 	Version string `json:"version"`
 }
 
-// Application Application represents a Helm chart that can be deployed to one or more Kubernetes pods.
-type Application struct {
+// CatalogV3Application Application represents a Helm chart that can be deployed to one or more Kubernetes pods.
+type CatalogV3Application struct {
 	// ChartName Helm chart name.
 	ChartName string `json:"chartName"`
 
 	// ChartVersion Helm chart version.
 	ChartVersion string `json:"chartVersion"`
 
-	// CreateTime The creation time of the application.
-	CreateTime *time.Time `json:"createTime,omitempty"`
+	// CreateTime A Timestamp represents a point in time independent of any time zone or local
+	//  calendar, encoded as a count of seconds and fractions of seconds at
+	//  nanosecond resolution. The count is relative to an epoch at UTC midnight on
+	//  January 1, 1970, in the proleptic Gregorian calendar which extends the
+	//  Gregorian calendar backwards to year one.
+	//
+	//  All minutes are 60 seconds long. Leap seconds are "smeared" so that no leap
+	//  second table is needed for interpretation, using a [24-hour linear
+	//  smear](https://developers.google.com/time/smear).
+	//
+	//  The range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z. By
+	//  restricting to that range, we ensure that we can convert to and from [RFC
+	//  3339](https://www.ietf.org/rfc/rfc3339.txt) date strings.
+	//
+	//  # Examples
+	//
+	//  Example 1: Compute Timestamp from POSIX `time()`.
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(time(NULL));
+	//      timestamp.set_nanos(0);
+	//
+	//  Example 2: Compute Timestamp from POSIX `gettimeofday()`.
+	//
+	//      struct timeval tv;
+	//      gettimeofday(&tv, NULL);
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(tv.tv_sec);
+	//      timestamp.set_nanos(tv.tv_usec * 1000);
+	//
+	//  Example 3: Compute Timestamp from Win32 `GetSystemTimeAsFileTime()`.
+	//
+	//      FILETIME ft;
+	//      GetSystemTimeAsFileTime(&ft);
+	//      UINT64 ticks = (((UINT64)ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
+	//
+	//      // A Windows tick is 100 nanoseconds. Windows epoch 1601-01-01T00:00:00Z
+	//      // is 11644473600 seconds before Unix epoch 1970-01-01T00:00:00Z.
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds((INT64) ((ticks / 10000000) - 11644473600LL));
+	//      timestamp.set_nanos((INT32) ((ticks % 10000000) * 100));
+	//
+	//  Example 4: Compute Timestamp from Java `System.currentTimeMillis()`.
+	//
+	//      long millis = System.currentTimeMillis();
+	//
+	//      Timestamp timestamp = Timestamp.newBuilder().setSeconds(millis / 1000)
+	//          .setNanos((int) ((millis % 1000) * 1000000)).build();
+	//
+	//  Example 5: Compute Timestamp from Java `Instant.now()`.
+	//
+	//      Instant now = Instant.now();
+	//
+	//      Timestamp timestamp =
+	//          Timestamp.newBuilder().setSeconds(now.getEpochSecond())
+	//              .setNanos(now.getNano()).build();
+	//
+	//  Example 6: Compute Timestamp from current time in Python.
+	//
+	//      timestamp = Timestamp()
+	//      timestamp.GetCurrentTime()
+	//
+	//  # JSON Mapping
+	//
+	//  In JSON format, the Timestamp type is encoded as a string in the
+	//  [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format. That is, the
+	//  format is "{year}-{month}-{day}T{hour}:{min}:{sec}[.{frac_sec}]Z"
+	//  where {year} is always expressed using four digits while {month}, {day},
+	//  {hour}, {min}, and {sec} are zero-padded to two digits each. The fractional
+	//  seconds, which can go up to 9 digits (i.e. up to 1 nanosecond resolution),
+	//  are optional. The "Z" suffix indicates the timezone ("UTC"); the timezone
+	//  is required. A proto3 JSON serializer should always use UTC (as indicated by
+	//  "Z") when printing the Timestamp type and a proto3 JSON parser should be
+	//  able to accept both UTC and other timezones (as indicated by an offset).
+	//
+	//  For example, "2017-01-15T01:30:15.01Z" encodes 15.01 seconds past
+	//  01:30 UTC on January 15, 2017.
+	//
+	//  In JavaScript, one can convert a Date object to this format using the
+	//  standard
+	//  [toISOString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString)
+	//  method. In Python, a standard `datetime.datetime` object can be converted
+	//  to this format using
+	//  [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with
+	//  the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use
+	//  the Joda Time's [`ISODateTimeFormat.dateTime()`](
+	//  http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()
+	//  ) to obtain a formatter capable of generating timestamps in this format.
+	CreateTime *GoogleProtobufTimestamp `json:"createTime,omitempty"`
 
-	// DefaultProfileName Name of the profile to be used by default when deploying this application. If at least one profile is available, this field must be set.
+	// DefaultProfileName (OPTIONAL) Name of the profile to be used by default when deploying this application.
+	//  If at least one profile is available, this field must be set.
 	DefaultProfileName *string `json:"defaultProfileName,omitempty"`
 
-	// Description Description of the application. Displayed on user interfaces.
+	// Description (OPTIONAL) Description of the application. Displayed on user interfaces.
 	Description *string `json:"description,omitempty"`
 
-	// DisplayName Display name is an optional human-readable name for the application. When specified, it must be unique among all applications within a project. It is used for display purposes on user interfaces.
+	// DisplayName (OPTIONAL) Display name is an optional human-readable name for the application. When specified, it must be unique among all
+	//  applications within a project. It is used for display purposes on user interfaces.
 	DisplayName *string `json:"displayName,omitempty"`
 
 	// HelmRegistryName ID of the project's registry where the Helm chart of the application is available for download.
 	HelmRegistryName string `json:"helmRegistryName"`
 
-	// IgnoredResources List of Kubernetes resources that must be ignored during the application deployment.
-	IgnoredResources *[]ResourceReference `json:"ignoredResources,omitempty"`
+	// IgnoredResources (OPTIONAL) List of Kubernetes resources that must be ignored during the application deployment.
+	IgnoredResources *[]CatalogV3ResourceReference `json:"ignoredResources,omitempty"`
 
-	// ImageRegistryName ID of the project's registry where the Docker image of the application is available for download.
+	// ImageRegistryName (OPTIONAL) ID of the project's registry where the Docker image of the application is available for download.
 	ImageRegistryName *string `json:"imageRegistryName,omitempty"`
 
-	// Kind Field designating whether the application is a system add-on, system extension, or a normal application.
-	Kind *ApplicationKind `json:"kind,omitempty"`
+	// Kind Kind designation for applications and packages, normal (unspecified), extension, or addon.
+	Kind *CatalogV3Kind `json:"kind,omitempty"`
 
-	// Name Name is a human readable unique identifier for the application and must be unique for all applications of a given project. Used in network URIs.
+	// Name Name is a human readable unique identifier for the application and must be unique for all applications of a
+	//  given project. Used in network URIs.
 	Name string `json:"name"`
 
 	// Profiles Set of profiles that can be used when deploying the application.
-	Profiles *[]Profile `json:"profiles,omitempty"`
+	Profiles *[]CatalogV3Profile `json:"profiles,omitempty"`
 
-	// UpdateTime The last update time of the application.
-	UpdateTime *time.Time `json:"updateTime,omitempty"`
+	// UpdateTime A Timestamp represents a point in time independent of any time zone or local
+	//  calendar, encoded as a count of seconds and fractions of seconds at
+	//  nanosecond resolution. The count is relative to an epoch at UTC midnight on
+	//  January 1, 1970, in the proleptic Gregorian calendar which extends the
+	//  Gregorian calendar backwards to year one.
+	//
+	//  All minutes are 60 seconds long. Leap seconds are "smeared" so that no leap
+	//  second table is needed for interpretation, using a [24-hour linear
+	//  smear](https://developers.google.com/time/smear).
+	//
+	//  The range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z. By
+	//  restricting to that range, we ensure that we can convert to and from [RFC
+	//  3339](https://www.ietf.org/rfc/rfc3339.txt) date strings.
+	//
+	//  # Examples
+	//
+	//  Example 1: Compute Timestamp from POSIX `time()`.
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(time(NULL));
+	//      timestamp.set_nanos(0);
+	//
+	//  Example 2: Compute Timestamp from POSIX `gettimeofday()`.
+	//
+	//      struct timeval tv;
+	//      gettimeofday(&tv, NULL);
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(tv.tv_sec);
+	//      timestamp.set_nanos(tv.tv_usec * 1000);
+	//
+	//  Example 3: Compute Timestamp from Win32 `GetSystemTimeAsFileTime()`.
+	//
+	//      FILETIME ft;
+	//      GetSystemTimeAsFileTime(&ft);
+	//      UINT64 ticks = (((UINT64)ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
+	//
+	//      // A Windows tick is 100 nanoseconds. Windows epoch 1601-01-01T00:00:00Z
+	//      // is 11644473600 seconds before Unix epoch 1970-01-01T00:00:00Z.
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds((INT64) ((ticks / 10000000) - 11644473600LL));
+	//      timestamp.set_nanos((INT32) ((ticks % 10000000) * 100));
+	//
+	//  Example 4: Compute Timestamp from Java `System.currentTimeMillis()`.
+	//
+	//      long millis = System.currentTimeMillis();
+	//
+	//      Timestamp timestamp = Timestamp.newBuilder().setSeconds(millis / 1000)
+	//          .setNanos((int) ((millis % 1000) * 1000000)).build();
+	//
+	//  Example 5: Compute Timestamp from Java `Instant.now()`.
+	//
+	//      Instant now = Instant.now();
+	//
+	//      Timestamp timestamp =
+	//          Timestamp.newBuilder().setSeconds(now.getEpochSecond())
+	//              .setNanos(now.getNano()).build();
+	//
+	//  Example 6: Compute Timestamp from current time in Python.
+	//
+	//      timestamp = Timestamp()
+	//      timestamp.GetCurrentTime()
+	//
+	//  # JSON Mapping
+	//
+	//  In JSON format, the Timestamp type is encoded as a string in the
+	//  [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format. That is, the
+	//  format is "{year}-{month}-{day}T{hour}:{min}:{sec}[.{frac_sec}]Z"
+	//  where {year} is always expressed using four digits while {month}, {day},
+	//  {hour}, {min}, and {sec} are zero-padded to two digits each. The fractional
+	//  seconds, which can go up to 9 digits (i.e. up to 1 nanosecond resolution),
+	//  are optional. The "Z" suffix indicates the timezone ("UTC"); the timezone
+	//  is required. A proto3 JSON serializer should always use UTC (as indicated by
+	//  "Z") when printing the Timestamp type and a proto3 JSON parser should be
+	//  able to accept both UTC and other timezones (as indicated by an offset).
+	//
+	//  For example, "2017-01-15T01:30:15.01Z" encodes 15.01 seconds past
+	//  01:30 UTC on January 15, 2017.
+	//
+	//  In JavaScript, one can convert a Date object to this format using the
+	//  standard
+	//  [toISOString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString)
+	//  method. In Python, a standard `datetime.datetime` object can be converted
+	//  to this format using
+	//  [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with
+	//  the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use
+	//  the Joda Time's [`ISODateTimeFormat.dateTime()`](
+	//  http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()
+	//  ) to obtain a formatter capable of generating timestamps in this format.
+	UpdateTime *GoogleProtobufTimestamp `json:"updateTime,omitempty"`
 
 	// Version Version of the application. Used in combination with the name to identify a unique application within a project.
 	Version string `json:"version"`
 }
 
-// ApplicationKind Field designating whether the application is a system add-on, system extension, or a normal application.
-type ApplicationKind string
-
-// ApplicationDependency ApplicationDependency represents the dependency of one application on another within the context of a deployment package. This dependency is specified as the name of the application that has the dependency, and the name of the application that is the dependency.
-type ApplicationDependency struct {
+// CatalogV3ApplicationDependency ApplicationDependency represents the dependency of one application on another within the context of a deployment package.
+//
+//	This dependency is specified as the name of the application that has the dependency, and the name of the application
+//	that is the dependency.
+type CatalogV3ApplicationDependency struct {
 	// Name Name of the application that has the dependency on the other.
 	Name string `json:"name"`
 
@@ -113,8 +298,8 @@ type ApplicationDependency struct {
 	Requires string `json:"requires"`
 }
 
-// ApplicationReference ApplicationReference represents a reference to an application by its name and its version.
-type ApplicationReference struct {
+// CatalogV3ApplicationReference ApplicationReference represents a reference to an application by its name and its version.
+type CatalogV3ApplicationReference struct {
 	// Name Name of the referenced application.
 	Name string `json:"name"`
 
@@ -122,32 +307,214 @@ type ApplicationReference struct {
 	Version string `json:"version"`
 }
 
-// Artifact Artifact represents a binary artifact that can be used for various purposes, e.g. icon or thumbnail for UI display, or auxiliary artifacts for integration with various platform services such as Grafana dashboard and similar. An artifact may be used by multiple deployment packages.
-type Artifact struct {
+// CatalogV3Artifact Artifact represents a binary artifact that can be used for various purposes, e.g. icon or thumbnail for UI display, or
+//
+//	auxiliary artifacts for integration with various platform services such as Grafana dashboard and similar. An artifact may be
+//	used by multiple deployment packages.
+type CatalogV3Artifact struct {
 	// Artifact Raw byte content of the artifact encoded as base64. The limits refer to the number of raw bytes.
 	Artifact []byte `json:"artifact"`
 
-	// CreateTime The creation time of the artifact.
-	CreateTime *time.Time `json:"createTime,omitempty"`
+	// CreateTime A Timestamp represents a point in time independent of any time zone or local
+	//  calendar, encoded as a count of seconds and fractions of seconds at
+	//  nanosecond resolution. The count is relative to an epoch at UTC midnight on
+	//  January 1, 1970, in the proleptic Gregorian calendar which extends the
+	//  Gregorian calendar backwards to year one.
+	//
+	//  All minutes are 60 seconds long. Leap seconds are "smeared" so that no leap
+	//  second table is needed for interpretation, using a [24-hour linear
+	//  smear](https://developers.google.com/time/smear).
+	//
+	//  The range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z. By
+	//  restricting to that range, we ensure that we can convert to and from [RFC
+	//  3339](https://www.ietf.org/rfc/rfc3339.txt) date strings.
+	//
+	//  # Examples
+	//
+	//  Example 1: Compute Timestamp from POSIX `time()`.
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(time(NULL));
+	//      timestamp.set_nanos(0);
+	//
+	//  Example 2: Compute Timestamp from POSIX `gettimeofday()`.
+	//
+	//      struct timeval tv;
+	//      gettimeofday(&tv, NULL);
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(tv.tv_sec);
+	//      timestamp.set_nanos(tv.tv_usec * 1000);
+	//
+	//  Example 3: Compute Timestamp from Win32 `GetSystemTimeAsFileTime()`.
+	//
+	//      FILETIME ft;
+	//      GetSystemTimeAsFileTime(&ft);
+	//      UINT64 ticks = (((UINT64)ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
+	//
+	//      // A Windows tick is 100 nanoseconds. Windows epoch 1601-01-01T00:00:00Z
+	//      // is 11644473600 seconds before Unix epoch 1970-01-01T00:00:00Z.
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds((INT64) ((ticks / 10000000) - 11644473600LL));
+	//      timestamp.set_nanos((INT32) ((ticks % 10000000) * 100));
+	//
+	//  Example 4: Compute Timestamp from Java `System.currentTimeMillis()`.
+	//
+	//      long millis = System.currentTimeMillis();
+	//
+	//      Timestamp timestamp = Timestamp.newBuilder().setSeconds(millis / 1000)
+	//          .setNanos((int) ((millis % 1000) * 1000000)).build();
+	//
+	//  Example 5: Compute Timestamp from Java `Instant.now()`.
+	//
+	//      Instant now = Instant.now();
+	//
+	//      Timestamp timestamp =
+	//          Timestamp.newBuilder().setSeconds(now.getEpochSecond())
+	//              .setNanos(now.getNano()).build();
+	//
+	//  Example 6: Compute Timestamp from current time in Python.
+	//
+	//      timestamp = Timestamp()
+	//      timestamp.GetCurrentTime()
+	//
+	//  # JSON Mapping
+	//
+	//  In JSON format, the Timestamp type is encoded as a string in the
+	//  [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format. That is, the
+	//  format is "{year}-{month}-{day}T{hour}:{min}:{sec}[.{frac_sec}]Z"
+	//  where {year} is always expressed using four digits while {month}, {day},
+	//  {hour}, {min}, and {sec} are zero-padded to two digits each. The fractional
+	//  seconds, which can go up to 9 digits (i.e. up to 1 nanosecond resolution),
+	//  are optional. The "Z" suffix indicates the timezone ("UTC"); the timezone
+	//  is required. A proto3 JSON serializer should always use UTC (as indicated by
+	//  "Z") when printing the Timestamp type and a proto3 JSON parser should be
+	//  able to accept both UTC and other timezones (as indicated by an offset).
+	//
+	//  For example, "2017-01-15T01:30:15.01Z" encodes 15.01 seconds past
+	//  01:30 UTC on January 15, 2017.
+	//
+	//  In JavaScript, one can convert a Date object to this format using the
+	//  standard
+	//  [toISOString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString)
+	//  method. In Python, a standard `datetime.datetime` object can be converted
+	//  to this format using
+	//  [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with
+	//  the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use
+	//  the Joda Time's [`ISODateTimeFormat.dateTime()`](
+	//  http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()
+	//  ) to obtain a formatter capable of generating timestamps in this format.
+	CreateTime *GoogleProtobufTimestamp `json:"createTime,omitempty"`
 
-	// Description Description of the artifact. Displayed on user interfaces.
+	// Description (OPTIONAL) Description of the artifact. Displayed on user interfaces.
 	Description *string `json:"description,omitempty"`
 
-	// DisplayName Display name is an optional human-readable name for the artifact. When specified, it must be unique among all artifacts within a project. It is used for display purposes on user interfaces.
+	// DisplayName (OPTIONAL) Display name is an optional human-readable name for the artifact. When specified, it must be unique among all
+	//  artifacts within a project. It is used for display purposes on user interfaces.
 	DisplayName *string `json:"displayName,omitempty"`
 
-	// MimeType Artifact's MIME type. Only text/plain, application/json, application/yaml, image/png, and image/jpeg are allowed at this time. MIME types are defined and standardized in IETF's RFC 6838.
+	// MimeType Artifact's MIME type. Only text/plain, application/json, application/yaml, image/png, and image/jpeg are allowed at this time.
+	//
+	//  MIME types are defined and standardized in IETF's RFC 6838.
 	MimeType string `json:"mimeType"`
 
 	// Name Name is a human-readable unique identifier for the artifact and must be unique for all artifacts within a project.
 	Name string `json:"name"`
 
-	// UpdateTime The last update time of the artifact.
-	UpdateTime *time.Time `json:"updateTime,omitempty"`
+	// UpdateTime A Timestamp represents a point in time independent of any time zone or local
+	//  calendar, encoded as a count of seconds and fractions of seconds at
+	//  nanosecond resolution. The count is relative to an epoch at UTC midnight on
+	//  January 1, 1970, in the proleptic Gregorian calendar which extends the
+	//  Gregorian calendar backwards to year one.
+	//
+	//  All minutes are 60 seconds long. Leap seconds are "smeared" so that no leap
+	//  second table is needed for interpretation, using a [24-hour linear
+	//  smear](https://developers.google.com/time/smear).
+	//
+	//  The range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z. By
+	//  restricting to that range, we ensure that we can convert to and from [RFC
+	//  3339](https://www.ietf.org/rfc/rfc3339.txt) date strings.
+	//
+	//  # Examples
+	//
+	//  Example 1: Compute Timestamp from POSIX `time()`.
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(time(NULL));
+	//      timestamp.set_nanos(0);
+	//
+	//  Example 2: Compute Timestamp from POSIX `gettimeofday()`.
+	//
+	//      struct timeval tv;
+	//      gettimeofday(&tv, NULL);
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(tv.tv_sec);
+	//      timestamp.set_nanos(tv.tv_usec * 1000);
+	//
+	//  Example 3: Compute Timestamp from Win32 `GetSystemTimeAsFileTime()`.
+	//
+	//      FILETIME ft;
+	//      GetSystemTimeAsFileTime(&ft);
+	//      UINT64 ticks = (((UINT64)ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
+	//
+	//      // A Windows tick is 100 nanoseconds. Windows epoch 1601-01-01T00:00:00Z
+	//      // is 11644473600 seconds before Unix epoch 1970-01-01T00:00:00Z.
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds((INT64) ((ticks / 10000000) - 11644473600LL));
+	//      timestamp.set_nanos((INT32) ((ticks % 10000000) * 100));
+	//
+	//  Example 4: Compute Timestamp from Java `System.currentTimeMillis()`.
+	//
+	//      long millis = System.currentTimeMillis();
+	//
+	//      Timestamp timestamp = Timestamp.newBuilder().setSeconds(millis / 1000)
+	//          .setNanos((int) ((millis % 1000) * 1000000)).build();
+	//
+	//  Example 5: Compute Timestamp from Java `Instant.now()`.
+	//
+	//      Instant now = Instant.now();
+	//
+	//      Timestamp timestamp =
+	//          Timestamp.newBuilder().setSeconds(now.getEpochSecond())
+	//              .setNanos(now.getNano()).build();
+	//
+	//  Example 6: Compute Timestamp from current time in Python.
+	//
+	//      timestamp = Timestamp()
+	//      timestamp.GetCurrentTime()
+	//
+	//  # JSON Mapping
+	//
+	//  In JSON format, the Timestamp type is encoded as a string in the
+	//  [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format. That is, the
+	//  format is "{year}-{month}-{day}T{hour}:{min}:{sec}[.{frac_sec}]Z"
+	//  where {year} is always expressed using four digits while {month}, {day},
+	//  {hour}, {min}, and {sec} are zero-padded to two digits each. The fractional
+	//  seconds, which can go up to 9 digits (i.e. up to 1 nanosecond resolution),
+	//  are optional. The "Z" suffix indicates the timezone ("UTC"); the timezone
+	//  is required. A proto3 JSON serializer should always use UTC (as indicated by
+	//  "Z") when printing the Timestamp type and a proto3 JSON parser should be
+	//  able to accept both UTC and other timezones (as indicated by an offset).
+	//
+	//  For example, "2017-01-15T01:30:15.01Z" encodes 15.01 seconds past
+	//  01:30 UTC on January 15, 2017.
+	//
+	//  In JavaScript, one can convert a Date object to this format using the
+	//  standard
+	//  [toISOString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString)
+	//  method. In Python, a standard `datetime.datetime` object can be converted
+	//  to this format using
+	//  [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with
+	//  the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use
+	//  the Joda Time's [`ISODateTimeFormat.dateTime()`](
+	//  http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()
+	//  ) to obtain a formatter capable of generating timestamps in this format.
+	UpdateTime *GoogleProtobufTimestamp `json:"updateTime,omitempty"`
 }
 
-// ArtifactReference ArtifactReference serves as a reference to an artifact, together with the artifact's purpose within a deployment package.
-type ArtifactReference struct {
+// CatalogV3ArtifactReference ArtifactReference serves as a reference to an artifact, together with the artifact's purpose within a deployment package.
+type CatalogV3ArtifactReference struct {
 	// Name Name of the artifact.
 	Name string `json:"name"`
 
@@ -155,114 +522,498 @@ type ArtifactReference struct {
 	Purpose string `json:"purpose"`
 }
 
-// CreateApplicationResponse Response message for the CreateApplication method.
-type CreateApplicationResponse struct {
+// CatalogV3CreateApplicationResponse Response message for the CreateApplication method.
+type CatalogV3CreateApplicationResponse struct {
 	// Application Application represents a Helm chart that can be deployed to one or more Kubernetes pods.
-	Application Application `json:"application"`
+	Application CatalogV3Application `json:"application"`
 }
 
-// CreateArtifactResponse Response message for the CreateArtifact method.
-type CreateArtifactResponse struct {
-	// Artifact Artifact represents a binary artifact that can be used for various purposes, e.g. icon or thumbnail for UI display, or auxiliary artifacts for integration with various platform services such as Grafana dashboard and similar. An artifact may be used by multiple deployment packages.
-	Artifact Artifact `json:"artifact"`
+// CatalogV3CreateArtifactResponse Response message for the CreateArtifact method.
+type CatalogV3CreateArtifactResponse struct {
+	// Artifact Artifact represents a binary artifact that can be used for various purposes, e.g. icon or thumbnail for UI display, or
+	//  auxiliary artifacts for integration with various platform services such as Grafana dashboard and similar. An artifact may be
+	//  used by multiple deployment packages.
+	Artifact CatalogV3Artifact `json:"artifact"`
 }
 
-// CreateDeploymentPackageResponse Response message for the CreateDeploymentPackage method.
-type CreateDeploymentPackageResponse struct {
-	// DeploymentPackage DeploymentPackage represents a collection of applications (referenced by their name and a version) that are deployed together. The package can define one or more deployment profiles that specify the individual application profiles to be used when deploying each application. If applications need to be deployed in a particular order, the package can also define any startup dependencies between its constituent applications as a set of dependency graph edges. The deployment package can also refer to a set of artifacts used for miscellaneous purposes, e.g. a thumbnail, icon, or a Grafana extension.
-	DeploymentPackage DeploymentPackage `json:"deploymentPackage"`
+// CatalogV3CreateDeploymentPackageResponse Response message for the CreateDeploymentPackage method.
+type CatalogV3CreateDeploymentPackageResponse struct {
+	// DeploymentPackage DeploymentPackage represents a collection of applications (referenced by their name and a version) that are
+	//  deployed together. The package can define one or more deployment profiles that specify the individual application
+	//  profiles to be used when deploying each application. If applications need to be deployed in a particular order, the
+	//  package can also define any startup dependencies between its constituent applications as a set of dependency graph edges.
+	//
+	//  The deployment package can also refer to a set of artifacts used for miscellaneous purposes,
+	//  e.g. a thumbnail, icon, or a Grafana extension.
+	DeploymentPackage CatalogV3DeploymentPackage `json:"deploymentPackage"`
 }
 
-// CreateRegistryResponse Response message for the CreateRegistry method.
-type CreateRegistryResponse struct {
-	// Registry Registry represents a repository from which various artifacts, such as application Docker\* images or Helm\* charts can be retrieved. As such, the registry entity holds information used for finding and accessing the represented repository.
-	Registry Registry `json:"registry"`
+// CatalogV3CreateRegistryResponse Response message for the CreateRegistry method.
+type CatalogV3CreateRegistryResponse struct {
+	// Registry Registry represents a repository from which various artifacts, such as application Docker\* images or Helm\* charts
+	//  can be retrieved. As such, the registry entity holds information used for finding and accessing the represented repository.
+	Registry CatalogV3Registry `json:"registry"`
 }
 
-// DeploymentPackage DeploymentPackage represents a collection of applications (referenced by their name and a version) that are deployed together. The package can define one or more deployment profiles that specify the individual application profiles to be used when deploying each application. If applications need to be deployed in a particular order, the package can also define any startup dependencies between its constituent applications as a set of dependency graph edges. The deployment package can also refer to a set of artifacts used for miscellaneous purposes, e.g. a thumbnail, icon, or a Grafana extension.
-type DeploymentPackage struct {
-	// ApplicationDependencies Optional set of application deployment dependencies, expressed as (name, requires) pairs of edges in the deployment order dependency graph.
-	ApplicationDependencies *[]ApplicationDependency `json:"applicationDependencies,omitempty"`
+// CatalogV3DeploymentPackage DeploymentPackage represents a collection of applications (referenced by their name and a version) that are
+//
+//	deployed together. The package can define one or more deployment profiles that specify the individual application
+//	profiles to be used when deploying each application. If applications need to be deployed in a particular order, the
+//	package can also define any startup dependencies between its constituent applications as a set of dependency graph edges.
+//
+//	The deployment package can also refer to a set of artifacts used for miscellaneous purposes,
+//	e.g. a thumbnail, icon, or a Grafana extension.
+type CatalogV3DeploymentPackage struct {
+	// ApplicationDependencies (OPTIONAL) Optional set of application deployment dependencies, expressed as (name, requires) pairs of edges in the
+	//  deployment order dependency graph.
+	ApplicationDependencies *[]CatalogV3ApplicationDependency `json:"applicationDependencies,omitempty"`
 
 	// ApplicationReferences List of applications comprising this deployment package. Expressed as (name, version) pairs.
-	ApplicationReferences []ApplicationReference `json:"applicationReferences"`
+	ApplicationReferences []CatalogV3ApplicationReference `json:"applicationReferences"`
 
-	// Artifacts Optional list of artifacts required for displaying or deploying this package. For example, icon or thumbnail artifacts can be used by the UI; Grafana\* dashboard definitions can be used by the deployment manager.
-	Artifacts []ArtifactReference `json:"artifacts"`
+	// Artifacts Optional list of artifacts required for displaying or deploying this package. For example, icon or thumbnail
+	//  artifacts can be used by the UI; Grafana\* dashboard definitions can be used by the deployment manager.
+	Artifacts []CatalogV3ArtifactReference `json:"artifacts"`
 
-	// CreateTime The creation time of the deployment package.
-	CreateTime *time.Time `json:"createTime,omitempty"`
+	// CreateTime A Timestamp represents a point in time independent of any time zone or local
+	//  calendar, encoded as a count of seconds and fractions of seconds at
+	//  nanosecond resolution. The count is relative to an epoch at UTC midnight on
+	//  January 1, 1970, in the proleptic Gregorian calendar which extends the
+	//  Gregorian calendar backwards to year one.
+	//
+	//  All minutes are 60 seconds long. Leap seconds are "smeared" so that no leap
+	//  second table is needed for interpretation, using a [24-hour linear
+	//  smear](https://developers.google.com/time/smear).
+	//
+	//  The range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z. By
+	//  restricting to that range, we ensure that we can convert to and from [RFC
+	//  3339](https://www.ietf.org/rfc/rfc3339.txt) date strings.
+	//
+	//  # Examples
+	//
+	//  Example 1: Compute Timestamp from POSIX `time()`.
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(time(NULL));
+	//      timestamp.set_nanos(0);
+	//
+	//  Example 2: Compute Timestamp from POSIX `gettimeofday()`.
+	//
+	//      struct timeval tv;
+	//      gettimeofday(&tv, NULL);
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(tv.tv_sec);
+	//      timestamp.set_nanos(tv.tv_usec * 1000);
+	//
+	//  Example 3: Compute Timestamp from Win32 `GetSystemTimeAsFileTime()`.
+	//
+	//      FILETIME ft;
+	//      GetSystemTimeAsFileTime(&ft);
+	//      UINT64 ticks = (((UINT64)ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
+	//
+	//      // A Windows tick is 100 nanoseconds. Windows epoch 1601-01-01T00:00:00Z
+	//      // is 11644473600 seconds before Unix epoch 1970-01-01T00:00:00Z.
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds((INT64) ((ticks / 10000000) - 11644473600LL));
+	//      timestamp.set_nanos((INT32) ((ticks % 10000000) * 100));
+	//
+	//  Example 4: Compute Timestamp from Java `System.currentTimeMillis()`.
+	//
+	//      long millis = System.currentTimeMillis();
+	//
+	//      Timestamp timestamp = Timestamp.newBuilder().setSeconds(millis / 1000)
+	//          .setNanos((int) ((millis % 1000) * 1000000)).build();
+	//
+	//  Example 5: Compute Timestamp from Java `Instant.now()`.
+	//
+	//      Instant now = Instant.now();
+	//
+	//      Timestamp timestamp =
+	//          Timestamp.newBuilder().setSeconds(now.getEpochSecond())
+	//              .setNanos(now.getNano()).build();
+	//
+	//  Example 6: Compute Timestamp from current time in Python.
+	//
+	//      timestamp = Timestamp()
+	//      timestamp.GetCurrentTime()
+	//
+	//  # JSON Mapping
+	//
+	//  In JSON format, the Timestamp type is encoded as a string in the
+	//  [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format. That is, the
+	//  format is "{year}-{month}-{day}T{hour}:{min}:{sec}[.{frac_sec}]Z"
+	//  where {year} is always expressed using four digits while {month}, {day},
+	//  {hour}, {min}, and {sec} are zero-padded to two digits each. The fractional
+	//  seconds, which can go up to 9 digits (i.e. up to 1 nanosecond resolution),
+	//  are optional. The "Z" suffix indicates the timezone ("UTC"); the timezone
+	//  is required. A proto3 JSON serializer should always use UTC (as indicated by
+	//  "Z") when printing the Timestamp type and a proto3 JSON parser should be
+	//  able to accept both UTC and other timezones (as indicated by an offset).
+	//
+	//  For example, "2017-01-15T01:30:15.01Z" encodes 15.01 seconds past
+	//  01:30 UTC on January 15, 2017.
+	//
+	//  In JavaScript, one can convert a Date object to this format using the
+	//  standard
+	//  [toISOString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString)
+	//  method. In Python, a standard `datetime.datetime` object can be converted
+	//  to this format using
+	//  [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with
+	//  the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use
+	//  the Joda Time's [`ISODateTimeFormat.dateTime()`](
+	//  http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()
+	//  ) to obtain a formatter capable of generating timestamps in this format.
+	CreateTime *GoogleProtobufTimestamp `json:"createTime,omitempty"`
 
-	// DefaultNamespaces Optional map of application-to-namespace bindings to be used as a default when deploying the applications that comprise the package. If a namespace is not defined in the set of "namespaces" in this Deployment Package, it will be inferred that it is a simple namespace with no predefined labels or annotations.
+	// DefaultNamespaces (OPTIONAL) Optional map of application-to-namespace bindings to be used as a default when deploying the applications that
+	//  comprise the package.
+	//  If a namespace is not defined in the set of "namespaces" in this Deployment Package,
+	//  it will be inferred that it is a simple namespace with no predefined labels or annotations.
 	DefaultNamespaces *map[string]string `json:"defaultNamespaces,omitempty"`
 
-	// DefaultProfileName Name of the default deployment profile to be used by default when deploying this package.
+	// DefaultProfileName (OPTIONAL) Name of the default deployment profile to be used by default when deploying this package.
 	DefaultProfileName *string `json:"defaultProfileName,omitempty"`
 
-	// Description Description of the deployment package. Displayed on user interfaces.
+	// Description (OPTIONAL) Description of the deployment package. Displayed on user interfaces.
 	Description *string `json:"description,omitempty"`
 
-	// DisplayName Display name is an optional human-readable name for the deployment package. When specified, it must be unique among all packages within a project. It is used for display purposes on user interfaces.
+	// DisplayName (OPTIONAL) Display name is an optional human-readable name for the deployment package. When specified, it must be unique among all
+	//  packages within a project. It is used for display purposes on user interfaces.
 	DisplayName *string `json:"displayName,omitempty"`
 
 	// Extensions Optional list of API and UI extensions.
-	Extensions []APIExtension `json:"extensions"`
+	Extensions []CatalogV3APIExtension `json:"extensions"`
 
-	// ForbidsMultipleDeployments Optional flag indicating whether multiple deployments of this package are forbidden within the same realm.
+	// ForbidsMultipleDeployments (OPTIONAL) Optional flag indicating whether multiple deployments of this package are forbidden within the same realm.
 	ForbidsMultipleDeployments *bool `json:"forbidsMultipleDeployments,omitempty"`
 
-	// IsDeployed Flag indicating whether the deployment package has been deployed. The mutability of the deployment package entity can be limited when this flag is true. For example, one may not be able to update when an application is removed from a package after it has been marked as deployed.
+	// IsDeployed (OPTIONAL) Flag indicating whether the deployment package has been deployed.
+	//  The mutability of the deployment package entity can be limited when this flag is true. For example, one may
+	//  not be able to update when an application is removed from a package after it has been marked as
+	//  deployed.
 	IsDeployed *bool `json:"isDeployed,omitempty"`
 
-	// IsVisible Flag indicating whether the deployment package is visible in the UI. Some deployment packages can be classified as auxiliary platform extensions and therefore are to be deployed indirectly only when specified as deployment requirements, rather than directly by the platform operator.
+	// IsVisible (OPTIONAL) Flag indicating whether the deployment package is visible in the UI.
+	//  Some deployment packages can be classified as auxiliary platform extensions and therefore are to be deployed
+	//  indirectly only when specified as deployment requirements, rather than directly by the platform operator.
 	IsVisible *bool `json:"isVisible,omitempty"`
 
-	// Kind Field designating whether the deployment package is a system add-on, system extension, or a normal package.
-	Kind *DeploymentPackageKind `json:"kind,omitempty"`
+	// Kind Kind designation for applications and packages, normal (unspecified), extension, or addon.
+	Kind *CatalogV3Kind `json:"kind,omitempty"`
 
-	// Name Name is a human-readable unique identifier for the deployment package and must be unique for all packages of a given project.
+	// Name Name is a human-readable unique identifier for the deployment package and must be unique for all packages of a
+	//  given project.
 	Name string `json:"name"`
 
-	// Namespaces Namespace definitions to be created before resources are deployed. This allows complex namespaces to be defined with predefined labels and annotations. If not defined, simple namespaces will be created as needed.
-	Namespaces *[]Namespace `json:"namespaces,omitempty"`
+	// Namespaces (OPTIONAL) Namespace definitions to be created before resources are deployed.
+	//  This allows complex namespaces to be defined with predefined labels and annotations.
+	//  If not defined, simple namespaces will be created as needed.
+	Namespaces *[]CatalogV3Namespace `json:"namespaces,omitempty"`
 
 	// Profiles Set of deployment profiles to choose from when deploying this package.
-	Profiles *[]DeploymentProfile `json:"profiles,omitempty"`
+	Profiles *[]CatalogV3DeploymentProfile `json:"profiles,omitempty"`
 
-	// UpdateTime The last update time of the deployment package.
-	UpdateTime *time.Time `json:"updateTime,omitempty"`
+	// UpdateTime A Timestamp represents a point in time independent of any time zone or local
+	//  calendar, encoded as a count of seconds and fractions of seconds at
+	//  nanosecond resolution. The count is relative to an epoch at UTC midnight on
+	//  January 1, 1970, in the proleptic Gregorian calendar which extends the
+	//  Gregorian calendar backwards to year one.
+	//
+	//  All minutes are 60 seconds long. Leap seconds are "smeared" so that no leap
+	//  second table is needed for interpretation, using a [24-hour linear
+	//  smear](https://developers.google.com/time/smear).
+	//
+	//  The range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z. By
+	//  restricting to that range, we ensure that we can convert to and from [RFC
+	//  3339](https://www.ietf.org/rfc/rfc3339.txt) date strings.
+	//
+	//  # Examples
+	//
+	//  Example 1: Compute Timestamp from POSIX `time()`.
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(time(NULL));
+	//      timestamp.set_nanos(0);
+	//
+	//  Example 2: Compute Timestamp from POSIX `gettimeofday()`.
+	//
+	//      struct timeval tv;
+	//      gettimeofday(&tv, NULL);
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(tv.tv_sec);
+	//      timestamp.set_nanos(tv.tv_usec * 1000);
+	//
+	//  Example 3: Compute Timestamp from Win32 `GetSystemTimeAsFileTime()`.
+	//
+	//      FILETIME ft;
+	//      GetSystemTimeAsFileTime(&ft);
+	//      UINT64 ticks = (((UINT64)ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
+	//
+	//      // A Windows tick is 100 nanoseconds. Windows epoch 1601-01-01T00:00:00Z
+	//      // is 11644473600 seconds before Unix epoch 1970-01-01T00:00:00Z.
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds((INT64) ((ticks / 10000000) - 11644473600LL));
+	//      timestamp.set_nanos((INT32) ((ticks % 10000000) * 100));
+	//
+	//  Example 4: Compute Timestamp from Java `System.currentTimeMillis()`.
+	//
+	//      long millis = System.currentTimeMillis();
+	//
+	//      Timestamp timestamp = Timestamp.newBuilder().setSeconds(millis / 1000)
+	//          .setNanos((int) ((millis % 1000) * 1000000)).build();
+	//
+	//  Example 5: Compute Timestamp from Java `Instant.now()`.
+	//
+	//      Instant now = Instant.now();
+	//
+	//      Timestamp timestamp =
+	//          Timestamp.newBuilder().setSeconds(now.getEpochSecond())
+	//              .setNanos(now.getNano()).build();
+	//
+	//  Example 6: Compute Timestamp from current time in Python.
+	//
+	//      timestamp = Timestamp()
+	//      timestamp.GetCurrentTime()
+	//
+	//  # JSON Mapping
+	//
+	//  In JSON format, the Timestamp type is encoded as a string in the
+	//  [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format. That is, the
+	//  format is "{year}-{month}-{day}T{hour}:{min}:{sec}[.{frac_sec}]Z"
+	//  where {year} is always expressed using four digits while {month}, {day},
+	//  {hour}, {min}, and {sec} are zero-padded to two digits each. The fractional
+	//  seconds, which can go up to 9 digits (i.e. up to 1 nanosecond resolution),
+	//  are optional. The "Z" suffix indicates the timezone ("UTC"); the timezone
+	//  is required. A proto3 JSON serializer should always use UTC (as indicated by
+	//  "Z") when printing the Timestamp type and a proto3 JSON parser should be
+	//  able to accept both UTC and other timezones (as indicated by an offset).
+	//
+	//  For example, "2017-01-15T01:30:15.01Z" encodes 15.01 seconds past
+	//  01:30 UTC on January 15, 2017.
+	//
+	//  In JavaScript, one can convert a Date object to this format using the
+	//  standard
+	//  [toISOString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString)
+	//  method. In Python, a standard `datetime.datetime` object can be converted
+	//  to this format using
+	//  [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with
+	//  the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use
+	//  the Joda Time's [`ISODateTimeFormat.dateTime()`](
+	//  http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()
+	//  ) to obtain a formatter capable of generating timestamps in this format.
+	UpdateTime *GoogleProtobufTimestamp `json:"updateTime,omitempty"`
 
 	// Version Version of the deployment package.
 	Version string `json:"version"`
 }
 
-// DeploymentPackageKind Field designating whether the deployment package is a system add-on, system extension, or a normal package.
-type DeploymentPackageKind string
-
-// DeploymentProfile DeploymentProfile specifies which application profiles will be used for deployment of which applications.
-type DeploymentProfile struct {
-	// ApplicationProfiles Application profiles map application names to the names of its profile, to be used when deploying the application as part of the deployment package together with the deployment profile.
+// CatalogV3DeploymentProfile DeploymentProfile specifies which application profiles will be used for deployment of which applications.
+type CatalogV3DeploymentProfile struct {
+	// ApplicationProfiles Application profiles map application names to the names of its profile, to be used when deploying the application
+	//  as part of the deployment package together with the deployment profile.
 	ApplicationProfiles map[string]string `json:"applicationProfiles"`
 
-	// CreateTime The creation time of the deployment profile.
-	CreateTime *time.Time `json:"createTime,omitempty"`
+	// CreateTime A Timestamp represents a point in time independent of any time zone or local
+	//  calendar, encoded as a count of seconds and fractions of seconds at
+	//  nanosecond resolution. The count is relative to an epoch at UTC midnight on
+	//  January 1, 1970, in the proleptic Gregorian calendar which extends the
+	//  Gregorian calendar backwards to year one.
+	//
+	//  All minutes are 60 seconds long. Leap seconds are "smeared" so that no leap
+	//  second table is needed for interpretation, using a [24-hour linear
+	//  smear](https://developers.google.com/time/smear).
+	//
+	//  The range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z. By
+	//  restricting to that range, we ensure that we can convert to and from [RFC
+	//  3339](https://www.ietf.org/rfc/rfc3339.txt) date strings.
+	//
+	//  # Examples
+	//
+	//  Example 1: Compute Timestamp from POSIX `time()`.
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(time(NULL));
+	//      timestamp.set_nanos(0);
+	//
+	//  Example 2: Compute Timestamp from POSIX `gettimeofday()`.
+	//
+	//      struct timeval tv;
+	//      gettimeofday(&tv, NULL);
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(tv.tv_sec);
+	//      timestamp.set_nanos(tv.tv_usec * 1000);
+	//
+	//  Example 3: Compute Timestamp from Win32 `GetSystemTimeAsFileTime()`.
+	//
+	//      FILETIME ft;
+	//      GetSystemTimeAsFileTime(&ft);
+	//      UINT64 ticks = (((UINT64)ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
+	//
+	//      // A Windows tick is 100 nanoseconds. Windows epoch 1601-01-01T00:00:00Z
+	//      // is 11644473600 seconds before Unix epoch 1970-01-01T00:00:00Z.
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds((INT64) ((ticks / 10000000) - 11644473600LL));
+	//      timestamp.set_nanos((INT32) ((ticks % 10000000) * 100));
+	//
+	//  Example 4: Compute Timestamp from Java `System.currentTimeMillis()`.
+	//
+	//      long millis = System.currentTimeMillis();
+	//
+	//      Timestamp timestamp = Timestamp.newBuilder().setSeconds(millis / 1000)
+	//          .setNanos((int) ((millis % 1000) * 1000000)).build();
+	//
+	//  Example 5: Compute Timestamp from Java `Instant.now()`.
+	//
+	//      Instant now = Instant.now();
+	//
+	//      Timestamp timestamp =
+	//          Timestamp.newBuilder().setSeconds(now.getEpochSecond())
+	//              .setNanos(now.getNano()).build();
+	//
+	//  Example 6: Compute Timestamp from current time in Python.
+	//
+	//      timestamp = Timestamp()
+	//      timestamp.GetCurrentTime()
+	//
+	//  # JSON Mapping
+	//
+	//  In JSON format, the Timestamp type is encoded as a string in the
+	//  [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format. That is, the
+	//  format is "{year}-{month}-{day}T{hour}:{min}:{sec}[.{frac_sec}]Z"
+	//  where {year} is always expressed using four digits while {month}, {day},
+	//  {hour}, {min}, and {sec} are zero-padded to two digits each. The fractional
+	//  seconds, which can go up to 9 digits (i.e. up to 1 nanosecond resolution),
+	//  are optional. The "Z" suffix indicates the timezone ("UTC"); the timezone
+	//  is required. A proto3 JSON serializer should always use UTC (as indicated by
+	//  "Z") when printing the Timestamp type and a proto3 JSON parser should be
+	//  able to accept both UTC and other timezones (as indicated by an offset).
+	//
+	//  For example, "2017-01-15T01:30:15.01Z" encodes 15.01 seconds past
+	//  01:30 UTC on January 15, 2017.
+	//
+	//  In JavaScript, one can convert a Date object to this format using the
+	//  standard
+	//  [toISOString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString)
+	//  method. In Python, a standard `datetime.datetime` object can be converted
+	//  to this format using
+	//  [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with
+	//  the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use
+	//  the Joda Time's [`ISODateTimeFormat.dateTime()`](
+	//  http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()
+	//  ) to obtain a formatter capable of generating timestamps in this format.
+	CreateTime *GoogleProtobufTimestamp `json:"createTime,omitempty"`
 
-	// Description Description of the deployment profile. Displayed on user interfaces.
+	// Description (OPTIONAL) Description of the deployment profile. Displayed on user interfaces.
 	Description *string `json:"description,omitempty"`
 
-	// DisplayName Display name is an optional human-readable name for the registry. When specified, it must be unique among all profiles of a given package. It is used for display purposes on user interfaces.
+	// DisplayName (OPTIONAL) Display name is an optional human-readable name for the registry. When specified, it must be unique among all
+	//  profiles of a given package. It is used for display purposes on user interfaces.
 	DisplayName *string `json:"displayName,omitempty"`
 
-	// Name Name is a human-readable unique identifier for the profile and must be unique for all profiles of a given deployment package.
+	// Name Name is a human-readable unique identifier for the profile and must be unique for all profiles of a
+	//  given deployment package.
 	Name string `json:"name"`
 
-	// UpdateTime The last update time of the deployment profile.
-	UpdateTime *time.Time `json:"updateTime,omitempty"`
+	// UpdateTime A Timestamp represents a point in time independent of any time zone or local
+	//  calendar, encoded as a count of seconds and fractions of seconds at
+	//  nanosecond resolution. The count is relative to an epoch at UTC midnight on
+	//  January 1, 1970, in the proleptic Gregorian calendar which extends the
+	//  Gregorian calendar backwards to year one.
+	//
+	//  All minutes are 60 seconds long. Leap seconds are "smeared" so that no leap
+	//  second table is needed for interpretation, using a [24-hour linear
+	//  smear](https://developers.google.com/time/smear).
+	//
+	//  The range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z. By
+	//  restricting to that range, we ensure that we can convert to and from [RFC
+	//  3339](https://www.ietf.org/rfc/rfc3339.txt) date strings.
+	//
+	//  # Examples
+	//
+	//  Example 1: Compute Timestamp from POSIX `time()`.
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(time(NULL));
+	//      timestamp.set_nanos(0);
+	//
+	//  Example 2: Compute Timestamp from POSIX `gettimeofday()`.
+	//
+	//      struct timeval tv;
+	//      gettimeofday(&tv, NULL);
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(tv.tv_sec);
+	//      timestamp.set_nanos(tv.tv_usec * 1000);
+	//
+	//  Example 3: Compute Timestamp from Win32 `GetSystemTimeAsFileTime()`.
+	//
+	//      FILETIME ft;
+	//      GetSystemTimeAsFileTime(&ft);
+	//      UINT64 ticks = (((UINT64)ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
+	//
+	//      // A Windows tick is 100 nanoseconds. Windows epoch 1601-01-01T00:00:00Z
+	//      // is 11644473600 seconds before Unix epoch 1970-01-01T00:00:00Z.
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds((INT64) ((ticks / 10000000) - 11644473600LL));
+	//      timestamp.set_nanos((INT32) ((ticks % 10000000) * 100));
+	//
+	//  Example 4: Compute Timestamp from Java `System.currentTimeMillis()`.
+	//
+	//      long millis = System.currentTimeMillis();
+	//
+	//      Timestamp timestamp = Timestamp.newBuilder().setSeconds(millis / 1000)
+	//          .setNanos((int) ((millis % 1000) * 1000000)).build();
+	//
+	//  Example 5: Compute Timestamp from Java `Instant.now()`.
+	//
+	//      Instant now = Instant.now();
+	//
+	//      Timestamp timestamp =
+	//          Timestamp.newBuilder().setSeconds(now.getEpochSecond())
+	//              .setNanos(now.getNano()).build();
+	//
+	//  Example 6: Compute Timestamp from current time in Python.
+	//
+	//      timestamp = Timestamp()
+	//      timestamp.GetCurrentTime()
+	//
+	//  # JSON Mapping
+	//
+	//  In JSON format, the Timestamp type is encoded as a string in the
+	//  [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format. That is, the
+	//  format is "{year}-{month}-{day}T{hour}:{min}:{sec}[.{frac_sec}]Z"
+	//  where {year} is always expressed using four digits while {month}, {day},
+	//  {hour}, {min}, and {sec} are zero-padded to two digits each. The fractional
+	//  seconds, which can go up to 9 digits (i.e. up to 1 nanosecond resolution),
+	//  are optional. The "Z" suffix indicates the timezone ("UTC"); the timezone
+	//  is required. A proto3 JSON serializer should always use UTC (as indicated by
+	//  "Z") when printing the Timestamp type and a proto3 JSON parser should be
+	//  able to accept both UTC and other timezones (as indicated by an offset).
+	//
+	//  For example, "2017-01-15T01:30:15.01Z" encodes 15.01 seconds past
+	//  01:30 UTC on January 15, 2017.
+	//
+	//  In JavaScript, one can convert a Date object to this format using the
+	//  standard
+	//  [toISOString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString)
+	//  method. In Python, a standard `datetime.datetime` object can be converted
+	//  to this format using
+	//  [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with
+	//  the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use
+	//  the Joda Time's [`ISODateTimeFormat.dateTime()`](
+	//  http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()
+	//  ) to obtain a formatter capable of generating timestamps in this format.
+	UpdateTime *GoogleProtobufTimestamp `json:"updateTime,omitempty"`
 }
 
-// DeploymentRequirement DeploymentRequirement is a reference to the deployment package that must be deployed first, as a requirement for an application to be deployed.
-type DeploymentRequirement struct {
-	// DeploymentProfileName Optional name of the deployment profile to be used. When not provided, the default deployment profile will be used.
+// CatalogV3DeploymentRequirement DeploymentRequirement is a reference to the deployment package that must be deployed first,
+//
+//	as a requirement for an application to be deployed.
+type CatalogV3DeploymentRequirement struct {
+	// DeploymentProfileName (OPTIONAL) Optional name of the deployment profile to be used. When not provided, the default deployment profile will be used.
 	DeploymentProfileName *string `json:"deploymentProfileName,omitempty"`
 
 	// Name Name of the required deployment package.
@@ -272,9 +1023,9 @@ type DeploymentRequirement struct {
 	Version string `json:"version"`
 }
 
-// Endpoint Endpoint represents an application service endpoint.
-type Endpoint struct {
-	// AppName The name of the application providing this endpoint.
+// CatalogV3Endpoint Endpoint represents an application service endpoint.
+type CatalogV3Endpoint struct {
+	// AppName (OPTIONAL) The name of the application providing this endpoint.
 	AppName *string `json:"appName,omitempty"`
 
 	// AuthType Authentication type expected by the endpoint.
@@ -293,176 +1044,464 @@ type Endpoint struct {
 	ServiceName string `json:"serviceName"`
 }
 
-// GetApplicationReferenceCountResponse Response message for the GetApplicationReferenceCount method.
-type GetApplicationReferenceCountResponse struct {
-	ReferenceCount uint32 `json:"referenceCount"`
+// CatalogV3GetApplicationReferenceCountResponse Response message for the GetApplicationReferenceCount method.
+type CatalogV3GetApplicationReferenceCountResponse struct {
+	ReferenceCount int `json:"referenceCount"`
 }
 
-// GetApplicationResponse Response message for the GetApplication method.
-type GetApplicationResponse struct {
+// CatalogV3GetApplicationResponse Response message for the GetApplication method.
+type CatalogV3GetApplicationResponse struct {
 	// Application Application represents a Helm chart that can be deployed to one or more Kubernetes pods.
-	Application Application `json:"application"`
+	Application CatalogV3Application `json:"application"`
 }
 
-// GetApplicationVersionsResponse Response message for the GetApplication method.
-type GetApplicationVersionsResponse struct {
-	// Application A list of applications with the same project and name.
-	Application []Application `json:"application"`
+// CatalogV3GetApplicationVersionsResponse Response message for the GetApplication method.
+type CatalogV3GetApplicationVersionsResponse struct {
+	// Application A list of applications with the same project and name. TODO rename to 'applications'
+	Application []CatalogV3Application `json:"application"`
 }
 
-// GetArtifactResponse Response message for the GetArtifact method.
-type GetArtifactResponse struct {
-	// Artifact Artifact represents a binary artifact that can be used for various purposes, e.g. icon or thumbnail for UI display, or auxiliary artifacts for integration with various platform services such as Grafana dashboard and similar. An artifact may be used by multiple deployment packages.
-	Artifact Artifact `json:"artifact"`
+// CatalogV3GetArtifactResponse Response message for the GetArtifact method.
+type CatalogV3GetArtifactResponse struct {
+	// Artifact Artifact represents a binary artifact that can be used for various purposes, e.g. icon or thumbnail for UI display, or
+	//  auxiliary artifacts for integration with various platform services such as Grafana dashboard and similar. An artifact may be
+	//  used by multiple deployment packages.
+	Artifact CatalogV3Artifact `json:"artifact"`
 }
 
-// GetDeploymentPackageResponse Response message for the GetDeploymentPackage method.
-type GetDeploymentPackageResponse struct {
-	// DeploymentPackage DeploymentPackage represents a collection of applications (referenced by their name and a version) that are deployed together. The package can define one or more deployment profiles that specify the individual application profiles to be used when deploying each application. If applications need to be deployed in a particular order, the package can also define any startup dependencies between its constituent applications as a set of dependency graph edges. The deployment package can also refer to a set of artifacts used for miscellaneous purposes, e.g. a thumbnail, icon, or a Grafana extension.
-	DeploymentPackage DeploymentPackage `json:"deploymentPackage"`
+// CatalogV3GetDeploymentPackageResponse Response message for the GetDeploymentPackage method.
+type CatalogV3GetDeploymentPackageResponse struct {
+	// DeploymentPackage DeploymentPackage represents a collection of applications (referenced by their name and a version) that are
+	//  deployed together. The package can define one or more deployment profiles that specify the individual application
+	//  profiles to be used when deploying each application. If applications need to be deployed in a particular order, the
+	//  package can also define any startup dependencies between its constituent applications as a set of dependency graph edges.
+	//
+	//  The deployment package can also refer to a set of artifacts used for miscellaneous purposes,
+	//  e.g. a thumbnail, icon, or a Grafana extension.
+	DeploymentPackage CatalogV3DeploymentPackage `json:"deploymentPackage"`
 }
 
-// GetDeploymentPackageVersionsResponse Response message for the GetDeploymentPackageVersions method.
-type GetDeploymentPackageVersionsResponse struct {
+// CatalogV3GetDeploymentPackageVersionsResponse Response message for the GetDeploymentPackageVersions method.
+type CatalogV3GetDeploymentPackageVersionsResponse struct {
 	// DeploymentPackages A list of DeploymentPackages with the same project and name.
-	DeploymentPackages []DeploymentPackage `json:"deploymentPackages"`
+	DeploymentPackages []CatalogV3DeploymentPackage `json:"deploymentPackages"`
 }
 
-// GetRegistryResponse Response message for the GetRegistry method.
-type GetRegistryResponse struct {
-	// Registry Registry represents a repository from which various artifacts, such as application Docker\* images or Helm\* charts can be retrieved. As such, the registry entity holds information used for finding and accessing the represented repository.
-	Registry Registry `json:"registry"`
+// CatalogV3GetRegistryResponse Response message for the GetRegistry method.
+type CatalogV3GetRegistryResponse struct {
+	// Registry Registry represents a repository from which various artifacts, such as application Docker\* images or Helm\* charts
+	//  can be retrieved. As such, the registry entity holds information used for finding and accessing the represented repository.
+	Registry CatalogV3Registry `json:"registry"`
 }
 
-// ImportResponse Response message for the Import method
-type ImportResponse struct {
+// CatalogV3ImportResponse Response message for the Import method
+type CatalogV3ImportResponse struct {
 	// ErrorMessages Any error messages encountered either during chart parsing or entity creation or update.
 	ErrorMessages *[]string `json:"errorMessages,omitempty"`
 }
 
-// ListApplicationsResponse Response message for the ListApplications method.
-type ListApplicationsResponse struct {
+// CatalogV3Kind Kind designation for applications and packages, normal (unspecified), extension, or addon.
+type CatalogV3Kind string
+
+// CatalogV3ListApplicationsResponse Response message for the ListApplications method.
+type CatalogV3ListApplicationsResponse struct {
 	// Applications A list of applications.
-	Applications []Application `json:"applications"`
+	Applications []CatalogV3Application `json:"applications"`
 
 	// TotalElements Count of items in the entire list, regardless of pagination.
 	TotalElements int32 `json:"totalElements"`
 }
 
-// ListArtifactsResponse Response message for the ListArtifacts method.
-type ListArtifactsResponse struct {
+// CatalogV3ListArtifactsResponse Response message for the ListArtifacts method.
+type CatalogV3ListArtifactsResponse struct {
 	// Artifacts A list of artifacts.
-	Artifacts []Artifact `json:"artifacts"`
+	Artifacts []CatalogV3Artifact `json:"artifacts"`
 
 	// TotalElements Count of items in the entire list, regardless of pagination.
 	TotalElements int32 `json:"totalElements"`
 }
 
-// ListDeploymentPackagesResponse Response message for the ListDeploymentPackages method.
-type ListDeploymentPackagesResponse struct {
+// CatalogV3ListDeploymentPackagesResponse Response message for the ListDeploymentPackages method.
+type CatalogV3ListDeploymentPackagesResponse struct {
 	// DeploymentPackages A list of DeploymentPackages.
-	DeploymentPackages []DeploymentPackage `json:"deploymentPackages"`
+	DeploymentPackages []CatalogV3DeploymentPackage `json:"deploymentPackages"`
 
 	// TotalElements Count of items in the entire list, regardless of pagination.
 	TotalElements int32 `json:"totalElements"`
 }
 
-// ListRegistriesResponse Response message for the ListRegistries method.
-type ListRegistriesResponse struct {
+// CatalogV3ListRegistriesResponse Response message for the ListRegistries method.
+type CatalogV3ListRegistriesResponse struct {
 	// Registries A list of registries.
-	Registries []Registry `json:"registries"`
+	Registries []CatalogV3Registry `json:"registries"`
 
 	// TotalElements Count of items in the entire list, regardless of pagination.
 	TotalElements int32 `json:"totalElements"`
 }
 
-// Namespace Namespace represents a complex namespace definition with predefined labels and annotations. They are created before any other resources in the deployment.
-type Namespace struct {
+// CatalogV3Namespace Namespace represents a complex namespace definition with predefined labels and annotations.
+//
+//	They are created before any other resources in the deployment.
+type CatalogV3Namespace struct {
+	// Annotations (OPTIONAL)
 	Annotations *map[string]string `json:"annotations,omitempty"`
-	Labels      *map[string]string `json:"labels,omitempty"`
 
-	// Name namespace names must be valid RFC 1123 DNS labels. Avoid creating namespaces with the prefix `kube-`, since it is reserved for Kubernetes\* system namespaces. Avoid `default` - will already exist
+	// Labels (OPTIONAL)
+	Labels *map[string]string `json:"labels,omitempty"`
+
+	// Name namespace names must be valid RFC 1123 DNS labels.
+	//  Avoid creating namespaces with the prefix `kube-`, since it is reserved for Kubernetes\* system namespaces.
+	//  Avoid `default` - will already exist
 	Name string `json:"name"`
 }
 
-// ParameterTemplate ParameterTemplate describes override values for Helm chart values
-type ParameterTemplate struct {
-	// Default Default value for the parameter.
+// CatalogV3ParameterTemplate ParameterTemplate describes override values for Helm chart values
+type CatalogV3ParameterTemplate struct {
+	// Default (OPTIONAL) Default value for the parameter.
 	Default *string `json:"default,omitempty"`
 
-	// DisplayName Display name is an optional human-readable name for the template. It is used for display purposes on user interfaces.
+	// DisplayName (OPTIONAL) Display name is an optional human-readable name for the template. It is used for display purposes on user interfaces.
 	DisplayName *string `json:"displayName,omitempty"`
 
-	// Mandatory Optional mandatory flag for the parameter.
+	// Mandatory (OPTIONAL) Optional mandatory flag for the parameter.
 	Mandatory *bool `json:"mandatory,omitempty"`
 
 	// Name Human-readable name for the parameter template.
 	Name string `json:"name"`
 
-	// Secret Optional secret flag for the parameter.
+	// Secret (OPTIONAL) Optional secret flag for the parameter.
 	Secret *bool `json:"secret,omitempty"`
 
-	// SuggestedValues List of suggested values to use, to override the default value.
+	// SuggestedValues (OPTIONAL) List of suggested values to use, to override the default value.
 	SuggestedValues *[]string `json:"suggestedValues,omitempty"`
 
 	// Type Type of parameter: string, number, or boolean.
 	Type string `json:"type"`
 
-	// Validator Optional validator for the parameter. Usage TBD.
+	// Validator (OPTIONAL) Optional validator for the parameter. Usage TBD.
 	Validator *string `json:"validator,omitempty"`
 }
 
-// Profile Profile is a set of configuration values for customizing application deployment.
-type Profile struct {
-	// ChartValues Raw byte value containing the chart values as raw YAML bytes.
+// CatalogV3Profile Profile is a set of configuration values for customizing application deployment.
+type CatalogV3Profile struct {
+	// ChartValues (OPTIONAL) Raw byte value containing the chart values as raw YAML bytes.
 	ChartValues *string `json:"chartValues,omitempty"`
 
-	// CreateTime The creation time of the profile.
-	CreateTime *time.Time `json:"createTime,omitempty"`
+	// CreateTime A Timestamp represents a point in time independent of any time zone or local
+	//  calendar, encoded as a count of seconds and fractions of seconds at
+	//  nanosecond resolution. The count is relative to an epoch at UTC midnight on
+	//  January 1, 1970, in the proleptic Gregorian calendar which extends the
+	//  Gregorian calendar backwards to year one.
+	//
+	//  All minutes are 60 seconds long. Leap seconds are "smeared" so that no leap
+	//  second table is needed for interpretation, using a [24-hour linear
+	//  smear](https://developers.google.com/time/smear).
+	//
+	//  The range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z. By
+	//  restricting to that range, we ensure that we can convert to and from [RFC
+	//  3339](https://www.ietf.org/rfc/rfc3339.txt) date strings.
+	//
+	//  # Examples
+	//
+	//  Example 1: Compute Timestamp from POSIX `time()`.
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(time(NULL));
+	//      timestamp.set_nanos(0);
+	//
+	//  Example 2: Compute Timestamp from POSIX `gettimeofday()`.
+	//
+	//      struct timeval tv;
+	//      gettimeofday(&tv, NULL);
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(tv.tv_sec);
+	//      timestamp.set_nanos(tv.tv_usec * 1000);
+	//
+	//  Example 3: Compute Timestamp from Win32 `GetSystemTimeAsFileTime()`.
+	//
+	//      FILETIME ft;
+	//      GetSystemTimeAsFileTime(&ft);
+	//      UINT64 ticks = (((UINT64)ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
+	//
+	//      // A Windows tick is 100 nanoseconds. Windows epoch 1601-01-01T00:00:00Z
+	//      // is 11644473600 seconds before Unix epoch 1970-01-01T00:00:00Z.
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds((INT64) ((ticks / 10000000) - 11644473600LL));
+	//      timestamp.set_nanos((INT32) ((ticks % 10000000) * 100));
+	//
+	//  Example 4: Compute Timestamp from Java `System.currentTimeMillis()`.
+	//
+	//      long millis = System.currentTimeMillis();
+	//
+	//      Timestamp timestamp = Timestamp.newBuilder().setSeconds(millis / 1000)
+	//          .setNanos((int) ((millis % 1000) * 1000000)).build();
+	//
+	//  Example 5: Compute Timestamp from Java `Instant.now()`.
+	//
+	//      Instant now = Instant.now();
+	//
+	//      Timestamp timestamp =
+	//          Timestamp.newBuilder().setSeconds(now.getEpochSecond())
+	//              .setNanos(now.getNano()).build();
+	//
+	//  Example 6: Compute Timestamp from current time in Python.
+	//
+	//      timestamp = Timestamp()
+	//      timestamp.GetCurrentTime()
+	//
+	//  # JSON Mapping
+	//
+	//  In JSON format, the Timestamp type is encoded as a string in the
+	//  [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format. That is, the
+	//  format is "{year}-{month}-{day}T{hour}:{min}:{sec}[.{frac_sec}]Z"
+	//  where {year} is always expressed using four digits while {month}, {day},
+	//  {hour}, {min}, and {sec} are zero-padded to two digits each. The fractional
+	//  seconds, which can go up to 9 digits (i.e. up to 1 nanosecond resolution),
+	//  are optional. The "Z" suffix indicates the timezone ("UTC"); the timezone
+	//  is required. A proto3 JSON serializer should always use UTC (as indicated by
+	//  "Z") when printing the Timestamp type and a proto3 JSON parser should be
+	//  able to accept both UTC and other timezones (as indicated by an offset).
+	//
+	//  For example, "2017-01-15T01:30:15.01Z" encodes 15.01 seconds past
+	//  01:30 UTC on January 15, 2017.
+	//
+	//  In JavaScript, one can convert a Date object to this format using the
+	//  standard
+	//  [toISOString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString)
+	//  method. In Python, a standard `datetime.datetime` object can be converted
+	//  to this format using
+	//  [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with
+	//  the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use
+	//  the Joda Time's [`ISODateTimeFormat.dateTime()`](
+	//  http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()
+	//  ) to obtain a formatter capable of generating timestamps in this format.
+	CreateTime *GoogleProtobufTimestamp `json:"createTime,omitempty"`
 
-	// DeploymentRequirement List of deployment requirements for this profile.
-	DeploymentRequirement *[]DeploymentRequirement `json:"deploymentRequirement,omitempty"`
+	// DeploymentRequirement (OPTIONAL) List of deployment requirements for this profile.
+	DeploymentRequirement *[]CatalogV3DeploymentRequirement `json:"deploymentRequirement,omitempty"`
 
-	// Description Description of the profile. Displayed on user interfaces.
+	// Description (OPTIONAL) Description of the profile. Displayed on user interfaces.
 	Description *string `json:"description,omitempty"`
 
-	// DisplayName Display name is an optional human-readable name for the profile. When specified, it must be unique among all profiles of a given application. It is used for display purposes on user interfaces.
+	// DisplayName (OPTIONAL) Display name is an optional human-readable name for the profile. When specified, it must be unique among all
+	//  profiles of a given application. It is used for display purposes on user interfaces.
 	DisplayName *string `json:"displayName,omitempty"`
 
 	// Name Human-readable name for the profile. Unique among all profiles of the same application.
 	Name string `json:"name"`
 
-	// ParameterTemplates Parameter templates available for this profile.
-	ParameterTemplates *[]ParameterTemplate `json:"parameterTemplates,omitempty"`
+	// ParameterTemplates (OPTIONAL) Parameter templates available for this profile.
+	ParameterTemplates *[]CatalogV3ParameterTemplate `json:"parameterTemplates,omitempty"`
 
-	// UpdateTime The last update time of the profile.
-	UpdateTime *time.Time `json:"updateTime,omitempty"`
+	// UpdateTime A Timestamp represents a point in time independent of any time zone or local
+	//  calendar, encoded as a count of seconds and fractions of seconds at
+	//  nanosecond resolution. The count is relative to an epoch at UTC midnight on
+	//  January 1, 1970, in the proleptic Gregorian calendar which extends the
+	//  Gregorian calendar backwards to year one.
+	//
+	//  All minutes are 60 seconds long. Leap seconds are "smeared" so that no leap
+	//  second table is needed for interpretation, using a [24-hour linear
+	//  smear](https://developers.google.com/time/smear).
+	//
+	//  The range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z. By
+	//  restricting to that range, we ensure that we can convert to and from [RFC
+	//  3339](https://www.ietf.org/rfc/rfc3339.txt) date strings.
+	//
+	//  # Examples
+	//
+	//  Example 1: Compute Timestamp from POSIX `time()`.
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(time(NULL));
+	//      timestamp.set_nanos(0);
+	//
+	//  Example 2: Compute Timestamp from POSIX `gettimeofday()`.
+	//
+	//      struct timeval tv;
+	//      gettimeofday(&tv, NULL);
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(tv.tv_sec);
+	//      timestamp.set_nanos(tv.tv_usec * 1000);
+	//
+	//  Example 3: Compute Timestamp from Win32 `GetSystemTimeAsFileTime()`.
+	//
+	//      FILETIME ft;
+	//      GetSystemTimeAsFileTime(&ft);
+	//      UINT64 ticks = (((UINT64)ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
+	//
+	//      // A Windows tick is 100 nanoseconds. Windows epoch 1601-01-01T00:00:00Z
+	//      // is 11644473600 seconds before Unix epoch 1970-01-01T00:00:00Z.
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds((INT64) ((ticks / 10000000) - 11644473600LL));
+	//      timestamp.set_nanos((INT32) ((ticks % 10000000) * 100));
+	//
+	//  Example 4: Compute Timestamp from Java `System.currentTimeMillis()`.
+	//
+	//      long millis = System.currentTimeMillis();
+	//
+	//      Timestamp timestamp = Timestamp.newBuilder().setSeconds(millis / 1000)
+	//          .setNanos((int) ((millis % 1000) * 1000000)).build();
+	//
+	//  Example 5: Compute Timestamp from Java `Instant.now()`.
+	//
+	//      Instant now = Instant.now();
+	//
+	//      Timestamp timestamp =
+	//          Timestamp.newBuilder().setSeconds(now.getEpochSecond())
+	//              .setNanos(now.getNano()).build();
+	//
+	//  Example 6: Compute Timestamp from current time in Python.
+	//
+	//      timestamp = Timestamp()
+	//      timestamp.GetCurrentTime()
+	//
+	//  # JSON Mapping
+	//
+	//  In JSON format, the Timestamp type is encoded as a string in the
+	//  [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format. That is, the
+	//  format is "{year}-{month}-{day}T{hour}:{min}:{sec}[.{frac_sec}]Z"
+	//  where {year} is always expressed using four digits while {month}, {day},
+	//  {hour}, {min}, and {sec} are zero-padded to two digits each. The fractional
+	//  seconds, which can go up to 9 digits (i.e. up to 1 nanosecond resolution),
+	//  are optional. The "Z" suffix indicates the timezone ("UTC"); the timezone
+	//  is required. A proto3 JSON serializer should always use UTC (as indicated by
+	//  "Z") when printing the Timestamp type and a proto3 JSON parser should be
+	//  able to accept both UTC and other timezones (as indicated by an offset).
+	//
+	//  For example, "2017-01-15T01:30:15.01Z" encodes 15.01 seconds past
+	//  01:30 UTC on January 15, 2017.
+	//
+	//  In JavaScript, one can convert a Date object to this format using the
+	//  standard
+	//  [toISOString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString)
+	//  method. In Python, a standard `datetime.datetime` object can be converted
+	//  to this format using
+	//  [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with
+	//  the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use
+	//  the Joda Time's [`ISODateTimeFormat.dateTime()`](
+	//  http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()
+	//  ) to obtain a formatter capable of generating timestamps in this format.
+	UpdateTime *GoogleProtobufTimestamp `json:"updateTime,omitempty"`
 }
 
-// Registry Registry represents a repository from which various artifacts, such as application Docker\* images or Helm\* charts can be retrieved. As such, the registry entity holds information used for finding and accessing the represented repository.
-type Registry struct {
-	// ApiType Optional type of the API used to obtain inventory of the articles hosted by the registry.
+// CatalogV3Registry Registry represents a repository from which various artifacts, such as application Docker\* images or Helm\* charts
+//
+//	can be retrieved. As such, the registry entity holds information used for finding and accessing the represented repository.
+type CatalogV3Registry struct {
+	// ApiType (OPTIONAL) Optional type of the API used to obtain inventory of the articles hosted by the registry.
 	ApiType *string `json:"apiType,omitempty"`
 
 	// AuthToken Optional authentication token or password for accessing the registry.
 	AuthToken *string `json:"authToken,omitempty"`
 
-	// Cacerts Optional CA certificates for accessing the registry using secure channels, such as HTTPS.
+	// Cacerts (OPTIONAL) Optional CA certificates for accessing the registry using secure channels, such as HTTPS.
 	Cacerts *string `json:"cacerts,omitempty"`
 
-	// CreateTime The creation time of the registry.
-	CreateTime *time.Time `json:"createTime,omitempty"`
+	// CreateTime A Timestamp represents a point in time independent of any time zone or local
+	//  calendar, encoded as a count of seconds and fractions of seconds at
+	//  nanosecond resolution. The count is relative to an epoch at UTC midnight on
+	//  January 1, 1970, in the proleptic Gregorian calendar which extends the
+	//  Gregorian calendar backwards to year one.
+	//
+	//  All minutes are 60 seconds long. Leap seconds are "smeared" so that no leap
+	//  second table is needed for interpretation, using a [24-hour linear
+	//  smear](https://developers.google.com/time/smear).
+	//
+	//  The range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z. By
+	//  restricting to that range, we ensure that we can convert to and from [RFC
+	//  3339](https://www.ietf.org/rfc/rfc3339.txt) date strings.
+	//
+	//  # Examples
+	//
+	//  Example 1: Compute Timestamp from POSIX `time()`.
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(time(NULL));
+	//      timestamp.set_nanos(0);
+	//
+	//  Example 2: Compute Timestamp from POSIX `gettimeofday()`.
+	//
+	//      struct timeval tv;
+	//      gettimeofday(&tv, NULL);
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(tv.tv_sec);
+	//      timestamp.set_nanos(tv.tv_usec * 1000);
+	//
+	//  Example 3: Compute Timestamp from Win32 `GetSystemTimeAsFileTime()`.
+	//
+	//      FILETIME ft;
+	//      GetSystemTimeAsFileTime(&ft);
+	//      UINT64 ticks = (((UINT64)ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
+	//
+	//      // A Windows tick is 100 nanoseconds. Windows epoch 1601-01-01T00:00:00Z
+	//      // is 11644473600 seconds before Unix epoch 1970-01-01T00:00:00Z.
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds((INT64) ((ticks / 10000000) - 11644473600LL));
+	//      timestamp.set_nanos((INT32) ((ticks % 10000000) * 100));
+	//
+	//  Example 4: Compute Timestamp from Java `System.currentTimeMillis()`.
+	//
+	//      long millis = System.currentTimeMillis();
+	//
+	//      Timestamp timestamp = Timestamp.newBuilder().setSeconds(millis / 1000)
+	//          .setNanos((int) ((millis % 1000) * 1000000)).build();
+	//
+	//  Example 5: Compute Timestamp from Java `Instant.now()`.
+	//
+	//      Instant now = Instant.now();
+	//
+	//      Timestamp timestamp =
+	//          Timestamp.newBuilder().setSeconds(now.getEpochSecond())
+	//              .setNanos(now.getNano()).build();
+	//
+	//  Example 6: Compute Timestamp from current time in Python.
+	//
+	//      timestamp = Timestamp()
+	//      timestamp.GetCurrentTime()
+	//
+	//  # JSON Mapping
+	//
+	//  In JSON format, the Timestamp type is encoded as a string in the
+	//  [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format. That is, the
+	//  format is "{year}-{month}-{day}T{hour}:{min}:{sec}[.{frac_sec}]Z"
+	//  where {year} is always expressed using four digits while {month}, {day},
+	//  {hour}, {min}, and {sec} are zero-padded to two digits each. The fractional
+	//  seconds, which can go up to 9 digits (i.e. up to 1 nanosecond resolution),
+	//  are optional. The "Z" suffix indicates the timezone ("UTC"); the timezone
+	//  is required. A proto3 JSON serializer should always use UTC (as indicated by
+	//  "Z") when printing the Timestamp type and a proto3 JSON parser should be
+	//  able to accept both UTC and other timezones (as indicated by an offset).
+	//
+	//  For example, "2017-01-15T01:30:15.01Z" encodes 15.01 seconds past
+	//  01:30 UTC on January 15, 2017.
+	//
+	//  In JavaScript, one can convert a Date object to this format using the
+	//  standard
+	//  [toISOString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString)
+	//  method. In Python, a standard `datetime.datetime` object can be converted
+	//  to this format using
+	//  [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with
+	//  the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use
+	//  the Joda Time's [`ISODateTimeFormat.dateTime()`](
+	//  http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()
+	//  ) to obtain a formatter capable of generating timestamps in this format.
+	CreateTime *GoogleProtobufTimestamp `json:"createTime,omitempty"`
 
-	// Description Description of the registry. Displayed on user interfaces.
+	// Description (OPTIONAL) Description of the registry. Displayed on user interfaces.
 	Description *string `json:"description,omitempty"`
 
-	// DisplayName Display name is an optional human-readable name for the registry. When specified, it must be unique among all registries within a project. It is used for display purposes on user interfaces.
+	// DisplayName (OPTIONAL) Display name is an optional human-readable name for the registry. When specified, it must be unique among all
+	//  registries within a project. It is used for display purposes on user interfaces.
 	DisplayName *string `json:"displayName,omitempty"`
 
-	// InventoryUrl Optional URL of the API for accessing inventory of artifacts hosted by the registry.
+	// InventoryUrl (OPTIONAL) Optional URL of the API for accessing inventory of artifacts hosted by the registry.
 	InventoryUrl *string `json:"inventoryUrl,omitempty"`
 
-	// Name Name is a human-readable unique identifier for the registry and must be unique for all registries of a given project.
+	// Name Name is a human-readable unique identifier for the registry and must be unique for all registries of a
+	//  given project.
 	Name string `json:"name"`
 
 	// RootUrl Root URL for retrieving artifacts, e.g. Docker images and Helm charts, from the registry.
@@ -471,27 +1510,118 @@ type Registry struct {
 	// Type Type indicates whether the registry holds Docker images or Helm charts; defaults to Helm charts.
 	Type string `json:"type"`
 
-	// UpdateTime The last update time of the registry.
-	UpdateTime *time.Time `json:"updateTime,omitempty"`
+	// UpdateTime A Timestamp represents a point in time independent of any time zone or local
+	//  calendar, encoded as a count of seconds and fractions of seconds at
+	//  nanosecond resolution. The count is relative to an epoch at UTC midnight on
+	//  January 1, 1970, in the proleptic Gregorian calendar which extends the
+	//  Gregorian calendar backwards to year one.
+	//
+	//  All minutes are 60 seconds long. Leap seconds are "smeared" so that no leap
+	//  second table is needed for interpretation, using a [24-hour linear
+	//  smear](https://developers.google.com/time/smear).
+	//
+	//  The range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z. By
+	//  restricting to that range, we ensure that we can convert to and from [RFC
+	//  3339](https://www.ietf.org/rfc/rfc3339.txt) date strings.
+	//
+	//  # Examples
+	//
+	//  Example 1: Compute Timestamp from POSIX `time()`.
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(time(NULL));
+	//      timestamp.set_nanos(0);
+	//
+	//  Example 2: Compute Timestamp from POSIX `gettimeofday()`.
+	//
+	//      struct timeval tv;
+	//      gettimeofday(&tv, NULL);
+	//
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds(tv.tv_sec);
+	//      timestamp.set_nanos(tv.tv_usec * 1000);
+	//
+	//  Example 3: Compute Timestamp from Win32 `GetSystemTimeAsFileTime()`.
+	//
+	//      FILETIME ft;
+	//      GetSystemTimeAsFileTime(&ft);
+	//      UINT64 ticks = (((UINT64)ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
+	//
+	//      // A Windows tick is 100 nanoseconds. Windows epoch 1601-01-01T00:00:00Z
+	//      // is 11644473600 seconds before Unix epoch 1970-01-01T00:00:00Z.
+	//      Timestamp timestamp;
+	//      timestamp.set_seconds((INT64) ((ticks / 10000000) - 11644473600LL));
+	//      timestamp.set_nanos((INT32) ((ticks % 10000000) * 100));
+	//
+	//  Example 4: Compute Timestamp from Java `System.currentTimeMillis()`.
+	//
+	//      long millis = System.currentTimeMillis();
+	//
+	//      Timestamp timestamp = Timestamp.newBuilder().setSeconds(millis / 1000)
+	//          .setNanos((int) ((millis % 1000) * 1000000)).build();
+	//
+	//  Example 5: Compute Timestamp from Java `Instant.now()`.
+	//
+	//      Instant now = Instant.now();
+	//
+	//      Timestamp timestamp =
+	//          Timestamp.newBuilder().setSeconds(now.getEpochSecond())
+	//              .setNanos(now.getNano()).build();
+	//
+	//  Example 6: Compute Timestamp from current time in Python.
+	//
+	//      timestamp = Timestamp()
+	//      timestamp.GetCurrentTime()
+	//
+	//  # JSON Mapping
+	//
+	//  In JSON format, the Timestamp type is encoded as a string in the
+	//  [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format. That is, the
+	//  format is "{year}-{month}-{day}T{hour}:{min}:{sec}[.{frac_sec}]Z"
+	//  where {year} is always expressed using four digits while {month}, {day},
+	//  {hour}, {min}, and {sec} are zero-padded to two digits each. The fractional
+	//  seconds, which can go up to 9 digits (i.e. up to 1 nanosecond resolution),
+	//  are optional. The "Z" suffix indicates the timezone ("UTC"); the timezone
+	//  is required. A proto3 JSON serializer should always use UTC (as indicated by
+	//  "Z") when printing the Timestamp type and a proto3 JSON parser should be
+	//  able to accept both UTC and other timezones (as indicated by an offset).
+	//
+	//  For example, "2017-01-15T01:30:15.01Z" encodes 15.01 seconds past
+	//  01:30 UTC on January 15, 2017.
+	//
+	//  In JavaScript, one can convert a Date object to this format using the
+	//  standard
+	//  [toISOString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString)
+	//  method. In Python, a standard `datetime.datetime` object can be converted
+	//  to this format using
+	//  [`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with
+	//  the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use
+	//  the Joda Time's [`ISODateTimeFormat.dateTime()`](
+	//  http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()
+	//  ) to obtain a formatter capable of generating timestamps in this format.
+	UpdateTime *GoogleProtobufTimestamp `json:"updateTime,omitempty"`
 
 	// Username Optional username for accessing the registry.
 	Username *string `json:"username,omitempty"`
 }
 
-// ResourceReference ResourceReference represents a Kubernetes resource identifier.
-type ResourceReference struct {
+// CatalogV3ResourceReference ResourceReference represents a Kubernetes resource identifier.
+type CatalogV3ResourceReference struct {
+	// Ignore (OPTIONAL) Ignore whole resource if true. Will use "remove" if false or not present.
+	Ignore *bool `json:"ignore,omitempty"`
+
 	// Kind Kubernetes resource kind, e.g. ConfigMap.
 	Kind string `json:"kind"`
 
 	// Name Kubernetes resource name.
 	Name string `json:"name"`
 
-	// Namespace Kubernetes namespace where the ignored resource resides. When empty, the application namespace will be used.
+	// Namespace (OPTIONAL) Kubernetes namespace where the ignored resource resides. When empty, the application namespace will be used.
 	Namespace *string `json:"namespace,omitempty"`
 }
 
-// UIExtension UIExtension is an augmentation of an API extension.
-type UIExtension struct {
+// CatalogV3UIExtension UIExtension is an augmentation of an API extension.
+type CatalogV3UIExtension struct {
 	// AppName The name of the application corresponding to this UI extension.
 	AppName string `json:"appName"`
 
@@ -511,8 +1641,8 @@ type UIExtension struct {
 	ServiceName string `json:"serviceName"`
 }
 
-// Upload Upload represents a single file-upload record.
-type Upload struct {
+// CatalogV3Upload Upload represents a single file-upload record.
+type CatalogV3Upload struct {
 	// Artifact Raw bytes content of the file being uploaded.
 	Artifact []byte `json:"artifact"`
 
@@ -520,8 +1650,8 @@ type Upload struct {
 	FileName string `json:"fileName"`
 }
 
-// UploadCatalogEntitiesResponse Response message for the UploadCatalogItems method
-type UploadCatalogEntitiesResponse struct {
+// CatalogV3UploadCatalogEntitiesResponse Response message for the UploadCatalogItems method
+type CatalogV3UploadCatalogEntitiesResponse struct {
 	// ErrorMessages Any error messages encountered either during YAML parsing or entity creation or update.
 	ErrorMessages *[]string `json:"errorMessages,omitempty"`
 
@@ -529,11 +1659,137 @@ type UploadCatalogEntitiesResponse struct {
 	SessionId string `json:"sessionId"`
 
 	// UploadNumber Deprecated: Next expected upload number or total number of uploads on the last upload request.
-	UploadNumber uint32 `json:"uploadNumber"`
+	UploadNumber int `json:"uploadNumber"`
 }
 
-// CatalogServiceListApplicationsParams defines parameters for CatalogServiceListApplications.
-type CatalogServiceListApplicationsParams struct {
+// ConnectError Error type returned by Connect: https://connectrpc.com/docs/go/errors/#http-representation
+type ConnectError struct {
+	// Code The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+	Code *ConnectErrorCode `json:"code,omitempty"`
+
+	// Detail Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+	Detail *GoogleProtobufAny `json:"detail,omitempty"`
+
+	// Message A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+	Message              *string                `json:"message,omitempty"`
+	AdditionalProperties map[string]interface{} `json:"-"`
+}
+
+// ConnectErrorCode The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+type ConnectErrorCode string
+
+// GoogleProtobufAny Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+type GoogleProtobufAny struct {
+	Debug                *map[string]interface{} `json:"debug,omitempty"`
+	Type                 *string                 `json:"type,omitempty"`
+	Value                *openapi_types.File     `json:"value,omitempty"`
+	AdditionalProperties map[string]interface{}  `json:"-"`
+}
+
+// GoogleProtobufEmpty A generic empty message that you can re-use to avoid defining duplicated
+//
+//	empty messages in your APIs. A typical example is to use it as the request
+//	or the response type of an API method. For instance:
+//
+//	    service Foo {
+//	      rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);
+//	    }
+type GoogleProtobufEmpty = map[string]interface{}
+
+// GoogleProtobufTimestamp A Timestamp represents a point in time independent of any time zone or local
+//
+//	calendar, encoded as a count of seconds and fractions of seconds at
+//	nanosecond resolution. The count is relative to an epoch at UTC midnight on
+//	January 1, 1970, in the proleptic Gregorian calendar which extends the
+//	Gregorian calendar backwards to year one.
+//
+//	All minutes are 60 seconds long. Leap seconds are "smeared" so that no leap
+//	second table is needed for interpretation, using a [24-hour linear
+//	smear](https://developers.google.com/time/smear).
+//
+//	The range is from 0001-01-01T00:00:00Z to 9999-12-31T23:59:59.999999999Z. By
+//	restricting to that range, we ensure that we can convert to and from [RFC
+//	3339](https://www.ietf.org/rfc/rfc3339.txt) date strings.
+//
+//	# Examples
+//
+//	Example 1: Compute Timestamp from POSIX `time()`.
+//
+//	    Timestamp timestamp;
+//	    timestamp.set_seconds(time(NULL));
+//	    timestamp.set_nanos(0);
+//
+//	Example 2: Compute Timestamp from POSIX `gettimeofday()`.
+//
+//	    struct timeval tv;
+//	    gettimeofday(&tv, NULL);
+//
+//	    Timestamp timestamp;
+//	    timestamp.set_seconds(tv.tv_sec);
+//	    timestamp.set_nanos(tv.tv_usec * 1000);
+//
+//	Example 3: Compute Timestamp from Win32 `GetSystemTimeAsFileTime()`.
+//
+//	    FILETIME ft;
+//	    GetSystemTimeAsFileTime(&ft);
+//	    UINT64 ticks = (((UINT64)ft.dwHighDateTime) << 32) | ft.dwLowDateTime;
+//
+//	    // A Windows tick is 100 nanoseconds. Windows epoch 1601-01-01T00:00:00Z
+//	    // is 11644473600 seconds before Unix epoch 1970-01-01T00:00:00Z.
+//	    Timestamp timestamp;
+//	    timestamp.set_seconds((INT64) ((ticks / 10000000) - 11644473600LL));
+//	    timestamp.set_nanos((INT32) ((ticks % 10000000) * 100));
+//
+//	Example 4: Compute Timestamp from Java `System.currentTimeMillis()`.
+//
+//	    long millis = System.currentTimeMillis();
+//
+//	    Timestamp timestamp = Timestamp.newBuilder().setSeconds(millis / 1000)
+//	        .setNanos((int) ((millis % 1000) * 1000000)).build();
+//
+//	Example 5: Compute Timestamp from Java `Instant.now()`.
+//
+//	    Instant now = Instant.now();
+//
+//	    Timestamp timestamp =
+//	        Timestamp.newBuilder().setSeconds(now.getEpochSecond())
+//	            .setNanos(now.getNano()).build();
+//
+//	Example 6: Compute Timestamp from current time in Python.
+//
+//	    timestamp = Timestamp()
+//	    timestamp.GetCurrentTime()
+//
+//	# JSON Mapping
+//
+//	In JSON format, the Timestamp type is encoded as a string in the
+//	[RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format. That is, the
+//	format is "{year}-{month}-{day}T{hour}:{min}:{sec}[.{frac_sec}]Z"
+//	where {year} is always expressed using four digits while {month}, {day},
+//	{hour}, {min}, and {sec} are zero-padded to two digits each. The fractional
+//	seconds, which can go up to 9 digits (i.e. up to 1 nanosecond resolution),
+//	are optional. The "Z" suffix indicates the timezone ("UTC"); the timezone
+//	is required. A proto3 JSON serializer should always use UTC (as indicated by
+//	"Z") when printing the Timestamp type and a proto3 JSON parser should be
+//	able to accept both UTC and other timezones (as indicated by an offset).
+//
+//	For example, "2017-01-15T01:30:15.01Z" encodes 15.01 seconds past
+//	01:30 UTC on January 15, 2017.
+//
+//	In JavaScript, one can convert a Date object to this format using the
+//	standard
+//	[toISOString()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date/toISOString)
+//	method. In Python, a standard `datetime.datetime` object can be converted
+//	to this format using
+//	[`strftime`](https://docs.python.org/2/library/time.html#time.strftime) with
+//	the time format spec '%Y-%m-%dT%H:%M:%S.%fZ'. Likewise, in Java, one can use
+//	the Joda Time's [`ISODateTimeFormat.dateTime()`](
+//	http://joda-time.sourceforge.net/apidocs/org/joda/time/format/ISODateTimeFormat.html#dateTime()
+//	) to obtain a formatter capable of generating timestamps in this format.
+type GoogleProtobufTimestamp = time.Time
+
+// CatalogV3CatalogServiceListApplicationsParams defines parameters for CatalogV3CatalogServiceListApplications.
+type CatalogV3CatalogServiceListApplicationsParams struct {
 	// OrderBy Names the field to be used for ordering the returned results.
 	OrderBy *string `form:"orderBy,omitempty" json:"orderBy,omitempty"`
 
@@ -547,14 +1803,11 @@ type CatalogServiceListApplicationsParams struct {
 	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
 
 	// Kinds List of application kinds to be returned; empty list means all kinds.
-	Kinds *[]CatalogServiceListApplicationsParamsKinds `form:"kinds,omitempty" json:"kinds,omitempty"`
+	Kinds *[]CatalogV3Kind `form:"kinds,omitempty" json:"kinds,omitempty"`
 }
 
-// CatalogServiceListApplicationsParamsKinds defines parameters for CatalogServiceListApplications.
-type CatalogServiceListApplicationsParamsKinds string
-
-// CatalogServiceListArtifactsParams defines parameters for CatalogServiceListArtifacts.
-type CatalogServiceListArtifactsParams struct {
+// CatalogV3CatalogServiceListArtifactsParams defines parameters for CatalogV3CatalogServiceListArtifacts.
+type CatalogV3CatalogServiceListArtifactsParams struct {
 	// OrderBy Names the field to be used for ordering the returned results.
 	OrderBy *string `form:"orderBy,omitempty" json:"orderBy,omitempty"`
 
@@ -568,8 +1821,8 @@ type CatalogServiceListArtifactsParams struct {
 	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
 }
 
-// CatalogServiceListDeploymentPackagesParams defines parameters for CatalogServiceListDeploymentPackages.
-type CatalogServiceListDeploymentPackagesParams struct {
+// CatalogV3CatalogServiceListDeploymentPackagesParams defines parameters for CatalogV3CatalogServiceListDeploymentPackages.
+type CatalogV3CatalogServiceListDeploymentPackagesParams struct {
 	// OrderBy Names the field to be used for ordering the returned results.
 	OrderBy *string `form:"orderBy,omitempty" json:"orderBy,omitempty"`
 
@@ -583,16 +1836,13 @@ type CatalogServiceListDeploymentPackagesParams struct {
 	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
 
 	// Kinds List of deployment package kinds to be returned; empty list means all kinds.
-	Kinds *[]CatalogServiceListDeploymentPackagesParamsKinds `form:"kinds,omitempty" json:"kinds,omitempty"`
+	Kinds *[]CatalogV3Kind `form:"kinds,omitempty" json:"kinds,omitempty"`
 }
 
-// CatalogServiceListDeploymentPackagesParamsKinds defines parameters for CatalogServiceListDeploymentPackages.
-type CatalogServiceListDeploymentPackagesParamsKinds string
-
-// CatalogServiceImportParams defines parameters for CatalogServiceImport.
-type CatalogServiceImportParams struct {
+// CatalogV3CatalogServiceImportParams defines parameters for CatalogV3CatalogServiceImport.
+type CatalogV3CatalogServiceImportParams struct {
 	// Url Required URL of Helm Chart to import
-	Url *string `form:"url,omitempty" json:"url,omitempty"`
+	Url string `form:"url" json:"url"`
 
 	// Username Optional username for downloading from the URL
 	Username *string `form:"username,omitempty" json:"username,omitempty"`
@@ -603,21 +1853,24 @@ type CatalogServiceImportParams struct {
 	// ChartValues Optional raw byte value containing the chart values as raw YAML bytes.
 	ChartValues *string `form:"chartValues,omitempty" json:"chartValues,omitempty"`
 
-	// IncludeAuth If true and a username/auth_token is specified then they will be included in the generated Registry object.
+	// IncludeAuth If true and a username/auth_token is specified then they will be included
+	//  in the generated Registry object.
 	IncludeAuth *bool `form:"includeAuth,omitempty" json:"includeAuth,omitempty"`
 
-	// GenerateDefaultValues If true and chart_values is not set, then the values.yaml will be extracted and used to generate default profile values.
+	// GenerateDefaultValues If true and chart_values is not set, then the values.yaml will be extracted and
+	//  used to generate default profile values.
 	GenerateDefaultValues *bool `form:"generateDefaultValues,omitempty" json:"generateDefaultValues,omitempty"`
 
-	// GenerateDefaultParameters Generates default parameters from the values, from chart_values or from generate_default_values as appropriate.
+	// GenerateDefaultParameters Generates default parameters from the values, from chart_values or from
+	//  generate_default_values as appropriate.
 	GenerateDefaultParameters *bool `form:"generateDefaultParameters,omitempty" json:"generateDefaultParameters,omitempty"`
 
 	// Namespace Optional namespace
 	Namespace *string `form:"namespace,omitempty" json:"namespace,omitempty"`
 }
 
-// CatalogServiceListRegistriesParams defines parameters for CatalogServiceListRegistries.
-type CatalogServiceListRegistriesParams struct {
+// CatalogV3CatalogServiceListRegistriesParams defines parameters for CatalogV3CatalogServiceListRegistries.
+type CatalogV3CatalogServiceListRegistriesParams struct {
 	// OrderBy Names the field to be used for ordering the returned results.
 	OrderBy *string `form:"orderBy,omitempty" json:"orderBy,omitempty"`
 
@@ -634,47 +1887,231 @@ type CatalogServiceListRegistriesParams struct {
 	ShowSensitiveInfo *bool `form:"showSensitiveInfo,omitempty" json:"showSensitiveInfo,omitempty"`
 }
 
-// CatalogServiceGetRegistryParams defines parameters for CatalogServiceGetRegistry.
-type CatalogServiceGetRegistryParams struct {
+// CatalogV3CatalogServiceGetRegistryParams defines parameters for CatalogV3CatalogServiceGetRegistry.
+type CatalogV3CatalogServiceGetRegistryParams struct {
 	// ShowSensitiveInfo Request that sensitive information, such as username, auth_token, and CA certificates are included in the response.
 	ShowSensitiveInfo *bool `form:"showSensitiveInfo,omitempty" json:"showSensitiveInfo,omitempty"`
 }
 
-// CatalogServiceUploadCatalogEntitiesParams defines parameters for CatalogServiceUploadCatalogEntities.
-type CatalogServiceUploadCatalogEntitiesParams struct {
-	// SessionId First upload request in the batch must not specify session ID. Subsequent upload requests must copy the session ID from the previously issued response.
-	SessionId *string `form:"sessionId,omitempty" json:"sessionId,omitempty"`
+// CatalogV3CatalogServiceCreateApplicationJSONRequestBody defines body for CatalogV3CatalogServiceCreateApplication for application/json ContentType.
+type CatalogV3CatalogServiceCreateApplicationJSONRequestBody = CatalogV3Application
 
-	// UploadNumber Deprecated: Upload number must increase sequentially, starting with 1.
-	UploadNumber *uint32 `form:"uploadNumber,omitempty" json:"uploadNumber,omitempty"`
+// CatalogV3CatalogServiceUpdateApplicationJSONRequestBody defines body for CatalogV3CatalogServiceUpdateApplication for application/json ContentType.
+type CatalogV3CatalogServiceUpdateApplicationJSONRequestBody = CatalogV3Application
 
-	// LastUpload Must be set to 'true' to perform load of all entity files uploaded as part of this session.
-	LastUpload *bool `form:"lastUpload,omitempty" json:"lastUpload,omitempty"`
+// CatalogV3CatalogServiceCreateArtifactJSONRequestBody defines body for CatalogV3CatalogServiceCreateArtifact for application/json ContentType.
+type CatalogV3CatalogServiceCreateArtifactJSONRequestBody = CatalogV3Artifact
+
+// CatalogV3CatalogServiceUpdateArtifactJSONRequestBody defines body for CatalogV3CatalogServiceUpdateArtifact for application/json ContentType.
+type CatalogV3CatalogServiceUpdateArtifactJSONRequestBody = CatalogV3Artifact
+
+// CatalogV3CatalogServiceCreateDeploymentPackageJSONRequestBody defines body for CatalogV3CatalogServiceCreateDeploymentPackage for application/json ContentType.
+type CatalogV3CatalogServiceCreateDeploymentPackageJSONRequestBody = CatalogV3DeploymentPackage
+
+// CatalogV3CatalogServiceUpdateDeploymentPackageJSONRequestBody defines body for CatalogV3CatalogServiceUpdateDeploymentPackage for application/json ContentType.
+type CatalogV3CatalogServiceUpdateDeploymentPackageJSONRequestBody = CatalogV3DeploymentPackage
+
+// CatalogV3CatalogServiceCreateRegistryJSONRequestBody defines body for CatalogV3CatalogServiceCreateRegistry for application/json ContentType.
+type CatalogV3CatalogServiceCreateRegistryJSONRequestBody = CatalogV3Registry
+
+// CatalogV3CatalogServiceUpdateRegistryJSONRequestBody defines body for CatalogV3CatalogServiceUpdateRegistry for application/json ContentType.
+type CatalogV3CatalogServiceUpdateRegistryJSONRequestBody = CatalogV3Registry
+
+// CatalogV3CatalogServiceUploadCatalogEntitiesJSONRequestBody defines body for CatalogV3CatalogServiceUploadCatalogEntities for application/json ContentType.
+type CatalogV3CatalogServiceUploadCatalogEntitiesJSONRequestBody = CatalogV3Upload
+
+// Getter for additional properties for ConnectError. Returns the specified
+// element and whether it was found
+func (a ConnectError) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
 }
 
-// CatalogServiceCreateApplicationJSONRequestBody defines body for CatalogServiceCreateApplication for application/json ContentType.
-type CatalogServiceCreateApplicationJSONRequestBody = Application
+// Setter for additional properties for ConnectError
+func (a *ConnectError) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
 
-// CatalogServiceUpdateApplicationJSONRequestBody defines body for CatalogServiceUpdateApplication for application/json ContentType.
-type CatalogServiceUpdateApplicationJSONRequestBody = Application
+// Override default JSON handling for ConnectError to handle AdditionalProperties
+func (a *ConnectError) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
 
-// CatalogServiceCreateArtifactJSONRequestBody defines body for CatalogServiceCreateArtifact for application/json ContentType.
-type CatalogServiceCreateArtifactJSONRequestBody = Artifact
+	if raw, found := object["code"]; found {
+		err = json.Unmarshal(raw, &a.Code)
+		if err != nil {
+			return fmt.Errorf("error reading 'code': %w", err)
+		}
+		delete(object, "code")
+	}
 
-// CatalogServiceUpdateArtifactJSONRequestBody defines body for CatalogServiceUpdateArtifact for application/json ContentType.
-type CatalogServiceUpdateArtifactJSONRequestBody = Artifact
+	if raw, found := object["detail"]; found {
+		err = json.Unmarshal(raw, &a.Detail)
+		if err != nil {
+			return fmt.Errorf("error reading 'detail': %w", err)
+		}
+		delete(object, "detail")
+	}
 
-// CatalogServiceCreateDeploymentPackageJSONRequestBody defines body for CatalogServiceCreateDeploymentPackage for application/json ContentType.
-type CatalogServiceCreateDeploymentPackageJSONRequestBody = DeploymentPackage
+	if raw, found := object["message"]; found {
+		err = json.Unmarshal(raw, &a.Message)
+		if err != nil {
+			return fmt.Errorf("error reading 'message': %w", err)
+		}
+		delete(object, "message")
+	}
 
-// CatalogServiceUpdateDeploymentPackageJSONRequestBody defines body for CatalogServiceUpdateDeploymentPackage for application/json ContentType.
-type CatalogServiceUpdateDeploymentPackageJSONRequestBody = DeploymentPackage
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
 
-// CatalogServiceCreateRegistryJSONRequestBody defines body for CatalogServiceCreateRegistry for application/json ContentType.
-type CatalogServiceCreateRegistryJSONRequestBody = Registry
+// Override default JSON handling for ConnectError to handle AdditionalProperties
+func (a ConnectError) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
 
-// CatalogServiceUpdateRegistryJSONRequestBody defines body for CatalogServiceUpdateRegistry for application/json ContentType.
-type CatalogServiceUpdateRegistryJSONRequestBody = Registry
+	if a.Code != nil {
+		object["code"], err = json.Marshal(a.Code)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'code': %w", err)
+		}
+	}
 
-// CatalogServiceUploadCatalogEntitiesJSONRequestBody defines body for CatalogServiceUploadCatalogEntities for application/json ContentType.
-type CatalogServiceUploadCatalogEntitiesJSONRequestBody = Upload
+	if a.Detail != nil {
+		object["detail"], err = json.Marshal(a.Detail)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'detail': %w", err)
+		}
+	}
+
+	if a.Message != nil {
+		object["message"], err = json.Marshal(a.Message)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'message': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}
+
+// Getter for additional properties for GoogleProtobufAny. Returns the specified
+// element and whether it was found
+func (a GoogleProtobufAny) Get(fieldName string) (value interface{}, found bool) {
+	if a.AdditionalProperties != nil {
+		value, found = a.AdditionalProperties[fieldName]
+	}
+	return
+}
+
+// Setter for additional properties for GoogleProtobufAny
+func (a *GoogleProtobufAny) Set(fieldName string, value interface{}) {
+	if a.AdditionalProperties == nil {
+		a.AdditionalProperties = make(map[string]interface{})
+	}
+	a.AdditionalProperties[fieldName] = value
+}
+
+// Override default JSON handling for GoogleProtobufAny to handle AdditionalProperties
+func (a *GoogleProtobufAny) UnmarshalJSON(b []byte) error {
+	object := make(map[string]json.RawMessage)
+	err := json.Unmarshal(b, &object)
+	if err != nil {
+		return err
+	}
+
+	if raw, found := object["debug"]; found {
+		err = json.Unmarshal(raw, &a.Debug)
+		if err != nil {
+			return fmt.Errorf("error reading 'debug': %w", err)
+		}
+		delete(object, "debug")
+	}
+
+	if raw, found := object["type"]; found {
+		err = json.Unmarshal(raw, &a.Type)
+		if err != nil {
+			return fmt.Errorf("error reading 'type': %w", err)
+		}
+		delete(object, "type")
+	}
+
+	if raw, found := object["value"]; found {
+		err = json.Unmarshal(raw, &a.Value)
+		if err != nil {
+			return fmt.Errorf("error reading 'value': %w", err)
+		}
+		delete(object, "value")
+	}
+
+	if len(object) != 0 {
+		a.AdditionalProperties = make(map[string]interface{})
+		for fieldName, fieldBuf := range object {
+			var fieldVal interface{}
+			err := json.Unmarshal(fieldBuf, &fieldVal)
+			if err != nil {
+				return fmt.Errorf("error unmarshaling field %s: %w", fieldName, err)
+			}
+			a.AdditionalProperties[fieldName] = fieldVal
+		}
+	}
+	return nil
+}
+
+// Override default JSON handling for GoogleProtobufAny to handle AdditionalProperties
+func (a GoogleProtobufAny) MarshalJSON() ([]byte, error) {
+	var err error
+	object := make(map[string]json.RawMessage)
+
+	if a.Debug != nil {
+		object["debug"], err = json.Marshal(a.Debug)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'debug': %w", err)
+		}
+	}
+
+	if a.Type != nil {
+		object["type"], err = json.Marshal(a.Type)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'type': %w", err)
+		}
+	}
+
+	if a.Value != nil {
+		object["value"], err = json.Marshal(a.Value)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'value': %w", err)
+		}
+	}
+
+	for fieldName, field := range a.AdditionalProperties {
+		object[fieldName], err = json.Marshal(field)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling '%s': %w", fieldName, err)
+		}
+	}
+	return json.Marshal(object)
+}

@@ -12,8 +12,8 @@ The API is located under [REST API specification](../api/spec/openapi.yaml).
 ## API Generation
 
 We use the Buf tool to generate the REST API specification, leveraging several plugins to streamline the process. These
-plugins include `go` for Go code generation, `go-grpc` for gRPC services, `kollalabs` for OpenAPI v3 specifications,
-`grpc-gateway` for RESTful APIs, `validate` for schema validation, and `doc` for generating documentation.
+plugins include `go` for Go code generation, `go-grpc` for gRPC services, `connect-openapi` for OpenAPI v3 specifications with validation constraints,
+`grpc-gateway` for RESTful APIs, and `doc` for generating documentation.
 
 ## API Code Generation and Implementation
 

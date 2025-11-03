@@ -45,6 +45,17 @@ func generateSchemaDefs(spec interface{}) (interface{}, error) {
 	for name, node := range schemasNode.(map[string]interface{}) {
 		if isRelevant(name) {
 			defs[name] = augmentNode(name, node)
+
+			// Create short aliases for main entity types
+			if name == "catalog.v3.Application" {
+				defs["Application"] = augmentNode(name, node)
+			} else if name == "catalog.v3.Artifact" {
+				defs["Artifact"] = augmentNode(name, node)
+			} else if name == "catalog.v3.DeploymentPackage" {
+				defs["DeploymentPackage"] = augmentNode(name, node)
+			} else if name == "catalog.v3.Registry" {
+				defs["Registry"] = augmentNode(name, node)
+			}
 		}
 	}
 	return map[string]interface{}{"$defs": defs}, nil
@@ -52,17 +63,24 @@ func generateSchemaDefs(spec interface{}) (interface{}, error) {
 
 // Augments the given named node to be backwards compatible with the existing YAML schema
 func augmentNode(name string, node interface{}) interface{} {
+	nodeMap := node.(map[string]interface{})
+
+	// For main entity types, remove additionalProperties entirely
+	// The unevaluatedProperties: false is handled at the oneOf level in the base schema
+	if isMainEntityType(name) {
+		delete(nodeMap, "additionalProperties")
+	}
+
 	// Rename any names in the required properties list
-	requiredNode, ok := node.(map[string]interface{})["required"]
+	requiredNode, ok := nodeMap["required"]
 	if ok {
-		nm := node.(map[string]interface{})
-		nm["required"] = augmentRequiredFields(name, requiredNode)
+		nodeMap["required"] = augmentRequiredFields(name, requiredNode)
 	}
 
 	// Rename any property nodes
-	propertiesNode, ok := node.(map[string]interface{})["properties"]
-	properties := propertiesNode.(map[string]interface{})
-	if ok {
+	propertiesNode, ok := nodeMap["properties"]
+	if ok && propertiesNode != nil {
+		properties := propertiesNode.(map[string]interface{})
 		augmentProperties(name, properties)
 	}
 	return node
@@ -80,7 +98,21 @@ var renames = map[string]string{
 
 // Augments the required fields list of a given node
 func augmentRequiredFields(name string, requiredNode interface{}) interface{} {
-	required := requiredNode.([]interface{})
+	var required []interface{}
+
+	// Handle both []interface{} and []string types
+	switch v := requiredNode.(type) {
+	case []interface{}:
+		required = v
+	case []string:
+		required = make([]interface{}, len(v))
+		for i, s := range v {
+			required[i] = s
+		}
+	default:
+		return requiredNode
+	}
+
 	var newRequired []string
 	for _, n := range required {
 		field := n.(string)
@@ -107,8 +139,8 @@ func augmentProperties(name string, properties map[string]interface{}) {
 		}
 
 		// Node specific transformations
-		if name == "DeploymentPackage" && n == "profiles" {
-			// deployment profiles node needs to be renamed from profiled to deploymentProfiles to avoid collision
+		if (name == "DeploymentPackage" || name == "catalog.v3.DeploymentPackage") && n == "profiles" {
+			// deployment profiles node needs to be renamed from profiles to deploymentProfiles to avoid collision
 			properties["deploymentProfiles"] = pn // insert the node with the new name
 			delete(properties, n)                 // delete the node under the old name
 		}
@@ -140,11 +172,33 @@ func augmentProperties(name string, properties map[string]interface{}) {
 			}
 		}
 	}
+
+	// Add backwards compatibility properties for Profile schema
+	if name == "Profile" || name == "catalog.v3.Profile" {
+		// Add valuesFileName as an optional property for backwards compatibility
+		properties["valuesFileName"] = map[string]interface{}{
+			"type":        "string",
+			"description": "(OPTIONAL) Legacy property: name of the values file. Use chartValues instead.",
+		}
+		// Rename deploymentRequirement to deploymentRequirements for backwards compatibility
+		if req, ok := properties["deploymentRequirement"]; ok {
+			properties["deploymentRequirements"] = req
+		}
+	}
+}
+
+// Returns true if the given named node is a main entity type that should allow metadata properties.
+func isMainEntityType(name string) bool {
+	return name == "catalog.v3.Application" ||
+		name == "catalog.v3.Artifact" ||
+		name == "catalog.v3.DeploymentPackage" ||
+		name == "catalog.v3.Registry"
 }
 
 // Returns true if the field is indeed not required for the given node.
 func isNotRequiredField(name string, field string) bool {
-	return name == "DeploymentPackage" && (field == "artifacts" || field == "extensions")
+	return (name == "DeploymentPackage" || name == "catalog.v3.DeploymentPackage") &&
+		(field == "artifacts" || field == "extensions")
 }
 
 // Returns true if the given named node is relevant to the YAML schema.

@@ -15,6 +15,7 @@ package northbound
  */
 
 import (
+	"buf.build/go/protovalidate"
 	"context"
 	"sync"
 
@@ -98,7 +99,7 @@ func (g *Server) UploadCatalogEntities(ctx context.Context, req *catalogv3.Uploa
 	if req == nil || req.Upload == nil {
 		return nil, nberrors.NewInvalidArgument(
 			nberrors.WithMessage("incomplete request"))
-	} else if err = req.Upload.Validate(); err != nil {
+	} else if err = protovalidate.Validate(req); err != nil {
 		return nil, nberrors.NewInvalidArgument(
 			nberrors.WithMessage(err.Error()))
 	}

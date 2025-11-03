@@ -19,7 +19,8 @@ chartVersion: "0.1.3"
 profiles:
   - name: "default"
     displayName: "Default"
-    valuesFileName: "values.yaml"
+    chartValues: |
+      # values content here
 
 ---
 $schema: "https://schema.intel.com/catalog.orchestrator/0.1/schema"
@@ -40,4 +41,5 @@ randomProperty: "should trigger error"
 profiles:
   - name: "default"
     displayName: "Default"
-    valuesFileName: "values.yaml"
+    chartValues: |
+      # values content here

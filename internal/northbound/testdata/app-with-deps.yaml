@@ -22,5 +22,4 @@ profiles:
     deploymentRequirements:
       - name: ca-gigi
         version: v0.2.1
-        publisher: footen
         deploymentProfileName: cp-1
