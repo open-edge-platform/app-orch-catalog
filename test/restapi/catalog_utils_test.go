@@ -65,7 +65,7 @@ func (s *TestSuite) TestUploadTarball() {
 	assert.NoError(s.T(), err)
 
 	var result struct {
-		DeploymentPackage restClient.DeploymentPackage `json:"deploymentPackage"`
+		DeploymentPackage restClient.CatalogV3DeploymentPackage `json:"deploymentPackage"`
 	}
 	s.unmarshalJSON(body, &result)
 
@@ -135,7 +135,7 @@ func (s *TestSuite) TestUploadSeparateFiles() {
 	assert.NoError(s.T(), err)
 
 	var result struct {
-		DeploymentPackage restClient.DeploymentPackage `json:"deploymentPackage"`
+		DeploymentPackage restClient.CatalogV3DeploymentPackage `json:"deploymentPackage"`
 	}
 	s.unmarshalJSON(resBody, &result)
 
