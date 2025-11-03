@@ -29,6 +29,8 @@ plugins:
     opt:
       - format=yaml
       - path=openapi.yaml
+      - short-operation-ids
+      - short-service-tags
   - remote: buf.build/grpc-ecosystem/gateway:v2.15.2
     out: pkg/api
     opt: paths=source_relative

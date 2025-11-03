@@ -317,8 +317,8 @@ func (s *UISimulator) paginateApplications(initialOffset int32, pages int32, pag
 func (s *UISimulator) paginatePackages(initialOffset int32, pages int32, pageSize int32) error {
 	return s.paginate("Page Packages", initialOffset, pages, pageSize,
 		func(offset int32, size int32) error {
-			resp, err := s.client.CatalogServiceListDeploymentPackagesWithResponse(s.ctx,
-				&restapi.CatalogServiceListDeploymentPackagesParams{Offset: &offset, PageSize: &size}, addHeaders)
+			resp, err := s.client.CatalogV3CatalogServiceListDeploymentPackagesWithResponse(s.ctx,
+				&restapi.CatalogV3CatalogServiceListDeploymentPackagesParams{Offset: &offset, PageSize: &size}, addHeaders)
 			if err == nil && resp.HTTPResponse.StatusCode == 200 {
 				s.packages = resp.JSON200.DeploymentPackages
 			}

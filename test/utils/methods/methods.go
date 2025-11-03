@@ -163,8 +163,8 @@ func (c *CatalogClient) GetDeploymentPackageVersions(ctx context.Context, name s
 	return resp.JSON200.DeploymentPackages, resp.StatusCode(), nil
 }
 
-func (c *CatalogClient) ListDeploymentPackages(ctx context.Context, params *restClient.CatalogServiceListDeploymentPackagesParams) ([]restClient.DeploymentPackage, int, error) {
-	resp, err := c.Client.CatalogServiceListDeploymentPackagesWithResponse(ctx, params)
+func (c *CatalogClient) ListDeploymentPackages(ctx context.Context, params *restClient.CatalogV3CatalogServiceListDeploymentPackagesParams) ([]restClient.DeploymentPackage, int, error) {
+	resp, err := c.Client.CatalogV3CatalogServiceListDeploymentPackagesWithResponse(ctx, params)
 	if err != nil || resp == nil || resp.StatusCode() != 200 {
 		if err != nil {
 			if resp != nil {
