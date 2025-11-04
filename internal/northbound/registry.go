@@ -5,6 +5,7 @@
 package northbound
 
 import (
+	"buf.build/go/protovalidate"
 	"bytes"
 	"context"
 	"encoding/base64"
@@ -23,6 +24,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -32,7 +34,42 @@ const (
 
 	// Registries with this value for CA certs trigger use of a dynamically loaded CA
 	dynamicCACertsName = "use-dynamic-cacert"
+
+	// System registries that are managed by app-orch-tenant-controller
+	// NOTE: Ensure app-orch-tenant-controller and app-orch-catalog are updated at the same time,
+	//       if these registry names change.
+	SystemRegistryHarborHelm   = "harbor-helm-oci"
+	SystemRegistryHarborDocker = "harbor-docker-oci"
 )
+
+var (
+	systemRegistries = []string{
+		SystemRegistryHarborHelm,
+		SystemRegistryHarborDocker,
+	}
+)
+
+// validateRegistryName validates the registry name according to the specified rules
+func validateRegistryName(name string) error {
+	if len(name) < 1 {
+		return fmt.Errorf("registry name must be at least 1 character long")
+	}
+	if len(name) > 40 {
+		return fmt.Errorf("registry name must be at most 40 characters long")
+	}
+
+	// Pattern: ^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$
+	// This means: start with alphanumeric, middle can have hyphens, end with alphanumeric (if more than 1 char)
+	matched, err := regexp.MatchString("^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$", name)
+	if err != nil {
+		return fmt.Errorf("error validating registry name pattern: %v", err)
+	}
+	if !matched {
+		return fmt.Errorf("registry name must match pattern: start with a-z0-9, can contain hyphens, end with a-z0-9")
+	}
+
+	return nil
+}
 
 type RegistrySecretData interface {
 	RootURL() string
@@ -117,7 +154,14 @@ func (g *Server) CreateRegistry(ctx context.Context, req *catalogv3.CreateRegist
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.RegistryType),
 			errors.WithMessage("incomplete request"))
-	} else if err := req.Registry.Validate(); err != nil {
+	} else if err := protovalidate.Validate(req); err != nil {
+		return nil, errors.NewInvalidArgument(
+			errors.WithResourceType(errors.RegistryType),
+			errors.WithMessage(err.Error()))
+	}
+
+	// Additional validation for registry name
+	if err := validateRegistryName(req.Registry.Name); err != nil {
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.RegistryType),
 			errors.WithMessage(err.Error()))
@@ -241,6 +285,15 @@ func (g *Server) checkRegistryUniqueness(ctx context.Context, tx *generated.Tx, 
 		}
 	}
 	return nil
+}
+
+func (g *Server) IsSystemRegistry(name string) bool {
+	for _, r := range systemRegistries {
+		if r == name {
+			return true
+		}
+	}
+	return false
 }
 
 // ListRegistries gets a list of all registries through gRPC
@@ -499,11 +552,22 @@ func (g *Server) UpdateRegistry(ctx context.Context, req *catalogv3.UpdateRegist
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.RegistryType),
 			errors.WithMessage("incomplete request"))
-	} else if err := req.Registry.Validate(); err != nil {
+	}
+
+	// Validate registry name
+	if err := validateRegistryName(req.RegistryName); err != nil {
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.RegistryType),
 			errors.WithMessage(err.Error()))
-	} else if req.RegistryName != req.Registry.Name {
+	}
+
+	if err := protovalidate.Validate(req); err != nil {
+		return nil, errors.NewInvalidArgument(
+			errors.WithResourceType(errors.RegistryType),
+			errors.WithMessage(err.Error()))
+	}
+
+	if req.RegistryName != req.Registry.Name {
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.RegistryType),
 			errors.WithMessage("name cannot be changed %s != %s", req.RegistryName, req.Registry.Name))

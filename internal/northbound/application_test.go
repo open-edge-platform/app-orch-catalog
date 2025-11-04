@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"google.golang.org/grpc/codes"
@@ -146,19 +147,29 @@ func (s *NorthBoundTestSuite) TestCreateApplication() {
 }
 
 func (s *NorthBoundTestSuite) TestCreateApplicationInvalidName() {
-	// Create one with invalid name
+	// Create one with invalid name but valid other fields
 	_, err := s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
-		Application: &catalogv3.Application{Name: "Another Application", Version: ""},
+		Application: &catalogv3.Application{
+			Name:         "Another Application", // Invalid: contains spaces
+			Version:      "v1.0.0",              // Valid
+			ChartName:    "valid-chart",         // Valid
+			ChartVersion: "1.0.0",               // Valid
+		},
 	})
 	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`application invalid: invalid Application.Name: value does not match regex pattern "^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$"`))
+		"application invalid: validation error:\n - application.name: value does not match regex pattern `^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$` [string.pattern]"))
 
-	// Create one with invalid version
+	// Create one with invalid version but valid other fields
 	_, err = s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
-		Application: &catalogv3.Application{Name: "another-application", Version: "V 1"},
+		Application: &catalogv3.Application{
+			Name:         "valid-app",   // Valid
+			Version:      "V 1",         // Invalid: contains spaces
+			ChartName:    "valid-chart", // Valid
+			ChartVersion: "1.0.0",       // Valid
+		},
 	})
 	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`application invalid: invalid Application.Version: value does not match regex pattern "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"`))
+		"application invalid: validation error:\n - application.version: value does not match regex pattern `^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$` [string.pattern]"))
 
 	// Create one with invalid registry
 	_, err = s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
@@ -172,6 +183,113 @@ func (s *NorthBoundTestSuite) TestCreateApplicationInvalidName() {
 		},
 	})
 	s.ErrorIs(err, status.Errorf(codes.InvalidArgument, `application invalid: helm registry non-existent-registry not found`))
+}
+
+func (s *NorthBoundTestSuite) TestCreateApplicationWithPreReleaseChartVersions() {
+	// Test various pre-release and build metadata chart version formats
+	testCases := []struct {
+		name         string
+		chartVersion string
+		shouldPass   bool
+	}{
+		{"Standard version", "1.0.0", true},
+		{"Pre-release with alpha", "1.0.0-alpha", true},
+		{"Pre-release with alpha.1", "1.0.0-alpha.1", true},
+		{"Pre-release with rc1", "1.0.0-rc1", true},
+		{"Pre-release with beta.2", "1.2.3-beta.2", true},
+		{"Pre-release with multiple identifiers", "1.0.0-alpha.beta.1", true},
+		{"Pre-release with build metadata", "1.0.0-alpha+build.1", true},
+		{"Build metadata only", "1.0.0+20130313144700", true},
+		{"Complex pre-release", "1.3.8-pre-rc1", true},
+		{"Numeric pre-release", "1.0.0-0.3.7", true},
+		{"Version with v prefix", "v1.0.0", true},
+		{"Version with V prefix", "V1.0.0", true},
+		{"Complex semantic version", "2.0.0-rc.1+build.123", true},
+	}
+
+	for i, tc := range testCases {
+		s.T().Run(tc.name, func(_ *testing.T) {
+			// Use a simple counter-based app name to avoid validation issues
+			appName := fmt.Sprintf("chart-test-%d", i)
+			resp, err := s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
+				Application: &catalogv3.Application{
+					HelmRegistryName: fooreg,
+					Name:             appName,
+					DisplayName:      fmt.Sprintf("Chart Test %d", i),
+					Version:          "1.0.0",
+					ChartName:        "test-chart",
+					ChartVersion:     tc.chartVersion,
+				},
+			})
+
+			if tc.shouldPass {
+				s.validateResponse(err, resp)
+				s.T().Logf("✓ Chart version '%s' accepted", tc.chartVersion)
+			} else {
+				s.Error(err, "Expected chart version '%s' to be rejected", tc.chartVersion)
+				s.T().Logf("✗ Chart version '%s' rejected as expected", tc.chartVersion)
+			}
+		})
+	}
+}
+
+func (s *NorthBoundTestSuite) TestCreateApplicationWithInvalidChartVersions() {
+	testCases := []struct {
+		name         string
+		chartVersion string
+		expectError  string
+	}{
+		{
+			name:         "Empty chart version",
+			chartVersion: "",
+			expectError:  "chart_version: value length must be at least 1 characters",
+		},
+		{
+			name:         "Chart version with invalid characters",
+			chartVersion: "1.0.0@invalid",
+			expectError:  "chart_version: value does not match regex pattern",
+		},
+		{
+			name:         "Chart version starting with invalid character",
+			chartVersion: "@1.0.0",
+			expectError:  "chart_version: value does not match regex pattern",
+		},
+		{
+			name:         "Chart version ending with invalid character",
+			chartVersion: "1.0.0@",
+			expectError:  "chart_version: value does not match regex pattern",
+		},
+		{
+			name:         "Chart version with space",
+			chartVersion: "1.0.0 beta",
+			expectError:  "chart_version: value does not match regex pattern",
+		},
+		{
+			name:         "Chart version with invalid special characters",
+			chartVersion: "1.0.0#invalid",
+			expectError:  "chart_version: value does not match regex pattern",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			appName := fmt.Sprintf("invalid-chart-app-%d", time.Now().UnixNano()%1000000)
+
+			_, err := s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
+				Application: &catalogv3.Application{
+					HelmRegistryName: fooreg,
+					Name:             appName,
+					DisplayName:      "Test Invalid Chart Version",
+					Version:          "1.0.0",
+					ChartName:        "test-chart",
+					ChartVersion:     tc.chartVersion,
+				},
+			})
+
+			s.Assert().Error(err, "Expected error for invalid chart version: %s", tc.chartVersion)
+			s.Assert().Contains(err.Error(), tc.expectError, "Error should contain expected message for chart version: %s", tc.chartVersion)
+		})
+	}
 }
 
 func (s *NorthBoundTestSuite) TestCreateWithLongChartVersion() {

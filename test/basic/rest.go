@@ -199,12 +199,12 @@ func (s *TestSuite) TestValidateRESTBasics() {
 	s.validateRESTArtifactReference(ar, "thumb", "thumbnail")
 
 	// Get all packages for bar project
-	lbr, err := s.restClient.CatalogServiceListDeploymentPackagesWithResponse(s.ProjectID("footen"), &restapi.CatalogServiceListDeploymentPackagesParams{}, addHeaders)
+	lbr, err := s.restClient.CatalogV3CatalogServiceListDeploymentPackagesWithResponse(s.ProjectID("footen"), &restapi.CatalogV3CatalogServiceListDeploymentPackagesParams{}, addHeaders)
 	s.validateResponse(err, lbr)
 	s.Len(lbr.JSON200.DeploymentPackages, 1)
 
 	// Get all packages for foo project
-	lbr, err = s.restClient.CatalogServiceListDeploymentPackagesWithResponse(s.ProjectID("barten"), &restapi.CatalogServiceListDeploymentPackagesParams{}, addHeaders)
+	lbr, err = s.restClient.CatalogV3CatalogServiceListDeploymentPackagesWithResponse(s.ProjectID("barten"), &restapi.CatalogV3CatalogServiceListDeploymentPackagesParams{}, addHeaders)
 	s.validateResponse(err, lbr)
 	s.Len(lbr.JSON200.DeploymentPackages, 0)
 }

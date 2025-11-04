@@ -8,7 +8,7 @@ VERSION            := $(shell cat VERSION)
 CHART_VERSION      := $(shell cat VERSION)
 VERSION_DEV_SUFFIX := -dev
 GIT_COMMIT         ?= $(shell git rev-parse --short HEAD)
-OPA_IMAGE_VER       = 1.6.0-static
+OPA_IMAGE_VER       = 1.10.0-envoy-static
 
 
 ifeq ($(patsubst %$(VERSION_DEV_SUFFIX),,$(lastword $(VERSION))),)
@@ -79,7 +79,7 @@ CHART_RELEASE				?= catalog-service
 POSTGRES_CHART_PATH			?= "./deployments/postgres"
 POSTGRES_CHART_VERSION		?= 12.12.10
 
-OAPI_CODEGEN_VERSION ?= v2.2.0
+OAPI_CODEGEN_VERSION ?= v2.5.0
 
 # The endpoint URL of a keycloak server e.g. http://keycloak/realms/master refers to a keycloak server in the cluster
 OIDC_SERVER                 ?= http://keycloak.$(CHART_NAMESPACE).svc/realms/master
@@ -121,8 +121,8 @@ SAMPLE_ORG_ID := "11111111-1111-1111-1111-111111111111"
 SAMPLE_PROJECT_ID := "11111111-1111-1111-1111-222222222222"
 PLATFORM_NS := "orch-platform"
 KEYCLOAK_HELM_VERSION := 24.4.11
-BUF_VERSION := 1.52.1
-ENVOY_VERSION := v1.33.1
+BUF_VERSION := 1.59.0
+ENVOY_VERSION := v1.36.2
 
 # Functions to extract the OS/ARCH
 schema_rel_os    = $(word 3, $(subst -, ,$(notdir $@)))
@@ -168,15 +168,13 @@ ent-describe: ## Describe ENT assets
 install-protoc-plugins:
 	@echo "Installing protoc-gen-doc..."
 	@go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@latest
-	@echo "Installing protoc-gen-validate..."
-	@go install github.com/envoyproxy/protoc-gen-validate@latest
 	@echo "Installing protoc-gen-go-grpc..."
 	@go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-	@echo "Installing protoc-gen-openapi"
-	@go install github.com/kollalabs/protoc-gen-openapi@latest
+	@echo "Installing protoc-gen-connect-openapi"
+	@go install github.com/sudorandom/protoc-gen-connect-openapi@v0.21.3
 	echo "Installing oapi-codegen"
 	# for the binary install
-	go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@${OAPI_CODEGEN_VERSION}
+	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@${OAPI_CODEGEN_VERSION}
 	@echo "Installing buf..."
 	go install github.com/bufbuild/buf/cmd/buf@v${BUF_VERSION}
 	# for the binary installation
@@ -188,12 +186,10 @@ install-protoc-plugins:
 verify-protoc-plugins:
 	@echo "Verifying protoc-gen-doc installation..."
 	@command -v protoc-gen-doc >/dev/null 2>&1 && echo "protoc-gen-doc is installed." || echo "protoc-gen-doc is not installed."
-	@echo "Verifying protoc-gen-validate installation..."
-	@command -v protoc-gen-validate >/dev/null 2>&1 && echo "protoc-gen-validate is installed." || echo "protoc-gen-validate is not installed."
 	@echo "Verifying protoc-gen-go-grpc installation..."
 	@command -v protoc-gen-go-grpc >/dev/null 2>&1 && echo "protoc-gen-go-grpc is installed." || echo "protoc-gen-go-grpc is not installed."
-	@echo "Verifying protoc-gen-openapi installation..."
-	@command -v protoc-gen-openapi >/dev/null 2>&1 && echo "protoc-gen-openapi is installed." || echo "protoc-gen-openapi is not installed."
+	@echo "Verifying protoc-gen-connect-openapi installation..."
+	@command -v protoc-gen-connect-openapi >/dev/null 2>&1 && echo "protoc-gen-connect-openapi is installed." || echo "protoc-gen-connect-openapi is not installed."
 	echo "Verifying oapi-codegen installation..."
 	@command -v oapi-codegen >/dev/null 2>&1 && echo "oapi-codegen is installed." || echo "oapi-codegen is not installed."
 	@echo "Verifying buf installation..."
@@ -234,15 +230,26 @@ schema-generate: ## Generate YAML schema from OpenAPI Spec
 	go run cmd/schema/schema.go generate
 
 .PHONY: customise-openapi
-customise-openapi: ## Customize Openapi Spec after generation
-	@echo "openapi.yaml Add required true to projectId query parameter"
-	@yq -i '(.paths.*.*.parameters[] | select(.name=="projectId") |.required) = true' api/spec/openapi.yaml
-	@echo "openapi.yaml required false for projectId query parameter in Lists"
-	@yq -i '(.paths.*.get | select(.operationId=="CatalogService_List*") | .parameters[] | select(.name=="projectId") |.required) = false' api/spec/openapi.yaml
-	@# TODO: Replace the following remedy with yq-based one; both of the previous yq commands wrongly inject "get: null" for the upload path.
-	@echo "openapi.yaml removing upload path get"
-	@grep -v ' get: null' api/spec/openapi.yaml > api/spec/openapi.yaml.aux; mv api/spec/openapi.yaml.aux api/spec/openapi.yaml
-	@grep -v ' get: {}' api/spec/openapi.yaml > api/spec/openapi.yaml.aux; mv api/spec/openapi.yaml.aux api/spec/openapi.yaml
+customise-openapi: ## Customise the generated OpenAPI spec for REST clients
+	@echo "Adding info section and fixing OpenAPI version..."
+	@yq eval '.info = {"title": "Application Catalog API", "version": "v3.0.0", "description": "REST API for managing applications, deployment packages, registries, and artifacts"}' -i api/spec/openapi.yaml
+	@yq eval '.openapi = "3.0.3"' -i api/spec/openapi.yaml
+	@echo "Removing empty Watch endpoints..."
+	@yq eval 'del(.paths["/catalog.v3.CatalogService/WatchApplications"])' -i api/spec/openapi.yaml
+	@yq eval 'del(.paths["/catalog.v3.CatalogService/WatchArtifacts"])' -i api/spec/openapi.yaml
+	@yq eval 'del(.paths["/catalog.v3.CatalogService/WatchDeploymentPackages"])' -i api/spec/openapi.yaml
+	@yq eval 'del(.paths["/catalog.v3.CatalogService/WatchRegistries"])' -i api/spec/openapi.yaml
+	@echo "Removing Connect-specific endpoints..."
+	@yq eval 'del(.paths["/catalog.v3.CatalogService/DownloadDeploymentPackage"])' -i api/spec/openapi.yaml
+	@echo "Removing Connect-specific schemas..."
+	@yq eval 'del(.components.schemas["connect-protocol-version"])' -i api/spec/openapi.yaml
+	@yq eval 'del(.components.schemas["connect-timeout-header"])' -i api/spec/openapi.yaml
+	@yq eval 'del(.components.schemas["connect.error"])' -i api/spec/openapi.yaml
+	@yq eval 'del(.components.schemas["connect.error_details.Any"])' -i api/spec/openapi.yaml
+	@echo "Removing examples property from schemas..."
+	@yq eval 'del(.components.schemas."google.protobuf.Timestamp".examples)' -i api/spec/openapi.yaml
+	@echo "Removing const property from schemas..."
+	@sed -i '/const:/d' api/spec/openapi.yaml
 
 .PHONY: openapi-spec-validate
 openapi-spec-validate: $(VENV_NAME) ## Install openapi-spec-validator
@@ -251,12 +258,12 @@ openapi-spec-validate: $(VENV_NAME) ## Install openapi-spec-validator
 
 .PHONY: oapi-codegen
 oapi-codegen: ## Install oapi-codegen
-	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@${OAPI_CODEGEN_VERSION}
+	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@${OAPI_CODEGEN_VERSION}
 
 .PHONY: rest-client-gen
 rest-client-gen: ## Generate Rest client from the generated openapi spec.
-	oapi-codegen -generate client -old-config-style -package restClient -o pkg/restClient/client.go api/spec/openapi.yaml
-	oapi-codegen -generate types -old-config-style -package restClient -o pkg/restClient/types.go api/spec/openapi.yaml
+	PATH="$(shell go env GOBIN):$$PATH" oapi-codegen -generate client -old-config-style -package restClient -o pkg/restClient/client.go api/spec/openapi.yaml
+	PATH="$(shell go env GOBIN):$$PATH" oapi-codegen -generate types -old-config-style -package restClient -o pkg/restClient/types.go api/spec/openapi.yaml
 
 .PHONY: mod-update
 mod-update: ## Update Go modules

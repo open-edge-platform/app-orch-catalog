@@ -5,9 +5,9 @@ version: v2
 modules:
   - path: api
 deps:
-  - buf.build/envoyproxy/protoc-gen-validate
+  - buf.build/bufbuild/protovalidate:v1.0.0
   - buf.build/googleapis/googleapis
-  - buf.build/grpc-ecosystem/grpc-gateway
+  - buf.build/gnostic/gnostic
 lint:
   use:
     - COMMENT_MESSAGE

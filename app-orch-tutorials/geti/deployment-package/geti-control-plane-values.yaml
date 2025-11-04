@@ -4,6 +4,8 @@
 global:
   registry_address: ghcr.io
   docker_namespace: open-edge-platform/geti
+  debian:
+    name: os-shell:12-debian-12-r47
 
 auth-proxy:
   certificate:

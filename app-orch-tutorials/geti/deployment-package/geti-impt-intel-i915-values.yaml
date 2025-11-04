@@ -11,6 +11,8 @@ global:
   registry_address: ghcr.io
   workflow_versions: 2.10.1
   manage_users_roles: true
+  debian:
+    name: os-shell:12-debian-12-r47
 
 spice-db:
   fullnameOverride: impt-spice-db
@@ -70,3 +72,8 @@ modelmesh-serving:
   certificate:
     issuerRef:
       name: edge-node-cluster-issuer
+
+etcd:
+  volumePermissions:
+    image:
+      name: os-shell:12-debian-12-r47

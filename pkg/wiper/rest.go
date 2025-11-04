@@ -7,17 +7,17 @@ package wiper
 import (
 	"context"
 	"github.com/open-edge-platform/app-orch-catalog/internal/northbound"
-	restapi "github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
+	"github.com/open-edge-platform/app-orch-catalog/pkg/restClient"
 	"net/http"
 )
 
 type restWiper struct {
-	client     restapi.ClientWithResponses
-	reqEditors []restapi.RequestEditorFn
+	client     restClient.ClientWithResponses
+	reqEditors []restClient.RequestEditorFn
 }
 
 // NewRESTWiper creates a project wiper that uses REST API to wipe data
-func NewRESTWiper(client restapi.ClientWithResponses, reqEditors ...restapi.RequestEditorFn) ProjectWiper {
+func NewRESTWiper(client restClient.ClientWithResponses, reqEditors ...restClient.RequestEditorFn) ProjectWiper {
 	return &restWiper{client: client, reqEditors: reqEditors}
 }
 
@@ -44,7 +44,7 @@ var (
 // Sweeps through all packages, marking them as not deployed
 func (w *restWiper) preparePackagesForDeletion(ctx context.Context) []error {
 	var errors []error
-	resp, err := w.client.CatalogServiceListDeploymentPackagesWithResponse(ctx, &restapi.CatalogServiceListDeploymentPackagesParams{PageSize: &maxPageSize}, w.reqEditors...)
+	resp, err := w.client.CatalogServiceListDeploymentPackagesWithResponse(ctx, &restClient.CatalogServiceListDeploymentPackagesParams{PageSize: &maxPageSize}, w.reqEditors...)
 	if err != nil {
 		return append(errors, err)
 	}
@@ -90,7 +90,7 @@ func (w *restWiper) prepareApplicationsForDeletion(ctx context.Context) []error 
 	offset := int32(0)
 	hasMorePages := true
 	for hasMorePages {
-		resp, err := w.client.CatalogServiceListApplicationsWithResponse(ctx, &restapi.CatalogServiceListApplicationsParams{PageSize: &maxPageSize, Offset: &offset}, w.reqEditors...)
+		resp, err := w.client.CatalogServiceListApplicationsWithResponse(ctx, &restClient.CatalogServiceListApplicationsParams{PageSize: &maxPageSize, Offset: &offset}, w.reqEditors...)
 		if resp.StatusCode() != http.StatusOK {
 			return nil
 		}
@@ -132,7 +132,7 @@ func (w *restWiper) prepareApplicationForDeletion(ctx context.Context, name stri
 
 func (w *restWiper) wipePackages(ctx context.Context) []error {
 	var errors []error
-	resp, err := w.client.CatalogServiceListDeploymentPackagesWithResponse(ctx, &restapi.CatalogServiceListDeploymentPackagesParams{PageSize: &maxPageSize}, w.reqEditors...)
+	resp, err := w.client.CatalogServiceListDeploymentPackagesWithResponse(ctx, &restClient.CatalogServiceListDeploymentPackagesParams{PageSize: &maxPageSize}, w.reqEditors...)
 	if err != nil {
 		return append(errors, err)
 	}
@@ -150,7 +150,7 @@ func (w *restWiper) wipePackages(ctx context.Context) []error {
 
 func (w *restWiper) wipeApplications(ctx context.Context) []error {
 	var errors []error
-	resp, err := w.client.CatalogServiceListApplicationsWithResponse(ctx, &restapi.CatalogServiceListApplicationsParams{PageSize: &maxPageSize}, w.reqEditors...)
+	resp, err := w.client.CatalogServiceListApplicationsWithResponse(ctx, &restClient.CatalogServiceListApplicationsParams{PageSize: &maxPageSize}, w.reqEditors...)
 	if err != nil {
 		return append(errors, err)
 	}
@@ -168,7 +168,7 @@ func (w *restWiper) wipeApplications(ctx context.Context) []error {
 
 func (w *restWiper) wipeArtifacts(ctx context.Context) []error {
 	var errors []error
-	resp, err := w.client.CatalogServiceListArtifactsWithResponse(ctx, &restapi.CatalogServiceListArtifactsParams{PageSize: &maxPageSize}, w.reqEditors...)
+	resp, err := w.client.CatalogServiceListArtifactsWithResponse(ctx, &restClient.CatalogServiceListArtifactsParams{PageSize: &maxPageSize}, w.reqEditors...)
 	if err != nil {
 		return append(errors, err)
 	}
@@ -186,7 +186,7 @@ func (w *restWiper) wipeArtifacts(ctx context.Context) []error {
 
 func (w *restWiper) wipeRegistries(ctx context.Context) []error {
 	var errors []error
-	resp, err := w.client.CatalogServiceListRegistriesWithResponse(ctx, &restapi.CatalogServiceListRegistriesParams{PageSize: &maxPageSize}, w.reqEditors...)
+	resp, err := w.client.CatalogServiceListRegistriesWithResponse(ctx, &restClient.CatalogServiceListRegistriesParams{PageSize: &maxPageSize}, w.reqEditors...)
 	if err != nil {
 		return append(errors, err)
 	}

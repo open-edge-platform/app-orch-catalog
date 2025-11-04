@@ -5,6 +5,7 @@
 package northbound
 
 import (
+	"buf.build/go/protovalidate"
 	"bytes"
 	"context"
 	"encoding/json"
@@ -33,7 +34,7 @@ func (g *Server) CreateArtifact(ctx context.Context, req *catalogv3.CreateArtifa
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.ArtifactType),
 			errors.WithMessage("incomplete request"))
-	} else if err := req.Artifact.Validate(); err != nil {
+	} else if err := protovalidate.Validate(req); err != nil {
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.ArtifactType),
 			errors.WithResourceName(req.Artifact.Name),
@@ -340,7 +341,7 @@ func (g *Server) UpdateArtifact(ctx context.Context, req *catalogv3.UpdateArtifa
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.ArtifactType),
 			errors.WithMessage("incomplete request"))
-	} else if err := req.Artifact.Validate(); err != nil {
+	} else if err := protovalidate.Validate(req); err != nil {
 		return nil, errors.NewInvalidArgument(
 			errors.WithResourceType(errors.ArtifactType),
 			errors.WithMessage(err.Error()))

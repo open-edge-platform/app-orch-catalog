@@ -4,14 +4,10 @@
 
 package northbound
 
-/* The Catalog Service supports Uploads via the Upload endpoint.
+/* The Catalog Service supports import of helm charts from OCI registries.
  *
- * An upload consists of a set of files. These may either be individual YAML files or
- * they may be tarballs that contain individual YAML files. If a tarball is provided, then
- * it will be extracted and the individual YAML files will be processed.
- *
- * Each tarball is loaded independently, and the tarballs are loaded independently of raw
- * yaml files that may be present.
+ * The OCI helm chart is fetched from the registry, and then a deployment package,
+ * application, and registry are generated from the chart.
  */
 
 import (
@@ -35,7 +31,7 @@ func verboseNBError(err error) error {
 	return nberrors.NewInvalidArgument(opts...)
 }
 
-// UploadCatalogEntities allows upload of YAML files containing catalog entity descriptions or TAR file containing such YAML files through gRPC
+// Import allows a helm chart to be imported from an OCI registry
 func (g *Server) Import(ctx context.Context, req *catalogv3.ImportRequest) (*catalogv3.ImportResponse, error) {
 	projectUUID, err := GetActiveProjectID(ctx)
 	if err != nil {
@@ -90,8 +86,9 @@ func (g *Server) Import(ctx context.Context, req *catalogv3.ImportRequest) (*cat
 		return nil, errors.NewDBError(errors.WithError(err))
 	}
 
+	allowOverwriteRegistry := !g.IsSystemRegistry(reg.Name)
 	registryEvents := &RegistryEvents{}
-	err = g.createOrUpdateRegistry(ctx, tx, projectUUID, reg, registryEvents)
+	err = g.createOrUpdateRegistry(ctx, tx, projectUUID, reg, registryEvents, allowOverwriteRegistry)
 	if err != nil {
 		g.rollbackTransaction(tx)
 		return nil, errors.NewDBError(errors.WithError(err))

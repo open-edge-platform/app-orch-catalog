@@ -12,6 +12,7 @@ import (
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -95,8 +96,8 @@ func (s *NorthBoundTestSuite) TestCreateRegistry() {
 func (s *NorthBoundTestSuite) TestCreateRegistryInvalidName() {
 	// Create one with invalid name
 	_, err := s.client.CreateRegistry(s.ProjectID(footen), &catalogv3.CreateRegistryRequest{Registry: &catalogv3.Registry{Name: "Third registry"}})
-	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		`registry invalid: invalid Registry.Name: value does not match regex pattern "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"`))
+	s.Error(err)
+	s.Contains(err.Error(), "registry.name: value does not match regex pattern")
 }
 
 func (s *NorthBoundTestSuite) TestCreateRegistryDisplayName() {
@@ -538,11 +539,20 @@ new line`)
 			},
 		})
 		if err != nil || created == nil {
-			if err.Error() != `rpc error: code = InvalidArgument desc = registry invalid: invalid Registry.Name: value does not match regex pattern "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"` &&
-				err.Error() != `rpc error: code = InvalidArgument desc = registry invalid: invalid Registry.Name: value length must be between 1 and 40 runes, inclusive` &&
-				err.Error() != `rpc error: code = InvalidArgument desc = registry invalid: display name cannot contain leading or trailing spaces` &&
-				err.Error() != `rpc error: code = InvalidArgument desc = registry invalid: invalid Registry.DisplayName: value length must be between 0 and 40 runes, inclusive` &&
-				err.Error() != `rpc error: code = InvalidArgument desc = registry invalid: invalid Registry.DisplayName: value does not match regex pattern "^\\PC*$"` {
+			// Use regex patterns to match the new protovalidate v1.0.0 error format
+			namePatternRE, _ := regexp.Compile(`(?s)registry invalid: validation error:.*registry\.name: value does not match regex pattern.*\[string\.pattern\]`)
+			nameLenRE, _ := regexp.Compile(`(?s)registry invalid: validation error:.*registry\.name: value length must be at most.*characters.*\[string\.max_len\]`)
+			displayNameSpacesRE, _ := regexp.Compile(`registry invalid: display name cannot contain leading or trailing spaces`)
+			displayNameLenRE, _ := regexp.Compile(`(?s)registry invalid: validation error:.*registry\.display_name: value length must be at most.*characters.*\[string\.max_len\]`)
+			displayNamePatternRE, _ := regexp.Compile(`(?s)registry invalid: validation error:.*registry\.display_name: value does not match regex pattern.*\[string\.pattern\]`)
+			rootURLPatternRE, _ := regexp.Compile(`(?s)registry invalid: validation error:.*registry\.root_url: value does not match regex pattern.*\[string\.pattern\]`)
+
+			if !namePatternRE.Match([]byte(err.Error())) &&
+				!nameLenRE.Match([]byte(err.Error())) &&
+				!displayNameSpacesRE.Match([]byte(err.Error())) &&
+				!displayNameLenRE.Match([]byte(err.Error())) &&
+				!displayNamePatternRE.Match([]byte(err.Error())) &&
+				!rootURLPatternRE.Match([]byte(err.Error())) {
 				t.Errorf("%v Name: %v DisplayName: %v", err.Error(), name, displayName)
 			}
 		}
@@ -682,7 +692,7 @@ func (s *NorthBoundTestSuite) TestRegistryUpdateErrors() {
 		errorCode            codes.Code
 	}{
 		"change registry name":  {topLevelRegistryName: "not-the-one", errorString: "registry invalid: name cannot be changed not-the-one != fooreg", errorCode: codes.InvalidArgument},
-		"invalid registry name": {registryName: "invalid name!", errorString: `registry invalid: invalid Registry.Name: value does not match regex pattern "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"`, errorCode: codes.InvalidArgument},
+		"invalid registry name": {registryName: "invalid name!", errorString: `registry.name: value does not match regex pattern`, errorCode: codes.InvalidArgument},
 		"invalid display name":  {displayName: "   invalid name!   ", errorString: "registry fooreg invalid: display name cannot contain leading or trailing spaces", errorCode: codes.InvalidArgument},
 		"unique display name":   {registryName: fooreg, topLevelRegistryName: fooreg, displayName: "Registry fooregalt", errorString: "registry fooreg already exists: registry fooreg display name Registry fooregalt is not unique", errorCode: codes.AlreadyExists},
 	}
@@ -701,7 +711,12 @@ func (s *NorthBoundTestSuite) TestRegistryUpdateErrors() {
 			}
 			_, err := s.client.UpdateRegistry(s.ProjectID(footen), req)
 
-			s.ErrorIs(err, status.Error(testCase.errorCode, testCase.errorString))
+			if name == "invalid registry name" {
+				s.Error(err)
+				s.Contains(err.Error(), testCase.errorString)
+			} else {
+				s.ErrorIs(err, status.Error(testCase.errorCode, testCase.errorString))
+			}
 		})
 	}
 }
@@ -978,4 +993,11 @@ func (s *NorthBoundTestSuite) TestOCIRegistry() {
 	resp, err := s.client.CreateRegistry(s.ProjectID(footen), &catalogv3.CreateRegistryRequest{Registry: reg})
 	s.NoError(err)
 	s.NotNil(resp)
+}
+
+func (s *NorthBoundTestSuite) TestIsSystemRegistry() {
+	server := Server{}
+	s.True(server.IsSystemRegistry("harbor-helm-oci"))
+	s.True(server.IsSystemRegistry("harbor-docker-oci"))
+	s.False(server.IsSystemRegistry("harbor-something-else"))
 }

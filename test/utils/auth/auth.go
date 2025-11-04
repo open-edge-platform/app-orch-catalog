@@ -27,10 +27,16 @@ func SetUpAccessToken(t *testing.T, server string) string {
 	c := &http.Client{
 		Transport: &http.Transport{},
 	}
+	
+	password := os.Getenv("ORCH_DEFAULT_PASSWORD")
+	if password == "" {
+		panic("ORCH_DEFAULT_PASSWORD environment variable is required")
+	}
+	
 	data := url.Values{}
 	data.Set("client_id", "system-client")
 	data.Set("username", fmt.Sprintf("%s-edge-mgr", types.SampleProject))
-	data.Set("password", "ChangeMeOn1stLogin!")
+	data.Set("password", password)
 	data.Set("grant_type", "password")
 	url := "https://" + server + "/realms/master/protocol/openid-connect/token"
 	req, err := http.NewRequest(http.MethodPost,

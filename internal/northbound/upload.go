@@ -15,6 +15,7 @@ package northbound
  */
 
 import (
+	"buf.build/go/protovalidate"
 	"context"
 	"sync"
 
@@ -98,7 +99,7 @@ func (g *Server) UploadCatalogEntities(ctx context.Context, req *catalogv3.Uploa
 	if req == nil || req.Upload == nil {
 		return nil, nberrors.NewInvalidArgument(
 			nberrors.WithMessage("incomplete request"))
-	} else if err = req.Upload.Validate(); err != nil {
+	} else if err = protovalidate.Validate(req); err != nil {
 		return nil, nberrors.NewInvalidArgument(
 			nberrors.WithMessage(err.Error()))
 	}
@@ -249,7 +250,9 @@ func (u *uploadSession) ProcessFiles(ctx context.Context, files yamlreader.FileS
 }
 
 func (u *uploadSession) loadRegistry(ctx context.Context, tx *generated.Tx, reg *catalogv3.Registry) error {
-	return u.g.createOrUpdateRegistry(ctx, tx, u.projectUUID, reg, u.registryEvents)
+	allowOverwriteRegistry := !u.g.IsSystemRegistry(reg.Name)
+
+	return u.g.createOrUpdateRegistry(ctx, tx, u.projectUUID, reg, u.registryEvents, allowOverwriteRegistry)
 }
 
 func (u *uploadSession) loadArtifact(ctx context.Context, tx *generated.Tx, art *catalogv3.Artifact) error {
