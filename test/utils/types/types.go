@@ -39,10 +39,11 @@ func GetPointerString(s string) *string {
 	return &s
 }
 
-func GetDeploymentPackages() []restClient.DeploymentPackage {
-	var pkgs []restClient.DeploymentPackage
-	extensionKind := restClient.DeploymentPackageKindKINDEXTENSION
-	for _, dp := range []restClient.DeploymentPackage{
+func GetDeploymentPackages() []restClient.CatalogV3DeploymentPackage {
+	var pkgs []restClient.CatalogV3DeploymentPackage
+	extensionKind := restClient.KINDEXTENSION
+	for _, dp := range []restClient.CatalogV3DeploymentPackage{
+		{Name: "cert-manager", Description: GetPointerString("cert-manager Deployment Package"), Kind: &extensionKind},
 		{Name: "intel-gpu", Description: GetPointerString("Intel GPU K8S extension"), Kind: &extensionKind},
 		{Name: "kubernetes-dashboard", Description: GetPointerString("kubernetes-dashboard"), Kind: &extensionKind},
 		{Name: "loadbalancer", Description: GetPointerString("Enables load balancer and dns services on the edge"), Kind: &extensionKind},
@@ -51,10 +52,9 @@ func GetDeploymentPackages() []restClient.DeploymentPackage {
 		{Name: "observability", Description: GetPointerString("observability Stack"), Kind: &extensionKind},
 		{Name: "skupper", Description: GetPointerString("Enables Skupper service on the edge"), Kind: &extensionKind},
 		{Name: "trusted-compute", Description: GetPointerString("Trusted Compute k8s plugin for trusted workloads. Requires cluster using a \"privilege\" template."), Kind: &extensionKind},
-		{Name: "usb", Description: GetPointerString("Brings USB allocation for containers/VMs running on k8s cluster"), Kind: &extensionKind},
 		{Name: "virtualization", Description: GetPointerString("Virtualization support for k8s cluster"), Kind: &extensionKind},
 	} {
-		pkgs = append(pkgs, restClient.DeploymentPackage{
+		pkgs = append(pkgs, restClient.CatalogV3DeploymentPackage{
 			Name:        dp.Name,
 			Description: dp.Description,
 			Kind:        dp.Kind,
@@ -63,11 +63,11 @@ func GetDeploymentPackages() []restClient.DeploymentPackage {
 	return pkgs
 }
 
-func GetApplications() []restClient.Application {
-	var apps []restClient.Application
-	extensionKind := restClient.ApplicationKindKINDEXTENSION
+func GetApplications() []restClient.CatalogV3Application {
+	var apps []restClient.CatalogV3Application
+	extensionKind := restClient.KINDEXTENSION
 
-	for _, sa := range []restClient.Application{
+	for _, sa := range []restClient.CatalogV3Application{
 		{Name: "ingress-nginx", DisplayName: GetPointerString("ingress-nginx"), Description: GetPointerString("Edge Orchestrator EdgeDNS"), Kind: &extensionKind, ChartName: "ingress-nginx", HelmRegistryName: "kubernetes-ingress-helm"},
 		{Name: "intel-device-operator", DisplayName: GetPointerString("intel-device-operator"), Description: GetPointerString("Intel Device Plugin Operator"), Kind: &extensionKind, ChartName: "intel-device-plugins-operator", HelmRegistryName: "intel-github-io"},
 		{Name: "intel-gpu-plugin", DisplayName: GetPointerString("intel-gpu-plugin"), Description: GetPointerString("Intel GPU Device Plugin"), Kind: &extensionKind, ChartName: "intel-device-plugins-gpu", HelmRegistryName: "intel-github-io"},
@@ -77,7 +77,6 @@ func GetApplications() []restClient.Application {
 		{Name: "metallb-config", DisplayName: GetPointerString("metallb-config"), Description: GetPointerString("Load balancer configuration for bare metal k8s clusters"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/metallb-config", HelmRegistryName: "intel-rs-helm"},
 		{Name: "cert-manager", DisplayName: GetPointerString("cert-manager"), Description: GetPointerString("Cert Manager"), Kind: &extensionKind, ChartName: "cert-manager", HelmRegistryName: "jetstack"},
 		{Name: "fluent-bit", DisplayName: GetPointerString("fluent-bit"), Description: GetPointerString("Fluent Bit"), Kind: &extensionKind, ChartName: "fluent-bit", HelmRegistryName: "fluent-bit"},
-		{Name: "akri", DisplayName: GetPointerString("akri"), Description: GetPointerString("akri base application"), Kind: &extensionKind, ChartName: "akri", HelmRegistryName: "akri-helm-registry"},
 		{Name: "attestation-manager", DisplayName: GetPointerString("attestation-manager"), Description: GetPointerString("Workload prptection and continus monitoring add-on for Kubernetes"), Kind: &extensionKind, ChartName: "edge-orch/trusted-compute/charts/attestation-manager", HelmRegistryName: "intel-rs-helm"},
 		{Name: "attestation-verifier", DisplayName: GetPointerString("attestation-verifier"), Description: GetPointerString("attestation verifier of trusted compute"), Kind: &extensionKind, ChartName: "edge-orch/trusted-compute/charts/attestation-verifier", HelmRegistryName: "intel-rs-helm"},
 		{Name: "cdi", DisplayName: GetPointerString("cdi"), Description: GetPointerString("Persistent storage management add-on for Kubernetes"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/cdi", HelmRegistryName: "intel-rs-helm"},
@@ -89,9 +88,8 @@ func GetApplications() []restClient.Application {
 		{Name: "prometheus", DisplayName: GetPointerString("prometheus"), Description: GetPointerString("Prometheus"), Kind: &extensionKind, ChartName: "kube-prometheus-stack", HelmRegistryName: "prometheus"},
 		{Name: "telegraf", DisplayName: GetPointerString("telegraf"), Description: GetPointerString("Telegraf"), Kind: &extensionKind, ChartName: "telegraf", HelmRegistryName: "telegraf"},
 		{Name: "trusted-workload", DisplayName: GetPointerString("trusted-workload"), Description: GetPointerString("Deploys the necessary CRD and runtime class to enable trusted compute workloads within virtual machines."), Kind: &extensionKind, ChartName: "edge-orch/trusted-compute/charts/trusted-workload", HelmRegistryName: "intel-rs-helm"},
-		{Name: "usb-device-plugin", DisplayName: GetPointerString("usb-device-plugin"), Description: GetPointerString("Telegraf"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/akri", HelmRegistryName: "intel-rs-helm"},
 	} {
-		apps = append(apps, restClient.Application{
+		apps = append(apps, restClient.CatalogV3Application{
 			Name:             sa.Name,
 			DisplayName:      sa.DisplayName,
 			Description:      sa.Description,
@@ -103,11 +101,11 @@ func GetApplications() []restClient.Application {
 	return apps
 }
 
-func GetRegistryDefinitions(orchDomain string) []restClient.Registry {
+func GetRegistryDefinitions(orchDomain string) []restClient.CatalogV3Registry {
 	dockerURL := fmt.Sprintf("https://registry-oci.%s/", orchDomain)
 	helmURL := fmt.Sprintf("oci://registry-oci.%s/catalog-apps-sample-org-sample-project", orchDomain)
 
-	return []restClient.Registry{
+	return []restClient.CatalogV3Registry{
 		{Name: "akri-helm-registry", DisplayName: GetPointerString("akri-helm-registry"), Description: GetPointerString("Public registry for akri chart"), RootUrl: "https://project-akri.github.io/akri/", Type: "HELM"},
 		{Name: "bitnami-helm-oci", DisplayName: GetPointerString("bitnami-helm-oci"), Description: GetPointerString("Bitnami helm registry"), RootUrl: "oci://registry-1.docker.io/bitnamicharts", Type: "HELM"},
 		{Name: "fluent-bit", DisplayName: GetPointerString("fluent-bit"), Description: GetPointerString("Public registry for fluent bit chart"), RootUrl: "https://fluent.github.io/helm-charts", Type: "HELM"},

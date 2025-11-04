@@ -44,7 +44,7 @@ var (
 // Sweeps through all packages, marking them as not deployed
 func (w *restWiper) preparePackagesForDeletion(ctx context.Context) []error {
 	var errors []error
-	resp, err := w.client.CatalogV3CatalogServiceListDeploymentPackagesWithResponse(ctx, &restClient.CatalogV3CatalogServiceListDeploymentPackagesParams{PageSize: &maxPageSize}, w.reqEditors...)
+	resp, err := w.client.CatalogServiceListDeploymentPackagesWithResponse(ctx, &restClient.CatalogServiceListDeploymentPackagesParams{PageSize: &maxPageSize}, w.reqEditors...)
 	if err != nil {
 		return append(errors, err)
 	}
@@ -61,7 +61,7 @@ func (w *restWiper) preparePackagesForDeletion(ctx context.Context) []error {
 }
 
 func (w *restWiper) preparePackageForDeletion(ctx context.Context, name string, version string) error {
-	gresp, err := w.client.CatalogV3CatalogServiceGetDeploymentPackageWithResponse(ctx, name, version, w.reqEditors...)
+	gresp, err := w.client.CatalogServiceGetDeploymentPackageWithResponse(ctx, name, version, w.reqEditors...)
 	if err != nil {
 		return err
 	}
@@ -78,7 +78,7 @@ func (w *restWiper) preparePackageForDeletion(ctx context.Context, name string, 
 	pkg.DefaultNamespaces = nil
 	pkg.DefaultProfileName = nil
 
-	if _, err = w.client.CatalogV3CatalogServiceUpdateDeploymentPackageWithResponse(ctx, name, version, pkg, w.reqEditors...); err != nil {
+	if _, err = w.client.CatalogServiceUpdateDeploymentPackageWithResponse(ctx, name, version, pkg, w.reqEditors...); err != nil {
 		return err
 	}
 	return nil
@@ -90,7 +90,7 @@ func (w *restWiper) prepareApplicationsForDeletion(ctx context.Context) []error 
 	offset := int32(0)
 	hasMorePages := true
 	for hasMorePages {
-		resp, err := w.client.CatalogV3CatalogServiceListApplicationsWithResponse(ctx, &restClient.CatalogV3CatalogServiceListApplicationsParams{PageSize: &maxPageSize, Offset: &offset}, w.reqEditors...)
+		resp, err := w.client.CatalogServiceListApplicationsWithResponse(ctx, &restClient.CatalogServiceListApplicationsParams{PageSize: &maxPageSize, Offset: &offset}, w.reqEditors...)
 		if resp.StatusCode() != http.StatusOK {
 			return nil
 		}
@@ -110,7 +110,7 @@ func (w *restWiper) prepareApplicationsForDeletion(ctx context.Context) []error 
 }
 
 func (w *restWiper) prepareApplicationForDeletion(ctx context.Context, name string, version string) error {
-	gresp, err := w.client.CatalogV3CatalogServiceGetApplicationWithResponse(ctx, name, version, w.reqEditors...)
+	gresp, err := w.client.CatalogServiceGetApplicationWithResponse(ctx, name, version, w.reqEditors...)
 	if err != nil {
 		return err
 	}
@@ -124,7 +124,7 @@ func (w *restWiper) prepareApplicationForDeletion(ctx context.Context, name stri
 	app.Profiles = nil
 	app.DefaultProfileName = nil
 
-	if _, err = w.client.CatalogV3CatalogServiceUpdateApplicationWithResponse(ctx, name, version, app, w.reqEditors...); err != nil {
+	if _, err = w.client.CatalogServiceUpdateApplicationWithResponse(ctx, name, version, app, w.reqEditors...); err != nil {
 		return err
 	}
 	return nil
@@ -132,7 +132,7 @@ func (w *restWiper) prepareApplicationForDeletion(ctx context.Context, name stri
 
 func (w *restWiper) wipePackages(ctx context.Context) []error {
 	var errors []error
-	resp, err := w.client.CatalogV3CatalogServiceListDeploymentPackagesWithResponse(ctx, &restClient.CatalogV3CatalogServiceListDeploymentPackagesParams{PageSize: &maxPageSize}, w.reqEditors...)
+	resp, err := w.client.CatalogServiceListDeploymentPackagesWithResponse(ctx, &restClient.CatalogServiceListDeploymentPackagesParams{PageSize: &maxPageSize}, w.reqEditors...)
 	if err != nil {
 		return append(errors, err)
 	}
@@ -141,7 +141,7 @@ func (w *restWiper) wipePackages(ctx context.Context) []error {
 	}
 
 	for _, pkg := range resp.JSON200.DeploymentPackages {
-		if _, err = w.client.CatalogV3CatalogServiceDeleteDeploymentPackageWithResponse(ctx, pkg.Name, pkg.Version, w.reqEditors...); err != nil {
+		if _, err = w.client.CatalogServiceDeleteDeploymentPackageWithResponse(ctx, pkg.Name, pkg.Version, w.reqEditors...); err != nil {
 			errors = append(errors, err)
 		}
 	}
@@ -150,7 +150,7 @@ func (w *restWiper) wipePackages(ctx context.Context) []error {
 
 func (w *restWiper) wipeApplications(ctx context.Context) []error {
 	var errors []error
-	resp, err := w.client.CatalogV3CatalogServiceListApplicationsWithResponse(ctx, &restClient.CatalogV3CatalogServiceListApplicationsParams{PageSize: &maxPageSize}, w.reqEditors...)
+	resp, err := w.client.CatalogServiceListApplicationsWithResponse(ctx, &restClient.CatalogServiceListApplicationsParams{PageSize: &maxPageSize}, w.reqEditors...)
 	if err != nil {
 		return append(errors, err)
 	}
@@ -159,7 +159,7 @@ func (w *restWiper) wipeApplications(ctx context.Context) []error {
 	}
 
 	for _, app := range resp.JSON200.Applications {
-		if _, err = w.client.CatalogV3CatalogServiceDeleteApplicationWithResponse(ctx, app.Name, app.Version, w.reqEditors...); err != nil {
+		if _, err = w.client.CatalogServiceDeleteApplicationWithResponse(ctx, app.Name, app.Version, w.reqEditors...); err != nil {
 			errors = append(errors, err)
 		}
 	}
@@ -168,7 +168,7 @@ func (w *restWiper) wipeApplications(ctx context.Context) []error {
 
 func (w *restWiper) wipeArtifacts(ctx context.Context) []error {
 	var errors []error
-	resp, err := w.client.CatalogV3CatalogServiceListArtifactsWithResponse(ctx, &restClient.CatalogV3CatalogServiceListArtifactsParams{PageSize: &maxPageSize}, w.reqEditors...)
+	resp, err := w.client.CatalogServiceListArtifactsWithResponse(ctx, &restClient.CatalogServiceListArtifactsParams{PageSize: &maxPageSize}, w.reqEditors...)
 	if err != nil {
 		return append(errors, err)
 	}
@@ -177,7 +177,7 @@ func (w *restWiper) wipeArtifacts(ctx context.Context) []error {
 	}
 
 	for _, artifact := range resp.JSON200.Artifacts {
-		if _, err = w.client.CatalogV3CatalogServiceDeleteArtifactWithResponse(ctx, artifact.Name, w.reqEditors...); err != nil {
+		if _, err = w.client.CatalogServiceDeleteArtifactWithResponse(ctx, artifact.Name, w.reqEditors...); err != nil {
 			errors = append(errors, err)
 		}
 	}
@@ -186,7 +186,7 @@ func (w *restWiper) wipeArtifacts(ctx context.Context) []error {
 
 func (w *restWiper) wipeRegistries(ctx context.Context) []error {
 	var errors []error
-	resp, err := w.client.CatalogV3CatalogServiceListRegistriesWithResponse(ctx, &restClient.CatalogV3CatalogServiceListRegistriesParams{PageSize: &maxPageSize}, w.reqEditors...)
+	resp, err := w.client.CatalogServiceListRegistriesWithResponse(ctx, &restClient.CatalogServiceListRegistriesParams{PageSize: &maxPageSize}, w.reqEditors...)
 	if err != nil {
 		return append(errors, err)
 	}
@@ -195,7 +195,7 @@ func (w *restWiper) wipeRegistries(ctx context.Context) []error {
 	}
 
 	for _, registry := range resp.JSON200.Registries {
-		if _, err = w.client.CatalogV3CatalogServiceDeleteRegistryWithResponse(ctx, registry.Name, w.reqEditors...); err != nil {
+		if _, err = w.client.CatalogServiceDeleteRegistryWithResponse(ctx, registry.Name, w.reqEditors...); err != nil {
 			errors = append(errors, err)
 		}
 	}

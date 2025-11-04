@@ -42,8 +42,8 @@ func (s *TestSuite) TestListBootStrapDeploymentPackages() {
 		OrderBy:  &orderBy,
 		PageSize: &pageSize,
 		Offset:   &offset,
-		Kinds: &[]restClient.CatalogServiceListDeploymentPackagesParamsKinds{
-			restClient.CatalogServiceListDeploymentPackagesParamsKindsKINDEXTENSION,
+		Kinds: &[]restClient.CatalogV3Kind{
+			restClient.KINDEXTENSION,
 		},
 	})
 	assert.NoError(s.T(), err)

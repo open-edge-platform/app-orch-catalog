@@ -237,6 +237,8 @@ func (s *NorthBoundTestSuite) TestUploadMalwareArtifact() {
 		resp *catalogv3.UploadCatalogEntitiesResponse
 	)
 	server := internaltesting.StartMalwareServer()
+	// Add a small delay to ensure the server is fully ready
+	time.Sleep(100 * time.Millisecond)
 	malware.DefaultScanner = malware.NewScanner(":1123", time.Duration(5)*time.Second, false)
 
 	defer func() {
@@ -269,6 +271,8 @@ func (s *NorthBoundTestSuite) TestUploadMalware() {
 		resp *catalogv3.UploadCatalogEntitiesResponse
 	)
 	server := internaltesting.StartMalwareServer()
+	// Add a small delay to ensure the server is fully ready
+	time.Sleep(100 * time.Millisecond)
 	malware.DefaultScanner = malware.NewScanner(":1123", time.Duration(5)*time.Second, false)
 
 	defer func() {
