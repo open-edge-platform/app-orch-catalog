@@ -1,9 +1,9 @@
 # SPDX-FileCopyrightText: (C) 2023 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
-buf 1.52.1
+buf 1.59.0
 getenvoy 0.4.1
-golang 1.24.6
+golang 1.24.9
 golangci-lint 1.64.7
 hadolint 2.12.0
 helm 3.11.1
@@ -12,8 +12,8 @@ jq 1.7.1
 kind 0.29.0
 kubectl 1.33.2
 k9s 0.50.6
-oapi-codegen 2.4.1
-opa 1.6.0
+oapi-codegen 2.5.0
+opa 1.10.0-envoy-static
 protoc 22.0
 trivy 0.64.1
 yamllint 1.26.3
