@@ -38,7 +38,7 @@ jobs:
     steps:
       - name: Deploy Kind Orchestrator (with fallback authentication)
         id: deploy-kind-orchestrator
-        uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@093b0f31ec797fccde424a11493378f396531ca9
+        uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@da998b5f5a75a18bbf096d0092c7fbd9d97087a8
         timeout-minutes: 45
         with:
           orch_version: ${{ inputs.emf-branch || 'main' }}
