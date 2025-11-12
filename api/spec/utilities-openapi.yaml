@@ -80,7 +80,7 @@ paths:
                       items:
                         type: string
                         maxLength: 500
-  /catalog.orchestrator.apis/v3/deployment_packages/{deploymentPackageName}/versions/{version}/download:
+  /catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}/download:
     get:
       tags:
         - CatalogService
@@ -88,7 +88,7 @@ paths:
       description: Gets a specific deployment package and downloads it as a tarball.
       operationId: CatalogService_DownloadDeploymentPackage
       parameters:
-        - name: deploymentPackageName
+        - name: deployment_package_name
           in: path
           description: Name of the DeploymentPackage.
           required: true
