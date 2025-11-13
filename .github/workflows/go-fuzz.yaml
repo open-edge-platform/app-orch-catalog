@@ -28,7 +28,7 @@ jobs:
   go-fuzz-catalog:
     if: ${{ inputs.run_catalog || github.event_name == 'schedule' }}
     name: Catalog Go Fuzzing Tests
-    uses: open-edge-platform/orch-ci/.github/workflows/apporch-go-fuzz.yml@15fa19e8760a1d7954de69b7059433f3855bbd92 # 0.1.58
+    uses: open-edge-platform/orch-ci/.github/workflows/apporch-go-fuzz.yml@50452868e1a7850e3f76e9247e6b6e436a9980e1 # 0.1.61
     with:
       # Declare 4800 secs duration since schedule event will not pick up input values from workflow_dispatch
       fuzz_seconds: ${{ fromJSON(inputs.fuzz_seconds_catalog || 4800) }}
