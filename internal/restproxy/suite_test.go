@@ -5,6 +5,7 @@
 package restproxy
 
 import (
+	"context"
 	"net"
 	"net/http"
 	"net/url"
@@ -26,7 +27,6 @@ import (
 	"github.com/open-edge-platform/orch-library/go/pkg/openpolicyagent"
 	"github.com/stretchr/testify/suite"
 	gomock "go.uber.org/mock/gomock"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
 

@@ -5,6 +5,7 @@
 package northbound
 
 import (
+	"context"
 	"encoding/base64"
 	"fmt"
 	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
@@ -20,7 +21,6 @@ import (
 	"github.com/open-edge-platform/orch-library/go/pkg/openpolicyagent"
 	"github.com/stretchr/testify/suite"
 	gomock "go.uber.org/mock/gomock"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
