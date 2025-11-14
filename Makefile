@@ -8,7 +8,7 @@ VERSION            := $(shell cat VERSION)
 CHART_VERSION      := $(shell cat VERSION)
 VERSION_DEV_SUFFIX := -dev
 GIT_COMMIT         ?= $(shell git rev-parse --short HEAD)
-OPA_IMAGE_VER       = edge-static
+OPA_IMAGE_VER       = 1.10.0-envoy-static
 
 
 ifeq ($(patsubst %$(VERSION_DEV_SUFFIX),,$(lastword $(VERSION))),)
@@ -79,7 +79,7 @@ CHART_RELEASE				?= catalog-service
 POSTGRES_CHART_PATH			?= "./deployments/postgres"
 POSTGRES_CHART_VERSION		?= 12.12.10
 
-OAPI_CODEGEN_VERSION ?= v2.2.0
+OAPI_CODEGEN_VERSION ?= v2.5.0
 
 # The endpoint URL of a keycloak server e.g. http://keycloak/realms/master refers to a keycloak server in the cluster
 OIDC_SERVER                 ?= http://keycloak.$(CHART_NAMESPACE).svc/realms/master
@@ -121,8 +121,8 @@ SAMPLE_ORG_ID := "11111111-1111-1111-1111-111111111111"
 SAMPLE_PROJECT_ID := "11111111-1111-1111-1111-222222222222"
 PLATFORM_NS := "orch-platform"
 KEYCLOAK_HELM_VERSION := 24.4.11
-BUF_VERSION := 1.52.1
-ENVOY_VERSION := v1.33.1
+BUF_VERSION := 1.59.0
+ENVOY_VERSION := v1.36.2
 
 # Functions to extract the OS/ARCH
 schema_rel_os    = $(word 3, $(subst -, ,$(notdir $@)))
@@ -171,10 +171,10 @@ install-protoc-plugins:
 	@echo "Installing protoc-gen-go-grpc..."
 	@go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 	@echo "Installing protoc-gen-connect-openapi"
-	@go install github.com/connectrpc/connect-openapi-go/cmd/protoc-gen-connect-openapi@latest
+	@go install github.com/sudorandom/protoc-gen-connect-openapi@v0.21.3
 	echo "Installing oapi-codegen"
 	# for the binary install
-	go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@${OAPI_CODEGEN_VERSION}
+	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@${OAPI_CODEGEN_VERSION}
 	@echo "Installing buf..."
 	go install github.com/bufbuild/buf/cmd/buf@v${BUF_VERSION}
 	# for the binary installation
@@ -231,28 +231,25 @@ schema-generate: ## Generate YAML schema from OpenAPI Spec
 
 .PHONY: customise-openapi
 customise-openapi: ## Customise the generated OpenAPI spec for REST clients
-	@echo "Adding info section and removing invalid endpoints..."
+	@echo "Adding info section and fixing OpenAPI version..."
 	@yq eval '.info = {"title": "Application Catalog API", "version": "v3.0.0", "description": "REST API for managing applications, deployment packages, registries, and artifacts"}' -i api/spec/openapi.yaml
-	@echo "Updating OpenAPI version to 3.0.3..."
 	@yq eval '.openapi = "3.0.3"' -i api/spec/openapi.yaml
-	@echo "Removing Watch endpoints..."
+	@echo "Removing empty Watch endpoints..."
 	@yq eval 'del(.paths["/catalog.v3.CatalogService/WatchApplications"])' -i api/spec/openapi.yaml
 	@yq eval 'del(.paths["/catalog.v3.CatalogService/WatchArtifacts"])' -i api/spec/openapi.yaml
 	@yq eval 'del(.paths["/catalog.v3.CatalogService/WatchDeploymentPackages"])' -i api/spec/openapi.yaml
 	@yq eval 'del(.paths["/catalog.v3.CatalogService/WatchRegistries"])' -i api/spec/openapi.yaml
+	@echo "Removing Connect-specific endpoints..."
+	@yq eval 'del(.paths["/catalog.v3.CatalogService/DownloadDeploymentPackage"])' -i api/spec/openapi.yaml
 	@echo "Removing Connect-specific schemas..."
 	@yq eval 'del(.components.schemas["connect-protocol-version"])' -i api/spec/openapi.yaml
 	@yq eval 'del(.components.schemas["connect-timeout-header"])' -i api/spec/openapi.yaml
-	@echo "Removing paths with undefined schema references..."
-	@yq eval 'del(.paths."/catalog.v3.CatalogService/DownloadDeploymentPackage")' -i api/spec/openapi.yaml
-	@echo "Removing examples property from Timestamp schema..."
+	@yq eval 'del(.components.schemas["connect.error"])' -i api/spec/openapi.yaml
+	@yq eval 'del(.components.schemas["connect.error_details.Any"])' -i api/spec/openapi.yaml
+	@echo "Removing examples property from schemas..."
 	@yq eval 'del(.components.schemas."google.protobuf.Timestamp".examples)' -i api/spec/openapi.yaml
-	@echo "Removing examples property from connect.error schema..."
-	@yq eval 'del(.components.schemas."connect.error".properties.code.examples)' -i api/spec/openapi.yaml
-	@echo "Removing const property from all schemas..."
+	@echo "Removing const property from schemas..."
 	@sed -i '/const:/d' api/spec/openapi.yaml
-	@echo "Fixing OpenAPI info section..."
-	@yq eval '.info = {"title": "Application Catalog API", "version": "v3.0.0", "description": "REST API for managing applications, deployment packages, registries, and artifacts"}' -i api/spec/openapi.yaml
 
 .PHONY: openapi-spec-validate
 openapi-spec-validate: $(VENV_NAME) ## Install openapi-spec-validator
@@ -261,7 +258,7 @@ openapi-spec-validate: $(VENV_NAME) ## Install openapi-spec-validator
 
 .PHONY: oapi-codegen
 oapi-codegen: ## Install oapi-codegen
-	go install github.com/deepmap/oapi-codegen/v2/cmd/oapi-codegen@${OAPI_CODEGEN_VERSION}
+	go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@${OAPI_CODEGEN_VERSION}
 
 .PHONY: rest-client-gen
 rest-client-gen: ## Generate Rest client from the generated openapi spec.

@@ -105,7 +105,7 @@ $defs:
         description: Helm chart version.
         maxLength: 53
         minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-.]{0,51}[a-z0-9]{0,1}$
+        pattern: ^[a-zA-Z0-9][a-zA-Z0-9-.+]{0,51}[a-zA-Z0-9]{0,1}$
         title: chart_version
         type: string
       createTime:
@@ -193,7 +193,9 @@ $defs:
        used by multiple deployment packages.
     properties:
       artifact:
-        description: Raw byte content of the artifact encoded as base64. The limits refer to the number of raw bytes.
+        description: |
+          Raw byte content of the artifact encoded as base64. The limits refer to the number of raw bytes.
+          bytes.const = []
         maxLength: 4000000
         minLength: 4
         title: artifact
@@ -530,7 +532,7 @@ $defs:
         description: Helm chart version.
         maxLength: 53
         minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-.]{0,51}[a-z0-9]{0,1}$
+        pattern: ^[a-zA-Z0-9][a-zA-Z0-9-.+]{0,51}[a-zA-Z0-9]{0,1}$
         title: chart_version
         type: string
       createTime:
@@ -667,7 +669,9 @@ $defs:
        used by multiple deployment packages.
     properties:
       artifact:
-        description: Raw byte content of the artifact encoded as base64. The limits refer to the number of raw bytes.
+        description: |
+          Raw byte content of the artifact encoded as base64. The limits refer to the number of raw bytes.
+          bytes.const = []
         maxLength: 4000000
         minLength: 4
         title: artifact
@@ -1426,50 +1430,6 @@ $defs:
       - fileName
       - artifact
     title: Upload
-    type: object
-  connect.error:
-    additionalProperties: true
-    description: 'Error type returned by Connect: https://connectrpc.com/docs/go/errors/#http-representation'
-    properties:
-      code:
-        description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
-        enum:
-          - canceled
-          - unknown
-          - invalid_argument
-          - deadline_exceeded
-          - not_found
-          - already_exists
-          - permission_denied
-          - resource_exhausted
-          - failed_precondition
-          - aborted
-          - out_of_range
-          - unimplemented
-          - internal
-          - unavailable
-          - data_loss
-          - unauthenticated
-        type: string
-      detail:
-        $ref: '#/$defs/google.protobuf.Any'
-      message:
-        description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
-        type: string
-    title: Connect Error
-    type: object
-  google.protobuf.Any:
-    additionalProperties: true
-    description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
-    properties:
-      debug:
-        additionalProperties: true
-        type: object
-      type:
-        type: string
-      value:
-        format: binary
-        type: string
     type: object
   google.protobuf.Empty:
     description: |-
