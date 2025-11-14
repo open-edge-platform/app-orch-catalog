@@ -11,14 +11,11 @@ on:
       - release-*
   workflow_dispatch:
 
-permissions: {}
+permissions:
+  contents: read
 
 jobs:
   post-merge-pipeline:
-    permissions:
-      contents: read
-      security-events: write
-      id-token: write
     uses: open-edge-platform/orch-ci/.github/workflows/post-merge.yml@da08a06e8aec70621e50ed4aec2fac5599839f45 # 0.1.62
     with:
       run_version_check: true

@@ -144,6 +144,8 @@ func createServerConnection(t *testing.T, dbClient *ent.Client, opaClient openpo
 	s, err := newTestService(dbClient, opaClient)
 	assert.NoError(t, err)
 	assert.NotNil(t, s)
+	// nosemgrep: go.grpc.security.grpc-server-insecure-connection.grpc-server-insecure-connection
+	// This is a test server running on localhost - insecure connection is acceptable for testing
 	server := grpc.NewServer()
 	s.Register(server)
 

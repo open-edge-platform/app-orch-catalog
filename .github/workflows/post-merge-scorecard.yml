@@ -12,11 +12,13 @@ on:
 
 permissions:
   contents: read
-  security-events: write
-  id-token: write
 
 jobs:
   call-scorecard:
+    permissions:
+      contents: read
+      security-events: write
+      id-token: write
     uses: open-edge-platform/orch-ci/.github/workflows/post-merge-scorecard.yml@main
     with:
       project_folder: "."
