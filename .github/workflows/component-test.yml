@@ -36,21 +36,20 @@ jobs:
       CODER_DIR: ${{ github.workspace }}
 
     steps:
-      - name: Deploy Kind Orchestrator (with fallback authentication)
+      - name: Deploy Kind Orchestrator
         id: deploy-kind-orchestrator
         uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@d9f30b46d8b4b94c0506935d8ad9a7f5b82d657f
         timeout-minutes: 45
         with:
           orch_version: ${{ inputs.emf-branch || 'main' }}
-          orch_password: 'ChangeMeOn1stLogin!'
+          orch_password: ${{ env.ORCH_DEFAULT_PASSWORD }}
           # Skip Docker Hub credentials since they're not available
           # docker_username: ${{ secrets.SYS_DOCKERHUB_USERNAME }}
           # docker_password: ${{ secrets.SYS_DOCKERHUB_RO }}
           token: ${{ secrets.SYS_ORCH_GITHUB }}
           deployment_type: 'all'
         env:
-          # Provide a default password since secret is not available
-          ORCH_DEFAULT_PASSWORD: 'ChangeMeOn1stLogin!'
+          ORCH_DEFAULT_PASSWORD: ${{ env.ORCH_DEFAULT_PASSWORD }}
 
       - name: Configure kubectl for Kind cluster
         run: |

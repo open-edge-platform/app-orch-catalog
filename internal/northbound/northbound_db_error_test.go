@@ -5,13 +5,13 @@
 package northbound
 
 import (
+	"context"
 	sqldb "database/sql"
 	"entgo.io/ent/dialect/sql"
 	sqlmock "github.com/DATA-DOG/go-sqlmock"
 	ent "github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/stretchr/testify/suite"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"

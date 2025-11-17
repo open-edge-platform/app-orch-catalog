@@ -5,6 +5,7 @@
 package restproxy
 
 import (
+	"context"
 	"net"
 	"net/http"
 	"net/url"
@@ -26,7 +27,6 @@ import (
 	"github.com/open-edge-platform/orch-library/go/pkg/openpolicyagent"
 	"github.com/stretchr/testify/suite"
 	gomock "go.uber.org/mock/gomock"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
 
@@ -144,7 +144,8 @@ func createServerConnection(t *testing.T, dbClient *ent.Client, opaClient openpo
 	s, err := newTestService(dbClient, opaClient)
 	assert.NoError(t, err)
 	assert.NotNil(t, s)
-	server := grpc.NewServer()
+	// Create server with explicit credentials option for test environment
+	server := grpc.NewServer(grpc.Creds(insecure.NewCredentials()))
 	s.Register(server)
 
 	go func() {
