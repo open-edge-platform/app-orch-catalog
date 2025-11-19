@@ -106,7 +106,6 @@ func GetRegistryDefinitions(orchDomain string) []restClient.CatalogV3Registry {
 	helmURL := fmt.Sprintf("oci://registry-oci.%s/catalog-apps-sample-org-sample-project", orchDomain)
 
 	return []restClient.CatalogV3Registry{
-		{Name: "akri-helm-registry", DisplayName: GetPointerString("akri-helm-registry"), Description: GetPointerString("Public registry for akri chart"), RootUrl: "https://project-akri.github.io/akri/", Type: "HELM"},
 		{Name: "bitnami-helm-oci", DisplayName: GetPointerString("bitnami-helm-oci"), Description: GetPointerString("Bitnami helm registry"), RootUrl: "oci://registry-1.docker.io/bitnamicharts", Type: "HELM"},
 		{Name: "fluent-bit", DisplayName: GetPointerString("fluent-bit"), Description: GetPointerString("Public registry for fluent bit chart"), RootUrl: "https://fluent.github.io/helm-charts", Type: "HELM"},
 		{Name: "harbor-docker-oci", DisplayName: GetPointerString("harbor oci docker"), Description: GetPointerString("Harbor OCI docker images registry"), RootUrl: dockerURL, Type: "IMAGE"},
