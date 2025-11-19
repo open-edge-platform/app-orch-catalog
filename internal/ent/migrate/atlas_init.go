@@ -11,22 +11,33 @@ import (
 )
 
 // InitializeAtlasTracking creates the atlas_schema_revisions table and marks
-// migrations as applied for databases migrated from pre-Atlas versions (< 0.15.5).
+// migrations as applied for databases migration
 // This handles the migration from Ent auto-migrate to Atlas-based migrations.
-func InitializeAtlasTracking(db *sql.DB) error {
+func InitializeAtlasTracking(dbPath string) error {
+	// Open a direct database connection for Atlas tracking initialization
+	db, err := sql.Open("postgres", dbPath)
+	if err != nil {
+		return fmt.Errorf("failed to open database connection: %w", err)
+	}
+	defer db.Close()
+
+	// Verify connection
+	if err := db.Ping(); err != nil {
+		return fmt.Errorf("failed to ping database: %w", err)
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
 	// Check if atlas_schema_revisions already exists
 	var exists bool
-	err := db.QueryRowContext(ctx, `
+	err = db.QueryRowContext(ctx, `
 		SELECT EXISTS (
 			SELECT FROM information_schema.tables 
 			WHERE table_schema = 'public' 
 			AND table_name = 'atlas_schema_revisions'
 		)
 	`).Scan(&exists)
-	
+
 	if err != nil {
 		return fmt.Errorf("failed to check for atlas_schema_revisions table: %w", err)
 	}
@@ -56,13 +67,11 @@ func InitializeAtlasTracking(db *sql.DB) error {
 			PRIMARY KEY (version)
 		)
 	`)
-	
+
 	if err != nil {
 		return fmt.Errorf("failed to create atlas_schema_revisions table: %w", err)
 	}
 
-	// Mark all pre-0.15.5 migrations as applied
-	// These migrations correspond to the schema created by Ent auto-migrate in 0.15.0
 	migrations := []struct {
 		version     string
 		description string
@@ -81,6 +90,7 @@ func InitializeAtlasTracking(db *sql.DB) error {
 		{"20240711172122", "resource-namespace"},
 		{"20240906060507", "v3"},
 		{"20240906164744", "namespaces"},
+		{"20250507105755", "ignoredResources"},
 	}
 
 	stmt, err := db.PrepareContext(ctx, `
@@ -88,7 +98,7 @@ func InitializeAtlasTracking(db *sql.DB) error {
 		(version, description, type, applied, total, executed_at, execution_time, hash, operator_version)
 		VALUES ($1, $2, 2, 0, 0, $3, 0, $4, 'Atlas CLI v0.38.1')
 	`)
-	
+
 	if err != nil {
 		return fmt.Errorf("failed to prepare insert statement: %w", err)
 	}
