@@ -109,9 +109,15 @@ func (m *Manager) Start() error {
 
 	// Unless the database schema migration has been disabled, attempt to run it explicitly via Atlas.
 	if !m.Config.DatabaseDisableMigration {
-		if _, err = migrate.RunAtlasMigrations(dbPath(m.Config, dbUser, dbPwd), m.Config.MigrationsDir); err != nil {
-			// For now, merely issue a loud error warning, but allow the server to proceed withs startup.
-			log.Fatalf("ATTENTION: failed to apply migrations: %v", err)
+		// Initialize Atlas migration tracking for databases migration
+		// This handles the transition from Ent auto-migrate to Atlas-based migrations
+		if err := migrate.InitializeAtlasTracking(m.dbClient.DB()); err != nil {
+			log.Fatalf("ATTENTION: failed to initialize Atlas migration tracking: %v", err)
+		}
+
+		if output, err := migrate.RunAtlasMigrations(dbPath(m.Config, dbUser, dbPwd), m.Config.MigrationsDir); err != nil {
+			// Log the full Atlas output to help diagnose migration failures
+			log.Fatalf("ATTENTION: failed to apply migrations: %v\nAtlas output: %s", err, string(output))
 		}
 
 		// Trigger the second phase of release-specific database migration.
