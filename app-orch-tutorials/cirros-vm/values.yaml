@@ -15,6 +15,11 @@ virtualMachine:
   # See: https://kubevirt.io/user-guide/compute/run_strategies/#runstrategy
   runStrategy: "Always"
 
+  # -- Annotations to add to the VM template metadata
+  annotations:
+    container.apparmor.security.beta.kubernetes.io/compute: unconfined
+    container.apparmor.security.beta.kubernetes.io/volumecirros-disk: unconfined
+
   features:
     # -- Enable KVM acceleration.
     # Setting the 'hidden' flag to `true` will obscure kvm from the host.
