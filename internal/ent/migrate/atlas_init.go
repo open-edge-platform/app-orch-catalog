@@ -49,6 +49,25 @@ func InitializeAtlasTracking(dbPath string) error {
 
 	log.Infof("Initializing Atlas migration tracking for pre-0.15.5 database")
 
+	// Check if the 15th migration (ignoredResources) was actually applied
+	// by verifying the namespace column is NOT NULL
+	var namespaceIsNullable string
+	err = db.QueryRowContext(ctx, `
+		SELECT is_nullable 
+		FROM information_schema.columns 
+		WHERE table_name = 'ignored_resources' 
+		AND column_name = 'namespace'
+	`).Scan(&namespaceIsNullable)
+
+	migration15Applied := false
+	if err == nil && namespaceIsNullable == "NO" {
+		// Namespace is NOT NULL, meaning the 15th migration was applied
+		migration15Applied = true
+		log.Infof("Detected that migration 20250507105755 (ignoredResources) was already applied")
+	} else if err != nil {
+		log.Warnf("Could not verify namespace column state: %v", err)
+	}
+
 	// Create the tracking table
 	_, err = db.ExecContext(ctx, `
 		CREATE TABLE atlas_schema_revisions (
@@ -72,6 +91,7 @@ func InitializeAtlasTracking(dbPath string) error {
 		return fmt.Errorf("failed to create atlas_schema_revisions table: %w", err)
 	}
 
+	// First 14 migrations that exist in all versions since v0.11.30
 	migrations := []struct {
 		version     string
 		description string
@@ -90,13 +110,20 @@ func InitializeAtlasTracking(dbPath string) error {
 		{"20240711172122", "resource-namespace"},
 		{"20240906060507", "v3"},
 		{"20240906164744", "namespaces"},
-		{"20250507105755", "ignoredResources"},
+	}
+
+	// Only add 15th migration if it was actually applied
+	if migration15Applied {
+		migrations = append(migrations, struct {
+			version     string
+			description string
+		}{"20250507105755", "ignoredResources"})
 	}
 
 	stmt, err := db.PrepareContext(ctx, `
 		INSERT INTO atlas_schema_revisions 
 		(version, description, type, applied, total, executed_at, execution_time, hash, operator_version)
-		VALUES ($1, $2, 2, 0, 0, $3, 0, $4, 'Atlas CLI v0.38.1')
+		VALUES ($1, $2, 2, 0, 0, $3, 0, $4, 'Atlas CLI v0.38.0')
 	`)
 
 	if err != nil {

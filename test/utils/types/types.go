@@ -115,5 +115,6 @@ func GetRegistryDefinitions(orchDomain string) []restClient.CatalogV3Registry {
 		{Name: "intel-rs-images", DisplayName: GetPointerString("intel-rs-image"), Description: GetPointerString("Repo on registry registry-rs.edgeorchestration.intel.com"), RootUrl: "oci://registry-rs.edgeorchestration.intel.com", Type: "IMAGE"},
 		{Name: "jetstack", DisplayName: GetPointerString("jetstack"), Description: GetPointerString("Public registry for cert manager chart"), RootUrl: "https://charts.jetstack.io", Type: "HELM"},
 		{Name: "kubernetes", DisplayName: GetPointerString("kubernetes"), Description: GetPointerString("Kubernetes dashboard registry"), RootUrl: "https://kubernetes.github.io/dashboard/", Type: "HELM"},
+		{Name: "kubernetes-ingress-helm", DisplayName: GetPointerString("kubernetes-ingress-helm"), Description: GetPointerString("Kubernetes Github helm registry for ingress-nginx"), RootUrl: "https://kubernetes.github.io/ingress-nginx", Type: "HELM"},
 	}
 }
