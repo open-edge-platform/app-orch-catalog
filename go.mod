@@ -8,7 +8,7 @@ go 1.24.9
 
 require (
 	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.10-20250912141014-52f32327d4b0.1
-	buf.build/go/protovalidate v1.0.0
+	buf.build/go/protovalidate v1.0.1
 	connectrpc.com/connect v1.19.1
 	entgo.io/contrib v0.7.0
 	entgo.io/ent v0.14.5
