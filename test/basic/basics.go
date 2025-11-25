@@ -55,10 +55,10 @@ func (s *TestSuite) TestBasics() {
 		"image/png", "test/basic/1x1.png")
 
 	// Create a new package
-	s.createPackage("footen", "cap1", "1.1", "Package One", "First Package",
+	s.createPackage("footen", "cap1", "1.1.0", "Package One", "First Package",
 		[]*catalogv3.ApplicationReference{
-			{Name: "ap1", Version: "1.1"},
-			{Name: "ap2", Version: "1.2"},
+			{Name: "ap1", Version: "1.1.0"},
+			{Name: "ap2", Version: "1.2.0"},
 		},
 		[]*catalogv3.DeploymentProfile{
 			packageProfile("p1", "Profile One", "First profile", map[string]string{"ap1": "p2", "ap2": "p1"}),
@@ -114,10 +114,10 @@ func (s *TestSuite) TestValidateBasics() {
 	s.Len(lir.Artifacts, 2)
 
 	resp, err := s.client.GetDeploymentPackage(s.AddHeaders("footen"), &catalogv3.GetDeploymentPackageRequest{
-		DeploymentPackageName: "cap1", Version: "1.1",
+		DeploymentPackageName: "cap1", Version: "1.1.0",
 	})
 	s.NoError(err)
-	s.validatePackage(resp.DeploymentPackage, "cap1", "1.1", "Package One", "First Package",
+	s.validatePackage(resp.DeploymentPackage, "cap1", "1.1.0", "Package One", "First Package",
 		2, 2, "p1", 2, 2)
 
 	// Validate the extensions and their endpoints

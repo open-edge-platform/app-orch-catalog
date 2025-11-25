@@ -41,10 +41,10 @@ func (s *TestSuite) TestRESTBasics() {
 		"image/png", "test/basic/1x1.png")
 
 	// Create a new package
-	s.createRESTPackage("footen", "cap1", "1.1", "Package One", "First Package",
+	s.createRESTPackage("footen", "cap1", "1.1.0", "Package One", "First Package",
 		[]restapi.ApplicationReference{
-			{Name: "ap1", Version: "1.1"},
-			{Name: "ap2", Version: "1.2"},
+			{Name: "ap1", Version: "1.1.0"},
+			{Name: "ap2", Version: "1.2.0"},
 		},
 		[]restapi.DeploymentProfile{
 			packageRESTProfile("p1", "Profile One", "First profile", map[string]string{"ap1": "p2", "ap2": "p1"}),
@@ -75,19 +75,19 @@ func (s *TestSuite) TestRESTBasics() {
 func (s *TestSuite) TestUpdateApplicationWithDeploymentRequirements() {
 	s.createRESTRegistry("barten", "barreg", "Bar Registry", "Registry for bars", "https://reg.bar.com/")
 
-	s.createRESTApplication("barten", "barreg", "app", "1.1",
+	s.createRESTApplication("barten", "barreg", "app", "1.1.0",
 		"App", "Application", []restapi.Profile{
 			profileREST("p1", "Profile", "A Profile", "some odd yaml goes here"),
 		}, "p1")
 
-	s.createRESTPackage("barten", "pkg", "1.0", "Package", "Package",
+	s.createRESTPackage("barten", "pkg", "1.0.0", "Package", "Package",
 		[]restapi.ApplicationReference{
-			{Name: "app", Version: "1.1"},
+			{Name: "app", Version: "1.1.0"},
 		}, nil, "", nil, nil)
 
 	// Create an app with deployment requirement it its profile
 	requirements := []restapi.DeploymentRequirement{
-		{Name: "pkg", Version: "1.0"},
+		{Name: "pkg", Version: "1.0.0"},
 	}
 
 	profiles := []restapi.Profile{
@@ -97,9 +97,9 @@ func (s *TestSuite) TestUpdateApplicationWithDeploymentRequirements() {
 
 	cresp, err := s.restClient.CatalogServiceCreateApplicationWithResponse(s.ProjectID("barten"), restapi.CatalogServiceCreateApplicationJSONRequestBody{
 		Name:               "topapp",
-		Version:            "1.0",
+		Version:            "1.0.0",
 		ChartName:          "topapp-chart",
-		ChartVersion:       "1.0",
+		ChartVersion:       "1.0.0",
 		DefaultProfileName: &profiles[0].Name,
 		HelmRegistryName:   "barreg",
 		Profiles:           &profiles,
@@ -107,7 +107,7 @@ func (s *TestSuite) TestUpdateApplicationWithDeploymentRequirements() {
 	s.validateResponse(err, cresp.JSON200)
 
 	// Retrieve the app and validate that the deployment requirements are there
-	resp, err := s.restClient.CatalogServiceGetApplicationWithResponse(s.ProjectID("barten"), "topapp", "1.0", addHeaders)
+	resp, err := s.restClient.CatalogServiceGetApplicationWithResponse(s.ProjectID("barten"), "topapp", "1.0.0", addHeaders)
 	s.validateResponse(err, resp.JSON200)
 	if resp.JSON200.Application.Profiles != nil && s.Len(*resp.JSON200.Application.Profiles, 1) {
 		s.Len(*(*resp.JSON200.Application.Profiles)[0].DeploymentRequirement, 1)
@@ -118,12 +118,12 @@ func (s *TestSuite) TestUpdateApplicationWithDeploymentRequirements() {
 	profiles[0].ChartValues = &newValues
 
 	// Update the app
-	_, err = s.restClient.CatalogServiceUpdateApplicationWithResponse(s.ProjectID("barten"), "topapp", "1.0",
+	_, err = s.restClient.CatalogServiceUpdateApplicationWithResponse(s.ProjectID("barten"), "topapp", "1.0.0",
 		restapi.CatalogServiceUpdateApplicationJSONRequestBody{
 			Name:               "topapp",
-			Version:            "1.0",
+			Version:            "1.0.0",
 			ChartName:          "topapp-chart",
-			ChartVersion:       "1.0c",
+			ChartVersion:       "1.0.0c",
 			DefaultProfileName: &profiles[0].Name,
 			HelmRegistryName:   "barreg",
 			Profiles:           &profiles,

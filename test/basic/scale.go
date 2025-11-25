@@ -84,7 +84,7 @@ func (s *TestSuite) generatePackages(projectUUID string, apps []*catalogv3.Appli
 			profiles := generatePackageProfiles(appName, spec.profiles, packageApps)
 			defaultProfile := fmt.Sprintf("p%d", oneOf(len(profiles)))
 			start := time.Now()
-			app := s.createPackage(projectUUID, appName, fmt.Sprintf("%d.0", vi),
+			app := s.createPackage(projectUUID, appName, fmt.Sprintf("%d.0.0", vi),
 				fmt.Sprintf("App %d v%d.0.0 of %s", ai, vi, projectUUID),
 				fmt.Sprintf("Some app %d v%d.0.0 of %s", ai, vi, projectUUID),
 				references, profiles, defaultProfile, extensions, artifacts)

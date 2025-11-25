@@ -224,21 +224,21 @@ func (s *NorthBoundTestSuite) TestCreateDeploymentPackageWithBadDependencies() {
 func (s *NorthBoundTestSuite) TestCreateDeploymentPackageDisplayName() {
 	// Creating two deployment_packages with blank display name should work
 	resp, err := s.client.CreateDeploymentPackage(s.ProjectID(footen), &catalogv3.CreateDeploymentPackageRequest{
-		DeploymentPackage: &catalogv3.DeploymentPackage{Name: "app1", Version: "1"},
+		DeploymentPackage: &catalogv3.DeploymentPackage{Name: "app1", Version: "1.0.0"},
 	})
 	s.validateResponse(err, resp)
 	resp, err = s.client.CreateDeploymentPackage(s.ProjectID(footen), &catalogv3.CreateDeploymentPackageRequest{
-		DeploymentPackage: &catalogv3.DeploymentPackage{Name: "app2", Version: "1"},
+		DeploymentPackage: &catalogv3.DeploymentPackage{Name: "app2", Version: "1.0.0"},
 	})
 	s.validateResponse(err, resp)
 
 	// Creating two deployment_packages with the same, non-blank display name should not work
 	resp, err = s.client.CreateDeploymentPackage(s.ProjectID(footen), &catalogv3.CreateDeploymentPackageRequest{
-		DeploymentPackage: &catalogv3.DeploymentPackage{Name: "app3", Version: "1", DisplayName: "Bundle"},
+		DeploymentPackage: &catalogv3.DeploymentPackage{Name: "app3", Version: "1.0.0", DisplayName: "Bundle"},
 	})
 	s.validateResponse(err, resp)
 	_, err = s.client.CreateDeploymentPackage(s.ProjectID(footen), &catalogv3.CreateDeploymentPackageRequest{
-		DeploymentPackage: &catalogv3.DeploymentPackage{Name: "app4", Version: "1", DisplayName: "bundle"},
+		DeploymentPackage: &catalogv3.DeploymentPackage{Name: "app4", Version: "1.0.0", DisplayName: "bundle"},
 	})
 	s.ErrorIs(err, status.Errorf(codes.AlreadyExists, "deployment-package app4 already exists: deployment package app4 display name bundle is not unique"))
 }
@@ -1154,7 +1154,7 @@ func (s *NorthBoundTestSuite) TestDeploymentPackageEvents() {
 	stream, err := s.client.WatchDeploymentPackages(ctx, &catalogv3.WatchDeploymentPackagesRequest{NoReplay: true})
 	s.NoError(err)
 
-	pkg := s.createDeploymentPkg(footen, fooreg, "newpkg", "0.1.1", "foo:v0.1.0", "bar:v0.2.1:barten")
+	pkg := s.createDeploymentPkg(footen, "newpkg", "0.1.0", "foo:v0.1.0", "bar:v0.2.1:barten")
 
 	resp, err := stream.Recv()
 	s.NoError(err)
@@ -1187,7 +1187,7 @@ func (s *NorthBoundTestSuite) TestDeploymentPackageEvents() {
 
 	// Make sure we get an error back for a Recv() on a closed channel
 	cancel()
-	s.createDeploymentPkg(footen, fooreg, "newpkg1", "0.1.1", "foo:v0.1.0", "bar:v0.2.1:barten")
+	s.createDeploymentPkg(footen, "newpkg1", "0.1.0", "foo:v0.1.0", "bar:v0.2.1:barten")
 	resp, err = stream.Recv()
 	s.Error(err)
 	s.Nil(resp)
@@ -1280,6 +1280,7 @@ new line`, "v1.0.0")
 			displayNameSpacesRE, _ := regexp.Compile(`deployment-package invalid: display name cannot contain leading or trailing spaces`)
 			displayNamePatternRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation error:.*deployment_package\.display_name: value does not match regex pattern.*\[string\.pattern\]`)
 			versionLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation error:.*deployment_package\.version: value length must be at least.*characters.*\[string\.min_len\]`)
+			versionMaxLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation error:.*deployment_package\.version: value length must be at most.*characters.*\[string\.max_len\]`)
 			versionPatternRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation error:.*deployment_package\.version: value does not match regex pattern.*\[string\.pattern\]`)
 
 			if !namePatternRE.Match([]byte(err.Error())) &&
@@ -1288,6 +1289,7 @@ new line`, "v1.0.0")
 				!displayNameSpacesRE.Match([]byte(err.Error())) &&
 				!displayNamePatternRE.Match([]byte(err.Error())) &&
 				!versionLenRE.Match([]byte(err.Error())) &&
+				!versionMaxLenRE.Match([]byte(err.Error())) &&
 				!versionPatternRE.Match([]byte(err.Error())) {
 				t.Errorf("%v Name: %v DisplayName: %v", err.Error(), name, displayName)
 			}
@@ -1497,7 +1499,7 @@ func TestEmptyDepAppsDBQuery(t *testing.T) {
 	s.Equal(0, len(apps.DeploymentPackages))
 
 	publisher, err := s.client.GetDeploymentPackage(s.ProjectID("nobody"), &catalogv3.GetDeploymentPackageRequest{
-		Version:               "1.0",
+		Version:               "1.0.0",
 		DeploymentPackageName: "none",
 	})
 	s.Nil(publisher)

@@ -214,8 +214,8 @@ func (s *UISimulator) createApplication() error {
 	return s.measure("Create Application", func() error {
 		p1 := "p1"
 		_, err := s.client.CatalogServiceCreateApplicationWithResponse(s.ctx, restapi.CatalogServiceCreateApplicationJSONRequestBody{
-			Name: name, Version: "0.1",
-			ChartName: fmt.Sprintf("%s-chart", name), ChartVersion: "0.1", HelmRegistryName: registry.Name,
+			Name: name, Version: "0.1.0",
+			ChartName: fmt.Sprintf("%s-chart", name), ChartVersion: "0.1.0", HelmRegistryName: registry.Name,
 			Profiles: &[]restapi.Profile{
 				profileREST("p1", "Profile One", "First profile", "some odd yaml goes here"),
 				profileREST("p2", "Profile Two", "Second profile", "some other yaml goes here"),
@@ -243,7 +243,7 @@ func (s *UISimulator) createPackage() error {
 	return s.measure("Create Package", func() error {
 		p1 := "p1"
 		_, err := s.client.CatalogServiceCreateDeploymentPackageWithResponse(s.ctx, restapi.CatalogServiceCreateDeploymentPackageJSONRequestBody{
-			Name: name, Version: "0.2",
+			Name: name, Version: "0.2.0",
 			ApplicationReferences: []restapi.ApplicationReference{{Name: application.Name, Version: application.Version}},
 			Profiles: &[]restapi.DeploymentProfile{
 				packageRESTProfile("p1", "Profile One", "First profile", map[string]string{application.Name: "p1"}),

@@ -899,7 +899,7 @@ components:
           title: version
           maxLength: 20
           minLength: 1
-          pattern: ^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$
+          pattern: ^v?[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\+[a-z0-9]+([.-][a-z0-9]+)*)?$
           description: Version of the API extension.
         displayName:
           type: string
@@ -961,7 +961,7 @@ components:
           title: version
           maxLength: 20
           minLength: 1
-          pattern: ^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$
+          pattern: ^v?[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\+[a-z0-9]+([.-][a-z0-9]+)*)?$
           description: Version of the application. Used in combination with the name to identify a unique application within a project.
         kind:
           title: kind
@@ -1069,7 +1069,7 @@ components:
           title: version
           maxLength: 20
           minLength: 1
-          pattern: ^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$
+          pattern: ^v?[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\+[a-z0-9]+([.-][a-z0-9]+)*)?$
           description: Version of the referenced application.
       title: ApplicationReference
       required:
@@ -1348,7 +1348,7 @@ components:
           title: version
           maxLength: 20
           minLength: 1
-          pattern: ^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$
+          pattern: ^v?[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\+[a-z0-9]+([.-][a-z0-9]+)*)?$
           description: Version of the deployment package.
         kind:
           title: kind
