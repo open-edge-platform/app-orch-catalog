@@ -1060,7 +1060,9 @@ func (s *NorthBoundTestSuite) TestUpdateDeploymentPackageAddProfile() {
 }
 
 func (s *NorthBoundTestSuite) TestDeploymentPackageWithSameAppNames() {
-	created, err := s.client.CreateDeploymentPackage(s.ProjectID(footen), &catalogv3.CreateDeploymentPackageRequest{
+	// Deployment packages with duplicate app names are no longer supported
+	// This test verifies that such packages are rejected at creation time
+	_, err := s.client.CreateDeploymentPackage(s.ProjectID(footen), &catalogv3.CreateDeploymentPackageRequest{
 		DeploymentPackage: &catalogv3.DeploymentPackage{
 			Name:        "test-ca",
 			Version:     "v0.1.0",
@@ -1078,17 +1080,34 @@ func (s *NorthBoundTestSuite) TestDeploymentPackageWithSameAppNames() {
 			DefaultProfileName: "cp1",
 		},
 	})
-	s.validateResponse(err, created)
+	s.ErrorContains(err, "duplicate application names")
+}
 
-	resp, err := s.client.GetDeploymentPackage(s.ProjectID(footen), &catalogv3.GetDeploymentPackageRequest{
-		DeploymentPackageName: "test-ca", Version: "v0.1.0",
+func (s *NorthBoundTestSuite) TestUpdateDeploymentPackageWithSameAppNamesModifyingProfile() {
+	// Duplicate app names are no longer supported, so creating such a package should fail
+	_, err := s.client.CreateDeploymentPackage(s.ProjectID(footen), &catalogv3.CreateDeploymentPackageRequest{
+		DeploymentPackage: &catalogv3.DeploymentPackage{
+			Name:        "test-ca",
+			Version:     "v0.1.0",
+			DisplayName: "Test bundle",
+			ApplicationReferences: []*catalogv3.ApplicationReference{
+				{Name: "bar", Version: "v0.2.0"},
+				{Name: "bar", Version: "v0.2.1"},
+			},
+			Profiles: []*catalogv3.DeploymentProfile{
+				{Name: "implicit-default", ApplicationProfiles: map[string]string{
+					"bar:v0.2.0": "p1",
+					"bar:v0.2.1": "p2",
+				}},
+			},
+			DefaultProfileName: "implicit-default",
+		},
 	})
-	s.validateResponse(err, created)
-	s.Len(resp.DeploymentPackage.Profiles, 1)
-	s.Len(resp.DeploymentPackage.Profiles[0].ApplicationProfiles, 2)
+	s.ErrorContains(err, "duplicate application names")
 }
 
 func (s *NorthBoundTestSuite) TestCreateDeploymentPackageWithoutFullyQualifiedProfiles() {
+	// This test now verifies that duplicate app names are rejected regardless of profile format
 	_, err := s.client.CreateDeploymentPackage(s.ProjectID(footen), &catalogv3.CreateDeploymentPackageRequest{
 		DeploymentPackage: &catalogv3.DeploymentPackage{
 			Name:        "test-ca",
@@ -1106,10 +1125,11 @@ func (s *NorthBoundTestSuite) TestCreateDeploymentPackageWithoutFullyQualifiedPr
 			DefaultProfileName: "cp1",
 		},
 	})
-	s.ErrorContains(err, "fully qualified")
+	s.ErrorContains(err, "duplicate application names")
 }
 
 func (s *NorthBoundTestSuite) TestUpdateDeploymentPackageWithoutFullyQualifiedProfiles() {
+	// Create a package with a single app
 	created, err := s.client.CreateDeploymentPackage(s.ProjectID(footen), &catalogv3.CreateDeploymentPackageRequest{
 		DeploymentPackage: &catalogv3.DeploymentPackage{
 			Name:        "test-ca",
@@ -1128,6 +1148,7 @@ func (s *NorthBoundTestSuite) TestUpdateDeploymentPackageWithoutFullyQualifiedPr
 	})
 	s.validateResponse(err, created)
 
+	// Try to update by adding a duplicate app name - this should be rejected
 	_, err = s.client.UpdateDeploymentPackage(s.ProjectID(footen), &catalogv3.UpdateDeploymentPackageRequest{
 		DeploymentPackageName: "test-ca", Version: "v0.1.0",
 		DeploymentPackage: &catalogv3.DeploymentPackage{
@@ -1146,7 +1167,27 @@ func (s *NorthBoundTestSuite) TestUpdateDeploymentPackageWithoutFullyQualifiedPr
 			DefaultProfileName: "cp1",
 		},
 	})
-	s.ErrorContains(err, "fully qualified")
+	s.ErrorContains(err, "duplicate application names")
+}
+
+func (s *NorthBoundTestSuite) TestCreateDeploymentPackageWithDuplicateNamesNoProfiles() {
+	// Test creating a deployment package with duplicate app names but NO profiles defined
+	// This should be rejected at creation time to prevent deployment failures later
+	_, err := s.client.CreateDeploymentPackage(s.ProjectID(footen), &catalogv3.CreateDeploymentPackageRequest{
+		DeploymentPackage: &catalogv3.DeploymentPackage{
+			Name:        "test-duplicate-no-profiles",
+			Version:     "v1.0.0",
+			DisplayName: "Test Duplicate Apps No Profiles",
+			ApplicationReferences: []*catalogv3.ApplicationReference{
+				{Name: "bar", Version: "v0.2.0"},
+				{Name: "bar", Version: "v0.2.1"},
+			},
+			// No profiles defined - this is the edge case that was causing 500 errors at deployment
+		},
+	})
+	s.Error(err)
+	s.ErrorContains(err, "duplicate application names")
+	s.ErrorContains(err, "reference each application only once")
 }
 
 func (s *NorthBoundTestSuite) TestDeploymentPackageEvents() {

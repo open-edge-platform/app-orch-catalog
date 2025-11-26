@@ -2109,3 +2109,59 @@ func (s *NorthBoundTestSuite) TestAddProfile() {
 	s.Equal(profilesValuesFound["default"], "key1a: value1a\nkey2a: value2a\n", "Default profile values should match")
 	s.Equal(profilesValuesFound["newone"], "key2b: value2b\nkey2b: value2b\n", "New profile values should match")
 }
+
+func (s *NorthBoundTestSuite) TestAddProfileWithoutChartValues() {
+	// Test creating an application profile without chart values (which is optional per proto definition)
+	var err error
+	created, err := s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
+		Application: &catalogv3.Application{
+			HelmRegistryName:  fooreg,
+			ImageRegistryName: fooregalt,
+			Name:              "test-app-no-values",
+			DisplayName:       "Test Application No Values",
+			Description:       "Test application with profile without chart values",
+			Version:           "1.0.0",
+			ChartName:         "test-chart",
+			ChartVersion:      "1.0.0",
+		},
+	})
+	s.validateResponse(err, created)
+	s.validateApp(created.Application, "test-app-no-values", "1.0.0", "Test Application No Values",
+		"Test application with profile without chart values", 0, "", "test-chart", "1.0.0", fooreg)
+
+	// Add profile without chart values - should succeed since chart_values is OPTIONAL in proto
+	_, err = s.client.UpdateApplication(s.ProjectID(footen), &catalogv3.UpdateApplicationRequest{
+		ApplicationName: "test-app-no-values",
+		Version:         "1.0.0",
+		Application: &catalogv3.Application{
+			Name:               "test-app-no-values",
+			Version:            "1.0.0",
+			ChartName:          "test-chart",
+			ChartVersion:       "1.0.0",
+			DefaultProfileName: "minimal",
+			HelmRegistryName:   fooreg,
+			ImageRegistryName:  fooregalt,
+			Profiles: []*catalogv3.Profile{
+				{
+					Name:        "minimal",
+					DisplayName: "Minimal Profile",
+					Description: "Profile without chart values",
+					ChartValues: "", // Empty chart values should be accepted
+				},
+			},
+		},
+	})
+	s.NoError(err)
+
+	// Verify the profile was created successfully
+	resp, err := s.client.GetApplication(s.ProjectID(footen), &catalogv3.GetApplicationRequest{
+		ApplicationName: "test-app-no-values",
+		Version:         "1.0.0",
+	})
+	s.validateResponse(err, resp)
+	s.Len(resp.Application.Profiles, 1)
+	s.Equal("minimal", resp.Application.Profiles[0].Name)
+	s.Equal("Minimal Profile", resp.Application.Profiles[0].DisplayName)
+	s.Equal("", resp.Application.Profiles[0].ChartValues, "Chart values should be empty")
+	s.Equal("minimal", resp.Application.DefaultProfileName)
+}
