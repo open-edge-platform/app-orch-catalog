@@ -175,7 +175,7 @@ $defs:
         description: Version of the application. Used in combination with the name to identify a unique application within a project.
         maxLength: 20
         minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$
+        pattern: ^v?[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\+[a-z0-9]+([.-][a-z0-9]+)*)?$
         title: version
         type: string
     required:
@@ -377,7 +377,7 @@ $defs:
         description: Version of the deployment package.
         maxLength: 20
         minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$
+        pattern: ^v?[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\+[a-z0-9]+([.-][a-z0-9]+)*)?$
         title: version
         type: string
     required:
@@ -510,7 +510,7 @@ $defs:
         description: Version of the API extension.
         maxLength: 20
         minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$
+        pattern: ^v?[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\+[a-z0-9]+([.-][a-z0-9]+)*)?$
         title: version
         type: string
     required:
@@ -602,7 +602,7 @@ $defs:
         description: Version of the application. Used in combination with the name to identify a unique application within a project.
         maxLength: 20
         minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$
+        pattern: ^v?[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\+[a-z0-9]+([.-][a-z0-9]+)*)?$
         title: version
         type: string
     required:
@@ -654,7 +654,7 @@ $defs:
         description: Version of the referenced application.
         maxLength: 20
         minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$
+        pattern: ^v?[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\+[a-z0-9]+([.-][a-z0-9]+)*)?$
         title: version
         type: string
     required:
@@ -874,7 +874,7 @@ $defs:
         description: Version of the deployment package.
         maxLength: 20
         minLength: 1
-        pattern: ^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$
+        pattern: ^v?[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\+[a-z0-9]+([.-][a-z0-9]+)*)?$
         title: version
         type: string
     required:

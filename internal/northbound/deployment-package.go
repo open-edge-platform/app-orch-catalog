@@ -98,34 +98,15 @@ func (g *Server) CreateDeploymentPackage(ctx context.Context, req *catalogv3.Cre
 }
 
 func validateDeploymentProfiles(pkg *catalogv3.DeploymentPackage) error {
-	// If there are no deployment profiles or if there is exactly one app in the package, bail with no issue
-	if len(pkg.Profiles) == 0 || len(pkg.ApplicationReferences) == 1 {
-		return nil
-	}
-
-	// See if all deployment packages use fully qualified app names
-	fqan := true
-	for _, dp := range pkg.Profiles {
-		if fqan {
-			for an := range dp.ApplicationProfiles {
-				if !strings.Contains(an, ":") {
-					fqan = false
-					break
-				}
-			}
-		}
-	}
-
-	// If all deployment packages use fully qualified app names, bail with no issue - for now
-	if fqan {
-		return nil
-	}
-
-	// Otherwise, check if there are any duplicate app names
+	// Check for duplicate app names - this is not a supported configuration
+	// Having multiple versions of the same application in a single deployment package
+	// creates ambiguity in configuration and deployment, as the profile-to-application
+	// linkage is not versioned
 	if hasDuplicateAppNames(pkg.ApplicationReferences) {
 		return errors.NewInvalidArgument(errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithMessage("package %s contains duplicate application names, "+
-				"but does not use fully qualified profile references", pkg.Name))
+			errors.WithMessage("package %s contains duplicate application names. "+
+				"Deployment packages must reference each application only once. "+
+				"To deploy multiple versions of an application, create separate deployment packages", pkg.Name))
 	}
 	return nil
 }

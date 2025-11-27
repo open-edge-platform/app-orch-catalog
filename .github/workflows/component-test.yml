@@ -49,7 +49,7 @@ jobs:
           token: ${{ secrets.SYS_ORCH_GITHUB }}
           deployment_type: 'all'
         env:
-          ORCH_DEFAULT_PASSWORD: ${{ env.ORCH_DEFAULT_PASSWORD }}
+          ORCH_DEFAULT_PASSWORD: ${{ secrets.ORCH_DEFAULT_PASSWORD }}
 
       - name: Configure kubectl for Kind cluster
         run: |

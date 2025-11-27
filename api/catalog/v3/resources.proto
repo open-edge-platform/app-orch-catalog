@@ -183,7 +183,7 @@ message DeploymentPackage {
     (buf.validate.field).string = {
       min_len: 1
       max_len: 20
-      pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
+      pattern: "^v?[0-9]+\\.[0-9]+\\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\\+[a-z0-9]+([.-][a-z0-9]+)*)?$"
     }
   ];
 
@@ -319,7 +319,7 @@ message ApplicationReference {
     (buf.validate.field).string = {
       min_len: 1
       max_len: 20
-      pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
+      pattern: "^v?[0-9]+\\.[0-9]+\\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\\+[a-z0-9]+([.-][a-z0-9]+)*)?$"
     }
   ];
 }
@@ -367,7 +367,7 @@ message APIExtension {
     (buf.validate.field).string = {
       min_len: 1
       max_len: 20
-      pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
+      pattern: "^v?[0-9]+\\.[0-9]+\\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\\+[a-z0-9]+([.-][a-z0-9]+)*)?$"
     }
   ];
 
@@ -598,7 +598,7 @@ message Application {
     (buf.validate.field).string = {
       min_len: 1
       max_len: 20
-      pattern: "^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$"
+      pattern: "^v?[0-9]+\\.[0-9]+\\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\\+[a-z0-9]+([.-][a-z0-9]+)*)?$"
     }
   ];
 

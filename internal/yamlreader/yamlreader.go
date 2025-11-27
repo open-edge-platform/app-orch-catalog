@@ -385,14 +385,21 @@ func (u *YamlReader) ReadApplication(d upload.YamlSpec, f FileSet) (*catalogv3.A
 
 // ReadProfile converts an upload.Profile into a Profile object.
 func (u *YamlReader) readProfile(appFileName string, p upload.Profile, f FileSet) (*catalogv3.Profile, error) {
-	fileBytes, ok := f[p.ValuesFileName]
-	if !ok {
-		fileBytes, ok = f[fmt.Sprintf("%s/%s", path.Dir(appFileName), p.ValuesFileName)]
+	var fileBytes []byte
+	var ok bool
+
+	// If ValuesFileName is provided, look it up in the FileSet
+	if p.ValuesFileName != "" {
+		fileBytes, ok = f[p.ValuesFileName]
 		if !ok {
-			return nil, nberrors.NewInvalidArgument(
-				nberrors.WithMessage("chart values file %s not found in uploads", p.ValuesFileName))
+			fileBytes, ok = f[fmt.Sprintf("%s/%s", path.Dir(appFileName), p.ValuesFileName)]
+			if !ok {
+				return nil, nberrors.NewInvalidArgument(
+					nberrors.WithMessage("chart values file %s not found in uploads", p.ValuesFileName))
+			}
 		}
 	}
+	// If ValuesFileName is empty, fileBytes remains empty (chart_values is optional per proto definition)
 
 	requirements := make([]*catalogv3.DeploymentRequirement, 0)
 	for _, dr := range p.DeploymentRequirements {

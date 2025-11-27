@@ -64,25 +64,25 @@ func (s *ProxyTestSuite) createThings() {
 
 	_, err = s.client.CreateApplication(s.ctx, &catalogv3.CreateApplicationRequest{Application: &catalogv3.Application{
 		Name:             "app",
-		Version:          "1.0",
+		Version:          "1.0.0",
 		HelmRegistryName: "reg",
 		ChartName:        "chart",
-		ChartVersion:     "1.0",
+		ChartVersion:     "1.0.0",
 	}})
 	s.NoError(err)
 
 	_, err = s.client.CreateDeploymentPackage(s.ctx, &catalogv3.CreateDeploymentPackageRequest{DeploymentPackage: &catalogv3.DeploymentPackage{
 		Name:                  "pkg",
-		Version:               "1.0",
-		ApplicationReferences: []*catalogv3.ApplicationReference{{Name: "app", Version: "1.0"}},
+		Version:               "1.0.0",
+		ApplicationReferences: []*catalogv3.ApplicationReference{{Name: "app", Version: "1.0.0"}},
 	}})
 	s.NoError(err)
 }
 
 func (s *ProxyTestSuite) deleteThings() {
-	_, err := s.client.DeleteDeploymentPackage(s.ctx, &catalogv3.DeleteDeploymentPackageRequest{DeploymentPackageName: "pkg", Version: "1.0"})
+	_, err := s.client.DeleteDeploymentPackage(s.ctx, &catalogv3.DeleteDeploymentPackageRequest{DeploymentPackageName: "pkg", Version: "1.0.0"})
 	s.NoError(err)
-	_, err = s.client.DeleteApplication(s.ctx, &catalogv3.DeleteApplicationRequest{ApplicationName: "app", Version: "1.0"})
+	_, err = s.client.DeleteApplication(s.ctx, &catalogv3.DeleteApplicationRequest{ApplicationName: "app", Version: "1.0.0"})
 	s.NoError(err)
 	_, err = s.client.DeleteArtifact(s.ctx, &catalogv3.DeleteArtifactRequest{ArtifactName: "art"})
 	s.NoError(err)

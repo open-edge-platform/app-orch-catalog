@@ -169,7 +169,7 @@ func (s *NorthBoundTestSuite) TestCreateApplicationInvalidName() {
 		},
 	})
 	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		"application invalid: validation error:\n - application.version: value does not match regex pattern `^[a-z0-9][a-z0-9-.]{0,18}[a-z0-9]{0,1}$` [string.pattern]"))
+		"application invalid: validation error:\n - application.version: value does not match regex pattern `^v?[0-9]+\\.[0-9]+\\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\\+[a-z0-9]+([.-][a-z0-9]+)*)?$` [string.pattern]"))
 
 	// Create one with invalid registry
 	_, err = s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
@@ -288,6 +288,127 @@ func (s *NorthBoundTestSuite) TestCreateApplicationWithInvalidChartVersions() {
 
 			s.Assert().Error(err, "Expected error for invalid chart version: %s", tc.chartVersion)
 			s.Assert().Contains(err.Error(), tc.expectError, "Error should contain expected message for chart version: %s", tc.chartVersion)
+		})
+	}
+}
+
+func (s *NorthBoundTestSuite) TestCreateApplicationWithInvalidVersions() {
+	testCases := []struct {
+		name        string
+		version     string
+		expectError string
+	}{
+		{
+			name:        "Empty application version",
+			version:     "",
+			expectError: "version: value length must be at least 1 characters",
+		},
+		{
+			name:        "Two-part version (1.0)",
+			version:     "1.0",
+			expectError: "version: value does not match regex pattern",
+		},
+		{
+			name:        "Single-part version (1)",
+			version:     "1",
+			expectError: "version: value does not match regex pattern",
+		},
+		{
+			name:        "Four-part version (2.4.0.2)",
+			version:     "2.4.0.2",
+			expectError: "version: value does not match regex pattern",
+		},
+		{
+			name:        "Four-part version (1.2.3.4)",
+			version:     "1.2.3.4",
+			expectError: "version: value does not match regex pattern",
+		},
+		{
+			name:        "Five-part version",
+			version:     "1.2.3.4.5",
+			expectError: "version: value does not match regex pattern",
+		},
+		{
+			name:        "Version with uppercase letters",
+			version:     "1.0.0-RC1",
+			expectError: "version: value does not match regex pattern",
+		},
+		{
+			name:        "Version with plus in main version",
+			version:     "1+2.3",
+			expectError: "version: value does not match regex pattern",
+		},
+		{
+			name:        "Version with invalid characters",
+			version:     "1.0.0@invalid",
+			expectError: "version: value does not match regex pattern",
+		},
+		{
+			name:        "Version starting with invalid character",
+			version:     "@1.0.0",
+			expectError: "version: value does not match regex pattern",
+		},
+		{
+			name:        "Version with space",
+			version:     "1.0.0 beta",
+			expectError: "version: value does not match regex pattern",
+		},
+	}
+
+	for _, tc := range testCases {
+		s.Run(tc.name, func() {
+			appName := fmt.Sprintf("invalid-version-app-%d", time.Now().UnixNano()%1000000)
+
+			_, err := s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
+				Application: &catalogv3.Application{
+					HelmRegistryName: fooreg,
+					Name:             appName,
+					DisplayName:      "Test Invalid App Version",
+					Version:          tc.version,
+					ChartName:        "test-chart",
+					ChartVersion:     "1.0.0",
+				},
+			})
+
+			s.Assert().Error(err, "Expected error for invalid application version: %s", tc.version)
+			s.Assert().Contains(err.Error(), tc.expectError, "Error should contain expected message for version: %s", tc.version)
+		})
+	}
+}
+
+func (s *NorthBoundTestSuite) TestCreateApplicationWithValidVersions() {
+	testCases := []struct {
+		name    string
+		version string
+	}{
+		{"Standard version", "1.0.0"},
+		{"Pre-release with alpha", "1.0.0-alpha"},
+		{"Pre-release with alpha.1", "1.0.0-alpha-1"},
+		{"Pre-release with rc1", "1.0.0-rc1"},
+		{"Pre-release with beta.2", "1.2.3-beta-2"},
+		{"Build metadata", "1.0.0-alpha+build.1"},
+		{"Build metadata only", "1.0.0+20130313144700"},
+		{"Complex pre-release", "1.3.8-pre-rc1"},
+		{"Numeric pre-release", "1.0.0-0-3-7"},
+		{"Version with v prefix", "v1.0.0"},
+	}
+
+	for i, tc := range testCases {
+		s.T().Run(tc.name, func(_ *testing.T) {
+			appName := fmt.Sprintf("version-test-%d", i)
+			resp, err := s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
+				Application: &catalogv3.Application{
+					HelmRegistryName: fooreg,
+					Name:             appName,
+					DisplayName:      fmt.Sprintf("Version Test %d", i),
+					Version:          tc.version,
+					ChartName:        "test-chart",
+					ChartVersion:     "1.0.0",
+				},
+			})
+
+			s.validateResponse(err, resp)
+			s.T().Logf("✓ Application version '%s' accepted", tc.version)
 		})
 	}
 }
@@ -426,27 +547,27 @@ func (s *NorthBoundTestSuite) TestCreateWithLongChartVersion() {
 func (s *NorthBoundTestSuite) TestCreateApplicationDisplayName() {
 	// Creating two applications with blank display name should work
 	resp, err := s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
-		Application: &catalogv3.Application{Name: "app1", Version: "1",
-			ChartName: "c", ChartVersion: "1", HelmRegistryName: fooreg},
+		Application: &catalogv3.Application{Name: "app1", Version: "1.0.0",
+			ChartName: "c", ChartVersion: "1.0.0", HelmRegistryName: fooreg},
 	})
 	s.validateResponse(err, resp)
 	resp, err = s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
-		Application: &catalogv3.Application{Name: "app2", Version: "1",
-			ChartName: "c", ChartVersion: "1", HelmRegistryName: fooreg},
+		Application: &catalogv3.Application{Name: "app2", Version: "1.0.0",
+			ChartName: "c", ChartVersion: "1.0.0", HelmRegistryName: fooreg},
 	})
 	s.validateResponse(err, resp)
 
 	// Creating two applications with the same, non-blank display name should not work
 	resp, err = s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
-		Application: &catalogv3.Application{Name: "app3", Version: "1", DisplayName: "Application",
-			ChartName: "c", ChartVersion: "1", HelmRegistryName: fooreg},
+		Application: &catalogv3.Application{Name: "app3", Version: "1.0.0", DisplayName: "Application",
+			ChartName: "c", ChartVersion: "1.0.0", HelmRegistryName: fooreg},
 	})
 	s.validateResponse(err, resp)
 	_, err = s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
-		Application: &catalogv3.Application{Name: "app4", Version: "1", DisplayName: "application",
-			ChartName: "c", ChartVersion: "1", HelmRegistryName: fooreg},
+		Application: &catalogv3.Application{Name: "app4", Version: "1.0.0", DisplayName: "application",
+			ChartName: "c", ChartVersion: "1.0.0", HelmRegistryName: fooreg},
 	})
-	s.ErrorIs(err, status.Errorf(codes.AlreadyExists, "application app4:1 already exists: display name already exists"))
+	s.ErrorIs(err, status.Errorf(codes.AlreadyExists, "application app4:1.0.0 already exists: display name already exists"))
 }
 
 func (s *NorthBoundTestSuite) TestCreateApplicationsWithSameDeploymentPackageDependency() {
@@ -1360,7 +1481,7 @@ func (s *NorthBoundTestSuite) TestApplicationUpdateProfileFromNoProfile() {
 		Application: &catalogv3.Application{
 			HelmRegistryName: fooreg,
 			Name:             "app",
-			Version:          "v1",
+			Version:          "v1.0.0",
 			ChartName:        "chart",
 			ChartVersion:     "0.1.0",
 		},
@@ -1370,7 +1491,7 @@ func (s *NorthBoundTestSuite) TestApplicationUpdateProfileFromNoProfile() {
 	s.Equal("", created.Application.DefaultProfileName)
 
 	resp, err := s.client.GetApplication(s.ProjectID(footen), &catalogv3.GetApplicationRequest{
-		ApplicationName: "app", Version: "v1",
+		ApplicationName: "app", Version: "v1.0.0",
 	})
 	s.validateResponse(err, resp)
 	s.Len(resp.Application.Profiles, 0)
@@ -1381,12 +1502,12 @@ func (s *NorthBoundTestSuite) TestApplicationUpdateProfileFromNoProfile() {
 	app.Profiles = []*catalogv3.Profile{{Name: "p1"}}
 	app.DefaultProfileName = "p1"
 	_, err = s.client.UpdateApplication(s.ProjectID(footen), &catalogv3.UpdateApplicationRequest{
-		ApplicationName: "app", Version: "v1", Application: app,
+		ApplicationName: "app", Version: "v1.0.0", Application: app,
 	})
 	s.NoError(err)
 
 	resp, err = s.client.GetApplication(s.ProjectID(footen), &catalogv3.GetApplicationRequest{
-		ApplicationName: "app", Version: "v1",
+		ApplicationName: "app", Version: "v1.0.0",
 	})
 	s.validateResponse(err, resp)
 	s.Len(resp.Application.Profiles, 1)
@@ -1555,9 +1676,9 @@ func (s *NorthBoundTestSuite) TestApplicationAuthErrors() {
 
 	app := &catalogv3.Application{
 		Name:         "app",
-		Version:      "6.7",
+		Version:      "6.7.0",
 		ChartName:    "c",
-		ChartVersion: "2.4",
+		ChartVersion: "2.4.0",
 	}
 
 	_, err = server.CreateApplication(s.ServerProjectID(footen), &catalogv3.CreateApplicationRequest{Application: app})
@@ -1566,13 +1687,13 @@ func (s *NorthBoundTestSuite) TestApplicationAuthErrors() {
 	_, err = server.UpdateApplication(s.ServerProjectID(footen), &catalogv3.UpdateApplicationRequest{ApplicationName: "app", Version: app.Version, Application: app})
 	s.ErrorIs(err, expectedAuthError)
 
-	_, err = server.DeleteApplication(s.ServerProjectID(footen), &catalogv3.DeleteApplicationRequest{ApplicationName: "app", Version: "1.0"})
+	_, err = server.DeleteApplication(s.ServerProjectID(footen), &catalogv3.DeleteApplicationRequest{ApplicationName: "app", Version: "1.0.0"})
 	s.ErrorIs(err, expectedAuthError)
 
-	_, err = server.GetApplication(s.ServerProjectID(footen), &catalogv3.GetApplicationRequest{ApplicationName: "app", Version: "1.0"})
+	_, err = server.GetApplication(s.ServerProjectID(footen), &catalogv3.GetApplicationRequest{ApplicationName: "app", Version: "1.0.0"})
 	s.ErrorIs(err, expectedAuthError)
 
-	_, err = server.GetApplicationReferenceCount(s.ServerProjectID(footen), &catalogv3.GetApplicationReferenceCountRequest{ApplicationName: "app", Version: "1.0"})
+	_, err = server.GetApplicationReferenceCount(s.ServerProjectID(footen), &catalogv3.GetApplicationReferenceCountRequest{ApplicationName: "app", Version: "1.0.0"})
 	s.ErrorIs(err, expectedAuthError)
 
 	_, err = server.GetApplicationVersions(s.ServerProjectID(footen), &catalogv3.GetApplicationVersionsRequest{ApplicationName: "app"})
@@ -1617,9 +1738,9 @@ func (s *NorthBoundDBErrTestSuite) TestApplicationGetInvalidArgs() {
 func (s *NorthBoundDBErrTestSuite) TestApplicationUpdateInvalidArgs() {
 	app := &catalogv3.Application{
 		Name:         "app!",
-		Version:      "6.7",
+		Version:      "6.7.0",
 		ChartName:    "c",
-		ChartVersion: "2.4",
+		ChartVersion: "2.4.0",
 	}
 	tests := map[string]struct {
 		req *catalogv3.UpdateApplicationRequest
@@ -1628,7 +1749,7 @@ func (s *NorthBoundDBErrTestSuite) TestApplicationUpdateInvalidArgs() {
 		"nil application":    {req: &catalogv3.UpdateApplicationRequest{Application: nil}},
 		"empty app name":     {req: &catalogv3.UpdateApplicationRequest{Application: app, ApplicationName: ""}},
 		"empty app version":  {req: &catalogv3.UpdateApplicationRequest{Application: app, ApplicationName: "app", Version: ""}},
-		"app validate error": {req: &catalogv3.UpdateApplicationRequest{Application: app, ApplicationName: "app", Version: "1.0"}},
+		"app validate error": {req: &catalogv3.UpdateApplicationRequest{Application: app, ApplicationName: "app", Version: "1.0.0"}},
 	}
 
 	for name, testCase := range tests {
@@ -1900,7 +2021,7 @@ func TestEmptyAppsDBQuery(t *testing.T) {
 	s.Equal(0, len(apps.Applications))
 
 	publisher, err := s.client.GetApplication(s.ProjectID("nobody"), &catalogv3.GetApplicationRequest{
-		Version:         "1.0",
+		Version:         "1.0.0",
 		ApplicationName: "none",
 	})
 	s.Nil(publisher)
@@ -1987,4 +2108,60 @@ func (s *NorthBoundTestSuite) TestAddProfile() {
 	}
 	s.Equal(profilesValuesFound["default"], "key1a: value1a\nkey2a: value2a\n", "Default profile values should match")
 	s.Equal(profilesValuesFound["newone"], "key2b: value2b\nkey2b: value2b\n", "New profile values should match")
+}
+
+func (s *NorthBoundTestSuite) TestAddProfileWithoutChartValues() {
+	// Test creating an application profile without chart values (which is optional per proto definition)
+	var err error
+	created, err := s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
+		Application: &catalogv3.Application{
+			HelmRegistryName:  fooreg,
+			ImageRegistryName: fooregalt,
+			Name:              "test-app-no-values",
+			DisplayName:       "Test Application No Values",
+			Description:       "Test application with profile without chart values",
+			Version:           "1.0.0",
+			ChartName:         "test-chart",
+			ChartVersion:      "1.0.0",
+		},
+	})
+	s.validateResponse(err, created)
+	s.validateApp(created.Application, "test-app-no-values", "1.0.0", "Test Application No Values",
+		"Test application with profile without chart values", 0, "", "test-chart", "1.0.0", fooreg)
+
+	// Add profile without chart values - should succeed since chart_values is OPTIONAL in proto
+	_, err = s.client.UpdateApplication(s.ProjectID(footen), &catalogv3.UpdateApplicationRequest{
+		ApplicationName: "test-app-no-values",
+		Version:         "1.0.0",
+		Application: &catalogv3.Application{
+			Name:               "test-app-no-values",
+			Version:            "1.0.0",
+			ChartName:          "test-chart",
+			ChartVersion:       "1.0.0",
+			DefaultProfileName: "minimal",
+			HelmRegistryName:   fooreg,
+			ImageRegistryName:  fooregalt,
+			Profiles: []*catalogv3.Profile{
+				{
+					Name:        "minimal",
+					DisplayName: "Minimal Profile",
+					Description: "Profile without chart values",
+					ChartValues: "", // Empty chart values should be accepted
+				},
+			},
+		},
+	})
+	s.NoError(err)
+
+	// Verify the profile was created successfully
+	resp, err := s.client.GetApplication(s.ProjectID(footen), &catalogv3.GetApplicationRequest{
+		ApplicationName: "test-app-no-values",
+		Version:         "1.0.0",
+	})
+	s.validateResponse(err, resp)
+	s.Len(resp.Application.Profiles, 1)
+	s.Equal("minimal", resp.Application.Profiles[0].Name)
+	s.Equal("Minimal Profile", resp.Application.Profiles[0].DisplayName)
+	s.Equal("", resp.Application.Profiles[0].ChartValues, "Chart values should be empty")
+	s.Equal("minimal", resp.Application.DefaultProfileName)
 }
