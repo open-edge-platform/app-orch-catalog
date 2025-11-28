@@ -111,11 +111,12 @@ func (m *Manager) Start() error {
 	if !m.Config.DatabaseDisableMigration {
 		// Initialize Atlas migration tracking for databases migration
 		// This handles upgrades where Atlas migration files were previously unavailable
-		if err := migrate.InitializeAtlasTracking(dbPath(m.Config, dbUser, dbPwd)); err != nil {
+		isFreshInstall, err := migrate.InitializeAtlasTracking(dbPath(m.Config, dbUser, dbPwd))
+		if err != nil {
 			log.Fatalf("ATTENTION: failed to initialize Atlas migration tracking: %v", err)
 		}
 
-		if output, err := migrate.RunAtlasMigrations(dbPath(m.Config, dbUser, dbPwd), m.Config.MigrationsDir); err != nil {
+		if output, err := migrate.RunAtlasMigrations(dbPath(m.Config, dbUser, dbPwd), m.Config.MigrationsDir, isFreshInstall); err != nil {
 			// Log the full Atlas output to help diagnose migration failures
 			log.Fatalf("ATTENTION: failed to apply migrations: %v\nAtlas output: %s", err, string(output))
 		}

@@ -14,7 +14,7 @@ import (
 var log = dazl.GetPackageLogger()
 
 // RunAtlasMigrations attempts to migrate the given database to the latest schema with the provided migration files.
-func RunAtlasMigrations(dbPath, migrationsDir string) ([]byte, error) {
+func RunAtlasMigrations(dbPath, migrationsDir string, allowDirty bool) ([]byte, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
@@ -29,8 +29,14 @@ func RunAtlasMigrations(dbPath, migrationsDir string) ([]byte, error) {
 		"apply",
 		"--url", dbPath,
 		"--dir", "file://" + migrationsDir,
-		//"--baseline", "20230713211509",
 	}
+
+	// Add --allow-dirty flag for fresh installations where public schema exists
+	if allowDirty {
+		args = append(args, "--allow-dirty")
+		log.Infof("Using --allow-dirty flag for fresh installation")
+	}
+
 	log.Debugf("Prepared Atlas command: %v %v", "atlas", args)
 	out, err := exec.CommandContext(ctx, "atlas", args...).CombinedOutput()
 	log.Infof("Atlas output: %s", string(out))
