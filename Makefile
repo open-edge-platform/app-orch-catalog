@@ -8,7 +8,7 @@ VERSION            := $(shell cat VERSION)
 CHART_VERSION      := $(shell cat VERSION)
 VERSION_DEV_SUFFIX := -dev
 GIT_COMMIT         ?= $(shell git rev-parse --short HEAD)
-OPA_IMAGE_VER       = 1.10.1-static
+OPA_IMAGE_VER       = 1.11.0-static
 
 
 ifeq ($(patsubst %$(VERSION_DEV_SUFFIX),,$(lastword $(VERSION))),)
