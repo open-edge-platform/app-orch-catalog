@@ -16,9 +16,14 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 # rebuild atlas from source to match go 1.24.11 to mitigate CVEs
 # hash for atlas v0.38.0
 ENV ATLAS_HASH=37e76e6cfd70b6fb95541087bb5a8ef7ef5b39cd
-RUN git clone https://github.com/ariga/atlas.git && cd atlas && git checkout $ATLAS_HASH
-RUN cd atlas/cmd/atlas && sed -i 's/go 1\.24\.6/go 1.24.11/g' go.mod && go build -o /go/bin/atlas .
+WORKDIR /build/src
+RUN git clone https://github.com/ariga/atlas.git
+WORKDIR /build/src/atlas
+RUN git checkout $ATLAS_HASH
+WORKDIR /build/src/atlas/cmd/atlas
+RUN sed -i 's/go 1\.24\.6/go 1.24.11/g' go.mod && go build -o /go/bin/atlas .
 
+WORKDIR /build
 RUN mkdir -p "$APP_ROOT/" && mkdir -p /build/etc
 
 ENV APP_ROOT=/build/src/github.com/open-edge-platform/app-orch-catalog
