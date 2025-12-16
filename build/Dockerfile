@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-FROM golang:1.24.9@sha256:5034fa44b36163a4109b71ed75c67dbdcb52c3cd9750953befe00054315d9fd2 AS base
+FROM golang:1.24.11@sha256:54528d189affe7ce60840cad093d53360705d47d71ea74d62eef72c476242fe9 AS base
 
 ENV CGO_ENABLED=0
 
@@ -13,11 +13,17 @@ ARG no_proxy
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-ENV ATLAS_VERSION=v0.38.0
-ENV ATLAS_GO=/tmp/atlasgo.sh
-ENV ATLAS_URL=https://atlasgo.sh
-RUN curl -sSf $ATLAS_URL > $ATLAS_GO
-RUN chmod +x $ATLAS_GO && $ATLAS_GO -y -o /go/bin/atlas
+# rebuild atlas from source to match go 1.24.11 to mitigate CVEs
+# hash for atlas v0.38.0
+ENV ATLAS_HASH=37e76e6cfd70b6fb95541087bb5a8ef7ef5b39cd
+WORKDIR /build/src
+RUN git clone https://github.com/ariga/atlas.git
+WORKDIR /build/src/atlas
+RUN git checkout $ATLAS_HASH
+WORKDIR /build/src/atlas/cmd/atlas
+RUN sed -i 's/go 1\.24\.6/go 1.24.11/g' go.mod && go build -o /go/bin/atlas .
+
+WORKDIR /build
 RUN mkdir -p "$APP_ROOT/" && mkdir -p /build/etc
 
 ENV APP_ROOT=/build/src/github.com/open-edge-platform/app-orch-catalog
