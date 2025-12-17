@@ -46,7 +46,7 @@ jobs:
           # Skip Docker Hub credentials since they're not available
           # docker_username: ${{ secrets.SYS_DOCKERHUB_USERNAME }}
           # docker_password: ${{ secrets.SYS_DOCKERHUB_RO }}
-          token: ${{ secrets.SYS_ORCH_GITHUB }}
+          token: ${{ secrets.SYS_EMF_GH_TOKEN }}
           deployment_type: 'all'
         env:
           ORCH_DEFAULT_PASSWORD: ${{ secrets.ORCH_DEFAULT_PASSWORD }}
@@ -97,7 +97,7 @@ jobs:
         with:
           repository: open-edge-platform/app-orch-catalog
           path: app-orch-catalog
-          token: ${{ secrets.SYS_ORCH_GITHUB }}
+          token: ${{ secrets.SYS_EMF_GH_TOKEN }}
           persist-credentials: false
 
       - name: Get current git hash of the app-orch-catalog PR
