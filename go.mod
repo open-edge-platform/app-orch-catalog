@@ -31,7 +31,7 @@ require (
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.11.1
-	github.com/sudorandom/protoc-gen-connect-openapi v0.21.3
+	github.com/sudorandom/protoc-gen-connect-openapi v0.22.0
 	go.uber.org/mock v0.6.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20251222181119-0a764e51fe1b
 	google.golang.org/grpc v1.78.0
