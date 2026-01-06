@@ -7,7 +7,7 @@ module github.com/open-edge-platform/app-orch-catalog
 go 1.24.11
 
 require (
-	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.10-20250912141014-52f32327d4b0.1
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.11-20251209175733-2a1774d88802.1
 	buf.build/go/protovalidate v1.0.1
 	connectrpc.com/connect v1.19.1
 	entgo.io/contrib v0.7.0
@@ -34,7 +34,7 @@ require (
 	github.com/sudorandom/protoc-gen-connect-openapi v0.22.0
 	go.uber.org/mock v0.6.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20251029180050-ab9386a59fda
-	google.golang.org/grpc v1.77.0
+	google.golang.org/grpc v1.78.0
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.6.0
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/yaml.v2 v2.4.0
