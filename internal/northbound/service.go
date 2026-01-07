@@ -7,13 +7,16 @@ package northbound
 import (
 	"context"
 	"database/sql"
-	entsql "entgo.io/ent/dialect/sql"
-	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
 	"regexp"
 
+	entsql "entgo.io/ent/dialect/sql"
+
+	"strings"
+	"sync"
+
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
-	ent "github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/application"
+	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/nberrors"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/orch-library/go/dazl"
 	"github.com/open-edge-platform/orch-library/go/pkg/northbound"
@@ -21,15 +24,13 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/emptypb"
-	"strings"
-	"sync"
 )
 
 var log = dazl.GetPackageLogger()
 var utilsLog = dazl.GetPackageLogger().WithSkipCalls(1)
 
 // NewService returns a new catalog Service
-func NewService(databaseClient *ent.Client, opaClient openpolicyagent.ClientWithResponsesInterface) northbound.Service {
+func NewService(databaseClient *generated.Client, opaClient openpolicyagent.ClientWithResponsesInterface) northbound.Service {
 	return &Service{
 		DatabaseClient: databaseClient,
 		OpaClient:      opaClient,
@@ -38,7 +39,7 @@ func NewService(databaseClient *ent.Client, opaClient openpolicyagent.ClientWith
 
 // Service is a Service implementation for administration.
 type Service struct {
-	DatabaseClient *ent.Client
+	DatabaseClient *generated.Client
 	OpaClient      openpolicyagent.ClientWithResponsesInterface
 }
 
@@ -64,13 +65,13 @@ const (
 func GetActiveProjectID(ctx context.Context) (string, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		return "", errors.NewInvalidArgument(errors.WithMessage("incomplete request: unable to fetch request metadata"))
+		return "", nberrors.NewInvalidArgument(nberrors.WithMessage("incomplete request: unable to fetch request metadata"))
 	}
 
 	values := md.Get(ActiveProjectID)
 	// FIXME: Remove this comment when ready to enforce empty activeprojectid metadata
 	//if len(values) == 0 || values[0] == "" {
-	//	return "", errors.NewInvalidArgument(errors.WithMessage("incomplete request: missing activeprojectid metadata"))
+	//	return "", nbnberrors.NewInvalidArgument(nberrors.WithMessage("incomplete request: missing activeprojectid metadata"))
 	//}
 
 	// FIXME: Remove this if clause when ready to enforce empty activeprojectid metadata
@@ -98,7 +99,7 @@ func GetActiveProjectIDAllowAdmin(ctx context.Context, fallbackProjectID string)
 // Server implements the gRPC service for administrative facilities.
 type Server struct {
 	catalogv3.UnimplementedCatalogServiceServer
-	databaseClient *ent.Client
+	databaseClient *generated.Client
 	opaClient      openpolicyagent.ClientWithResponsesInterface
 
 	lock           sync.RWMutex
@@ -108,7 +109,7 @@ type Server struct {
 }
 
 // NewServer creates a new server with the specified database client and OPA client entities.
-func NewServer(dbClient *ent.Client, opaClient openpolicyagent.ClientWithResponsesInterface) *Server {
+func NewServer(dbClient *generated.Client, opaClient openpolicyagent.ClientWithResponsesInterface) *Server {
 	return &Server{
 		UnimplementedCatalogServiceServer: catalogv3.UnimplementedCatalogServiceServer{},
 		databaseClient:                    dbClient,
@@ -149,9 +150,9 @@ func (g *Server) checkApplication(ctx context.Context, tx *generated.Tx, name, v
 	if err != nil {
 		return err
 	} else if !ok {
-		return errors.NewNotFound(errors.WithResourceType(errors.ApplicationType),
-			errors.WithResourceName(name),
-			errors.WithResourceVersion(version))
+		return nberrors.NewNotFound(nberrors.WithResourceType(nberrors.ApplicationType),
+			nberrors.WithResourceName(name),
+			nberrors.WithResourceVersion(version))
 	}
 	return nil
 }
@@ -166,9 +167,9 @@ func (g *Server) checkApplication(ctx context.Context, tx *generated.Tx, name, v
 //	if err != nil {
 //		return err
 //	} else if !ok {
-//		return errors.NewNotFound(errors.WithResourceType(errors.DeploymentPackageType),
-//			errors.WithResourceName(name),
-//			errors.WithResourceVersion(version))
+//		return nberrors.NewNotFound(nberrors.WithResourceType(nberrors.DeploymentPackageType),
+//			nberrors.WithResourceName(name),
+//			nberrors.WithResourceVersion(version))
 //	}
 //	return nil
 //}
@@ -185,7 +186,7 @@ func (g *Server) checkDeleteResult(ctx context.Context, tx *generated.Tx, err er
 	if tx != nil {
 		err = g.commitTransaction(tx)
 		if err != nil {
-			return nil, errors.NewDBError(errors.WithError(err))
+			return nil, nberrors.NewDBError(nberrors.WithError(err))
 		}
 	}
 
@@ -204,17 +205,17 @@ func logActivity(ctx context.Context, verb string, thing string, publisher strin
 	}
 }
 
-func findColumnName(attributeName string, columns map[string]string, resourceType errors.ResourceType, operation string) (string, error) {
+func findColumnName(attributeName string, columns map[string]string, resourceType nberrors.ResourceType, operation string) (string, error) {
 	columnName, ok := columns[attributeName]
 	if !ok {
-		return "", errors.NewInvalidArgument(
-			errors.WithResourceType(resourceType),
-			errors.WithMessage("%s: no such attribute: %s", operation, attributeName))
+		return "", nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(resourceType),
+			nberrors.WithMessage("%s: no such attribute: %s", operation, attributeName))
 	}
 	if columnName == "" {
-		return "", errors.NewInvalidArgument(
-			errors.WithResourceType(resourceType),
-			errors.WithMessage("%s: cannot %s on attribute: %s", operation, operation, attributeName))
+		return "", nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(resourceType),
+			nberrors.WithMessage("%s: cannot %s on attribute: %s", operation, operation, attributeName))
 	}
 	return columnName, nil
 }
@@ -224,7 +225,7 @@ type orderBy struct {
 	isDesc bool
 }
 
-func parseOrderBy(orderByParameter string, resourceType errors.ResourceType) ([]*orderBy, error) {
+func parseOrderBy(orderByParameter string, resourceType nberrors.ResourceType) ([]*orderBy, error) {
 	if orderByParameter == "" {
 		return nil, nil
 	}
@@ -234,19 +235,20 @@ func parseOrderBy(orderByParameter string, resourceType errors.ResourceType) ([]
 		descending := false
 		direction := strings.Split(strings.Trim(element, " "), " ")
 		if len(direction) > 2 {
-			return nil, errors.NewInvalidArgument(
-				errors.WithResourceType(resourceType),
-				errors.WithMessage("invalid order by: %s", element))
+			return nil, nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(resourceType),
+				nberrors.WithMessage("invalid order by: %s", element))
 		}
 		if len(direction) == 2 {
-			if direction[1] == "asc" {
+			switch direction[1] {
+			case "asc":
 				descending = false
-			} else if direction[1] == "desc" {
+			case "desc":
 				descending = true
-			} else {
-				return nil, errors.NewInvalidArgument(
-					errors.WithResourceType(resourceType),
-					errors.WithMessage("invalid order by: %s", element))
+			default:
+				return nil, nberrors.NewInvalidArgument(
+					nberrors.WithResourceType(resourceType),
+					nberrors.WithMessage("invalid order by: %s", element))
 			}
 		}
 		orderBys = append(orderBys, &orderBy{
@@ -265,7 +267,7 @@ func (o *orderBy) orderByDirection() entsql.OrderTermOption {
 	return orderMap[o.isDesc]
 }
 
-func orderByOptions(orderBys []*orderBy, columns map[string]string, resourceType errors.ResourceType) ([]func(selector *entsql.Selector), error) {
+func orderByOptions(orderBys []*orderBy, columns map[string]string, resourceType nberrors.ResourceType) ([]func(selector *entsql.Selector), error) {
 	var options []func(s *entsql.Selector)
 
 	if len(orderBys) != 0 {
@@ -286,7 +288,7 @@ type filter struct {
 	value string
 }
 
-func parseFilter(filterParameter string, resourceType errors.ResourceType) ([]*filter, error) {
+func parseFilter(filterParameter string, resourceType nberrors.ResourceType) ([]*filter, error) {
 	if filterParameter == "" {
 		return nil, nil
 	}
@@ -302,9 +304,9 @@ func parseFilter(filterParameter string, resourceType errors.ResourceType) ([]*f
 			selectors := strings.Split(element, "=")
 			if currentFilter != nil || len(selectors) != 2 || selectors[0] == "" || selectors[1] == "" {
 				// Error condition - too many equals
-				return nil, errors.NewInvalidArgument(
-					errors.WithResourceType(resourceType),
-					errors.WithMessage("filter: invalid filter request: %s", elements))
+				return nil, nberrors.NewInvalidArgument(
+					nberrors.WithResourceType(resourceType),
+					nberrors.WithMessage("filter: invalid filter request: %s", elements))
 			}
 			currentFilter = &filter{}
 			// This is the start of a selector. Grab the name and the value
@@ -313,9 +315,9 @@ func parseFilter(filterParameter string, resourceType errors.ResourceType) ([]*f
 		} else if element == "OR" {
 			if currentFilter == nil || index == len(elements)-1 {
 				//  Error condition - OR with no other term
-				return nil, errors.NewInvalidArgument(
-					errors.WithResourceType(resourceType),
-					errors.WithMessage("filter: invalid filter request: %s", elements))
+				return nil, nberrors.NewInvalidArgument(
+					nberrors.WithResourceType(resourceType),
+					nberrors.WithMessage("filter: invalid filter request: %s", elements))
 			}
 			filters = append(filters, currentFilter)
 			currentFilter = nil
@@ -323,9 +325,9 @@ func parseFilter(filterParameter string, resourceType errors.ResourceType) ([]*f
 		} else {
 			if currentFilter == nil {
 				// Error condition - missing an =
-				return nil, errors.NewInvalidArgument(
-					errors.WithResourceType(resourceType),
-					errors.WithMessage("filter: invalid filter request: %s", elements))
+				return nil, nberrors.NewInvalidArgument(
+					nberrors.WithResourceType(resourceType),
+					nberrors.WithMessage("filter: invalid filter request: %s", elements))
 			}
 			currentFilter.value = currentFilter.value + " " + element
 		}
@@ -337,7 +339,7 @@ func parseFilter(filterParameter string, resourceType errors.ResourceType) ([]*f
 	return filters, nil
 }
 
-func filterPredicates(filters []*filter, columns map[string]string, resourceType errors.ResourceType) ([]func(s *entsql.Selector), error) {
+func filterPredicates(filters []*filter, columns map[string]string, resourceType nberrors.ResourceType) ([]func(s *entsql.Selector), error) {
 	var preds []func(s *entsql.Selector)
 	if len(filters) != 0 {
 		for _, f := range filters {
@@ -377,13 +379,13 @@ const DefaultPageSize = 20
 
 func computePageRange(pageSize int32, offset int32, totalCount int) (int, int, int32, error) {
 	if offset < 0 {
-		return 0, 0, 0, errors.NewInvalidArgument(errors.WithMessage("invalid pagination: offset must not be negative"))
+		return 0, 0, 0, nberrors.NewInvalidArgument(nberrors.WithMessage("invalid pagination: offset must not be negative"))
 	}
 	if pageSize < 0 {
-		return 0, 0, 0, errors.NewInvalidArgument(errors.WithMessage("invalid pagination: pageSize must not be negative"))
+		return 0, 0, 0, nberrors.NewInvalidArgument(nberrors.WithMessage("invalid pagination: pageSize must not be negative"))
 	}
 	if pageSize > MaxPageSize {
-		return 0, 0, 0, errors.NewInvalidArgument(errors.WithMessage("invalid pagination: pageSize must not exceed %d", MaxPageSize))
+		return 0, 0, 0, nberrors.NewInvalidArgument(nberrors.WithMessage("invalid pagination: pageSize must not exceed %d", MaxPageSize))
 	}
 
 	if pageSize == 0 {
@@ -421,15 +423,15 @@ func validateDisplayName(name string, displayName string) (string, bool) {
 }
 
 // Checks whether the given results of query support uniqueness of display name.
-func checkUniqueness(count int, err error, thing string, name string, displayName string, resourceType errors.ResourceType) error {
+func checkUniqueness(count int, err error, thing string, name string, displayName string, resourceType nberrors.ResourceType) error {
 	if err != nil {
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	}
 	if count > 0 {
-		return errors.NewAlreadyExists(
-			errors.WithResourceType(resourceType),
-			errors.WithResourceName(name),
-			errors.WithMessage("%s %s display name %s is not unique", thing, name, displayName))
+		return nberrors.NewAlreadyExists(
+			nberrors.WithResourceType(resourceType),
+			nberrors.WithResourceName(name),
+			nberrors.WithMessage("%s %s display name %s is not unique", thing, name, displayName))
 	}
 	return nil
 }

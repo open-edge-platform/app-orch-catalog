@@ -5,10 +5,11 @@
 package dp
 
 import (
-	"buf.build/go/protovalidate"
 	"fmt"
 	"os"
 	"strings"
+
+	"buf.build/go/protovalidate"
 
 	"github.com/open-edge-platform/app-orch-catalog/internal/helm"
 	"github.com/open-edge-platform/app-orch-catalog/internal/shared/verboseerror"
@@ -206,7 +207,7 @@ func GenerateDefaultParameters(values string) ([]*catalogv3.ParameterTemplate, e
 	err := yaml.Unmarshal([]byte(values), &yamlContent)
 	if err != nil {
 		// This probably can't happen, because we probably already ensured it was valid YAML
-		return nil, fmt.Errorf("Invalid YAML content in values: %v", err)
+		return nil, fmt.Errorf("invalid YAML content in values: %v", err)
 	}
 	return GenerateDefaultParametersFromYaml("", yamlContent)
 }

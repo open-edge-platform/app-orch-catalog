@@ -6,17 +6,18 @@ package northbound
 
 import (
 	"context"
+	"strings"
+
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/deploymentpackage"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/deploymentprofile"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/deploymentrequirement"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/parametertemplate"
+	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/nberrors"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
-	"strings"
 
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/application"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/profile"
-	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
 )
 
 func validateParameterTemplates(profile *catalogv3.Profile) error {
@@ -24,23 +25,23 @@ func validateParameterTemplates(profile *catalogv3.Profile) error {
 	for _, pt := range profile.ParameterTemplates {
 		_, dup := ptNames[pt.Name]
 		if dup {
-			return errors.NewInvalidArgument(
-				errors.WithResourceType(errors.ApplicationType),
-				errors.WithResourceName(profile.Name),
-				errors.WithMessage("duplicate parameter template %s", pt.Name))
+			return nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.ApplicationType),
+				nberrors.WithResourceName(profile.Name),
+				nberrors.WithMessage("duplicate parameter template %s", pt.Name))
 		}
 		_, ok := validateDisplayName(pt.Name, pt.DisplayName)
 		if !ok {
-			return errors.NewInvalidArgument(
-				errors.WithResourceType(errors.ProfileType),
-				errors.WithResourceName(profile.Name),
-				errors.WithMessage("display name cannot contain leading or trailing spaces"))
+			return nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.ProfileType),
+				nberrors.WithResourceName(profile.Name),
+				nberrors.WithMessage("display name cannot contain leading or trailing spaces"))
 		}
 		if (pt.Mandatory || pt.Secret) && pt.Default != "" {
-			return errors.NewInvalidArgument(
-				errors.WithResourceType(errors.ApplicationType),
-				errors.WithResourceName(profile.Name),
-				errors.WithMessage("mandatory or secret parameter template %s should have no default value", pt.Name))
+			return nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.ApplicationType),
+				nberrors.WithResourceName(profile.Name),
+				nberrors.WithMessage("mandatory or secret parameter template %s should have no default value", pt.Name))
 		}
 		ptNames[pt.Name] = pt
 	}
@@ -50,10 +51,10 @@ func validateParameterTemplates(profile *catalogv3.Profile) error {
 func (g *Server) injectProfile(ctx context.Context, tx *generated.Tx, projectUUID string, profile *catalogv3.Profile, app *generated.Application) (*generated.Profile, error) {
 	displayName, ok := validateDisplayName(profile.Name, profile.DisplayName)
 	if !ok {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.ProfileType),
-			errors.WithResourceName(profile.Name),
-			errors.WithMessage("display name cannot contain leading or trailing spaces"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.ProfileType),
+			nberrors.WithResourceName(profile.Name),
+			nberrors.WithMessage("display name cannot contain leading or trailing spaces"))
 	}
 
 	if err := g.checkProfileUniqueness(ctx, profile, app); err != nil {
@@ -70,11 +71,11 @@ func (g *Server) injectProfile(ctx context.Context, tx *generated.Tx, projectUUI
 		Save(ctx)
 	if err != nil {
 		if generated.IsConstraintError(err) {
-			return nil, errors.NewAlreadyExists(
-				errors.WithResourceType(errors.ProfileType),
-				errors.WithResourceName(profile.Name))
+			return nil, nberrors.NewAlreadyExists(
+				nberrors.WithResourceType(nberrors.ProfileType),
+				nberrors.WithResourceName(profile.Name))
 		}
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	for _, dr := range profile.DeploymentRequirement {
@@ -101,7 +102,7 @@ func (g *Server) injectProfile(ctx context.Context, tx *generated.Tx, projectUUI
 			SetProfileFkID(created.ID).
 			Save(ctx)
 		if err != nil {
-			return nil, errors.NewDBError(errors.WithError(err))
+			return nil, nberrors.NewDBError(nberrors.WithError(err))
 		}
 	}
 	return created, nil
@@ -115,11 +116,11 @@ func (g *Server) injectDeploymentRequirement(ctx context.Context, tx *generated.
 		deploymentpackage.Version(requirement.Version)).FirstID(ctx)
 	if err != nil {
 		if generated.IsNotFound(err) {
-			return errors.NewNotFound(
-				errors.WithResourceType(errors.DeploymentPackageType),
-				errors.WithMessage("deployment package %s not found", requirement.Name))
+			return nberrors.NewNotFound(
+				nberrors.WithResourceType(nberrors.DeploymentPackageType),
+				nberrors.WithMessage("deployment package %s not found", requirement.Name))
 		}
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	}
 	drCreateStmt := tx.DeploymentRequirement.Create().
 		SetProfileFk(profileDB).
@@ -129,12 +130,12 @@ func (g *Server) injectDeploymentRequirement(ctx context.Context, tx *generated.
 			deploymentprofile.HasDeploymentPackageFkWith(deploymentpackage.ID(pkgID)),
 			deploymentprofile.Name(requirement.DeploymentProfileName)).FirstID(ctx)
 		if err != nil {
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 		drCreateStmt.SetDeploymentProfileFkID(dpID)
 	}
 	if err = drCreateStmt.Exec(ctx); err != nil {
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	}
 	return nil
 }
@@ -151,7 +152,7 @@ func (g *Server) getApplication(ctx context.Context, tx *generated.Tx, projectUU
 		if generated.IsNotFound(err) {
 			return nil, false, nil
 		}
-		return nil, false, errors.NewDBError(errors.WithError(err))
+		return nil, false, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	return app, true, nil
 }
@@ -162,7 +163,7 @@ func (g *Server) checkProfileUniqueness(ctx context.Context, p *catalogv3.Profil
 		existing, err := app.QueryProfiles().
 			Where(profile.DisplayNameLc(strings.ToLower(p.DisplayName)), profile.Not(profile.Name(p.Name))).
 			Count(ctx)
-		if err = checkUniqueness(existing, err, "profile", p.Name, p.DisplayName, errors.ProfileType); err != nil {
+		if err = checkUniqueness(existing, err, "profile", p.Name, p.DisplayName, nberrors.ProfileType); err != nil {
 			return err
 		}
 	}
@@ -172,13 +173,13 @@ func (g *Server) checkProfileUniqueness(ctx context.Context, p *catalogv3.Profil
 func (g *Server) extractDeploymentRequirements(ctx context.Context, profileDB *generated.Profile) ([]*catalogv3.DeploymentRequirement, error) {
 	requirementsDB, err := profileDB.QueryDeploymentRequirements().All(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	requirements := make([]*catalogv3.DeploymentRequirement, 0, len(requirementsDB))
 	for _, drDB := range requirementsDB {
 		dpkgDB, err := drDB.QueryDeploymentPackageFk().Only(ctx)
 		if err != nil {
-			return nil, errors.NewDBError(errors.WithError(err))
+			return nil, nberrors.NewDBError(nberrors.WithError(err))
 		}
 
 		dprofName := ""
@@ -206,7 +207,7 @@ func (g *Server) extractDeploymentRequirements(ctx context.Context, profileDB *g
 func (g *Server) extractParameterTemplates(ctx context.Context, profileDB *generated.Profile) ([]*catalogv3.ParameterTemplate, error) {
 	parameterTemplatesDB, err := profileDB.QueryParameterTemplates().All(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	parameterTemplates := make([]*catalogv3.ParameterTemplate, 0, len(parameterTemplatesDB))
 	for _, ptDB := range parameterTemplatesDB {
@@ -227,10 +228,10 @@ func (g *Server) extractParameterTemplates(ctx context.Context, profileDB *gener
 func (g *Server) updateProfile(ctx context.Context, tx *generated.Tx, projectUUID string, p *catalogv3.Profile, pDB *generated.Profile) error {
 	displayName, ok := validateDisplayName(p.Name, p.DisplayName)
 	if !ok {
-		return errors.NewInvalidArgument(
-			errors.WithResourceType(errors.ProfileType),
-			errors.WithResourceName(p.Name),
-			errors.WithMessage("display name cannot contain leading or trailing spaces"))
+		return nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.ProfileType),
+			nberrors.WithResourceName(p.Name),
+			nberrors.WithMessage("display name cannot contain leading or trailing spaces"))
 	}
 
 	_, err := tx.Profile.Update().Where(profile.ID(pDB.ID)).
@@ -240,12 +241,12 @@ func (g *Server) updateProfile(ctx context.Context, tx *generated.Tx, projectUUI
 		SetChartValues(p.ChartValues).
 		Save(ctx)
 	if err != nil {
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	// Delete and re-create all deployment requirements
 	if _, err := tx.DeploymentRequirement.Delete().Where(deploymentrequirement.HasProfileFkWith(profile.ID(pDB.ID))).Exec(ctx); err != nil {
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	for _, dr := range p.DeploymentRequirement {
@@ -256,7 +257,7 @@ func (g *Server) updateProfile(ctx context.Context, tx *generated.Tx, projectUUI
 
 	// Delete and re-create all parameter templates...
 	if _, err := tx.ParameterTemplate.Delete().Where(parametertemplate.HasProfileFkWith(profile.ID(pDB.ID))).Exec(ctx); err != nil {
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	err = validateParameterTemplates(p)
@@ -276,7 +277,7 @@ func (g *Server) updateProfile(ctx context.Context, tx *generated.Tx, projectUUI
 			SetProfileFkID(pDB.ID).
 			Save(ctx)
 		if err != nil {
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 	}
 	return nil

@@ -19,7 +19,7 @@ import (
 	"sort"
 	"strings"
 
-	nberrors "github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
+	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/nberrors"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/schema/upload"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/schema/validator"
 
@@ -147,7 +147,7 @@ func (u *YamlReader) extractTarball(fileBytes []byte) (FileSet, error) {
 	// Create a gzip reader
 	gzipReader, err := gzip.NewReader(reader)
 	if err != nil {
-		return nil, fmt.Errorf("Failed to create gzip reader while extracting: %w", err)
+		return nil, fmt.Errorf("failed to create gzip reader while extracting: %w", err)
 	}
 	defer gzipReader.Close()
 
@@ -161,7 +161,7 @@ func (u *YamlReader) extractTarball(fileBytes []byte) (FileSet, error) {
 			break // End of archive
 		}
 		if err != nil {
-			return nil, fmt.Errorf("Failed to read tar header while extracting: %w", err)
+			return nil, fmt.Errorf("failed to read tar header while extracting: %w", err)
 		}
 
 		// Check if the current file is the one we want to extract
@@ -169,7 +169,7 @@ func (u *YamlReader) extractTarball(fileBytes []byte) (FileSet, error) {
 			// Read the file content into a buffer
 			var buf bytes.Buffer
 			if _, err := io.CopyN(&buf, tarReader, MaxExtractedFileSize); err != nil && err != io.EOF {
-				return nil, fmt.Errorf("Failed to copy file content while extracting: %w", err)
+				return nil, fmt.Errorf("failed to copy file content while extracting: %w", err)
 			}
 
 			//verboseerror.Infof("Extracted file: %s\n", targetFileName)
