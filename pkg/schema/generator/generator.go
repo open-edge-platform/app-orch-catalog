@@ -47,13 +47,14 @@ func generateSchemaDefs(spec interface{}) (interface{}, error) {
 			defs[name] = augmentNode(name, node)
 
 			// Create short aliases for main entity types
-			if name == "catalog.v3.Application" {
+			switch name {
+			case "catalog.v3.Application":
 				defs["Application"] = augmentNode(name, node)
-			} else if name == "catalog.v3.Artifact" {
+			case "catalog.v3.Artifact":
 				defs["Artifact"] = augmentNode(name, node)
-			} else if name == "catalog.v3.DeploymentPackage" {
+			case "catalog.v3.DeploymentPackage":
 				defs["DeploymentPackage"] = augmentNode(name, node)
-			} else if name == "catalog.v3.Registry" {
+			case "catalog.v3.Registry":
 				defs["Registry"] = augmentNode(name, node)
 			}
 		}

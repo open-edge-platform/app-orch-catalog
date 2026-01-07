@@ -15,8 +15,7 @@ import (
 
 	"github.com/open-edge-platform/app-orch-catalog/internal/dp"
 	"github.com/open-edge-platform/app-orch-catalog/internal/helm"
-	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
-	nberrors "github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
+	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/nberrors"
 	"github.com/open-edge-platform/app-orch-catalog/internal/shared/verboseerror"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 )
@@ -83,7 +82,7 @@ func (g *Server) Import(ctx context.Context, req *catalogv3.ImportRequest) (*cat
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	allowOverwriteRegistry := !g.IsSystemRegistry(reg.Name)
@@ -91,26 +90,26 @@ func (g *Server) Import(ctx context.Context, req *catalogv3.ImportRequest) (*cat
 	err = g.createOrUpdateRegistry(ctx, tx, projectUUID, reg, registryEvents, allowOverwriteRegistry)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	appEvents := &ApplicationEvents{}
 	err = g.createOrUpdateApplication(ctx, tx, projectUUID, app, appEvents)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	dpEvents := &DeploymentPackageEvents{}
 	err = g.createOrUpdateDeploymentPackage(ctx, tx, projectUUID, pkg, dpEvents)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	err = g.commitTransaction(tx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	logActivity(ctx, "created", "registry", projectUUID, reg.Name)

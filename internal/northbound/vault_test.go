@@ -100,7 +100,8 @@ func (s *NorthBoundTestSuite) handleRevokeHTTPError(w http.ResponseWriter) {
 var secrets = map[string]string{}
 
 func (s *NorthBoundTestSuite) handleSecret(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
+	switch r.Method {
+	case http.MethodPost:
 		w.WriteHeader(http.StatusOK)
 		secretData := map[string]interface{}{}
 		rawData, err := io.ReadAll(r.Body)
@@ -112,7 +113,7 @@ func (s *NorthBoundTestSuite) handleSecret(w http.ResponseWriter, r *http.Reques
 		secret := data["value"].(string)
 		secretJSON := `{"data":{"data":{"value":"` + secret + `"}}}`
 		secrets[r.URL.Path] = secretJSON
-	} else if r.Method == http.MethodGet {
+	case http.MethodGet:
 		secretJSON, ok := secrets[r.URL.Path]
 		if !ok {
 			w.WriteHeader(http.StatusNotFound)
@@ -120,7 +121,7 @@ func (s *NorthBoundTestSuite) handleSecret(w http.ResponseWriter, r *http.Reques
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte(secretJSON))
 		}
-	} else if r.Method == http.MethodDelete {
+	case http.MethodDelete:
 		w.WriteHeader(http.StatusOK)
 		delete(secrets, r.URL.Path)
 	}

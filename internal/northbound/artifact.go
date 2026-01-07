@@ -5,23 +5,24 @@
 package northbound
 
 import (
-	"buf.build/go/protovalidate"
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"image/jpeg"
+	"image/png"
+	"strings"
+
+	"buf.build/go/protovalidate"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/artifact"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/predicate"
-	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
+	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/nberrors"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/malware"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gopkg.in/yaml.v3"
-	"image/jpeg"
-	"image/png"
-	"strings"
 )
 
 // CreateArtifact creates an artifact through gRPC
@@ -31,14 +32,14 @@ func (g *Server) CreateArtifact(ctx context.Context, req *catalogv3.CreateArtifa
 		return nil, err
 	}
 	if req == nil || req.Artifact == nil {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.ArtifactType),
-			errors.WithMessage("incomplete request"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.ArtifactType),
+			nberrors.WithMessage("incomplete request"))
 	} else if err := protovalidate.Validate(req); err != nil {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.ArtifactType),
-			errors.WithResourceName(req.Artifact.Name),
-			errors.WithMessage(err.Error()))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.ArtifactType),
+			nberrors.WithResourceName(req.Artifact.Name),
+			nberrors.WithMessage(err.Error()))
 	}
 
 	if err := g.authCheckAllowed(ctx, req); err != nil {
@@ -47,7 +48,7 @@ func (g *Server) CreateArtifact(ctx context.Context, req *catalogv3.CreateArtifa
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	events := &ArtifactEvents{}
@@ -58,7 +59,7 @@ func (g *Server) CreateArtifact(ctx context.Context, req *catalogv3.CreateArtifa
 
 	err = g.commitTransaction(tx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	logActivity(ctx, "created", "artifact", projectUUID, req.Artifact.Name)
@@ -79,9 +80,9 @@ func (g *Server) CreateArtifact(ctx context.Context, req *catalogv3.CreateArtifa
 func (g *Server) createArtifact(ctx context.Context, tx *generated.Tx, projectUUID string, art *catalogv3.Artifact, events *ArtifactEvents) (*generated.Artifact, error) {
 	displayName, ok := validateDisplayName(art.Name, art.DisplayName)
 	if !ok {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.ArtifactType),
-			errors.WithMessage("display name cannot contain leading or trailing spaces"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.ArtifactType),
+			nberrors.WithMessage("display name cannot contain leading or trailing spaces"))
 	}
 	art.DisplayName = displayName
 
@@ -98,14 +99,14 @@ func (g *Server) createArtifact(ctx context.Context, tx *generated.Tx, projectUU
 					log.Warn("Malware scanner is not available. Skipping scan due to permissive mode.")
 				} else {
 					log.Warn("Malware scanner returned error %s", err)
-					return nil, errors.NewUnavailable(
-						errors.WithResourceType(errors.ArtifactType),
-						errors.WithMessage("malware scanner configured but not available"))
+					return nil, nberrors.NewUnavailable(
+						nberrors.WithResourceType(nberrors.ArtifactType),
+						nberrors.WithMessage("malware scanner configured but not available"))
 				}
 			} else if !okay {
-				return nil, errors.NewInvalidArgument(
-					errors.WithResourceType(errors.ArtifactType),
-					errors.WithMessage("malware detected: %s", res))
+				return nil, nberrors.NewInvalidArgument(
+					nberrors.WithResourceType(nberrors.ArtifactType),
+					nberrors.WithMessage("malware detected: %s", res))
 			}
 		}
 	}
@@ -126,12 +127,12 @@ func (g *Server) createArtifact(ctx context.Context, tx *generated.Tx, projectUU
 		Save(ctx)
 	if err != nil {
 		if generated.IsConstraintError(err) {
-			return nil, errors.NewInvalidArgument(
-				errors.WithResourceType(errors.ArtifactType),
-				errors.WithResourceName(art.Name),
-				errors.WithMessage("artifact %s already exists", art.Name))
+			return nil, nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.ArtifactType),
+				nberrors.WithResourceName(art.Name),
+				nberrors.WithMessage("artifact %s already exists", art.Name))
 		}
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	events.append(CreatedEvent, projectUUID, art)
 	return created, nil
@@ -147,13 +148,13 @@ func (g *Server) checkArtifactUniqueness(ctx context.Context, tx *generated.Tx, 
 				artifact.Not(artifact.Name(a.Name))).
 			Count(ctx)
 		if err != nil {
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 		if existing > 0 {
-			return errors.NewAlreadyExists(
-				errors.WithResourceType(errors.ArtifactType),
-				errors.WithResourceName(a.Name),
-				errors.WithMessage("display name %s is not unique", a.DisplayName))
+			return nberrors.NewAlreadyExists(
+				nberrors.WithResourceType(nberrors.ArtifactType),
+				nberrors.WithResourceName(a.Name),
+				nberrors.WithMessage("display name %s is not unique", a.DisplayName))
 		}
 	}
 	return nil
@@ -166,9 +167,9 @@ func (g *Server) ListArtifacts(ctx context.Context, req *catalogv3.ListArtifacts
 		return nil, err
 	}
 	if req == nil {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.ArtifactType),
-			errors.WithMessage("incomplete request"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.ArtifactType),
+			nberrors.WithMessage("incomplete request"))
 	}
 
 	if err := g.authCheckAllowed(ctx, req); err != nil {
@@ -177,16 +178,16 @@ func (g *Server) ListArtifacts(ctx context.Context, req *catalogv3.ListArtifacts
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
-	orderBys, err := parseOrderBy(req.OrderBy, errors.ArtifactType)
+	orderBys, err := parseOrderBy(req.OrderBy, nberrors.ArtifactType)
 	if err != nil {
 		g.rollbackTransaction(tx)
 		return nil, err
 	}
 
-	filters, err := parseFilter(req.Filter, errors.ArtifactType)
+	filters, err := parseFilter(req.Filter, nberrors.ArtifactType)
 	if err != nil {
 		g.rollbackTransaction(tx)
 		return nil, err
@@ -200,7 +201,7 @@ func (g *Server) ListArtifacts(ctx context.Context, req *catalogv3.ListArtifacts
 
 	err = g.commitTransaction(tx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	return &catalogv3.ListArtifactsResponse{Artifacts: artifacts, TotalElements: totalElements}, nil
@@ -224,7 +225,7 @@ func (g *Server) getArtifacts(ctx context.Context, tx *generated.Tx,
 	var orderOptions []artifact.OrderOption
 	artifactsQuery := tx.Artifact.Query()
 
-	options, err := orderByOptions(orderBys, artifactColumns, errors.ArtifactType)
+	options, err := orderByOptions(orderBys, artifactColumns, nberrors.ArtifactType)
 	if err != nil {
 		return nil, nil, 0, err
 	}
@@ -233,7 +234,7 @@ func (g *Server) getArtifacts(ctx context.Context, tx *generated.Tx,
 	}
 	artifactsQuery = artifactsQuery.Order(orderOptions...)
 
-	filterPreds, err := filterPredicates(filters, artifactColumns, errors.ArtifactType)
+	filterPreds, err := filterPredicates(filters, artifactColumns, nberrors.ArtifactType)
 	if err != nil {
 		return nil, nil, 0, err
 	}
@@ -249,7 +250,7 @@ func (g *Server) getArtifacts(ctx context.Context, tx *generated.Tx,
 		artifactsDB, err = artifactsQuery.Where(artifact.ProjectUUID(projectUUID)).All(ctx)
 	}
 	if err != nil {
-		return nil, nil, 0, errors.NewDBError(errors.WithError(err))
+		return nil, nil, 0, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	startIndex, endIndex, totalElements, err := computePageRange(pageSize, offset, len(artifactsDB))
@@ -287,9 +288,9 @@ func (g *Server) GetArtifact(ctx context.Context, req *catalogv3.GetArtifactRequ
 		return nil, err
 	}
 	if req == nil || req.ArtifactName == "" {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.ArtifactType),
-			errors.WithMessage("incomplete request"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.ArtifactType),
+			nberrors.WithMessage("incomplete request"))
 	}
 
 	if err := g.authCheckAllowed(ctx, req); err != nil {
@@ -298,7 +299,7 @@ func (g *Server) GetArtifact(ctx context.Context, req *catalogv3.GetArtifactRequ
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	artifactDb, err := tx.Artifact.Query().
@@ -306,16 +307,16 @@ func (g *Server) GetArtifact(ctx context.Context, req *catalogv3.GetArtifactRequ
 	if err != nil {
 		g.rollbackTransaction(tx)
 		if generated.IsNotFound(err) {
-			return nil, errors.NewNotFound(
-				errors.WithResourceType(errors.ArtifactType),
-				errors.WithResourceName(req.ArtifactName))
+			return nil, nberrors.NewNotFound(
+				nberrors.WithResourceType(nberrors.ArtifactType),
+				nberrors.WithResourceName(req.ArtifactName))
 		}
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	err = g.commitTransaction(tx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	return &catalogv3.GetArtifactResponse{
@@ -338,17 +339,17 @@ func (g *Server) UpdateArtifact(ctx context.Context, req *catalogv3.UpdateArtifa
 		return nil, err
 	}
 	if req == nil || req.Artifact == nil || req.ArtifactName == "" {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.ArtifactType),
-			errors.WithMessage("incomplete request"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.ArtifactType),
+			nberrors.WithMessage("incomplete request"))
 	} else if err := protovalidate.Validate(req); err != nil {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.ArtifactType),
-			errors.WithMessage(err.Error()))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.ArtifactType),
+			nberrors.WithMessage(err.Error()))
 	} else if req.ArtifactName != req.Artifact.Name {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.ArtifactType),
-			errors.WithMessage("name cannot be changed %s != %s", req.ArtifactName, req.Artifact.Name))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.ArtifactType),
+			nberrors.WithMessage("name cannot be changed %s != %s", req.ArtifactName, req.Artifact.Name))
 	}
 
 	if err := g.authCheckAllowed(ctx, req); err != nil {
@@ -357,7 +358,7 @@ func (g *Server) UpdateArtifact(ctx context.Context, req *catalogv3.UpdateArtifa
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	events := &ArtifactEvents{}
@@ -368,7 +369,7 @@ func (g *Server) UpdateArtifact(ctx context.Context, req *catalogv3.UpdateArtifa
 
 	err = g.commitTransaction(tx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	logActivity(ctx, "updated", "artifact", projectUUID, req.Artifact.Name)
@@ -380,9 +381,9 @@ func (g *Server) UpdateArtifact(ctx context.Context, req *catalogv3.UpdateArtifa
 func (g *Server) updateArtifact(ctx context.Context, tx *generated.Tx, projectUUID string, art *catalogv3.Artifact, events *ArtifactEvents) error {
 	displayName, ok := validateDisplayName(art.Name, art.DisplayName)
 	if !ok {
-		return errors.NewInvalidArgument(
-			errors.WithResourceType(errors.ArtifactType),
-			errors.WithMessage("display name cannot contain leading or trailing spaces"))
+		return nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.ArtifactType),
+			nberrors.WithMessage("display name cannot contain leading or trailing spaces"))
 	}
 	art.DisplayName = displayName
 
@@ -405,12 +406,12 @@ func (g *Server) updateArtifact(ctx context.Context, tx *generated.Tx, projectUU
 		Save(ctx)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	} else if updateCount == 0 {
 		g.rollbackTransaction(tx)
-		return errors.NewNotFound(
-			errors.WithResourceType(errors.ArtifactType),
-			errors.WithResourceName(art.Name))
+		return nberrors.NewNotFound(
+			nberrors.WithResourceType(nberrors.ArtifactType),
+			nberrors.WithResourceName(art.Name))
 	}
 	events.append(UpdatedEvent, projectUUID, art)
 	return nil
@@ -423,9 +424,9 @@ func (g *Server) DeleteArtifact(ctx context.Context, req *catalogv3.DeleteArtifa
 		return nil, err
 	}
 	if req == nil || req.ArtifactName == "" {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.ArtifactType),
-			errors.WithMessage("incomplete request"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.ArtifactType),
+			nberrors.WithMessage("incomplete request"))
 	}
 
 	if err := g.authCheckAllowed(ctx, req); err != nil {
@@ -434,7 +435,7 @@ func (g *Server) DeleteArtifact(ctx context.Context, req *catalogv3.DeleteArtifa
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	events := &ArtifactEvents{}
@@ -442,18 +443,18 @@ func (g *Server) DeleteArtifact(ctx context.Context, req *catalogv3.DeleteArtifa
 		Where(artifact.ProjectUUID(projectUUID), artifact.Name(req.ArtifactName)).Exec(ctx)
 	if err != nil {
 		if generated.IsConstraintError(err) {
-			return nil, errors.NewInvalidArgument(
-				errors.WithResourceType(errors.ArtifactType),
-				errors.WithResourceName(req.ArtifactName),
-				errors.WithMessage("%s %s is in use and cannot be deleted", errors.ArtifactType, req.ArtifactName))
+			return nil, nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.ArtifactType),
+				nberrors.WithResourceName(req.ArtifactName),
+				nberrors.WithMessage("%s %s is in use and cannot be deleted", nberrors.ArtifactType, req.ArtifactName))
 		}
 		g.rollbackTransaction(tx)
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	} else if deleteCount == 0 {
 		g.rollbackTransaction(tx)
-		return nil, errors.NewNotFound(
-			errors.WithResourceType(errors.ArtifactType),
-			errors.WithResourceName(req.ArtifactName))
+		return nil, nberrors.NewNotFound(
+			nberrors.WithResourceType(nberrors.ArtifactType),
+			nberrors.WithResourceName(req.ArtifactName))
 	}
 	if _, err = g.checkDeleteResult(ctx, tx, err, fmt.Sprintf("artifact %s", req.ArtifactName), projectUUID); err != nil {
 		return nil, err
@@ -468,44 +469,44 @@ func validateArtifactData(name string, mime string, payload []byte) error {
 	switch mime {
 	case "text/plain":
 		if err := validateTextPlain(payload); err != nil {
-			return errors.NewInvalidArgument(
-				errors.WithResourceType(errors.ArtifactType),
-				errors.WithResourceName(name),
-				errors.WithMessage("artifact data is not valid Plain Text"))
+			return nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.ArtifactType),
+				nberrors.WithResourceName(name),
+				nberrors.WithMessage("artifact data is not valid Plain Text"))
 		}
 	case "application/json":
 		if err := validateApplicationJSON(payload); err != nil {
-			return errors.NewInvalidArgument(
-				errors.WithResourceType(errors.ArtifactType),
-				errors.WithResourceName(name),
-				errors.WithMessage("artifact data is not valid JSON"))
+			return nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.ArtifactType),
+				nberrors.WithResourceName(name),
+				nberrors.WithMessage("artifact data is not valid JSON"))
 		}
 	case "application/yaml":
 		if err := validateApplicationYAML(payload); err != nil {
-			return errors.NewInvalidArgument(
-				errors.WithResourceType(errors.ArtifactType),
-				errors.WithResourceName(name),
-				errors.WithMessage("artifact data is not valid YAML"))
+			return nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.ArtifactType),
+				nberrors.WithResourceName(name),
+				nberrors.WithMessage("artifact data is not valid YAML"))
 		}
 	case "image/png":
 		if err := validateImagePng(payload); err != nil {
-			return errors.NewInvalidArgument(
-				errors.WithResourceType(errors.ArtifactType),
-				errors.WithResourceName(name),
-				errors.WithMessage("artifact data is not valid PNG"))
+			return nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.ArtifactType),
+				nberrors.WithResourceName(name),
+				nberrors.WithMessage("artifact data is not valid PNG"))
 		}
 	case "image/jpeg":
 		if err := validateImageJpeg(payload); err != nil {
-			return errors.NewInvalidArgument(
-				errors.WithResourceType(errors.ArtifactType),
-				errors.WithResourceName(name),
-				errors.WithMessage("artifact data is not valid JPEG"))
+			return nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.ArtifactType),
+				nberrors.WithResourceName(name),
+				nberrors.WithMessage("artifact data is not valid JPEG"))
 		}
 	default:
-		return errors.NewInvalidArgument(
-			errors.WithResourceType(errors.ArtifactType),
-			errors.WithResourceName(name),
-			errors.WithMessage("artifact contents do not match mime type %s", mime))
+		return nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.ArtifactType),
+			nberrors.WithResourceName(name),
+			nberrors.WithMessage("artifact contents do not match mime type %s", mime))
 	}
 
 	return nil
@@ -548,17 +549,17 @@ func validateImageJpeg(data []byte) error {
 // WatchArtifacts watches inventory of artifacts for changes.
 func (g *Server) WatchArtifacts(req *catalogv3.WatchArtifactsRequest, server catalogv3.CatalogService_WatchArtifactsServer) error {
 	if server == nil {
-		return errors.NewInvalidArgument(
-			errors.WithMessage("incomplete request"))
+		return nberrors.NewInvalidArgument(
+			nberrors.WithMessage("incomplete request"))
 	}
 	projectUUID, err := GetActiveProjectIDAllowAdmin(server.Context(), req.ProjectId)
 	if err != nil {
 		return err
 	}
 	if req == nil {
-		return errors.NewInvalidArgument(
-			errors.WithResourceType(errors.ArtifactType),
-			errors.WithMessage("incomplete request"))
+		return nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.ArtifactType),
+			nberrors.WithMessage("incomplete request"))
 	}
 
 	if err := g.authCheckAllowed(server.Context(), req); err != nil {
@@ -573,7 +574,7 @@ func (g *Server) WatchArtifacts(req *catalogv3.WatchArtifactsRequest, server cat
 		ctx := server.Context()
 		tx, err := g.startTransaction(ctx)
 		if err != nil {
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 
 		artifacts, projectUUIDs, _, err := g.getArtifacts(ctx, tx, projectUUID, nil, nil, 0, 0)
@@ -600,7 +601,7 @@ func (g *Server) WatchArtifacts(req *catalogv3.WatchArtifactsRequest, server cat
 
 		err = g.commitTransaction(tx)
 		if err != nil {
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 	} else {
 		// Register the stream, so it can start receiving updates

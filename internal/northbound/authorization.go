@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
+	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/nberrors"
 	"github.com/open-edge-platform/orch-library/go/pkg/openpolicyagent"
 	"google.golang.org/grpc/metadata"
 )
@@ -23,7 +23,7 @@ func (g *Server) authCheckAllowed(ctx context.Context, request interface{}, cust
 	}
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		return errors.NewInvalidArgument(errors.WithMessage("authentication failed"))
+		return nberrors.NewInvalidArgument(nberrors.WithMessage("authentication failed"))
 	}
 	opaInputStruct := openpolicyagent.OpaInput{
 		Input: map[string]interface{}{
@@ -66,10 +66,10 @@ func (g *Server) authCheckAllowed(ctx context.Context, request interface{}, cust
 		resultObj, objErr := resp.JSON200.Result.AsOpaResponseResult0()
 		if objErr != nil {
 			log.Debugf("(#1) access denied by OPA rule %s: %v", requestName, objErr)
-			return errors.NewPermissionDenied()
+			return nberrors.NewPermissionDenied()
 		}
 		log.Debugf("(#2) access denied by OPA rule %s: %v", requestName, resultObj)
-		return errors.NewPermissionDenied()
+		return nberrors.NewPermissionDenied()
 
 	}
 	if resultBool {
@@ -78,5 +78,5 @@ func (g *Server) authCheckAllowed(ctx context.Context, request interface{}, cust
 	}
 
 	log.Debugf("access denied by OPA rule %s. OPA response %d %v", requestName, resp.StatusCode(), resp.HTTPResponse)
-	return errors.NewPermissionDenied()
+	return nberrors.NewPermissionDenied()
 }
