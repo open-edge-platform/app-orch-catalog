@@ -36,7 +36,7 @@ func createServerConnection(t *testing.T, dbClient *ent.Client, opaClient openpo
 	s, err := newTestService(dbClient, opaClient)
 	assert.NoError(t, err)
 	assert.NotNil(t, s)
-	server := grpc.NewServer()
+	server := grpc.NewServer() // nosemgrep
 	s.Register(server)
 
 	go func() {
