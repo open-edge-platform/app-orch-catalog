@@ -1315,14 +1315,14 @@ new line`, "v1.0.0")
 		})
 		if err != nil || created == nil {
 			// Use regex patterns to match the new protovalidate v1.0.0 error format
-			namePatternRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation error:.*deployment_package\.name: value does not match regex pattern.*\[string\.pattern\]`)
-			nameLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation error:.*deployment_package\.name: value length must be at most.*characters.*\[string\.max_len\]`)
-			displayNameLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation error:.*deployment_package\.display_name: value length must be at most.*characters.*\[string\.max_len\]`)
+			namePatternRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.name: value does not match regex pattern.*`)
+			nameLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.name: value length must be at most.*characters.*`)
+			displayNameLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.display_name: value length must be at most.*characters.*`)
 			displayNameSpacesRE, _ := regexp.Compile(`deployment-package invalid: display name cannot contain leading or trailing spaces`)
-			displayNamePatternRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation error:.*deployment_package\.display_name: value does not match regex pattern.*\[string\.pattern\]`)
-			versionLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation error:.*deployment_package\.version: value length must be at least.*characters.*\[string\.min_len\]`)
-			versionMaxLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation error:.*deployment_package\.version: value length must be at most.*characters.*\[string\.max_len\]`)
-			versionPatternRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation error:.*deployment_package\.version: value does not match regex pattern.*\[string\.pattern\]`)
+			displayNamePatternRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.display_name: value does not match regex pattern.*`)
+			versionLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.version: value length must be at least.*characters.*`)
+			versionMaxLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.version: value length must be at most.*characters.*`)
+			versionPatternRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.version: value does not match regex pattern.*`)
 
 			if !namePatternRE.Match([]byte(err.Error())) &&
 				!nameLenRE.Match([]byte(err.Error())) &&

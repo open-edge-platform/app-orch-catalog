@@ -157,7 +157,7 @@ func (s *NorthBoundTestSuite) TestCreateApplicationInvalidName() {
 		},
 	})
 	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		"application invalid: validation error:\n - application.name: value does not match regex pattern `^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$` [string.pattern]"))
+		"application invalid: validation error: application.name: value does not match regex pattern `^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$`"))
 
 	// Create one with invalid version but valid other fields
 	_, err = s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
@@ -169,7 +169,7 @@ func (s *NorthBoundTestSuite) TestCreateApplicationInvalidName() {
 		},
 	})
 	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		"application invalid: validation error:\n - application.version: value does not match regex pattern `^v?[0-9]+\\.[0-9]+\\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\\+[a-z0-9]+([.-][a-z0-9]+)*)?$` [string.pattern]"))
+		"application invalid: validation error: application.version: value does not match regex pattern `^v?[0-9]+\\.[0-9]+\\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\\+[a-z0-9]+([.-][a-z0-9]+)*)?$`"))
 
 	// Create one with invalid registry
 	_, err = s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
