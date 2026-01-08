@@ -15,15 +15,15 @@ package northbound
  */
 
 import (
-	"buf.build/go/protovalidate"
 	"context"
 	"sync"
 
-	nberrors "github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
+	"buf.build/go/protovalidate"
 
 	"github.com/google/uuid"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/artifact"
+	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/nberrors"
 	"github.com/open-edge-platform/app-orch-catalog/internal/yamlreader"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/malware"

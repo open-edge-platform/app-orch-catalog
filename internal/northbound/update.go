@@ -21,7 +21,7 @@ import (
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/application"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/deploymentpackage"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/registry"
-	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
+	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/nberrors"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 )
 
@@ -39,7 +39,7 @@ func (g *Server) registryIsEquivalent(ctx context.Context, reg1 *catalogv3.Regis
 	if UseSecretService {
 		secretService, err := SecretServiceFactory(ctx)
 		if err != nil {
-			return false, errors.NewVaultError(errors.WithError(err))
+			return false, nberrors.NewVaultError(nberrors.WithError(err))
 		}
 		defer secretService.Logout(ctx)
 
@@ -48,7 +48,7 @@ func (g *Server) registryIsEquivalent(ctx context.Context, reg1 *catalogv3.Regis
 		// Fetch the stored secret
 		encodedSecretData, err = secretService.ReadSecret(ctx, registryKey)
 		if err != nil {
-			return false, errors.NewVaultError(errors.WithError(err))
+			return false, nberrors.NewVaultError(nberrors.WithError(err))
 		}
 	} else {
 		// If secrets service is not enabled, then everything is packed into the AuthToken field of
@@ -59,7 +59,7 @@ func (g *Server) registryIsEquivalent(ctx context.Context, reg1 *catalogv3.Regis
 	rsd := registrySecretData{}
 	err := Base64Factory().DecodeBase64(&rsd, encodedSecretData)
 	if err != nil {
-		return false, errors.NewVaultError(errors.WithError(err))
+		return false, nberrors.NewVaultError(nberrors.WithError(err))
 	}
 
 	return reg1.AuthToken == rsd.AuthToken && reg1.Cacerts == rsd.Cacerts && reg1.ApiType == reg2.APIType && reg1.RootUrl == rsd.RootURL && reg1.InventoryUrl == rsd.InventoryURL && reg1.Username == rsd.Username, nil
@@ -80,10 +80,10 @@ func (g *Server) createOrUpdateRegistry(ctx context.Context, tx *generated.Tx, p
 				return err
 			}
 			if !isEquivalent {
-				return errors.NewAlreadyExists(
-					errors.WithResourceType(errors.RegistryType),
-					errors.WithResourceName(reg.Name),
-					errors.WithMessage("registry with name '%s' already exists", reg.Name))
+				return nberrors.NewAlreadyExists(
+					nberrors.WithResourceType(nberrors.RegistryType),
+					nberrors.WithResourceName(reg.Name),
+					nberrors.WithMessage("registry with name '%s' already exists", reg.Name))
 			}
 			// The registry is equivalent, but maybe a field that does not impact functionality, such as
 			// Description, has changed. Proceed to update the registry to pick up any such changes.

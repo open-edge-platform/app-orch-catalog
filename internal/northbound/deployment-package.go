@@ -5,11 +5,12 @@
 package northbound
 
 import (
-	"buf.build/go/protovalidate"
 	"context"
 	"fmt"
 	"reflect"
 	"strings"
+
+	"buf.build/go/protovalidate"
 
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/namespace"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/predicate"
@@ -24,7 +25,7 @@ import (
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/deploymentpackage"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/deploymentprofile"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/extension"
-	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
+	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/nberrors"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/app-orch-catalog/pkg/exporter"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -38,13 +39,13 @@ func (g *Server) CreateDeploymentPackage(ctx context.Context, req *catalogv3.Cre
 		return nil, err
 	}
 	if req == nil || req.DeploymentPackage == nil {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithMessage("incomplete request"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithMessage("incomplete request"))
 	} else if err := protovalidate.Validate(req); err != nil {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithMessage(err.Error()))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithMessage(err.Error()))
 	} else if err := validateDeploymentProfiles(req.DeploymentPackage); err != nil {
 		return nil, err
 	}
@@ -55,7 +56,7 @@ func (g *Server) CreateDeploymentPackage(ctx context.Context, req *catalogv3.Cre
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	events := &DeploymentPackageEvents{}
@@ -67,7 +68,7 @@ func (g *Server) CreateDeploymentPackage(ctx context.Context, req *catalogv3.Cre
 
 	err = g.commitTransaction(tx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	logActivity(ctx, "created", "deployment-package", projectUUID, req.DeploymentPackage.Name, req.DeploymentPackage.Version)
@@ -103,8 +104,8 @@ func validateDeploymentProfiles(pkg *catalogv3.DeploymentPackage) error {
 	// creates ambiguity in configuration and deployment, as the profile-to-application
 	// linkage is not versioned
 	if hasDuplicateAppNames(pkg.ApplicationReferences) {
-		return errors.NewInvalidArgument(errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithMessage("package %s contains duplicate application names. "+
+		return nberrors.NewInvalidArgument(nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithMessage("package %s contains duplicate application names. "+
 				"Deployment packages must reference each application only once. "+
 				"To deploy multiple versions of an application, create separate deployment packages", pkg.Name))
 	}
@@ -121,16 +122,16 @@ func hasDuplicateAppNames(refs []*catalogv3.ApplicationReference) bool {
 
 func (g *Server) createDeploymentPackage(ctx context.Context, tx *generated.Tx, projectUUID string, pkg *catalogv3.DeploymentPackage, events *DeploymentPackageEvents) (*generated.DeploymentPackage, error) {
 	if len(pkg.Profiles) > 0 && pkg.DefaultProfileName == "" {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithMessage("default profile name must be specified"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithMessage("default profile name must be specified"))
 	}
 
 	displayName, ok := validateDisplayName(pkg.Name, pkg.DisplayName)
 	if !ok {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithMessage("display name cannot contain leading or trailing spaces"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithMessage("display name cannot contain leading or trailing spaces"))
 	}
 
 	// Make sure that the display name, if specified is unique
@@ -153,13 +154,13 @@ func (g *Server) createDeploymentPackage(ctx context.Context, tx *generated.Tx, 
 	created, err := stmt.Save(ctx)
 	if err != nil {
 		if generated.IsConstraintError(err) {
-			return nil, errors.NewInvalidArgument(
-				errors.WithResourceType(errors.DeploymentPackageType),
-				errors.WithResourceName(pkg.Name),
-				errors.WithResourceVersion(pkg.Version),
-				errors.WithMessage("deployment package %s already exists", pkg.Name))
+			return nil, nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.DeploymentPackageType),
+				nberrors.WithResourceName(pkg.Name),
+				nberrors.WithResourceVersion(pkg.Version),
+				nberrors.WithMessage("deployment package %s already exists", pkg.Name))
 		}
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	// Create any application references
@@ -215,7 +216,7 @@ func (g *Server) checkDeploymentPackageUniqueness(ctx context.Context, tx *gener
 				deploymentpackage.DisplayNameLc(strings.ToLower(a.DisplayName)),
 				deploymentpackage.Not(deploymentpackage.Name(a.Name))).
 			Count(ctx)
-		if err = checkUniqueness(existing, err, "deployment package", a.Name, a.DisplayName, errors.DeploymentPackageType); err != nil {
+		if err = checkUniqueness(existing, err, "deployment package", a.Name, a.DisplayName, nberrors.DeploymentPackageType); err != nil {
 			return err
 		}
 	}
@@ -234,15 +235,15 @@ func (g *Server) checkDeploymentPackageNotDeployed(ctx context.Context, tx *gene
 		if generated.IsNotFound(err) {
 			return nil
 		}
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	if first.IsDeployed && pkg.IsDeployed {
-		return errors.NewFailedPrecondition(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithResourceName(pkg.Name),
-			errors.WithResourceVersion(pkg.Version),
-			errors.WithMessage("cannot modify deployed package"))
+		return nberrors.NewFailedPrecondition(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithResourceName(pkg.Name),
+			nberrors.WithResourceVersion(pkg.Version),
+			nberrors.WithMessage("cannot modify deployed package"))
 	}
 	return nil
 }
@@ -259,18 +260,18 @@ func (g *Server) createApplicationReferences(ctx context.Context, tx *generated.
 		appIDs = append(appIDs, appID)
 		if err != nil {
 			if generated.IsNotFound(err) {
-				return errors.NewInvalidArgument(
-					errors.WithResourceType(errors.ApplicationReferenceType),
-					errors.WithMessage("application reference not found"),
-					errors.WithResourceName(appRef.Name),
-					errors.WithResourceVersion(appRef.Version))
+				return nberrors.NewInvalidArgument(
+					nberrors.WithResourceType(nberrors.ApplicationReferenceType),
+					nberrors.WithMessage("application reference not found"),
+					nberrors.WithResourceName(appRef.Name),
+					nberrors.WithResourceVersion(appRef.Version))
 			}
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 	}
 	err := pkgDB.Update().ClearApplications().AddApplicationIDs(appIDs...).Exec(ctx)
 	if err != nil {
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	}
 	return nil
 }
@@ -292,7 +293,7 @@ func (g *Server) createDeploymentProfiles(ctx context.Context, tx *generated.Tx,
 	if defaultProfile != nil {
 		_, err := tx.DeploymentPackage.Update().Where(deploymentpackage.ID(pkgDB.ID)).SetDefaultProfile(defaultProfile).Save(ctx)
 		if err != nil {
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 	}
 	return nil
@@ -303,7 +304,7 @@ func (g *Server) createApplicationDependencies(ctx context.Context, tx *generate
 	ars := make(map[string]*generated.Application, 0)
 	appsDB, err := pkgDB.QueryApplications().All(ctx)
 	if err != nil {
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	}
 	for _, ar := range appsDB {
 		ars[ar.Name] = ar
@@ -311,27 +312,27 @@ func (g *Server) createApplicationDependencies(ctx context.Context, tx *generate
 
 	for _, appDep := range pkg.ApplicationDependencies {
 		if appDep.Name == appDep.Requires {
-			return errors.NewInvalidArgument(
-				errors.WithResourceType(errors.DeploymentPackageType),
-				errors.WithResourceName(pkg.Name),
-				errors.WithResourceVersion(pkg.Version),
-				errors.WithMessage("application %s cannot depend on itself", appDep.Name))
+			return nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.DeploymentPackageType),
+				nberrors.WithResourceName(pkg.Name),
+				nberrors.WithResourceVersion(pkg.Version),
+				nberrors.WithMessage("application %s cannot depend on itself", appDep.Name))
 		}
 		source, ok := ars[appDep.Name]
 		if !ok {
-			return errors.NewInvalidArgument(
-				errors.WithResourceType(errors.DeploymentPackageType),
-				errors.WithResourceName(pkg.Name),
-				errors.WithResourceVersion(pkg.Version),
-				errors.WithMessage("dependency for application %s does not exist", appDep.Name))
+			return nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.DeploymentPackageType),
+				nberrors.WithResourceName(pkg.Name),
+				nberrors.WithResourceVersion(pkg.Version),
+				nberrors.WithMessage("dependency for application %s does not exist", appDep.Name))
 		}
 		target, ok := ars[appDep.Requires]
 		if !ok {
-			return errors.NewInvalidArgument(
-				errors.WithResourceType(errors.DeploymentPackageType),
-				errors.WithResourceName(pkg.Name),
-				errors.WithResourceVersion(pkg.Version),
-				errors.WithMessage("dependency requirement %s does not exist", appDep.Requires))
+			return nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.DeploymentPackageType),
+				nberrors.WithResourceName(pkg.Name),
+				nberrors.WithResourceVersion(pkg.Version),
+				nberrors.WithMessage("dependency requirement %s does not exist", appDep.Requires))
 		}
 		_, err := tx.ApplicationDependency.Create().
 			SetDeploymentPackageFkID(pkgDB.ID).
@@ -339,7 +340,7 @@ func (g *Server) createApplicationDependencies(ctx context.Context, tx *generate
 			SetTargetFk(target).
 			Save(ctx)
 		if err != nil {
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 	}
 	return nil
@@ -350,7 +351,7 @@ func (g *Server) createApplicationNamespaces(ctx context.Context, tx *generated.
 	namespaces := make(map[string]*generated.Application, 0)
 	appsDB, err := pkgDB.QueryApplications().All(ctx)
 	if err != nil {
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	}
 	for _, aDB := range appsDB {
 		namespaces[aDB.Name] = aDB
@@ -359,11 +360,11 @@ func (g *Server) createApplicationNamespaces(ctx context.Context, tx *generated.
 	for appName, appNamespace := range pkg.DefaultNamespaces {
 		aDB, ok := namespaces[appName]
 		if !ok {
-			return errors.NewInvalidArgument(
-				errors.WithResourceType(errors.DeploymentPackageType),
-				errors.WithResourceName(pkg.Name),
-				errors.WithResourceVersion(pkg.Version),
-				errors.WithMessage("application %s does not exist", appName))
+			return nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.DeploymentPackageType),
+				nberrors.WithResourceName(pkg.Name),
+				nberrors.WithResourceVersion(pkg.Version),
+				nberrors.WithMessage("application %s does not exist", appName))
 		}
 		_, err := tx.ApplicationNamespace.Create().
 			SetDeploymentPackageFkID(pkgDB.ID).
@@ -371,7 +372,7 @@ func (g *Server) createApplicationNamespaces(ctx context.Context, tx *generated.
 			SetNamespace(appNamespace).
 			Save(ctx)
 		if err != nil {
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 	}
 	return nil
@@ -390,14 +391,14 @@ func (g *Server) createNamespaces(ctx context.Context, tx *generated.Tx, pkg *ca
 			SetName(namespace.Name).
 			Save(ctx)
 		if err != nil {
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 
 		for key, value := range namespace.Labels {
 			_, err := tx.NamespaceAdornment.Create().SetNamespaceFkID(nsDB.ID).SetType(namespaceLabelType).
 				SetKey(key).SetValue(value).Save(ctx)
 			if err != nil {
-				return errors.NewDBError(errors.WithError(err))
+				return nberrors.NewDBError(nberrors.WithError(err))
 			}
 		}
 
@@ -405,7 +406,7 @@ func (g *Server) createNamespaces(ctx context.Context, tx *generated.Tx, pkg *ca
 			_, err := tx.NamespaceAdornment.Create().SetNamespaceFkID(nsDB.ID).SetType(namespaceAnnotationType).
 				SetKey(key).SetValue(value).Save(ctx)
 			if err != nil {
-				return errors.NewDBError(errors.WithError(err))
+				return nberrors.NewDBError(nberrors.WithError(err))
 			}
 		}
 	}
@@ -431,7 +432,7 @@ func (g *Server) createExtensions(ctx context.Context, tx *generated.Tx, pkg *ca
 
 		extDB, err := stmt.Save(ctx)
 		if err != nil {
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 
 		for _, ep := range ext.Endpoints {
@@ -445,7 +446,7 @@ func (g *Server) createExtensions(ctx context.Context, tx *generated.Tx, pkg *ca
 				SetAppName(ep.AppName).
 				Save(ctx)
 			if err != nil {
-				return errors.NewDBError(errors.WithError(err))
+				return nberrors.NewDBError(nberrors.WithError(err))
 			}
 		}
 	}
@@ -461,13 +462,13 @@ func (g *Server) createArtifactReferences(ctx context.Context, tx *generated.Tx,
 			).Only(ctx)
 		if err != nil {
 			if generated.IsNotFound(err) {
-				return errors.NewInvalidArgument(
-					errors.WithResourceType(errors.DeploymentPackageType),
-					errors.WithResourceName(pkg.Name),
-					errors.WithResourceVersion(pkg.Version),
-					errors.WithMessage("artifact %s not found", art.Name))
+				return nberrors.NewInvalidArgument(
+					nberrors.WithResourceType(nberrors.DeploymentPackageType),
+					nberrors.WithResourceName(pkg.Name),
+					nberrors.WithResourceVersion(pkg.Version),
+					nberrors.WithMessage("artifact %s not found", art.Name))
 			}
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 		_, err = tx.ArtifactReference.Create().
 			SetDeploymentPackageFkID(pkgDB.ID).
@@ -475,7 +476,7 @@ func (g *Server) createArtifactReferences(ctx context.Context, tx *generated.Tx,
 			SetArtifact(artifactDB).
 			Save(ctx)
 		if err != nil {
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 	}
 	return nil
@@ -488,9 +489,9 @@ func (g *Server) ListDeploymentPackages(ctx context.Context, req *catalogv3.List
 		return nil, err
 	}
 	if req == nil {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithMessage("incomplete request"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithMessage("incomplete request"))
 	}
 
 	if err := g.authCheckAllowed(ctx, req); err != nil {
@@ -499,16 +500,16 @@ func (g *Server) ListDeploymentPackages(ctx context.Context, req *catalogv3.List
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
-	orderBys, err := parseOrderBy(req.OrderBy, errors.DeploymentPackageType)
+	orderBys, err := parseOrderBy(req.OrderBy, nberrors.DeploymentPackageType)
 	if err != nil {
 		g.rollbackTransaction(tx)
 		return nil, err
 	}
 
-	filters, err := parseFilter(req.Filter, errors.DeploymentPackageType)
+	filters, err := parseFilter(req.Filter, nberrors.DeploymentPackageType)
 	if err != nil {
 		g.rollbackTransaction(tx)
 		return nil, err
@@ -522,7 +523,7 @@ func (g *Server) ListDeploymentPackages(ctx context.Context, req *catalogv3.List
 
 	err = g.commitTransaction(tx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	logActivity(ctx, "listed", "deployment-packages", projectUUID, "Total => "+fmt.Sprintf("%d", totalElements))
 	return &catalogv3.ListDeploymentPackagesResponse{DeploymentPackages: packages, TotalElements: totalElements}, nil
@@ -545,7 +546,7 @@ func (g *Server) getDeploymentPackages(ctx context.Context, tx *generated.Tx, pr
 	var orderOptions []deploymentpackage.OrderOption
 	dpQuery := tx.DeploymentPackage.Query()
 
-	options, err := orderByOptions(orderBys, dpColumns, errors.DeploymentPackageType)
+	options, err := orderByOptions(orderBys, dpColumns, nberrors.DeploymentPackageType)
 	if err != nil {
 		return nil, nil, 0, err
 	}
@@ -554,7 +555,7 @@ func (g *Server) getDeploymentPackages(ctx context.Context, tx *generated.Tx, pr
 	}
 	dpQuery = dpQuery.Order(orderOptions...)
 
-	filterPreds, err := filterPredicates(filters, dpColumns, errors.DeploymentPackageType)
+	filterPreds, err := filterPredicates(filters, dpColumns, nberrors.DeploymentPackageType)
 	if err != nil {
 		return nil, nil, 0, err
 	}
@@ -575,7 +576,7 @@ func (g *Server) getDeploymentPackages(ctx context.Context, tx *generated.Tx, pr
 		pkgsDB, err = dpQuery.Where(deploymentpackage.ProjectUUID(projectUUID)).All(ctx)
 	}
 	if err != nil {
-		return nil, nil, 0, errors.NewDBError(errors.WithError(err))
+		return nil, nil, 0, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	totalElements := int32(len(pkgsDB))
@@ -669,7 +670,7 @@ func extractDeploymentPackage(ctx context.Context, pkgDB *generated.DeploymentPa
 				dp.DefaultProfileName = profiles[0].Name
 			}
 		} else {
-			return nil, errors.NewDBError(errors.WithError(err))
+			return nil, nberrors.NewDBError(nberrors.WithError(err))
 		}
 	} else {
 		dp.DefaultProfileName = profileDB.Name
@@ -682,7 +683,7 @@ func extractDeploymentPackage(ctx context.Context, pkgDB *generated.DeploymentPa
 func extractApplicationReferences(ctx context.Context, pkgDB *generated.DeploymentPackage) ([]*catalogv3.ApplicationReference, error) {
 	applicationsDB, err := pkgDB.QueryApplications().All(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	applications := make([]*catalogv3.ApplicationReference, 0, len(applicationsDB))
 	for _, appApplicationDB := range applicationsDB {
@@ -698,7 +699,7 @@ func extractApplicationReferences(ctx context.Context, pkgDB *generated.Deployme
 func extractDeploymentProfiles(ctx context.Context, pkgDB *generated.DeploymentPackage, useFQNames bool, includeSyntheticDefault bool) ([]*catalogv3.DeploymentProfile, error) {
 	profilesDB, err := pkgDB.QueryDeploymentProfiles().All(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	profiles := make([]*catalogv3.DeploymentProfile, 0, len(profilesDB))
 	if len(profilesDB) > 0 {
@@ -736,17 +737,17 @@ func extractDeploymentProfiles(ctx context.Context, pkgDB *generated.DeploymentP
 func extractApplicationDependencies(ctx context.Context, pkgDB *generated.DeploymentPackage) ([]*catalogv3.ApplicationDependency, error) {
 	dependenciesDB, err := pkgDB.QueryApplicationDependencies().All(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	dependencies := make([]*catalogv3.ApplicationDependency, 0, len(dependenciesDB))
 	for _, dependencyDB := range dependenciesDB {
 		source, err := dependencyDB.QuerySourceFk().Only(ctx)
 		if err != nil {
-			return nil, errors.NewDBError(errors.WithError(err))
+			return nil, nberrors.NewDBError(nberrors.WithError(err))
 		}
 		target, err := dependencyDB.QueryTargetFk().Only(ctx)
 		if err != nil {
-			return nil, errors.NewDBError(errors.WithError(err))
+			return nil, nberrors.NewDBError(nberrors.WithError(err))
 		}
 		dependencies = append(dependencies, &catalogv3.ApplicationDependency{Name: source.Name, Requires: target.Name})
 	}
@@ -757,13 +758,13 @@ func extractApplicationDependencies(ctx context.Context, pkgDB *generated.Deploy
 func extractApplicationNamespaces(ctx context.Context, pkgDB *generated.DeploymentPackage) (map[string]string, error) {
 	namespacesDB, err := pkgDB.QueryApplicationNamespaces().All(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	namespaces := make(map[string]string, len(namespacesDB))
 	for _, namespaceDB := range namespacesDB {
 		sourceDB, err := namespaceDB.QuerySourceFk().Only(ctx)
 		if err != nil {
-			return nil, errors.NewDBError(errors.WithError(err))
+			return nil, nberrors.NewDBError(nberrors.WithError(err))
 		}
 		namespaces[sourceDB.Name] = namespaceDB.Namespace
 	}
@@ -774,14 +775,14 @@ func extractApplicationNamespaces(ctx context.Context, pkgDB *generated.Deployme
 func extractNamespaces(ctx context.Context, pkgDB *generated.DeploymentPackage) ([]*catalogv3.Namespace, error) {
 	namespacesDB, err := pkgDB.QueryNamespaces().All(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	namespaces := make([]*catalogv3.Namespace, 0, len(namespacesDB))
 	for _, namespaceDB := range namespacesDB {
 		namespace := &catalogv3.Namespace{Name: namespaceDB.Name, Labels: map[string]string{}, Annotations: map[string]string{}}
 		adornmentsDB, err := namespaceDB.QueryAdornments().All(ctx)
 		if err != nil {
-			return nil, errors.NewDBError(errors.WithError(err))
+			return nil, nberrors.NewDBError(nberrors.WithError(err))
 		}
 		for _, adornmentDB := range adornmentsDB {
 			if adornmentDB.Type == namespaceLabelType {
@@ -800,7 +801,7 @@ func extractNamespaces(ctx context.Context, pkgDB *generated.DeploymentPackage) 
 func extractExtensions(ctx context.Context, pkgDB *generated.DeploymentPackage) ([]*catalogv3.APIExtension, error) {
 	extensionsDB, err := pkgDB.QueryExtensions().All(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	extensions := make([]*catalogv3.APIExtension, 0, len(extensionsDB))
 	for _, extDB := range extensionsDB {
@@ -823,7 +824,7 @@ func extractExtensions(ctx context.Context, pkgDB *generated.DeploymentPackage) 
 
 		epsDB, err := extDB.QueryEndpoints().All(ctx)
 		if err != nil {
-			return nil, errors.NewDBError(errors.WithError(err))
+			return nil, nberrors.NewDBError(nberrors.WithError(err))
 		}
 
 		eps := make([]*catalogv3.Endpoint, 0, len(epsDB))
@@ -848,13 +849,13 @@ func extractExtensions(ctx context.Context, pkgDB *generated.DeploymentPackage) 
 func extractArtifactReferences(ctx context.Context, pkgDB *generated.DeploymentPackage) ([]*catalogv3.ArtifactReference, error) {
 	artifactsDB, err := pkgDB.QueryArtifacts().All(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	artifacts := make([]*catalogv3.ArtifactReference, 0, len(artifactsDB))
 	for _, refDB := range artifactsDB {
 		artifactDB, err := refDB.QueryArtifact().Only(ctx)
 		if err != nil {
-			return nil, errors.NewDBError(errors.WithError(err))
+			return nil, nberrors.NewDBError(nberrors.WithError(err))
 		}
 		artifacts = append(artifacts, &catalogv3.ArtifactReference{
 			Name:    artifactDB.Name,
@@ -871,9 +872,9 @@ func (g *Server) GetDeploymentPackageVersions(ctx context.Context, req *catalogv
 		return nil, err
 	}
 	if req == nil || req.DeploymentPackageName == "" {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithMessage("incomplete request"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithMessage("incomplete request"))
 	}
 
 	if err := g.authCheckAllowed(ctx, req); err != nil {
@@ -882,7 +883,7 @@ func (g *Server) GetDeploymentPackageVersions(ctx context.Context, req *catalogv
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	pkgsDB, err := tx.DeploymentPackage.Query().
@@ -893,13 +894,13 @@ func (g *Server) GetDeploymentPackageVersions(ctx context.Context, req *catalogv
 		All(ctx)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	if len(pkgsDB) == 0 {
 		g.rollbackTransaction(tx)
-		return nil, errors.NewNotFound(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithResourceName(req.DeploymentPackageName))
+		return nil, nberrors.NewNotFound(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithResourceName(req.DeploymentPackageName))
 	}
 
 	pkgs := make([]*catalogv3.DeploymentPackage, 0, len(pkgsDB))
@@ -914,7 +915,7 @@ func (g *Server) GetDeploymentPackageVersions(ctx context.Context, req *catalogv
 
 	err = g.commitTransaction(tx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	logActivity(ctx, "got all version of", "deployment-package", projectUUID, "name => "+req.DeploymentPackageName,
 		"total versions => "+fmt.Sprintf("%d", len(pkgs)))
@@ -928,9 +929,9 @@ func (g *Server) GetDeploymentPackage(ctx context.Context, req *catalogv3.GetDep
 		return nil, err
 	}
 	if req == nil || req.DeploymentPackageName == "" || req.Version == "" {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithMessage("incomplete request"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithMessage("incomplete request"))
 	}
 
 	if err := g.authCheckAllowed(ctx, req); err != nil {
@@ -939,7 +940,7 @@ func (g *Server) GetDeploymentPackage(ctx context.Context, req *catalogv3.GetDep
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	pkgDB, err := tx.DeploymentPackage.Query().
@@ -952,23 +953,23 @@ func (g *Server) GetDeploymentPackage(ctx context.Context, req *catalogv3.GetDep
 	if err != nil {
 		g.rollbackTransaction(tx)
 		if generated.IsNotFound(err) {
-			return nil, errors.NewNotFound(
-				errors.WithResourceType(errors.DeploymentPackageType),
-				errors.WithResourceName(req.DeploymentPackageName),
-				errors.WithResourceVersion(req.Version))
+			return nil, nberrors.NewNotFound(
+				nberrors.WithResourceType(nberrors.DeploymentPackageType),
+				nberrors.WithResourceName(req.DeploymentPackageName),
+				nberrors.WithResourceVersion(req.Version))
 		}
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	ca, err := extractDeploymentPackage(ctx, pkgDB)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	err = g.commitTransaction(tx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	logActivity(ctx, "got", "deployment-package", projectUUID, req.DeploymentPackageName, req.Version)
 	return &catalogv3.GetDeploymentPackageResponse{DeploymentPackage: ca}, nil
@@ -981,9 +982,9 @@ func (g *Server) DownloadDeploymentPackage(ctx context.Context, req *catalogv3.D
 		return nil, err
 	}
 	if req == nil || req.DeploymentPackageName == "" || req.Version == "" {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithMessage("incomplete request"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithMessage("incomplete request"))
 	}
 
 	if err := g.authCheckAllowed(ctx, req); err != nil {
@@ -992,7 +993,7 @@ func (g *Server) DownloadDeploymentPackage(ctx context.Context, req *catalogv3.D
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	pkgDB, err := tx.DeploymentPackage.Query().
@@ -1005,18 +1006,18 @@ func (g *Server) DownloadDeploymentPackage(ctx context.Context, req *catalogv3.D
 	if err != nil {
 		g.rollbackTransaction(tx)
 		if generated.IsNotFound(err) {
-			return nil, errors.NewNotFound(
-				errors.WithResourceType(errors.DeploymentPackageType),
-				errors.WithResourceName(req.DeploymentPackageName),
-				errors.WithResourceVersion(req.Version))
+			return nil, nberrors.NewNotFound(
+				nberrors.WithResourceType(nberrors.DeploymentPackageType),
+				nberrors.WithResourceName(req.DeploymentPackageName),
+				nberrors.WithResourceVersion(req.Version))
 		}
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	ca, err := extractDeploymentPackage(ctx, pkgDB)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	registryNames := map[string]bool{}
@@ -1033,17 +1034,17 @@ func (g *Server) DownloadDeploymentPackage(ctx context.Context, req *catalogv3.D
 		if err != nil {
 			g.rollbackTransaction(tx)
 			if generated.IsNotFound(err) {
-				return nil, errors.NewNotFound(
-					errors.WithResourceType(errors.ApplicationType),
-					errors.WithResourceName(appReference.Name),
-					errors.WithResourceVersion(appReference.Version))
+				return nil, nberrors.NewNotFound(
+					nberrors.WithResourceType(nberrors.ApplicationType),
+					nberrors.WithResourceName(appReference.Name),
+					nberrors.WithResourceVersion(appReference.Version))
 			}
-			return nil, errors.NewDBError(errors.WithError(err))
+			return nil, nberrors.NewDBError(nberrors.WithError(err))
 		}
 		app, err := g.applicationExtract(ctx, appDB, projectUUID)
 		if err != nil {
 			g.rollbackTransaction(tx)
-			return nil, errors.NewDBError(errors.WithError(err))
+			return nil, nberrors.NewDBError(nberrors.WithError(err))
 		}
 		registryNames[app.HelmRegistryName] = true
 		apps = append(apps, app)
@@ -1054,7 +1055,7 @@ func (g *Server) DownloadDeploymentPackage(ctx context.Context, req *catalogv3.D
 	if UseSecretService {
 		secretService, err = SecretServiceFactory(ctx)
 		if err != nil {
-			return nil, errors.NewVaultError(errors.WithError(err))
+			return nil, nberrors.NewVaultError(nberrors.WithError(err))
 		}
 		defer secretService.Logout(ctx)
 	}
@@ -1070,23 +1071,23 @@ func (g *Server) DownloadDeploymentPackage(ctx context.Context, req *catalogv3.D
 		if err != nil {
 			g.rollbackTransaction(tx)
 			if generated.IsNotFound(err) {
-				return nil, errors.NewNotFound(
-					errors.WithResourceType(errors.RegistryType),
-					errors.WithResourceName(regName))
+				return nil, nberrors.NewNotFound(
+					nberrors.WithResourceType(nberrors.RegistryType),
+					nberrors.WithResourceName(regName))
 			}
-			return nil, errors.NewDBError(errors.WithError(err))
+			return nil, nberrors.NewDBError(nberrors.WithError(err))
 		}
 		reg, err := g.extractRegistry(ctx, regDB, secretService, true)
 		if err != nil {
 			g.rollbackTransaction(tx)
-			return nil, errors.NewDBError(errors.WithError(err))
+			return nil, nberrors.NewDBError(nberrors.WithError(err))
 		}
 		regs = append(regs, reg)
 	}
 
 	err = g.commitTransaction(tx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	e := exporter.NewExporter()
@@ -1094,26 +1095,26 @@ func (g *Server) DownloadDeploymentPackage(ctx context.Context, req *catalogv3.D
 
 	data, err := e.ExportDeploymentPackage(ca)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+		return nil, nberrors.NewDBError(nberrors.WithError(err)) // TODO: right error?
 	}
 	err = e.AddToTarball(fmt.Sprintf("%s-deployment-package.yaml", ca.Name), data)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+		return nil, nberrors.NewDBError(nberrors.WithError(err)) // TODO: right error?
 	}
 
 	for _, app := range apps {
 		data, profileData, err := e.ExportApplication(app)
 		if err != nil {
-			return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+			return nil, nberrors.NewDBError(nberrors.WithError(err)) // TODO: right error?
 		}
 		err = e.AddToTarball(fmt.Sprintf("%s-application.yaml", app.Name), data)
 		if err != nil {
-			return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+			return nil, nberrors.NewDBError(nberrors.WithError(err)) // TODO: right error?
 		}
 		for name, profile := range profileData {
 			err = e.AddToTarball(name, profile)
 			if err != nil {
-				return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+				return nil, nberrors.NewDBError(nberrors.WithError(err)) // TODO: right error?
 			}
 		}
 	}
@@ -1121,17 +1122,17 @@ func (g *Server) DownloadDeploymentPackage(ctx context.Context, req *catalogv3.D
 	for _, reg := range regs {
 		data, err = e.ExportRegistry(reg)
 		if err != nil {
-			return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+			return nil, nberrors.NewDBError(nberrors.WithError(err)) // TODO: right error?
 		}
 		err = e.AddToTarball(fmt.Sprintf("%s-registry.yaml", reg.Name), data)
 		if err != nil {
-			return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+			return nil, nberrors.NewDBError(nberrors.WithError(err)) // TODO: right error?
 		}
 	}
 
 	data, err = e.CloseTarball()
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err)) // TODO: right error?
+		return nil, nberrors.NewDBError(nberrors.WithError(err)) // TODO: right error?
 	}
 
 	logActivity(ctx, "download", "deployment-package", projectUUID, req.DeploymentPackageName, req.Version)
@@ -1168,21 +1169,21 @@ func (g *Server) UpdateDeploymentPackage(ctx context.Context, req *catalogv3.Upd
 		return nil, err
 	}
 	if req == nil || req.DeploymentPackage == nil || req.DeploymentPackageName == "" || req.Version == "" {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithMessage("incomplete request"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithMessage("incomplete request"))
 	} else if err := protovalidate.Validate(req); err != nil {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithMessage(err.Error()))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithMessage(err.Error()))
 	} else if req.DeploymentPackageName != req.DeploymentPackage.Name {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithMessage("name cannot be changed %s != %s", req.DeploymentPackageName, req.DeploymentPackage.Name))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithMessage("name cannot be changed %s != %s", req.DeploymentPackageName, req.DeploymentPackage.Name))
 	} else if req.Version != req.DeploymentPackage.Version {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithMessage("version cannot be changed %s != %s", req.Version, req.DeploymentPackage.Version))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithMessage("version cannot be changed %s != %s", req.Version, req.DeploymentPackage.Version))
 	} else if err := validateDeploymentProfiles(req.DeploymentPackage); err != nil {
 		return nil, err
 	}
@@ -1193,7 +1194,7 @@ func (g *Server) UpdateDeploymentPackage(ctx context.Context, req *catalogv3.Upd
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	events := &DeploymentPackageEvents{}
@@ -1204,7 +1205,7 @@ func (g *Server) UpdateDeploymentPackage(ctx context.Context, req *catalogv3.Upd
 
 	err = g.commitTransaction(tx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	logActivity(ctx, "updated", "deployment-package", projectUUID, req.DeploymentPackageName, req.Version)
@@ -1215,28 +1216,28 @@ func (g *Server) UpdateDeploymentPackage(ctx context.Context, req *catalogv3.Upd
 
 func (g *Server) updateDeploymentPackage(ctx context.Context, tx *generated.Tx, projectUUID string, pkg *catalogv3.DeploymentPackage, events *DeploymentPackageEvents) error {
 	if len(pkg.Profiles) > 0 && pkg.DefaultProfileName == "" {
-		return errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithMessage("default profile name must be specified"))
+		return nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithMessage("default profile name must be specified"))
 	}
 
 	displayName, ok := validateDisplayName(pkg.Name, pkg.DisplayName)
 	if !ok {
-		return errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithResourceName(pkg.Name),
-			errors.WithResourceVersion(pkg.Version),
-			errors.WithMessage("display name cannot contain leading or trailing spaces"))
+		return nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithResourceName(pkg.Name),
+			nberrors.WithResourceVersion(pkg.Version),
+			nberrors.WithMessage("display name cannot contain leading or trailing spaces"))
 	}
 
 	pkgDB, ok, err := g.getDeploymentPackage(ctx, tx, projectUUID, pkg.Name, pkg.Version)
 	if err != nil {
 		return err
 	} else if !ok {
-		return errors.NewNotFound(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithResourceVersion(pkg.Version),
-			errors.WithResourceName(pkg.Name))
+		return nberrors.NewNotFound(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithResourceVersion(pkg.Version),
+			nberrors.WithResourceName(pkg.Name))
 	}
 
 	changes, err := g.computePackageChanges(ctx, pkg, pkgDB)
@@ -1276,12 +1277,12 @@ func (g *Server) updateDeploymentPackage(ctx context.Context, tx *generated.Tx, 
 		SetKind(kindToDB(pkg.Kind)).
 		Save(ctx)
 	if err != nil {
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	} else if updateCount == 0 {
-		return errors.NewNotFound(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithResourceName(pkg.Name),
-			errors.WithResourceVersion(pkg.Version))
+		return nberrors.NewNotFound(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithResourceName(pkg.Name),
+			nberrors.WithResourceVersion(pkg.Version))
 	}
 
 	// Update the application references, if necessary
@@ -1361,12 +1362,12 @@ func (g *Server) updatePackageKindOrDeployedState(ctx context.Context, tx *gener
 		SetKind(kindToDB(pkg.Kind)).
 		Save(ctx)
 	if err != nil {
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	} else if updateCount == 0 {
-		return errors.NewNotFound(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithResourceName(pkg.Name),
-			errors.WithResourceVersion(pkg.Version))
+		return nberrors.NewNotFound(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithResourceName(pkg.Name),
+			nberrors.WithResourceVersion(pkg.Version))
 	}
 	return nil
 }
@@ -1483,15 +1484,15 @@ func (g *Server) updateDeploymentProfiles(ctx context.Context, tx *generated.Tx,
 	displayNames := make(map[string]*catalogv3.DeploymentProfile, 0)
 	for _, p := range pkg.Profiles {
 		if _, ok := givenProfiles[p.Name]; ok {
-			return errors.NewAlreadyExists(
-				errors.WithResourceType(errors.DeploymentProfileType),
-				errors.WithResourceName(p.Name))
+			return nberrors.NewAlreadyExists(
+				nberrors.WithResourceType(nberrors.DeploymentProfileType),
+				nberrors.WithResourceName(p.Name))
 		}
 		if _, ok := displayNames[strings.ToLower(p.DisplayName)]; ok {
-			return errors.NewAlreadyExists(
-				errors.WithResourceType(errors.DeploymentProfileType),
-				errors.WithResourceName(p.Name),
-				errors.WithMessage("deployment profile %s display name %s is not unique", p.Name, p.DisplayName))
+			return nberrors.NewAlreadyExists(
+				nberrors.WithResourceType(nberrors.DeploymentProfileType),
+				nberrors.WithResourceName(p.Name),
+				nberrors.WithMessage("deployment profile %s display name %s is not unique", p.Name, p.DisplayName))
 		}
 		givenProfiles[p.Name] = p
 		displayNames[strings.ToLower(p.DisplayName)] = p
@@ -1500,7 +1501,7 @@ func (g *Server) updateDeploymentProfiles(ctx context.Context, tx *generated.Tx,
 	// Iterate over the existing profiles in the database and find those that are not in the new set, i.e. should be deleted
 	profilesDB, err := pkgDB.QueryDeploymentProfiles().All(ctx)
 	if err != nil {
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	// Scan over the existing profiles to make sure we're not attempting to delete any that have pending references
@@ -1508,7 +1509,7 @@ func (g *Server) updateDeploymentProfiles(ctx context.Context, tx *generated.Tx,
 	for _, profileDB := range profilesDB {
 		if profile, ok := givenProfiles[profileDB.Name]; !ok {
 			if err = tx.DeploymentProfile.DeleteOneID(profileDB.ID).Exec(ctx); err != nil {
-				return errors.NewDBError(errors.WithError(err))
+				return nberrors.NewDBError(nberrors.WithError(err))
 			}
 		} else {
 			if err = g.updateDeploymentProfile(ctx, tx, profile, profileDB, pkgDB); err != nil {
@@ -1563,18 +1564,18 @@ func (g *Server) applicationDependenciesChanged(ctx context.Context, pkg *catalo
 
 		// Make sure that the existing dependency makes sense in the context of the specified pkg references
 		if _, ok := apps[dep.Name]; !ok {
-			return false, errors.NewInvalidArgument(
-				errors.WithResourceType(errors.DeploymentPackageType),
-				errors.WithResourceName(pkg.Name),
-				errors.WithResourceVersion(pkg.Version),
-				errors.WithMessage("dependency source %s not found", dep.Name))
+			return false, nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.DeploymentPackageType),
+				nberrors.WithResourceName(pkg.Name),
+				nberrors.WithResourceVersion(pkg.Version),
+				nberrors.WithMessage("dependency source %s not found", dep.Name))
 		}
 		if _, ok := apps[dep.Requires]; !ok {
-			return false, errors.NewInvalidArgument(
-				errors.WithResourceType(errors.DeploymentPackageType),
-				errors.WithResourceName(pkg.Name),
-				errors.WithResourceVersion(pkg.Version),
-				errors.WithMessage("dependency target %s not found", dep.Requires))
+			return false, nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.DeploymentPackageType),
+				nberrors.WithResourceName(pkg.Name),
+				nberrors.WithResourceVersion(pkg.Version),
+				nberrors.WithMessage("dependency target %s not found", dep.Requires))
 		}
 	}
 	return false, nil
@@ -1583,7 +1584,7 @@ func (g *Server) applicationDependenciesChanged(ctx context.Context, pkg *catalo
 func (g *Server) updateApplicationDependencies(ctx context.Context, tx *generated.Tx, pkg *catalogv3.DeploymentPackage, pkgDB *generated.DeploymentPackage) error {
 	if _, err := tx.ApplicationDependency.Delete().
 		Where(applicationdependency.HasDeploymentPackageFkWith(deploymentpackage.ID(pkgDB.ID))).Exec(ctx); err != nil {
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	}
 	return g.createApplicationDependencies(ctx, tx, pkg, pkgDB)
 }
@@ -1612,11 +1613,11 @@ func (g *Server) applicationNamespacesChanged(ctx context.Context, pkg *catalogv
 	// Otherwise, look for sameness within
 	for appName, appNamespace := range pkg.DefaultNamespaces {
 		if namespace, ok := existingNamespaces[appName]; !ok || appNamespace != namespace {
-			return false, errors.NewInvalidArgument(
-				errors.WithResourceType(errors.DeploymentPackageType),
-				errors.WithResourceName(pkg.Name),
-				errors.WithResourceVersion(pkg.Version),
-				errors.WithMessage("application %s does not exist", appName))
+			return false, nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.DeploymentPackageType),
+				nberrors.WithResourceName(pkg.Name),
+				nberrors.WithResourceVersion(pkg.Version),
+				nberrors.WithMessage("application %s does not exist", appName))
 		}
 		if _, appRefOk := appRefMap[appName]; !appRefOk {
 			return true, nil // app ref does not exist, so bail
@@ -1628,7 +1629,7 @@ func (g *Server) applicationNamespacesChanged(ctx context.Context, pkg *catalogv
 func (g *Server) updateApplicationNamespaces(ctx context.Context, tx *generated.Tx, pkg *catalogv3.DeploymentPackage, pkgDB *generated.DeploymentPackage) error {
 	if _, err := tx.ApplicationNamespace.Delete().
 		Where(applicationnamespace.HasDeploymentPackageFkWith(deploymentpackage.ID(pkgDB.ID))).Exec(ctx); err != nil {
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	}
 	return g.createApplicationNamespaces(ctx, tx, pkg, pkgDB)
 }
@@ -1664,7 +1665,7 @@ func (g *Server) namespacesChanged(ctx context.Context, pkg *catalogv3.Deploymen
 func (g *Server) updateNamespaces(ctx context.Context, tx *generated.Tx, pkg *catalogv3.DeploymentPackage, pkgDB *generated.DeploymentPackage) error {
 	if _, err := tx.Namespace.Delete().
 		Where(namespace.HasDeploymentPackageFkWith(deploymentpackage.ID(pkgDB.ID))).Exec(ctx); err != nil {
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	}
 	return g.createNamespaces(ctx, tx, pkg, pkgDB)
 }
@@ -1676,7 +1677,7 @@ func (g *Server) defaultDeploymentProfileChanged(ctx context.Context, pkg *catal
 		if generated.IsNotFound(err) { // If there were no profiles it's OK to have blank default profile
 			return pkg.DefaultProfileName != "", nil
 		}
-		return false, errors.NewDBError(errors.WithError(err))
+		return false, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	return pkg.DefaultProfileName != dpDB.Name, nil
 }
@@ -1695,13 +1696,13 @@ func (g *Server) updateDefaultDeploymentProfile(ctx context.Context, tx *generat
 			).First(ctx)
 		if err != nil {
 			if generated.IsNotFound(err) {
-				return errors.NewInvalidArgument(
-					errors.WithResourceType(errors.DeploymentPackageType),
-					errors.WithResourceName(pkgName),
-					errors.WithResourceVersion(version),
-					errors.WithMessage("%s %s not found", errors.DeploymentProfileType, name))
+				return nberrors.NewInvalidArgument(
+					nberrors.WithResourceType(nberrors.DeploymentPackageType),
+					nberrors.WithResourceName(pkgName),
+					nberrors.WithResourceVersion(version),
+					nberrors.WithMessage("%s %s not found", nberrors.DeploymentProfileType, name))
 			}
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 		_, err = tx.DeploymentPackage.Update().
 			Where(
@@ -1712,7 +1713,7 @@ func (g *Server) updateDefaultDeploymentProfile(ctx context.Context, tx *generat
 			SetDefaultProfileID(dpDB.ID).
 			Save(ctx)
 		if err != nil {
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 	}
 	return nil
@@ -1747,7 +1748,7 @@ func (g *Server) extensionsChanged(ctx context.Context, pkg *catalogv3.Deploymen
 func (g *Server) updateExtensions(ctx context.Context, tx *generated.Tx, pkg *catalogv3.DeploymentPackage, pkgDB *generated.DeploymentPackage) error {
 	if _, err := tx.Extension.Delete().
 		Where(extension.HasDeploymentPackageFkWith(deploymentpackage.ID(pkgDB.ID))).Exec(ctx); err != nil {
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	}
 	return g.createExtensions(ctx, tx, pkg, pkgDB)
 }
@@ -1785,7 +1786,7 @@ func (g *Server) artifactReferencesChanged(ctx context.Context, pkg *catalogv3.D
 func (g *Server) updateArtifactReferences(ctx context.Context, tx *generated.Tx, projectUUID string, pkg *catalogv3.DeploymentPackage, pkgDB *generated.DeploymentPackage) error {
 	if _, err := tx.ArtifactReference.Delete().
 		Where(artifactreference.HasDeploymentPackageFkWith(deploymentpackage.ID(pkgDB.ID))).Exec(ctx); err != nil {
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	}
 	return g.createArtifactReferences(ctx, tx, projectUUID, pkg, pkgDB)
 }
@@ -1801,9 +1802,9 @@ func (g *Server) DeleteDeploymentPackage(ctx context.Context, req *catalogv3.Del
 		return nil, err
 	}
 	if req == nil || req.DeploymentPackageName == "" || req.Version == "" {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithMessage("incomplete request"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithMessage("incomplete request"))
 	}
 
 	if err := g.authCheckAllowed(ctx, req); err != nil {
@@ -1812,7 +1813,7 @@ func (g *Server) DeleteDeploymentPackage(ctx context.Context, req *catalogv3.Del
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	// Make sure that CA is not already deployed
@@ -1836,13 +1837,13 @@ func (g *Server) DeleteDeploymentPackage(ctx context.Context, req *catalogv3.Del
 		Exec(ctx)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	} else if deleteCount == 0 {
 		g.rollbackTransaction(tx)
-		return nil, errors.NewNotFound(
-			errors.WithResourceType(errors.DeploymentPackageType),
-			errors.WithResourceName(req.DeploymentPackageName),
-			errors.WithResourceVersion(req.Version))
+		return nil, nberrors.NewNotFound(
+			nberrors.WithResourceType(nberrors.DeploymentPackageType),
+			nberrors.WithResourceName(req.DeploymentPackageName),
+			nberrors.WithResourceVersion(req.Version))
 	}
 	if _, err = g.checkDeleteResult(ctx, tx, err, fmt.Sprintf("deployment package %s:%s", req.DeploymentPackageName, req.Version), projectUUID); err != nil {
 		return nil, err
@@ -1856,17 +1857,17 @@ func (g *Server) DeleteDeploymentPackage(ctx context.Context, req *catalogv3.Del
 // WatchDeploymentPackages watches inventory of deployment packages for changes.
 func (g *Server) WatchDeploymentPackages(req *catalogv3.WatchDeploymentPackagesRequest, server catalogv3.CatalogService_WatchDeploymentPackagesServer) error {
 	if server == nil {
-		return errors.NewInvalidArgument(
-			errors.WithMessage("incomplete request"))
+		return nberrors.NewInvalidArgument(
+			nberrors.WithMessage("incomplete request"))
 	}
 	projectUUID, err := GetActiveProjectIDAllowAdmin(server.Context(), req.ProjectId)
 	if err != nil {
 		return err
 	}
 	if req == nil {
-		return errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentProfileType),
-			errors.WithMessage("incomplete request"))
+		return nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentProfileType),
+			nberrors.WithMessage("incomplete request"))
 	}
 
 	if err := g.authCheckAllowed(server.Context(), req); err != nil {
@@ -1881,7 +1882,7 @@ func (g *Server) WatchDeploymentPackages(req *catalogv3.WatchDeploymentPackagesR
 		ctx := server.Context()
 		tx, err := g.startTransaction(ctx)
 		if err != nil {
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 
 		deploymentPackages, projectUUIDs, _, err := g.getDeploymentPackages(ctx, tx, projectUUID, req.Kinds, nil, nil, 0, 0)
@@ -1908,7 +1909,7 @@ func (g *Server) WatchDeploymentPackages(req *catalogv3.WatchDeploymentPackagesR
 
 		err = g.commitTransaction(tx)
 		if err != nil {
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 	} else {
 		// Register the stream, so it can start receiving updates

@@ -5,27 +5,27 @@
 package northbound
 
 import (
-	"buf.build/go/protovalidate"
 	"bytes"
 	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"os"
+	"regexp"
+	"strings"
+
+	"buf.build/go/protovalidate"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
-	ent "github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/application"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/predicate"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/registry"
-	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
+	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/nberrors"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
-	"os"
-	"regexp"
-	"strings"
 )
 
 const (
@@ -151,20 +151,20 @@ func (g *Server) CreateRegistry(ctx context.Context, req *catalogv3.CreateRegist
 		return nil, err
 	}
 	if req == nil || req.Registry == nil {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.RegistryType),
-			errors.WithMessage("incomplete request"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.RegistryType),
+			nberrors.WithMessage("incomplete request"))
 	} else if err := protovalidate.Validate(req); err != nil {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.RegistryType),
-			errors.WithMessage(err.Error()))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.RegistryType),
+			nberrors.WithMessage(err.Error()))
 	}
 
 	// Additional validation for registry name
 	if err := validateRegistryName(req.Registry.Name); err != nil {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.RegistryType),
-			errors.WithMessage(err.Error()))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.RegistryType),
+			nberrors.WithMessage(err.Error()))
 	}
 
 	if err := g.authCheckAllowed(ctx, req); err != nil {
@@ -173,7 +173,7 @@ func (g *Server) CreateRegistry(ctx context.Context, req *catalogv3.CreateRegist
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	events := &RegistryEvents{}
@@ -185,7 +185,7 @@ func (g *Server) CreateRegistry(ctx context.Context, req *catalogv3.CreateRegist
 
 	err = g.commitTransaction(tx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	logActivity(ctx, "created", "registry", projectUUID, req.Registry.Name)
@@ -208,12 +208,12 @@ func (g *Server) CreateRegistry(ctx context.Context, req *catalogv3.CreateRegist
 	}, nil
 }
 
-func (g *Server) createRegistry(ctx context.Context, tx *ent.Tx, projectUUID string, reg *catalogv3.Registry, events *RegistryEvents) (*ent.Registry, error) {
+func (g *Server) createRegistry(ctx context.Context, tx *generated.Tx, projectUUID string, reg *catalogv3.Registry, events *RegistryEvents) (*generated.Registry, error) {
 	displayName, ok := validateDisplayName(reg.Name, reg.DisplayName)
 	if !ok {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.RegistryType),
-			errors.WithMessage("display name cannot contain leading or trailing spaces"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.RegistryType),
+			nberrors.WithMessage("display name cannot contain leading or trailing spaces"))
 	}
 	reg.DisplayName = displayName
 
@@ -246,24 +246,24 @@ func (g *Server) createRegistry(ctx context.Context, tx *ent.Tx, projectUUID str
 	created, err := create.Save(ctx)
 	if err != nil {
 		if generated.IsConstraintError(err) {
-			return nil, errors.NewInvalidArgument(
-				errors.WithResourceType(errors.RegistryType),
-				errors.WithResourceName(reg.Name),
-				errors.WithMessage(`registry %s already exists`, reg.Name))
+			return nil, nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.RegistryType),
+				nberrors.WithResourceName(reg.Name),
+				nberrors.WithMessage(`registry %s already exists`, reg.Name))
 		}
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	if UseSecretService {
 		secretService, err := SecretServiceFactory(ctx)
 		if err != nil {
-			return nil, errors.NewVaultError(errors.WithError(err))
+			return nil, nberrors.NewVaultError(nberrors.WithError(err))
 		}
 		defer secretService.Logout(ctx)
 
 		registryKey := MakeSecretPath(projectUUID, reg.Name)
 		err = secretService.WriteSecret(ctx, registryKey, registrySecretData)
 		if err != nil {
-			return nil, errors.NewVaultError(errors.WithError(err))
+			return nil, nberrors.NewVaultError(nberrors.WithError(err))
 		}
 	}
 
@@ -280,7 +280,7 @@ func (g *Server) checkRegistryUniqueness(ctx context.Context, tx *generated.Tx, 
 				registry.DisplayNameLc(strings.ToLower(r.DisplayName)),
 				registry.Not(registry.Name(r.Name))).
 			Count(ctx)
-		if err = checkUniqueness(existing, err, "registry", r.Name, r.DisplayName, errors.RegistryType); err != nil {
+		if err = checkUniqueness(existing, err, "registry", r.Name, r.DisplayName, nberrors.RegistryType); err != nil {
 			return err
 		}
 	}
@@ -303,9 +303,9 @@ func (g *Server) ListRegistries(ctx context.Context, req *catalogv3.ListRegistri
 		return nil, err
 	}
 	if req == nil {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.RegistryType),
-			errors.WithMessage("incomplete request"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.RegistryType),
+			nberrors.WithMessage("incomplete request"))
 	}
 
 	requestName := "ListRegistriesRequest"
@@ -318,15 +318,15 @@ func (g *Server) ListRegistries(ctx context.Context, req *catalogv3.ListRegistri
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
-	orderBys, err := parseOrderBy(req.OrderBy, errors.RegistryType)
+	orderBys, err := parseOrderBy(req.OrderBy, nberrors.RegistryType)
 	if err != nil {
 		g.rollbackTransaction(tx)
 		return nil, err
 	}
-	filters, err := parseFilter(req.Filter, errors.RegistryType)
+	filters, err := parseFilter(req.Filter, nberrors.RegistryType)
 	if err != nil {
 		g.rollbackTransaction(tx)
 		return nil, err
@@ -339,7 +339,7 @@ func (g *Server) ListRegistries(ctx context.Context, req *catalogv3.ListRegistri
 
 	err = g.commitTransaction(tx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	logActivity(ctx, "listed", "registries", projectUUID, "Total => "+fmt.Sprintf("%d", count))
 	return &catalogv3.ListRegistriesResponse{
@@ -374,13 +374,13 @@ func (g *Server) getRegistries(ctx context.Context, tx *generated.Tx, projectUUI
 	if UseSecretService {
 		secretService, err = SecretServiceFactory(ctx)
 		if err != nil {
-			return nil, nil, 0, errors.NewVaultError(errors.WithError(err))
+			return nil, nil, 0, nberrors.NewVaultError(nberrors.WithError(err))
 		}
 		defer secretService.Logout(ctx)
 	}
 
 	registriesQuery := tx.Registry.Query()
-	options, err := orderByOptions(orderBys, registryColumns, errors.RegistryType)
+	options, err := orderByOptions(orderBys, registryColumns, nberrors.RegistryType)
 	if err != nil {
 		return nil, nil, 0, err
 	}
@@ -389,7 +389,7 @@ func (g *Server) getRegistries(ctx context.Context, tx *generated.Tx, projectUUI
 	}
 	registriesQuery = registriesQuery.Order(orderOptions...)
 
-	filterPreds, err := filterPredicates(filters, registryColumns, errors.RegistryType)
+	filterPreds, err := filterPredicates(filters, registryColumns, nberrors.RegistryType)
 	if err != nil {
 		return nil, nil, 0, err
 	}
@@ -405,7 +405,7 @@ func (g *Server) getRegistries(ctx context.Context, tx *generated.Tx, projectUUI
 		registriesDB, err = registriesQuery.Where(registry.ProjectUUID(projectUUID)).All(ctx)
 	}
 	if err != nil {
-		return nil, nil, 0, errors.NewDBError(errors.WithError(err))
+		return nil, nil, 0, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	startIndex, endIndex, totalElements, err := computePageRange(pageSize, offset, len(registriesDB))
@@ -444,14 +444,14 @@ func (g *Server) extractRegistry(ctx context.Context, registryDB *generated.Regi
 		// Fetch the stored secret
 		encodedSecretData, err = secretService.ReadSecret(ctx, registryKey)
 		if err != nil {
-			return nil, errors.NewVaultError(errors.WithError(err))
+			return nil, nberrors.NewVaultError(nberrors.WithError(err))
 		}
 	} else {
 		encodedSecretData = registryDB.AuthToken
 	}
 	err = Base64Factory().DecodeBase64(&rsd, encodedSecretData)
 	if err != nil {
-		return nil, errors.NewVaultError(errors.WithError(err))
+		return nil, nberrors.NewVaultError(nberrors.WithError(err))
 	}
 	reg := &catalogv3.Registry{
 		Name:         registryDB.Name,
@@ -473,7 +473,7 @@ func (g *Server) extractRegistry(ctx context.Context, registryDB *generated.Regi
 			if len(dynamicCACert) == 0 {
 				dynamicCACert, err = readTLSCert()
 				if err != nil {
-					return nil, errors.NewVaultError(errors.WithError(err))
+					return nil, nberrors.NewVaultError(nberrors.WithError(err))
 				}
 			}
 			reg.Cacerts = dynamicCACert
@@ -489,9 +489,9 @@ func (g *Server) GetRegistry(ctx context.Context, req *catalogv3.GetRegistryRequ
 		return nil, err
 	}
 	if req == nil || req.RegistryName == "" {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.RegistryType),
-			errors.WithMessage("incomplete request"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.RegistryType),
+			nberrors.WithMessage("incomplete request"))
 	}
 
 	requestName := "GetRegistryRequest"
@@ -504,7 +504,7 @@ func (g *Server) GetRegistry(ctx context.Context, req *catalogv3.GetRegistryRequ
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	registryDB, err := tx.Registry.Query().
@@ -512,18 +512,18 @@ func (g *Server) GetRegistry(ctx context.Context, req *catalogv3.GetRegistryRequ
 	if err != nil {
 		g.rollbackTransaction(tx)
 		if generated.IsNotFound(err) {
-			return nil, errors.NewNotFound(
-				errors.WithResourceType(errors.RegistryType),
-				errors.WithResourceName(req.RegistryName))
+			return nil, nberrors.NewNotFound(
+				nberrors.WithResourceType(nberrors.RegistryType),
+				nberrors.WithResourceName(req.RegistryName))
 		}
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	var secretService SecretService
 	if UseSecretService {
 		secretService, err = SecretServiceFactory(ctx)
 		if err != nil {
-			return nil, errors.NewVaultError(errors.WithError(err))
+			return nil, nberrors.NewVaultError(nberrors.WithError(err))
 		}
 		defer secretService.Logout(ctx)
 	}
@@ -536,7 +536,7 @@ func (g *Server) GetRegistry(ctx context.Context, req *catalogv3.GetRegistryRequ
 
 	err = g.commitTransaction(tx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	logActivity(ctx, "got", "registry", projectUUID, req.RegistryName)
 	return &catalogv3.GetRegistryResponse{Registry: reg}, nil
@@ -549,28 +549,28 @@ func (g *Server) UpdateRegistry(ctx context.Context, req *catalogv3.UpdateRegist
 		return nil, err
 	}
 	if req == nil || req.Registry == nil || req.RegistryName == "" {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.RegistryType),
-			errors.WithMessage("incomplete request"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.RegistryType),
+			nberrors.WithMessage("incomplete request"))
 	}
 
 	// Validate registry name
 	if err := validateRegistryName(req.RegistryName); err != nil {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.RegistryType),
-			errors.WithMessage(err.Error()))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.RegistryType),
+			nberrors.WithMessage(err.Error()))
 	}
 
 	if err := protovalidate.Validate(req); err != nil {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.RegistryType),
-			errors.WithMessage(err.Error()))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.RegistryType),
+			nberrors.WithMessage(err.Error()))
 	}
 
 	if req.RegistryName != req.Registry.Name {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.RegistryType),
-			errors.WithMessage("name cannot be changed %s != %s", req.RegistryName, req.Registry.Name))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.RegistryType),
+			nberrors.WithMessage("name cannot be changed %s != %s", req.RegistryName, req.Registry.Name))
 	}
 
 	if err := g.authCheckAllowed(ctx, req); err != nil {
@@ -579,7 +579,7 @@ func (g *Server) UpdateRegistry(ctx context.Context, req *catalogv3.UpdateRegist
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	events := &RegistryEvents{}
@@ -590,7 +590,7 @@ func (g *Server) UpdateRegistry(ctx context.Context, req *catalogv3.UpdateRegist
 
 	err = g.commitTransaction(tx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	logActivity(ctx, "updated", "registry", projectUUID, req.RegistryName)
@@ -599,13 +599,13 @@ func (g *Server) UpdateRegistry(ctx context.Context, req *catalogv3.UpdateRegist
 	return &emptypb.Empty{}, nil
 }
 
-func (g *Server) updateRegistry(ctx context.Context, tx *ent.Tx, projectUUID string, reg *catalogv3.Registry, events *RegistryEvents) error {
+func (g *Server) updateRegistry(ctx context.Context, tx *generated.Tx, projectUUID string, reg *catalogv3.Registry, events *RegistryEvents) error {
 	displayName, ok := validateDisplayName(reg.Name, reg.DisplayName)
 	if !ok {
-		return errors.NewInvalidArgument(
-			errors.WithResourceType(errors.RegistryType),
-			errors.WithResourceName(reg.Name),
-			errors.WithMessage("display name cannot contain leading or trailing spaces"))
+		return nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.RegistryType),
+			nberrors.WithResourceName(reg.Name),
+			nberrors.WithMessage("display name cannot contain leading or trailing spaces"))
 	}
 
 	// Make sure that the display name, if specified is unique
@@ -640,57 +640,58 @@ func (g *Server) updateRegistry(ctx context.Context, tx *ent.Tx, projectUUID str
 	updateCount, err := update.Save(ctx)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	} else if updateCount == 0 {
 		g.rollbackTransaction(tx)
-		return errors.NewNotFound(
-			errors.WithResourceType(errors.RegistryType),
-			errors.WithResourceName(reg.Name),
-			errors.WithMessage(`registry not found`))
+		return nberrors.NewNotFound(
+			nberrors.WithResourceType(nberrors.RegistryType),
+			nberrors.WithResourceName(reg.Name),
+			nberrors.WithMessage(`registry not found`))
 	}
 	if UseSecretService {
 		registryKey := MakeSecretPath(projectUUID, reg.Name)
 		secretService, err := SecretServiceFactory(ctx)
 		if err != nil {
-			return errors.NewVaultError(errors.WithError(err))
+			return nberrors.NewVaultError(nberrors.WithError(err))
 		}
 		defer secretService.Logout(ctx)
 
 		err = secretService.WriteSecret(ctx, registryKey, registrySecretData)
 		if err != nil {
-			return errors.NewVaultError(errors.WithError(err))
+			return nberrors.NewVaultError(nberrors.WithError(err))
 		}
 	}
 	events.append(UpdatedEvent, projectUUID, reg)
 	return nil
 }
 
-func (g *Server) checkRegistryType(ctx context.Context, tx *ent.Tx, projectUUID string, reg *catalogv3.Registry) error {
+func (g *Server) checkRegistryType(ctx context.Context, tx *generated.Tx, projectUUID string, reg *catalogv3.Registry) error {
 	regDB, err := tx.Registry.Query().
 		Where(registry.ProjectUUID(projectUUID), registry.Name(reg.Name)).Only(ctx)
 	if err != nil {
 		if generated.IsNotFound(err) {
-			return errors.NewNotFound(
-				errors.WithResourceType(errors.RegistryType),
-				errors.WithResourceName(reg.Name))
+			return nberrors.NewNotFound(
+				nberrors.WithResourceType(nberrors.RegistryType),
+				nberrors.WithResourceName(reg.Name))
 		}
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	}
 	if regDB.Type != reg.Type {
 		count := 0
-		if reg.Type == helmType {
+		switch reg.Type {
+		case helmType:
 			count, err = tx.Registry.QueryApplicationImages(regDB).Count(ctx)
-		} else if reg.Type == imageType {
+		case imageType:
 			count, err = tx.Registry.QueryApplications(regDB).Count(ctx)
 		}
 		if err != nil {
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 		if count > 0 {
-			return errors.NewFailedPrecondition(
-				errors.WithResourceType(errors.RegistryType),
-				errors.WithResourceName(reg.Name),
-				errors.WithMessage("cannot change registry type to %s", reg.Type))
+			return nberrors.NewFailedPrecondition(
+				nberrors.WithResourceType(nberrors.RegistryType),
+				nberrors.WithResourceName(reg.Name),
+				nberrors.WithMessage("cannot change registry type to %s", reg.Type))
 		}
 	}
 	return nil
@@ -703,9 +704,9 @@ func (g *Server) DeleteRegistry(ctx context.Context, req *catalogv3.DeleteRegist
 		return nil, err
 	}
 	if req == nil || req.RegistryName == "" {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.RegistryType),
-			errors.WithMessage("incomplete request"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.RegistryType),
+			nberrors.WithMessage("incomplete request"))
 	}
 
 	if err := g.authCheckAllowed(ctx, req); err != nil {
@@ -714,7 +715,7 @@ func (g *Server) DeleteRegistry(ctx context.Context, req *catalogv3.DeleteRegist
 
 	tx, err := g.startTransaction(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	events := &RegistryEvents{}
@@ -726,26 +727,26 @@ func (g *Server) DeleteRegistry(ctx context.Context, req *catalogv3.DeleteRegist
 		Count(ctx)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	if uses > 0 {
 		g.rollbackTransaction(tx)
-		return nil, errors.NewFailedPrecondition(
-			errors.WithResourceType(errors.RegistryType),
-			errors.WithResourceName(req.RegistryName),
-			errors.WithMessage("cannot delete registry while in use"))
+		return nil, nberrors.NewFailedPrecondition(
+			nberrors.WithResourceType(nberrors.RegistryType),
+			nberrors.WithResourceName(req.RegistryName),
+			nberrors.WithMessage("cannot delete registry while in use"))
 	}
 
 	deleteCount, err := tx.Registry.Delete().
 		Where(registry.ProjectUUID(projectUUID), registry.Name(req.RegistryName)).Exec(ctx)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	} else if deleteCount == 0 {
 		g.rollbackTransaction(tx)
-		return nil, errors.NewNotFound(
-			errors.WithResourceType(errors.RegistryType),
-			errors.WithResourceName(req.RegistryName))
+		return nil, nberrors.NewNotFound(
+			nberrors.WithResourceType(nberrors.RegistryType),
+			nberrors.WithResourceName(req.RegistryName))
 	}
 
 	var secretService SecretService
@@ -754,14 +755,14 @@ func (g *Server) DeleteRegistry(ctx context.Context, req *catalogv3.DeleteRegist
 		secretService, err = SecretServiceFactory(ctx)
 		if err != nil {
 			g.rollbackTransaction(tx)
-			return nil, errors.NewVaultError(errors.WithError(err))
+			return nil, nberrors.NewVaultError(nberrors.WithError(err))
 		}
 		defer secretService.Logout(ctx)
 
 		err = secretService.DeleteSecret(ctx, registryKey)
 		if err != nil {
 			log.Warnf("failed to delete key %s from secret service: %v", registryKey, err)
-			return nil, errors.NewVaultError(errors.WithError(err))
+			return nil, nberrors.NewVaultError(nberrors.WithError(err))
 		}
 	}
 	if _, err = g.checkDeleteResult(ctx, tx, err, fmt.Sprintf("registry %s", req.RegistryName), projectUUID); err != nil {
@@ -776,17 +777,17 @@ func (g *Server) DeleteRegistry(ctx context.Context, req *catalogv3.DeleteRegist
 // WatchRegistries watches inventory of registries for changes.
 func (g *Server) WatchRegistries(req *catalogv3.WatchRegistriesRequest, server catalogv3.CatalogService_WatchRegistriesServer) error {
 	if server == nil {
-		return errors.NewInvalidArgument(
-			errors.WithMessage("incomplete request"))
+		return nberrors.NewInvalidArgument(
+			nberrors.WithMessage("incomplete request"))
 	}
 	projectUUID, err := GetActiveProjectIDAllowAdmin(server.Context(), req.ProjectId)
 	if err != nil {
 		return err
 	}
 	if req == nil {
-		return errors.NewInvalidArgument(
-			errors.WithResourceType(errors.RegistryType),
-			errors.WithMessage("incomplete request"))
+		return nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.RegistryType),
+			nberrors.WithMessage("incomplete request"))
 	}
 
 	if err := g.authCheckAllowed(server.Context(), req); err != nil {
@@ -801,7 +802,7 @@ func (g *Server) WatchRegistries(req *catalogv3.WatchRegistriesRequest, server c
 		ctx := server.Context()
 		tx, err := g.startTransaction(ctx)
 		if err != nil {
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 
 		registries, projectUUIDs, _, err := g.getRegistries(ctx, tx, projectUUID, req.ShowSensitiveInfo, nil, nil, 0, 0)
@@ -828,7 +829,7 @@ func (g *Server) WatchRegistries(req *catalogv3.WatchRegistriesRequest, server c
 
 		err = g.commitTransaction(tx)
 		if err != nil {
-			return errors.NewDBError(errors.WithError(err))
+			return nberrors.NewDBError(nberrors.WithError(err))
 		}
 	} else {
 		// Register the stream, so it can start receiving updates

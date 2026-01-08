@@ -8,14 +8,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	nberrors "github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
-	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 	"regexp"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/nberrors"
+	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var vaultError = status.Errorf(codes.Internal, `failed to access secret service`)

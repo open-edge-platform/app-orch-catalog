@@ -13,7 +13,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	ent "github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/enttest"
-	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
+	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/nberrors"
 	"github.com/open-edge-platform/orch-library/go/pkg/openpolicyagent"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc"
@@ -36,7 +36,7 @@ func createServerConnection(t *testing.T, dbClient *ent.Client, opaClient openpo
 	s, err := newTestService(dbClient, opaClient)
 	assert.NoError(t, err)
 	assert.NotNil(t, s)
-	server := grpc.NewServer()
+	server := grpc.NewServer() // nosemgrep
 	s.Register(server)
 
 	go func() {
@@ -100,7 +100,7 @@ func TestFiltersParsing(t *testing.T) {
 
 	for name, testCase := range tests {
 		t.Run(name, func(t *testing.T) {
-			resp, err := parseFilter(testCase.filter, errors.RegistryType)
+			resp, err := parseFilter(testCase.filter, nberrors.RegistryType)
 			if testCase.expectedError != "" {
 				assert.Error(t, err)
 				assert.Contains(t, err.Error(), testCase.expectedError)

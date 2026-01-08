@@ -7,23 +7,24 @@ package northbound
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/application"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/deploymentpackage"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/deploymentprofile"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/profile"
-	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
+	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/nberrors"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
-	"strings"
 )
 
 func (g *Server) injectDeploymentProfile(ctx context.Context, tx *generated.Tx, profile *catalogv3.DeploymentProfile, pkgDB *generated.DeploymentPackage) (*generated.DeploymentProfile, error) {
 	displayName, ok := validateDisplayName(profile.Name, profile.DisplayName)
 	if !ok {
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentProfileType),
-			errors.WithResourceName(profile.Name),
-			errors.WithMessage("display name cannot contain leading or trailing spaces"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentProfileType),
+			nberrors.WithResourceName(profile.Name),
+			nberrors.WithMessage("display name cannot contain leading or trailing spaces"))
 	}
 
 	if err := g.checkDeploymentProfileUniqueness(ctx, profile, pkgDB); err != nil {
@@ -33,10 +34,10 @@ func (g *Server) injectDeploymentProfile(ctx context.Context, tx *generated.Tx, 
 	profiles, err := g.validateAllProfiles(ctx, pkgDB, profile)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return nil, errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentProfileType),
-			errors.WithResourceName(profile.Name),
-			errors.WithMessage("application profiles are incongruent"))
+		return nil, nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentProfileType),
+			nberrors.WithResourceName(profile.Name),
+			nberrors.WithMessage("application profiles are incongruent"))
 	}
 
 	created, err := tx.DeploymentProfile.Create().
@@ -49,12 +50,12 @@ func (g *Server) injectDeploymentProfile(ctx context.Context, tx *generated.Tx, 
 		Save(ctx)
 	if err != nil {
 		if generated.IsConstraintError(err) {
-			return nil, errors.NewInvalidArgument(
-				errors.WithResourceType(errors.DeploymentProfileType),
-				errors.WithResourceName(profile.Name),
-				errors.WithMessage("deployment profile already exists"))
+			return nil, nberrors.NewInvalidArgument(
+				nberrors.WithResourceType(nberrors.DeploymentProfileType),
+				nberrors.WithResourceName(profile.Name),
+				nberrors.WithMessage("deployment profile already exists"))
 		}
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	return created, nil
 }
@@ -62,19 +63,19 @@ func (g *Server) injectDeploymentProfile(ctx context.Context, tx *generated.Tx, 
 func (g *Server) updateDeploymentProfile(ctx context.Context, tx *generated.Tx, deploymentProfile *catalogv3.DeploymentProfile, deploymentProfileDB *generated.DeploymentProfile, pkgDB *generated.DeploymentPackage) error {
 	displayName, ok := validateDisplayName(deploymentProfile.Name, deploymentProfile.DisplayName)
 	if !ok {
-		return errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentProfileType),
-			errors.WithResourceName(deploymentProfile.Name),
-			errors.WithMessage("display name cannot contain leading or trailing spaces"))
+		return nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentProfileType),
+			nberrors.WithResourceName(deploymentProfile.Name),
+			nberrors.WithMessage("display name cannot contain leading or trailing spaces"))
 	}
 
 	profiles, err := g.validateAllProfiles(ctx, pkgDB, deploymentProfile)
 	if err != nil {
 		g.rollbackTransaction(tx)
-		return errors.NewInvalidArgument(
-			errors.WithResourceType(errors.DeploymentProfileType),
-			errors.WithResourceName(deploymentProfile.Name),
-			errors.WithMessage("application profiles are incongruent"))
+		return nberrors.NewInvalidArgument(
+			nberrors.WithResourceType(nberrors.DeploymentProfileType),
+			nberrors.WithResourceName(deploymentProfile.Name),
+			nberrors.WithMessage("application profiles are incongruent"))
 	}
 
 	_, err = tx.DeploymentProfile.Update().Where(deploymentprofile.ID(deploymentProfileDB.ID)).
@@ -84,7 +85,7 @@ func (g *Server) updateDeploymentProfile(ctx context.Context, tx *generated.Tx, 
 		AddProfiles(profiles...).
 		Save(ctx)
 	if err != nil {
-		return errors.NewDBError(errors.WithError(err))
+		return nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	return nil
@@ -101,7 +102,7 @@ func (g *Server) getDeploymentPackage(ctx context.Context, tx *generated.Tx, pro
 		if generated.IsNotFound(err) {
 			return nil, false, nil
 		}
-		return nil, false, errors.NewDBError(errors.WithError(err))
+		return nil, false, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	return deploymentPkg, true, nil
 }
@@ -115,7 +116,7 @@ func (g *Server) checkDeploymentProfileUniqueness(ctx context.Context, p *catalo
 				deploymentprofile.Not(deploymentprofile.Name(p.Name)),
 			).
 			Count(ctx)
-		if err = checkUniqueness(existing, err, "deployment profile", p.Name, p.DisplayName, errors.DeploymentProfileType); err != nil {
+		if err = checkUniqueness(existing, err, "deployment profile", p.Name, p.DisplayName, nberrors.DeploymentProfileType); err != nil {
 			return err
 		}
 	}
@@ -142,7 +143,7 @@ func (g *Server) validateAllProfiles(ctx context.Context, pkg *generated.Deploym
 func (g *Server) validateProfile(ctx context.Context, pkg *generated.DeploymentPackage, appReference string, profileName string) (*generated.Profile, error) {
 	appDB, err := g.findApplicationInPackage(ctx, pkg, appReference)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	return appDB.QueryProfiles().Where(profile.Name(profileName)).Only(ctx)
 }
@@ -153,7 +154,7 @@ func (g *Server) findApplicationInPackage(ctx context.Context, pkg *generated.De
 	appName := fields[0]
 	appsDB, err := pkg.QueryApplications().Where(application.Name(appName)).All(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	// If we have just the app name and the query by name yielded at least one item, just return it
@@ -174,7 +175,7 @@ func (g *Server) findApplicationInPackage(ctx context.Context, pkg *generated.De
 	}
 
 	// If we got through all the apps, it must mean the reference is incongruous
-	return nil, errors.NewNotFound(errors.WithMessage("application %s:%s not found", appName, appVersion))
+	return nil, nberrors.NewNotFound(nberrors.WithMessage("application %s:%s not found", appName, appVersion))
 }
 
 // Composes map of application name to profile name mappings for the given deployment profile.
@@ -183,12 +184,12 @@ func composeAppProfileMap(ctx context.Context, cp *generated.DeploymentProfile, 
 	profiles := make(map[string]string, 0)
 	cpProfiles, err := cp.QueryProfiles().All(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 	for _, profile := range cpProfiles {
 		app, err1 := profile.QueryApplicationFk().Only(ctx)
 		if err1 != nil {
-			return nil, errors.NewDBError(errors.WithError(err))
+			return nil, nberrors.NewDBError(nberrors.WithError(err))
 		}
 		ref := app.Name
 		if useFQNames {
@@ -205,7 +206,7 @@ func implicitDefaultDeploymentProfile(ctx context.Context, pkgDB *generated.Depl
 	// Query all applications that have default profiles
 	appsDB, err := pkgDB.QueryApplications().Where(application.HasDefaultProfile()).All(ctx)
 	if err != nil {
-		return nil, errors.NewDBError(errors.WithError(err))
+		return nil, nberrors.NewDBError(nberrors.WithError(err))
 	}
 
 	// If there are no such apps, return nil to signify no implicit default profile
@@ -217,7 +218,7 @@ func implicitDefaultDeploymentProfile(ctx context.Context, pkgDB *generated.Depl
 	for _, appDB := range appsDB {
 		profileDB, err := appDB.QueryDefaultProfile().First(ctx)
 		if err != nil {
-			return nil, errors.NewDBError(errors.WithError(err))
+			return nil, nberrors.NewDBError(nberrors.WithError(err))
 		}
 		profiles[appDB.Name] = profileDB.Name
 	}

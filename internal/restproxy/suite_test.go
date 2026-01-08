@@ -14,15 +14,14 @@ import (
 
 	"github.com/gorilla/websocket"
 	_ "github.com/mattn/go-sqlite3"
-	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/errors"
 	"github.com/stretchr/testify/assert"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
 
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
-	ent "github.com/open-edge-platform/app-orch-catalog/internal/ent/generated"
 	"github.com/open-edge-platform/app-orch-catalog/internal/ent/generated/enttest"
 	"github.com/open-edge-platform/app-orch-catalog/internal/northbound"
+	"github.com/open-edge-platform/app-orch-catalog/internal/northbound/nberrors"
 	catalogv3 "github.com/open-edge-platform/app-orch-catalog/pkg/api/catalog/v3"
 	"github.com/open-edge-platform/orch-library/go/pkg/openpolicyagent"
 	"github.com/stretchr/testify/suite"
@@ -59,7 +58,7 @@ func (s *ProxyTestSuite) SetupSuite() {
 	}
 
 	mockController := gomock.NewController(s.T())
-	errors.Init()
+	nberrors.Init()
 
 	s.dbClient = enttest.Open(s.T(), "sqlite3", "file:ent?mode=memory&_fk=1")
 
@@ -133,11 +132,11 @@ func TestNorthBound(t *testing.T) {
 	suite.Run(t, &ProxyTestSuite{})
 }
 
-func newTestService(dbClient *ent.Client, opaClient openpolicyagent.ClientWithResponsesInterface) (northbound.Service, error) {
+func newTestService(dbClient *generated.Client, opaClient openpolicyagent.ClientWithResponsesInterface) (northbound.Service, error) {
 	return northbound.Service{DatabaseClient: dbClient, OpaClient: opaClient}, nil
 }
 
-func createServerConnection(t *testing.T, dbClient *ent.Client, opaClient openpolicyagent.ClientWithResponsesInterface) *grpc.ClientConn {
+func createServerConnection(t *testing.T, dbClient *generated.Client, opaClient openpolicyagent.ClientWithResponsesInterface) *grpc.ClientConn {
 	lis, err := net.Listen("tcp", "localhost:6943")
 	assert.NoError(t, err)
 
