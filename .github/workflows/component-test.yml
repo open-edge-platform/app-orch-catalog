@@ -28,7 +28,14 @@ jobs:
   component-tests:
     name: Deploy Kind Orchestrator and Run Component Tests
     if: |
-      ${{ inputs.run-component-tests || github.event_name == 'schedule' || github.event.label.name == 'run-component-tests' }}
+      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' && inputs.run-component-tests) ||
+      (
+        github.event_name == 'pull_request' &&
+        github.actor != 'dependabot[bot]' &&
+        github.event.pull_request.head.repo.full_name == github.repository &&
+        github.event.label.name == 'run-component-tests'
+      )
     runs-on: ubuntu-24.04-16core-64GB  # ubuntu-24.04-4core-16GB ubuntu-22.04-32core-128GB & ubuntu-24.04-16core-64GB
     timeout-minutes: 60
     env:
