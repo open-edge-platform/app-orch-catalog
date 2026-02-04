@@ -145,7 +145,7 @@ PRIMARY KEY (version)
 	stmt, err := db.PrepareContext(ctx, `
 INSERT INTO atlas_schema_revisions 
 (version, description, type, applied, total, executed_at, execution_time, hash, operator_version)
-VALUES ($1, $2, 2, 0, 0, $3, 0, $4, 'Atlas CLI v0.38.0')
+VALUES ($1, $2, 2, 0, 0, $3, 0, $4, 'Atlas CLI v1.0.0')
 `)
 
 	if err != nil {

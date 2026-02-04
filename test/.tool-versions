@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: (C) 2023 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
-golang 1.24.11
-kind 0.29.0
+golang 1.25.5
+kind 0.30.0
