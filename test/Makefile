@@ -11,7 +11,7 @@ export GO111MODULE=on
 GOCMD := GOPRIVATE="github.com/intel*/*" go
 
 GOTESTREPORT := $(shell which go-testreport || echo "")
-GOTESTSUM_PKG := gotest.tools/gotestsum@v1.12.2
+GOTESTSUM_PKG := gotest.tools/gotestsum@v1.13.0
 
 
 all: component-tests

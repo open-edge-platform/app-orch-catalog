@@ -30,7 +30,7 @@ FUZZ_SECONDS                   ?= 60
 
 OIE_CI_TESTING                   = rrp-devops/oie_ci_testing
 OIE_CI_TESTING_VER               = 2.9.34
-GOLANG_COVER_VERSION             = v0.2.0
+GOLANG_COVER_VERSION             = v0.41.0
 GOLANG_GOCOVER_COBERTURA_VERSION = v1.2.0
 GOPATH                           := $(shell go env GOPATH)
 GOCMD                            := GOPRIVATE="github.com/open-edge-platform/*" go
