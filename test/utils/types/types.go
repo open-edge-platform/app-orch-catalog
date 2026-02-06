@@ -116,11 +116,5 @@ func GetRegistryDefinitions(orchDomain string) []restClient.CatalogV3Registry {
 		{Name: "jetstack", DisplayName: GetPointerString("jetstack"), Description: GetPointerString("Public registry for cert manager chart"), RootUrl: "https://charts.jetstack.io", Type: "HELM"},
 		{Name: "kubernetes", DisplayName: GetPointerString("kubernetes"), Description: GetPointerString("Kubernetes dashboard registry"), RootUrl: "https://kubernetes.github.io/dashboard/", Type: "HELM"},
 		{Name: "kubernetes-ingress-helm", DisplayName: GetPointerString("kubernetes-ingress-helm"), Description: GetPointerString("Kubernetes Github helm registry for ingress-nginx"), RootUrl: "https://kubernetes.github.io/ingress-nginx", Type: "HELM"},
-		{Name: "metallb-helm", DisplayName: GetPointerString("metallb-helm"), Description: GetPointerString("Metallb helm registry"), RootUrl: "https://metallb.github.io/metallb", Type: "HELM"},
-		{Name: "node-exporter", DisplayName: GetPointerString("node-exporter"), Description: GetPointerString("Node exporter helm registry"), RootUrl: "https://prometheus-community.github.io/helm-charts", Type: "HELM"},
-		{Name: "node-feature-discovery", DisplayName: GetPointerString("node-feature-discovery"), Description: GetPointerString("Node feature discovery helm registry"), RootUrl: "https://kubernetes-sigs.github.io/node-feature-discovery/charts", Type: "HELM"},
-		{Name: "nvidia-ncg", DisplayName: GetPointerString("nvidia-ncg"), Description: GetPointerString("NVIDIA NCG helm registry"), RootUrl: "https://helm.ngc.nvidia.com/nvidia", Type: "HELM"},
-		{Name: "prometheus", DisplayName: GetPointerString("prometheus"), Description: GetPointerString("Prometheus helm registry"), RootUrl: "https://prometheus-community.github.io/helm-charts", Type: "HELM"},
-		{Name: "telegraf", DisplayName: GetPointerString("telegraf"), Description: GetPointerString("Telegraf helm registry"), RootUrl: "https://helm.influxdata.com", Type: "HELM"},
 	}
 }
