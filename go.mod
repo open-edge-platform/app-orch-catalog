@@ -31,11 +31,11 @@ require (
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.11.1
-	github.com/sudorandom/protoc-gen-connect-openapi v0.24.0
+	github.com/sudorandom/protoc-gen-connect-openapi v0.25.1
 	go.uber.org/mock v0.6.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20260128011058-8636f8732409
 	google.golang.org/grpc v1.78.0
-	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.6.0
+	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.6.1
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -137,8 +137,8 @@ require (
 	github.com/olekukonko/ll v0.1.2 // indirect
 	github.com/olekukonko/tablewriter v1.1.0 // indirect
 	github.com/opencontainers/go-digest v1.0.0 // indirect
-	github.com/pb33f/jsonpath v0.1.2 // indirect
-	github.com/pb33f/libopenapi v0.28.1 // indirect
+	github.com/pb33f/jsonpath v0.7.1 // indirect
+	github.com/pb33f/libopenapi v0.33.1 // indirect
 	github.com/pb33f/ordered-map/v2 v2.3.0 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
 	github.com/perimeterx/marshmallow v1.1.5 // indirect
@@ -159,7 +159,7 @@ require (
 	go.uber.org/zap v1.27.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
-	go.yaml.in/yaml/v4 v4.0.0-rc.3 // indirect
+	go.yaml.in/yaml/v4 v4.0.0-rc.4 // indirect
 	golang.org/x/arch v0.22.0 // indirect
 	golang.org/x/crypto v0.46.0 // indirect
 	golang.org/x/exp v0.0.0-20251023183803-a4bb9ffd2546 // indirect
