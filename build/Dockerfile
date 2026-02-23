@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-FROM golang:1.25.5@sha256:6cc2338c038bc20f96ab32848da2b5c0641bb9bb5363f2c33e9b7c8838f9a208 AS base
+FROM golang:1.25.7@sha256:85c0ab0b73087fda36bf8692efe2cf67c54a06d7ca3b49c489bbff98c9954d64 AS base
 
 ENV CGO_ENABLED=0
 
@@ -13,7 +13,7 @@ ARG no_proxy
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# rebuild atlas from source to match go 1.25.5 to mitigate CVEs
+# rebuild atlas from source to match go 1.25.7 to mitigate CVEs
 # hash for atlas v1.0.0
 ENV ATLAS_HASH=428c4cf84cd4790b08e35f383b4c2510c9e93f4a
 WORKDIR /build/src
@@ -21,7 +21,7 @@ RUN git clone https://github.com/ariga/atlas.git
 WORKDIR /build/src/atlas
 RUN git checkout $ATLAS_HASH
 WORKDIR /build/src/atlas/cmd/atlas
-RUN sed -i 's/go 1\.24\.6/go 1.25.5/g' go.mod && go build -o /go/bin/atlas .
+RUN sed -i 's/go 1\.24\.6/go 1.25.7/g' go.mod && go build -o /go/bin/atlas .
 
 WORKDIR /build
 RUN mkdir -p "$APP_ROOT/" && mkdir -p /build/etc
