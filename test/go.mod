@@ -4,7 +4,7 @@
 
 module github.com/open-edge-platform/app-orch-catalog/test
 
-go 1.25.5
+go 1.25.7
 
 require (
 	github.com/open-edge-platform/app-orch-catalog v0.16.0
