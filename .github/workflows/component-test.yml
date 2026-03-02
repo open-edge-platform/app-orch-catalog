@@ -94,7 +94,7 @@ jobs:
           echo "kubectl configuration successful!"
 
       - name: Set up Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417  # v6
         with:
           go-version: '1.25.7'
           cache: true
@@ -181,7 +181,7 @@ jobs:
           make component-tests
           echo "Component tests done!"
       - name: Report
-        uses: becheran/go-testreport@main
+        uses: becheran/go-testreport@90efc1ce13c872f23d6bc8a069527c26288b8f9c  # main
         with:
           input: app-orch-catalog/test/test-report.json
           output: app-orch-catalog/test/${{ github.event_name }}-${{ github.event.number }}-test-report.html
