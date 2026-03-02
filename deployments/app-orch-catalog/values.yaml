@@ -106,6 +106,7 @@ podAnnotations: {}
 podSecurityContext:
   runAsNonRoot: true
   runAsUser: 65532
+  runAsGroup: 65532
   seccompProfile:
     type: RuntimeDefault
 # fsGroup: 2000
@@ -119,6 +120,7 @@ catalogSecurityContext:
   readOnlyRootFilesystem: true
   runAsNonRoot: true
   runAsUser: 65532
+  runAsGroup: 65532
   allowPrivilegeEscalation: false
   seccompProfile:
     type: RuntimeDefault
