@@ -202,7 +202,6 @@ $(VENV_NAME): requirements.txt ## Create Python venv
 	python3 -m venv $@ ;\
   set +u; . ./$@/bin/activate; set -u ;\
   python -m pip install --upgrade pip ;\
-  python -m pip install openapi-spec-validator;\
   python -m pip install -r requirements.txt
 
 .PHONY: proto-generate
