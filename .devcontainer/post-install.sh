@@ -9,8 +9,8 @@ set -e
 apt-get update
 
 # Install Python and pip
-python -m pip install --upgrade pip
-python -m pip install openapi-spec-validator
+python -m pip install --upgrade pip==26.0.1
+python -m pip install openapi-spec-validator==0.8.4
 python -m pip install -r requirements.txt
 
 # Read .tool-versions file line by line
@@ -34,7 +34,7 @@ echo "export PATH=$PATH:$(go env GOBIN)" >> /etc/profile
 
 go install github.com/pseudomuto/protoc-gen-doc/cmd/protoc-gen-doc@v1.5.1
 go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.5.1
-go install github.com/connectrpc/connect-openapi-go/cmd/protoc-gen-connect-openapi@latest
+go install github.com/sudorandom/protoc-gen-connect-openapi@v0.25.4
 
 asdf version
 buf --version

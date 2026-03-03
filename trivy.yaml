@@ -8,3 +8,12 @@ scan:
     - vendor
     - test
     - app-orch-tutorials
+  skip-check-ids:
+    - DS026    # distroless images do not support HEALTHCHECK
+    - DS-0026  # alternate rule ID for the same check
+    - KSV110   # Helm sets namespace at install time; no hardcoded default namespace
+    - KSV-0110  # alternate rule ID for the same check
+    - KSV0125  # image registry is templated via .Values.image.registry; resolved at deploy time
+    - KSV-0125  # alternate rule ID for the same check
+    - CVE-2026-26958  # edwards25519 v1.1.0 in atlas (DB migration tool built in builder stage, not in final distroless image)
+    - CVE-2025-58767  # rexml in golang builder base image only; absent from final distroless/static image
