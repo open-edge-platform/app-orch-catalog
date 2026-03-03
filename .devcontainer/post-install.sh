@@ -10,7 +10,6 @@ apt-get update
 
 # Install Python and pip
 python -m pip install --upgrade pip==26.0.1
-python -m pip install openapi-spec-validator==0.8.4
 python -m pip install -r requirements.txt
 
 # Read .tool-versions file line by line

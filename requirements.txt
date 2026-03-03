@@ -2,9 +2,16 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+# openapi validation (used in devcontainer)
+openapi-spec-validator==0.8.4 \
+    --hash=sha256:cf905117063d7c4d495c8a5a167a1f2a8006da6ffa8ba234a7ed0d0f11454d51
+
 # license checking
-python-debian==0.1.44
-reuse~=5.0.0
+python-debian==0.1.44 \
+    --hash=sha256:11bd6f01c46da57982bdd66dd595e2d240feb32a85de3fd37c452102fd0337ab
+reuse==5.0.0 \
+    --hash=sha256:7fd7d11633ab22ba358f23c8e7bd567eec6fd379ce751a4587b07ee5552ff316
 
 # lint yaml
-yamllint~=1.35.1
+yamllint==1.35.1 \
+    --hash=sha256:2e16e504bb129ff515b37823b472750b36b6de07963bd74b307341ef5ad8bdc3
