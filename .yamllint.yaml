@@ -18,6 +18,7 @@ ignore: |
   app-orch-tutorials/developer-guide-tutorial/tutorial-chart/tutorial-web-ui/templates/
   app-orch-tutorials/httpbin/helm/templates/
   venv
+  venv-env
   .github/
 extends: default
 rules:

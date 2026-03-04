@@ -15,5 +15,8 @@ scan:
     - KSV-0110  # alternate rule ID for the same check
     - KSV0125  # image registry is templated via .Values.image.registry; resolved at deploy time
     - KSV-0125  # alternate rule ID for the same check
-    - CVE-2026-26958  # edwards25519 v1.1.0 in atlas (DB migration tool built in builder stage, not in final distroless image)
+    - KSV021   # runAsGroup is set to 65532 (> 10000) via catalogSecurityContext in values.yaml; Trivy false positive on templated Helm values
+    - KSV-0021  # alternate rule ID for the same check
+    - CVE-2026-26958  # edwards25519 v1.1.0 in atlas binary (DB migration CLI tool in final image; atlas v1.1.0 still uses v1.1.0, fixed v1.1.1 not yet available upstream)
     - CVE-2025-58767  # rexml in golang builder base image only; absent from final distroless/static image
+    - CVE-2026-24051  # otel/sdk v1.37.0 in atlas binary (DB migration CLI tool in final image); atlas v1.1.0 still uses otel/sdk v1.37.0, fixed v1.40.0 not yet available upstream

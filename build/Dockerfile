@@ -14,14 +14,14 @@ ARG no_proxy
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # rebuild atlas from source to match go 1.25.7 to mitigate CVEs
-# hash for atlas v1.0.0
-ENV ATLAS_HASH=428c4cf84cd4790b08e35f383b4c2510c9e93f4a
+# hash for atlas v1.1.0
+ENV ATLAS_HASH=1a19b3deb9b228120e4fb17cf461772da48bde73
 WORKDIR /build/src
 RUN git clone https://github.com/ariga/atlas.git
 WORKDIR /build/src/atlas
 RUN git checkout $ATLAS_HASH
 WORKDIR /build/src/atlas/cmd/atlas
-RUN sed -i 's/go 1\.24\.6/go 1.25.7/g' go.mod && go build -o /go/bin/atlas .
+RUN sed -i 's/go 1\.24\.11/go 1.25.7/g' go.mod && go build -o /go/bin/atlas .
 
 WORKDIR /build
 RUN mkdir -p "$APP_ROOT/" && mkdir -p /build/etc
