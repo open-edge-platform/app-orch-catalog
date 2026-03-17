@@ -10,8 +10,1071 @@ paths:
         - CatalogService
       summary: ListApplications
       description: Gets a list of applications.
+      operationId: CatalogService_ListApplications2
+      parameters:
+        - name: orderBy
+          in: query
+          description: Names the field to be used for ordering the returned results.
+          schema:
+            type: string
+            title: order_by
+            description: (OPTIONAL) Names the field to be used for ordering the returned results.
+        - name: filter
+          in: query
+          description: Expression to use for filtering the results.
+          schema:
+            type: string
+            title: filter
+            description: (OPTIONAL) Expression to use for filtering the results.
+        - name: pageSize
+          in: query
+          description: Maximum number of items to return.
+          schema:
+            type: integer
+            title: page_size
+            format: int32
+            description: (OPTIONAL) Maximum number of items to return.
+        - name: offset
+          in: query
+          description: Index of the first item to return.
+          schema:
+            type: integer
+            title: offset
+            format: int32
+            description: (OPTIONAL) Index of the first item to return.
+        - name: kinds
+          in: query
+          description: List of application kinds to be returned; empty list means all kinds.
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/catalog.v3.Kind'
+            title: kinds
+            maxItems: 20
+            description: (OPTIONAL) List of application kinds to be returned; empty list means all kinds.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/catalog.v3.ListApplicationsResponse'
+    post:
+      tags:
+        - CatalogService
+      summary: CreateApplication
+      description: Creates a new application.
+      operationId: CatalogService_CreateApplication2
+      parameters:
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      requestBody:
+        description: The registry to create.
+        content:
+          application/json:
+            schema:
+              title: application
+              description: The registry to create.
+              $ref: '#/components/schemas/catalog.v3.Application'
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/catalog.v3.CreateApplicationResponse'
+  /catalog.orchestrator.apis/v3/applications/{application_name}/versions:
+    get:
+      tags:
+        - CatalogService
+      summary: GetApplicationVersions
+      description: Gets all versions of a named application.
+      operationId: CatalogService_GetApplicationVersions2
+      parameters:
+        - name: application_name
+          in: path
+          description: Name of the application.
+          required: true
+          schema:
+            type: string
+            title: application_name
+            description: Name of the application.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/catalog.v3.GetApplicationVersionsResponse'
+  /catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}:
+    get:
+      tags:
+        - CatalogService
+      summary: GetApplication
+      description: Gets a specific application.
+      operationId: CatalogService_GetApplication2
+      parameters:
+        - name: application_name
+          in: path
+          description: Name of the application.
+          required: true
+          schema:
+            type: string
+            title: application_name
+            description: Name of the application.
+        - name: version
+          in: path
+          description: Version of the application.
+          required: true
+          schema:
+            type: string
+            title: version
+            description: Version of the application.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/catalog.v3.GetApplicationResponse'
+    put:
+      tags:
+        - CatalogService
+      summary: UpdateApplication
+      description: Updates an application.
+      operationId: CatalogService_UpdateApplication2
+      parameters:
+        - name: application_name
+          in: path
+          description: Name of the application.
+          required: true
+          schema:
+            type: string
+            title: application_name
+            description: Name of the application.
+        - name: version
+          in: path
+          description: Version of the application.
+          required: true
+          schema:
+            type: string
+            title: version
+            description: Version of the application.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      requestBody:
+        description: The application update.
+        content:
+          application/json:
+            schema:
+              title: application
+              description: The application update.
+              $ref: '#/components/schemas/catalog.v3.Application'
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+    delete:
+      tags:
+        - CatalogService
+      summary: DeleteApplication
+      description: Deletes an application.
+      operationId: CatalogService_DeleteApplication2
+      parameters:
+        - name: application_name
+          in: path
+          description: Name of the application.
+          required: true
+          schema:
+            type: string
+            title: application_name
+            description: Name of the application.
+        - name: version
+          in: path
+          description: Version of the application.
+          required: true
+          schema:
+            type: string
+            title: version
+            description: Version of the application.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+  /catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}/reference_count:
+    get:
+      tags:
+        - CatalogService
+      summary: GetApplicationReferenceCount
+      description: Gets application reference count - the number of deployment packages using this application.
+      operationId: CatalogService_GetApplicationReferenceCount2
+      parameters:
+        - name: application_name
+          in: path
+          description: Name of the application.
+          required: true
+          schema:
+            type: string
+            title: application_name
+            description: Name of the application.
+        - name: version
+          in: path
+          description: Version of the application.
+          required: true
+          schema:
+            type: string
+            title: version
+            description: Version of the application.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/catalog.v3.GetApplicationReferenceCountResponse'
+  /catalog.orchestrator.apis/v3/artifacts:
+    get:
+      tags:
+        - CatalogService
+      summary: ListArtifacts
+      description: Gets a list of artifacts.
+      operationId: CatalogService_ListArtifacts2
+      parameters:
+        - name: orderBy
+          in: query
+          description: Names the field to be used for ordering the returned results.
+          schema:
+            type: string
+            title: order_by
+            description: (OPTIONAL) Names the field to be used for ordering the returned results.
+        - name: filter
+          in: query
+          description: Expression to use for filtering the results.
+          schema:
+            type: string
+            title: filter
+            description: (OPTIONAL) Expression to use for filtering the results.
+        - name: pageSize
+          in: query
+          description: Maximum number of items to return.
+          schema:
+            type: integer
+            title: page_size
+            format: int32
+            description: (OPTIONAL) Maximum number of items to return.
+        - name: offset
+          in: query
+          description: Index of the first item to return.
+          schema:
+            type: integer
+            title: offset
+            format: int32
+            description: (OPTIONAL) Index of the first item to return.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/catalog.v3.ListArtifactsResponse'
+    post:
+      tags:
+        - CatalogService
+      summary: CreateArtifact
+      description: Creates a new artifact.
+      operationId: CatalogService_CreateArtifact2
+      parameters:
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      requestBody:
+        description: The artifact to create.
+        content:
+          application/json:
+            schema:
+              title: artifact
+              description: The artifact to create.
+              $ref: '#/components/schemas/catalog.v3.Artifact'
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/catalog.v3.CreateArtifactResponse'
+  /catalog.orchestrator.apis/v3/artifacts/{artifact_name}:
+    get:
+      tags:
+        - CatalogService
+      summary: GetArtifact
+      description: Gets a specific artifact.
+      operationId: CatalogService_GetArtifact2
+      parameters:
+        - name: artifact_name
+          in: path
+          description: Name of the artifact.
+          required: true
+          schema:
+            type: string
+            title: artifact_name
+            description: Name of the artifact.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/catalog.v3.GetArtifactResponse'
+    put:
+      tags:
+        - CatalogService
+      summary: UpdateArtifact
+      description: Updates an artifact.
+      operationId: CatalogService_UpdateArtifact2
+      parameters:
+        - name: artifact_name
+          in: path
+          description: Name of the artifact.
+          required: true
+          schema:
+            type: string
+            title: artifact_name
+            description: Name of the artifact.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      requestBody:
+        description: The artifact update.
+        content:
+          application/json:
+            schema:
+              title: artifact
+              description: The artifact update.
+              $ref: '#/components/schemas/catalog.v3.Artifact'
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+    delete:
+      tags:
+        - CatalogService
+      summary: DeleteArtifact
+      description: Deletes an artifact.
+      operationId: CatalogService_DeleteArtifact2
+      parameters:
+        - name: artifact_name
+          in: path
+          description: Name of the artifact.
+          required: true
+          schema:
+            type: string
+            title: artifact_name
+            description: Name of the artifact.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+  /catalog.orchestrator.apis/v3/deployment_packages:
+    get:
+      tags:
+        - CatalogService
+      summary: ListDeploymentPackages
+      description: Gets a list of deployment packages.
+      operationId: CatalogService_ListDeploymentPackages2
+      parameters:
+        - name: orderBy
+          in: query
+          description: Names the field to be used for ordering the returned results.
+          schema:
+            type: string
+            title: order_by
+            description: (OPTIONAL) Names the field to be used for ordering the returned results.
+        - name: filter
+          in: query
+          description: Expression to use for filtering the results.
+          schema:
+            type: string
+            title: filter
+            description: (OPTIONAL) Expression to use for filtering the results.
+        - name: pageSize
+          in: query
+          description: Maximum number of items to return.
+          schema:
+            type: integer
+            title: page_size
+            format: int32
+            description: (OPTIONAL) Maximum number of items to return.
+        - name: offset
+          in: query
+          description: Index of the first item to return.
+          schema:
+            type: integer
+            title: offset
+            format: int32
+            description: (OPTIONAL) Index of the first item to return.
+        - name: kinds
+          in: query
+          description: List of deployment package kinds to be returned; empty list means all kinds.
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/catalog.v3.Kind'
+            title: kinds
+            maxItems: 20
+            description: (OPTIONAL) List of deployment package kinds to be returned; empty list means all kinds.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/catalog.v3.ListDeploymentPackagesResponse'
+    post:
+      tags:
+        - CatalogService
+      summary: CreateDeploymentPackage
+      description: Creates a new deployment package.
+      operationId: CatalogService_CreateDeploymentPackage2
+      parameters:
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      requestBody:
+        description: The deployment package to create.
+        content:
+          application/json:
+            schema:
+              title: deployment_package
+              description: The deployment package to create.
+              $ref: '#/components/schemas/catalog.v3.DeploymentPackage'
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/catalog.v3.CreateDeploymentPackageResponse'
+  /catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions:
+    get:
+      tags:
+        - CatalogService
+      summary: GetDeploymentPackageVersions
+      description: Gets all versions of a named deployment package.
+      operationId: CatalogService_GetDeploymentPackageVersions2
+      parameters:
+        - name: deployment_package_name
+          in: path
+          description: Name of the DeploymentPackage.
+          required: true
+          schema:
+            type: string
+            title: deployment_package_name
+            description: Name of the DeploymentPackage.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/catalog.v3.GetDeploymentPackageVersionsResponse'
+  /catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}:
+    get:
+      tags:
+        - CatalogService
+      summary: GetDeploymentPackage
+      description: Gets a specific deployment package.
+      operationId: CatalogService_GetDeploymentPackage2
+      parameters:
+        - name: deployment_package_name
+          in: path
+          description: Name of the DeploymentPackage.
+          required: true
+          schema:
+            type: string
+            title: deployment_package_name
+            description: Name of the DeploymentPackage.
+        - name: version
+          in: path
+          description: Version of the DeploymentPackage.
+          required: true
+          schema:
+            type: string
+            title: version
+            description: Version of the DeploymentPackage.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/catalog.v3.GetDeploymentPackageResponse'
+    put:
+      tags:
+        - CatalogService
+      summary: UpdateDeploymentPackage
+      description: Updates a deployment package.
+      operationId: CatalogService_UpdateDeploymentPackage2
+      parameters:
+        - name: deployment_package_name
+          in: path
+          description: Name of the DeploymentPackage.
+          required: true
+          schema:
+            type: string
+            title: deployment_package_name
+            description: Name of the DeploymentPackage.
+        - name: version
+          in: path
+          description: Version of the DeploymentPackage.
+          required: true
+          schema:
+            type: string
+            title: version
+            description: Version of the DeploymentPackage.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      requestBody:
+        description: The DeploymentPackage update.
+        content:
+          application/json:
+            schema:
+              title: deployment_package
+              description: The DeploymentPackage update.
+              $ref: '#/components/schemas/catalog.v3.DeploymentPackage'
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+    delete:
+      tags:
+        - CatalogService
+      summary: DeleteDeploymentPackage
+      description: Deletes a deployment package.
+      operationId: CatalogService_DeleteDeploymentPackage2
+      parameters:
+        - name: deployment_package_name
+          in: path
+          description: Name of the DeploymentPackage.
+          required: true
+          schema:
+            type: string
+            title: deployment_package_name
+            description: Name of the DeploymentPackage.
+        - name: version
+          in: path
+          description: Version of the DeploymentPackage.
+          required: true
+          schema:
+            type: string
+            title: version
+            description: Version of the DeploymentPackage.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+  /catalog.orchestrator.apis/v3/import:
+    post:
+      tags:
+        - CatalogService
+      summary: Import
+      description: |-
+        Allows importing a deployment package from a Helm Chart. This is done as a single invocation with the URL
+         of the asset to be imported.
+      operationId: CatalogService_Import2
+      parameters:
+        - name: url
+          in: query
+          description: Required URL of Helm Chart to import
+          required: true
+          schema:
+            type: string
+            title: url
+            maxLength: 1000
+            description: Required URL of Helm Chart to import
+        - name: username
+          in: query
+          description: Optional username for downloading from the URL
+          schema:
+            type: string
+            title: username
+            maxLength: 1000
+            pattern: ^\PC*$
+            description: Optional username for downloading from the URL
+        - name: authToken
+          in: query
+          description: Optional authentication token or password for downloading from the URL
+          schema:
+            type: string
+            title: auth_token
+            maxLength: 4500
+            pattern: ^\PC*$
+            description: Optional authentication token or password for downloading from the URL
+        - name: chartValues
+          in: query
+          description: Optional raw byte value containing the chart values as raw YAML bytes.
+          schema:
+            type: string
+            title: chart_values
+            maxLength: 4000000
+            description: (OPTIONAL) Optional raw byte value containing the chart values as raw YAML bytes.
+        - name: includeAuth
+          in: query
+          description: |-
+            If true and a username/auth_token is specified then they will be included
+             in the generated Registry object.
+          schema:
+            type: boolean
+            title: include_auth
+            description: |-
+              (OPTIONAL) If true and a username/auth_token is specified then they will be included
+               in the generated Registry object.
+        - name: generateDefaultValues
+          in: query
+          description: |-
+            If true and chart_values is not set, then the values.yaml will be extracted and
+             used to generate default profile values.
+          schema:
+            type: boolean
+            title: generate_default_values
+            description: |-
+              (OPTIONAL) If true and chart_values is not set, then the values.yaml will be extracted and
+               used to generate default profile values.
+        - name: generateDefaultParameters
+          in: query
+          description: |-
+            Generates default parameters from the values, from chart_values or from
+             generate_default_values as appropriate.
+          schema:
+            type: boolean
+            title: generate_default_parameters
+            description: |-
+              (OPTIONAL) Generates default parameters from the values, from chart_values or from
+               generate_default_values as appropriate.
+        - name: namespace
+          in: query
+          description: Optional namespace
+          schema:
+            type: string
+            title: namespace
+            maxLength: 40
+            description: (OPTIONAL) Optional namespace
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/catalog.v3.ImportResponse'
+  /catalog.orchestrator.apis/v3/registries:
+    get:
+      tags:
+        - CatalogService
+      summary: ListRegistries
+      description: Gets a list of registries.
+      operationId: CatalogService_ListRegistries2
+      parameters:
+        - name: orderBy
+          in: query
+          description: Names the field to be used for ordering the returned results.
+          schema:
+            type: string
+            title: order_by
+            description: (OPTIONAL) Names the field to be used for ordering the returned results.
+        - name: filter
+          in: query
+          description: Expression to use for filtering the results.
+          schema:
+            type: string
+            title: filter
+            description: (OPTIONAL) Expression to use for filtering the results.
+        - name: pageSize
+          in: query
+          description: Maximum number of items to return.
+          schema:
+            type: integer
+            title: page_size
+            format: int32
+            description: (OPTIONAL) Maximum number of items to return.
+        - name: offset
+          in: query
+          description: Index of the first item to return.
+          schema:
+            type: integer
+            title: offset
+            format: int32
+            description: (OPTIONAL) Index of the first item to return.
+        - name: showSensitiveInfo
+          in: query
+          description: Request that sensitive information, such as username, auth_token, and CA certificates are included in the response.
+          schema:
+            type: boolean
+            title: show_sensitive_info
+            description: (OPTIONAL) Request that sensitive information, such as username, auth_token, and CA certificates are included in the response.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/catalog.v3.ListRegistriesResponse'
+    post:
+      tags:
+        - CatalogService
+      summary: CreateRegistry
+      description: Creates a new registry.
+      operationId: CatalogService_CreateRegistry2
+      parameters:
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      requestBody:
+        description: The registry to create.
+        content:
+          application/json:
+            schema:
+              title: registry
+              description: The registry to create.
+              $ref: '#/components/schemas/catalog.v3.Registry'
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/catalog.v3.CreateRegistryResponse'
+  /catalog.orchestrator.apis/v3/registries/{registry_name}:
+    get:
+      tags:
+        - CatalogService
+      summary: GetRegistry
+      description: Gets a specific registry.
+      operationId: CatalogService_GetRegistry2
+      parameters:
+        - name: registry_name
+          in: path
+          description: Name of the registry.
+          required: true
+          schema:
+            type: string
+            title: registry_name
+            maxLength: 40
+            minLength: 1
+            pattern: ^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$
+            description: Name of the registry.
+        - name: showSensitiveInfo
+          in: query
+          description: Request that sensitive information, such as username, auth_token, and CA certificates are included in the response.
+          schema:
+            type: boolean
+            title: show_sensitive_info
+            description: (OPTIONAL) Request that sensitive information, such as username, auth_token, and CA certificates are included in the response.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/catalog.v3.GetRegistryResponse'
+    put:
+      tags:
+        - CatalogService
+      summary: UpdateRegistry
+      description: Updates a registry.
+      operationId: CatalogService_UpdateRegistry2
+      parameters:
+        - name: registry_name
+          in: path
+          description: Name of the Registry.
+          required: true
+          schema:
+            type: string
+            title: registry_name
+            maxLength: 40
+            minLength: 1
+            pattern: ^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$
+            description: Name of the Registry.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      requestBody:
+        description: The Registry update.
+        content:
+          application/json:
+            schema:
+              title: registry
+              description: The Registry update.
+              $ref: '#/components/schemas/catalog.v3.Registry'
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+    delete:
+      tags:
+        - CatalogService
+      summary: DeleteRegistry
+      description: Deletes a registry.
+      operationId: CatalogService_DeleteRegistry2
+      parameters:
+        - name: registry_name
+          in: path
+          description: Name of the registry.
+          required: true
+          schema:
+            type: string
+            title: registry_name
+            maxLength: 40
+            minLength: 1
+            pattern: ^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$
+            description: Name of the registry.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/google.protobuf.Empty'
+  /catalog.orchestrator.apis/v3/uploads:
+    post:
+      tags:
+        - CatalogService
+      summary: UploadCatalogEntities
+      description: |-
+        Allows uploading of a YAML file containing various application catalog entities. Multiple RPC invocations
+         tagged with the same upload session ID can be used to upload multiple files and to create or update several
+         catalog entities as a single transaction.
+      operationId: CatalogService_UploadCatalogEntities2
+      parameters:
+        - name: sessionId
+          in: query
+          description: |-
+            First upload request in the batch must not specify session ID. Subsequent upload requests must copy
+             the session ID from the previously issued response.
+          schema:
+            type: string
+            title: session_id
+            description: |-
+              First upload request in the batch must not specify session ID. Subsequent upload requests must copy
+               the session ID from the previously issued response.
+        - name: uploadNumber
+          in: query
+          description: 'Deprecated: Upload number must increase sequentially, starting with 1.'
+          schema:
+            type: integer
+            title: upload_number
+            description: 'Deprecated: Upload number must increase sequentially, starting with 1.'
+        - name: lastUpload
+          in: query
+          description: Must be set to 'true' to perform load of all entity files uploaded as part of this session.
+          schema:
+            type: boolean
+            title: last_upload
+            description: Must be set to 'true' to perform load of all entity files uploaded as part of this session.
+        - name: projectName
+          in: query
+          description: Project name for multi-tenant path routing.
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
+      requestBody:
+        description: Upload record containing the file name and file contents being uploaded.
+        content:
+          application/json:
+            schema:
+              title: upload
+              description: Upload record containing the file name and file contents being uploaded.
+              $ref: '#/components/schemas/catalog.v3.Upload'
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/catalog.v3.UploadCatalogEntitiesResponse'
+  /v1/projects/{projectName}/catalog/applications:
+    get:
+      tags:
+        - CatalogService
+      summary: ListApplications
+      description: Gets a list of applications.
       operationId: CatalogService_ListApplications
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: orderBy
           in: query
           description: Names the field to be used for ordering the returned results.
@@ -65,6 +1128,15 @@ paths:
       summary: CreateApplication
       description: Creates a new application.
       operationId: CatalogService_CreateApplication
+      parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
       requestBody:
         description: The registry to create.
         content:
@@ -80,7 +1152,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/catalog.v3.CreateApplicationResponse'
-  /catalog.orchestrator.apis/v3/applications/{application_name}/versions:
+  /v1/projects/{projectName}/catalog/applications/{application_name}/versions:
     get:
       tags:
         - CatalogService
@@ -88,6 +1160,14 @@ paths:
       description: Gets all versions of a named application.
       operationId: CatalogService_GetApplicationVersions
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: application_name
           in: path
           description: Name of the application.
@@ -103,7 +1183,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/catalog.v3.GetApplicationVersionsResponse'
-  /catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}:
+  /v1/projects/{projectName}/catalog/applications/{application_name}/versions/{version}:
     get:
       tags:
         - CatalogService
@@ -111,6 +1191,14 @@ paths:
       description: Gets a specific application.
       operationId: CatalogService_GetApplication
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: application_name
           in: path
           description: Name of the application.
@@ -141,6 +1229,14 @@ paths:
       description: Updates an application.
       operationId: CatalogService_UpdateApplication
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: application_name
           in: path
           description: Name of the application.
@@ -179,6 +1275,14 @@ paths:
       description: Deletes an application.
       operationId: CatalogService_DeleteApplication
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: application_name
           in: path
           description: Name of the application.
@@ -202,7 +1306,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/google.protobuf.Empty'
-  /catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}/reference_count:
+  /v1/projects/{projectName}/catalog/applications/{application_name}/versions/{version}/reference_count:
     get:
       tags:
         - CatalogService
@@ -210,6 +1314,14 @@ paths:
       description: Gets application reference count - the number of deployment packages using this application.
       operationId: CatalogService_GetApplicationReferenceCount
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: application_name
           in: path
           description: Name of the application.
@@ -233,7 +1345,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/catalog.v3.GetApplicationReferenceCountResponse'
-  /catalog.orchestrator.apis/v3/artifacts:
+  /v1/projects/{projectName}/catalog/artifacts:
     get:
       tags:
         - CatalogService
@@ -241,6 +1353,14 @@ paths:
       description: Gets a list of artifacts.
       operationId: CatalogService_ListArtifacts
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: orderBy
           in: query
           description: Names the field to be used for ordering the returned results.
@@ -284,6 +1404,15 @@ paths:
       summary: CreateArtifact
       description: Creates a new artifact.
       operationId: CatalogService_CreateArtifact
+      parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
       requestBody:
         description: The artifact to create.
         content:
@@ -299,7 +1428,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/catalog.v3.CreateArtifactResponse'
-  /catalog.orchestrator.apis/v3/artifacts/{artifact_name}:
+  /v1/projects/{projectName}/catalog/artifacts/{artifact_name}:
     get:
       tags:
         - CatalogService
@@ -307,6 +1436,14 @@ paths:
       description: Gets a specific artifact.
       operationId: CatalogService_GetArtifact
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: artifact_name
           in: path
           description: Name of the artifact.
@@ -329,6 +1466,14 @@ paths:
       description: Updates an artifact.
       operationId: CatalogService_UpdateArtifact
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: artifact_name
           in: path
           description: Name of the artifact.
@@ -359,6 +1504,14 @@ paths:
       description: Deletes an artifact.
       operationId: CatalogService_DeleteArtifact
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: artifact_name
           in: path
           description: Name of the artifact.
@@ -374,7 +1527,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/google.protobuf.Empty'
-  /catalog.orchestrator.apis/v3/deployment_packages:
+  /v1/projects/{projectName}/catalog/deployment_packages:
     get:
       tags:
         - CatalogService
@@ -382,6 +1535,14 @@ paths:
       description: Gets a list of deployment packages.
       operationId: CatalogService_ListDeploymentPackages
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: orderBy
           in: query
           description: Names the field to be used for ordering the returned results.
@@ -435,6 +1596,15 @@ paths:
       summary: CreateDeploymentPackage
       description: Creates a new deployment package.
       operationId: CatalogService_CreateDeploymentPackage
+      parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
       requestBody:
         description: The deployment package to create.
         content:
@@ -450,7 +1620,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/catalog.v3.CreateDeploymentPackageResponse'
-  /catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions:
+  /v1/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions:
     get:
       tags:
         - CatalogService
@@ -458,6 +1628,14 @@ paths:
       description: Gets all versions of a named deployment package.
       operationId: CatalogService_GetDeploymentPackageVersions
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: deployment_package_name
           in: path
           description: Name of the DeploymentPackage.
@@ -473,7 +1651,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/catalog.v3.GetDeploymentPackageVersionsResponse'
-  /catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}:
+  /v1/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}:
     get:
       tags:
         - CatalogService
@@ -481,6 +1659,14 @@ paths:
       description: Gets a specific deployment package.
       operationId: CatalogService_GetDeploymentPackage
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: deployment_package_name
           in: path
           description: Name of the DeploymentPackage.
@@ -511,6 +1697,14 @@ paths:
       description: Updates a deployment package.
       operationId: CatalogService_UpdateDeploymentPackage
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: deployment_package_name
           in: path
           description: Name of the DeploymentPackage.
@@ -549,6 +1743,14 @@ paths:
       description: Deletes a deployment package.
       operationId: CatalogService_DeleteDeploymentPackage
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: deployment_package_name
           in: path
           description: Name of the DeploymentPackage.
@@ -572,7 +1774,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/google.protobuf.Empty'
-  /catalog.orchestrator.apis/v3/import:
+  /v1/projects/{projectName}/catalog/import:
     post:
       tags:
         - CatalogService
@@ -582,6 +1784,14 @@ paths:
          of the asset to be imported.
       operationId: CatalogService_Import
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: url
           in: query
           description: Required URL of Helm Chart to import
@@ -665,7 +1875,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/catalog.v3.ImportResponse'
-  /catalog.orchestrator.apis/v3/registries:
+  /v1/projects/{projectName}/catalog/registries:
     get:
       tags:
         - CatalogService
@@ -673,6 +1883,14 @@ paths:
       description: Gets a list of registries.
       operationId: CatalogService_ListRegistries
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: orderBy
           in: query
           description: Names the field to be used for ordering the returned results.
@@ -723,6 +1941,15 @@ paths:
       summary: CreateRegistry
       description: Creates a new registry.
       operationId: CatalogService_CreateRegistry
+      parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
       requestBody:
         description: The registry to create.
         content:
@@ -738,7 +1965,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/catalog.v3.CreateRegistryResponse'
-  /catalog.orchestrator.apis/v3/registries/{registry_name}:
+  /v1/projects/{projectName}/catalog/registries/{registry_name}:
     get:
       tags:
         - CatalogService
@@ -746,6 +1973,14 @@ paths:
       description: Gets a specific registry.
       operationId: CatalogService_GetRegistry
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: registry_name
           in: path
           description: Name of the registry.
@@ -778,6 +2013,14 @@ paths:
       description: Updates a registry.
       operationId: CatalogService_UpdateRegistry
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: registry_name
           in: path
           description: Name of the Registry.
@@ -811,6 +2054,14 @@ paths:
       description: Deletes a registry.
       operationId: CatalogService_DeleteRegistry
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: registry_name
           in: path
           description: Name of the registry.
@@ -829,7 +2080,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/google.protobuf.Empty'
-  /catalog.orchestrator.apis/v3/uploads:
+  /v1/projects/{projectName}/catalog/uploads:
     post:
       tags:
         - CatalogService
@@ -840,6 +2091,14 @@ paths:
          catalog entities as a single transaction.
       operationId: CatalogService_UploadCatalogEntities
       parameters:
+        - name: projectName
+          in: path
+          description: Project name for multi-tenant path routing.
+          required: true
+          schema:
+            type: string
+            title: projectName
+            description: (OPTIONAL) Project name for multi-tenant path routing.
         - name: sessionId
           in: query
           description: |-
@@ -1168,6 +2427,10 @@ components:
           title: application
           description: The registry to create.
           $ref: '#/components/schemas/catalog.v3.Application'
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: CreateApplicationRequest
       required:
         - application
@@ -1192,6 +2455,10 @@ components:
           title: artifact
           description: The artifact to create.
           $ref: '#/components/schemas/catalog.v3.Artifact'
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: CreateArtifactRequest
       required:
         - artifact
@@ -1216,6 +2483,10 @@ components:
           title: deployment_package
           description: The deployment package to create.
           $ref: '#/components/schemas/catalog.v3.DeploymentPackage'
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: CreateDeploymentPackageRequest
       required:
         - deploymentPackage
@@ -1240,6 +2511,10 @@ components:
           title: registry
           description: The registry to create.
           $ref: '#/components/schemas/catalog.v3.Registry'
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: CreateRegistryRequest
       required:
         - registry
@@ -1268,6 +2543,10 @@ components:
           type: string
           title: version
           description: Version of the application.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: DeleteApplicationRequest
       required:
         - applicationName
@@ -1281,6 +2560,10 @@ components:
           type: string
           title: artifact_name
           description: Name of the artifact.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: DeleteArtifactRequest
       required:
         - artifactName
@@ -1297,6 +2580,10 @@ components:
           type: string
           title: version
           description: Version of the DeploymentPackage.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: DeleteDeploymentPackageRequest
       required:
         - deploymentPackageName
@@ -1313,6 +2600,10 @@ components:
           minLength: 1
           pattern: ^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$
           description: Name of the registry.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: DeleteRegistryRequest
       required:
         - registryName
@@ -1575,6 +2866,10 @@ components:
           type: string
           title: version
           description: Version of the DeploymentPackage.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: DownloadDeploymentPackageRequest
       required:
         - deploymentPackageName
@@ -1679,6 +2974,10 @@ components:
           type: string
           title: version
           description: Version of the application.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: GetApplicationReferenceCountRequest
       required:
         - applicationName
@@ -1707,6 +3006,10 @@ components:
           type: string
           title: version
           description: Version of the application.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: GetApplicationRequest
       required:
         - applicationName
@@ -1732,6 +3035,10 @@ components:
           type: string
           title: application_name
           description: Name of the application.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: GetApplicationVersionsRequest
       required:
         - applicationName
@@ -1759,6 +3066,10 @@ components:
           type: string
           title: artifact_name
           description: Name of the artifact.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: GetArtifactRequest
       required:
         - artifactName
@@ -1787,6 +3098,10 @@ components:
           type: string
           title: version
           description: Version of the DeploymentPackage.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: GetDeploymentPackageRequest
       required:
         - deploymentPackageName
@@ -1812,6 +3127,10 @@ components:
           type: string
           title: deployment_package_name
           description: Name of the DeploymentPackage.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: GetDeploymentPackageVersionsRequest
       required:
         - deploymentPackageName
@@ -1846,6 +3165,10 @@ components:
           type: boolean
           title: show_sensitive_info
           description: (OPTIONAL) Request that sensitive information, such as username, auth_token, and CA certificates are included in the response.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: GetRegistryRequest
       required:
         - registryName
@@ -1910,6 +3233,10 @@ components:
           title: namespace
           maxLength: 40
           description: (OPTIONAL) Optional namespace
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: ImportRequest
       required:
         - url
@@ -1966,6 +3293,10 @@ components:
           title: kinds
           maxItems: 20
           description: (OPTIONAL) List of application kinds to be returned; empty list means all kinds.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: ListApplicationsRequest
       additionalProperties: false
       description: Request message for the ListApplications method.
@@ -2011,6 +3342,10 @@ components:
           title: offset
           format: int32
           description: (OPTIONAL) Index of the first item to return.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: ListArtifactsRequest
       additionalProperties: false
       description: Request message for the ListArtifacts method.
@@ -2063,6 +3398,10 @@ components:
           title: kinds
           maxItems: 20
           description: (OPTIONAL) List of deployment package kinds to be returned; empty list means all kinds.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: ListDeploymentPackagesRequest
       additionalProperties: false
       description: Request message for the ListDeploymentPackages method.
@@ -2112,6 +3451,10 @@ components:
           type: boolean
           title: show_sensitive_info
           description: (OPTIONAL) Request that sensitive information, such as username, auth_token, and CA certificates are included in the response.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: ListRegistriesRequest
       additionalProperties: false
       description: Request message for the ListRegistries method.
@@ -2489,6 +3832,10 @@ components:
           title: application
           description: The application update.
           $ref: '#/components/schemas/catalog.v3.Application'
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: UpdateApplicationRequest
       required:
         - applicationName
@@ -2507,6 +3854,10 @@ components:
           title: artifact
           description: The artifact update.
           $ref: '#/components/schemas/catalog.v3.Artifact'
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: UpdateArtifactRequest
       required:
         - artifactName
@@ -2528,6 +3879,10 @@ components:
           title: deployment_package
           description: The DeploymentPackage update.
           $ref: '#/components/schemas/catalog.v3.DeploymentPackage'
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: UpdateDeploymentPackageRequest
       required:
         - deploymentPackageName
@@ -2549,6 +3904,10 @@ components:
           title: registry
           description: The Registry update.
           $ref: '#/components/schemas/catalog.v3.Registry'
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: UpdateRegistryRequest
       required:
         - registryName
@@ -2594,6 +3953,10 @@ components:
           title: upload
           description: Upload record containing the file name and file contents being uploaded.
           $ref: '#/components/schemas/catalog.v3.Upload'
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: UploadCatalogEntitiesRequest
       required:
         - upload
@@ -2656,6 +4019,10 @@ components:
           title: kinds
           maxItems: 20
           description: (OPTIONAL) Application kinds to be watched; empty list means all kinds.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: WatchApplicationsRequest
       required:
         - projectId
@@ -2687,6 +4054,10 @@ components:
           type: boolean
           title: no_replay
           description: (OPTIONAL) Indicates whether replay of existing entities will be performed.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: WatchArtifactsRequest
       required:
         - projectId
@@ -2725,6 +4096,10 @@ components:
           title: kinds
           maxItems: 20
           description: (OPTIONAL) Deployment package kinds to be watched; empty list means all kinds.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: WatchDeploymentPackagesRequest
       required:
         - projectId
@@ -2760,6 +4135,10 @@ components:
           type: boolean
           title: show_sensitive_info
           description: (OPTIONAL) Request that sensitive information, such as username, auth_token, and CA certificates are included in the response.
+        projectName:
+          type: string
+          title: projectName
+          description: (OPTIONAL) Project name for multi-tenant path routing.
       title: WatchRegistriesRequest
       required:
         - projectId

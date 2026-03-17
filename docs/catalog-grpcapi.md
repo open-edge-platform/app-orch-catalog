@@ -8,6 +8,7 @@
 
 ## Table of Contents
 
+
 - [catalog/v3/resources.proto](#catalog_v3_resources-proto)
   - [APIExtension](#catalog-v3-APIExtension)
   - [Application](#catalog-v3-Application)
@@ -93,15 +94,20 @@
   
 - [Scalar Value Types](#scalar-value-types)
 
+
+
 <a name="catalog_v3_resources-proto"></a>
 
 ## catalog/v3/resources.proto
+
+
 
 <a name="catalog-v3-APIExtension"></a>
 
 ### APIExtension
 
 APIExtensions represents some form of an extension to the external API provided by deployment package.
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -112,11 +118,17 @@ APIExtensions represents some form of an extension to the external API provided 
 | endpoints | [Endpoint](#catalog-v3-Endpoint) | repeated | One or more API endpoints provided by the API extension. |
 | ui_extension | [UIExtension](#catalog-v3-UIExtension) |  | Additional information specific to UI extensions. |
 
+
+
+
+
+
 <a name="catalog-v3-Application"></a>
 
 ### Application
 
 Application represents a Helm chart that can be deployed to one or more Kubernetes pods.
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -135,6 +147,11 @@ Application represents a Helm chart that can be deployed to one or more Kubernet
 | create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | The creation time of the application. |
 | update_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | The last update time of the application. |
 
+
+
+
+
+
 <a name="catalog-v3-ApplicationDependency"></a>
 
 ### ApplicationDependency
@@ -143,10 +160,16 @@ ApplicationDependency represents the dependency of one application on another wi
 This dependency is specified as the name of the application that has the dependency, and the name of the application
 that is the dependency.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | Name of the application that has the dependency on the other. |
 | requires | [string](#string) |  | Name of the application that is required by the other. |
+
+
+
+
+
 
 <a name="catalog-v3-ApplicationReference"></a>
 
@@ -154,10 +177,16 @@ that is the dependency.
 
 ApplicationReference represents a reference to an application by its name and its version.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | Name of the referenced application. |
 | version | [string](#string) |  | Version of the referenced application. |
+
+
+
+
+
 
 <a name="catalog-v3-Artifact"></a>
 
@@ -166,6 +195,7 @@ ApplicationReference represents a reference to an application by its name and it
 Artifact represents a binary artifact that can be used for various purposes, e.g. icon or thumbnail for UI display, or
 auxiliary artifacts for integration with various platform services such as Grafana dashboard and similar. An artifact may be
 used by multiple deployment packages.
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -179,16 +209,27 @@ MIME types are defined and standardized in IETF's RFC 6838. |
 | create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | The creation time of the artifact. |
 | update_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | The last update time of the artifact. |
 
+
+
+
+
+
 <a name="catalog-v3-ArtifactReference"></a>
 
 ### ArtifactReference
 
 ArtifactReference serves as a reference to an artifact, together with the artifact's purpose within a deployment package.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | Name of the artifact. |
 | purpose | [string](#string) |  | Purpose of the artifact, e.g. icon, thumbnail, Grafana dashboard, etc. |
+
+
+
+
+
 
 <a name="catalog-v3-DeploymentPackage"></a>
 
@@ -201,6 +242,7 @@ package can also define any startup dependencies between its constituent applica
 
 The deployment package can also refer to a set of artifacts used for miscellaneous purposes,
 e.g. a thumbnail, icon, or a Grafana extension.
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -223,20 +265,34 @@ e.g. a thumbnail, icon, or a Grafana extension.
 | create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | The creation time of the deployment package. |
 | update_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | The last update time of the deployment package. |
 
+
+
+
+
+
 <a name="catalog-v3-DeploymentPackage-DefaultNamespacesEntry"></a>
 
 ### DeploymentPackage.DefaultNamespacesEntry
+
+
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | key | [string](#string) |  |  |
 | value | [string](#string) |  |  |
 
+
+
+
+
+
 <a name="catalog-v3-DeploymentProfile"></a>
 
 ### DeploymentProfile
 
 DeploymentProfile specifies which application profiles will be used for deployment of which applications.
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -247,14 +303,27 @@ DeploymentProfile specifies which application profiles will be used for deployme
 | create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | The creation time of the deployment profile. |
 | update_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | The last update time of the deployment profile. |
 
+
+
+
+
+
 <a name="catalog-v3-DeploymentProfile-ApplicationProfilesEntry"></a>
 
 ### DeploymentProfile.ApplicationProfilesEntry
+
+
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | key | [string](#string) |  |  |
 | value | [string](#string) |  |  |
+
+
+
+
+
 
 <a name="catalog-v3-DeploymentRequirement"></a>
 
@@ -263,17 +332,24 @@ DeploymentProfile specifies which application profiles will be used for deployme
 DeploymentRequirement is a reference to the deployment package that must be deployed first,
 as a requirement for an application to be deployed.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | Name of the required deployment package. |
 | version | [string](#string) |  | Version of the required deployment package. |
 | deployment_profile_name | [string](#string) |  | Optional name of the deployment profile to be used. When not provided, the default deployment profile will be used. |
 
+
+
+
+
+
 <a name="catalog-v3-Endpoint"></a>
 
 ### Endpoint
 
 Endpoint represents an application service endpoint.
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -284,6 +360,11 @@ Endpoint represents an application service endpoint.
 | auth_type | [string](#string) |  | Authentication type expected by the endpoint. |
 | app_name | [string](#string) |  | The name of the application providing this endpoint. |
 
+
+
+
+
+
 <a name="catalog-v3-Event"></a>
 
 ### Event
@@ -291,10 +372,16 @@ Endpoint represents an application service endpoint.
 Event message carries the event type detected by the catalog service during the invocation of
 the "watch" RPC.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | type | [string](#string) |  | Type field specifies whether an entity was created, updated, or deleted. The replayed type is used to annotate entities during the replay phase of the watch RPC. |
 | project_id | [string](#string) |  | ID of the project to which the subject belongs. |
+
+
+
+
+
 
 <a name="catalog-v3-Namespace"></a>
 
@@ -303,35 +390,58 @@ the "watch" RPC.
 Namespace represents a complex namespace definition with predefined labels and annotations.
 They are created before any other resources in the deployment.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  | namespace names must be valid RFC 1123 DNS labels. Avoid creating namespaces with the prefix `kube-`, since it is reserved for Kubernetes\* system namespaces. Avoid `default` - will already exist |
 | labels | [Namespace.LabelsEntry](#catalog-v3-Namespace-LabelsEntry) | repeated |  |
 | annotations | [Namespace.AnnotationsEntry](#catalog-v3-Namespace-AnnotationsEntry) | repeated |  |
 
+
+
+
+
+
 <a name="catalog-v3-Namespace-AnnotationsEntry"></a>
 
 ### Namespace.AnnotationsEntry
+
+
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | key | [string](#string) |  |  |
 | value | [string](#string) |  |  |
+
+
+
+
+
 
 <a name="catalog-v3-Namespace-LabelsEntry"></a>
 
 ### Namespace.LabelsEntry
 
+
+
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | key | [string](#string) |  |  |
 | value | [string](#string) |  |  |
+
+
+
+
+
 
 <a name="catalog-v3-ParameterTemplate"></a>
 
 ### ParameterTemplate
 
 ParameterTemplate describes override values for Helm chart values
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -344,11 +454,17 @@ ParameterTemplate describes override values for Helm chart values
 | secret | [bool](#bool) |  | Optional secret flag for the parameter. |
 | mandatory | [bool](#bool) |  | Optional mandatory flag for the parameter. |
 
+
+
+
+
+
 <a name="catalog-v3-Profile"></a>
 
 ### Profile
 
 Profile is a set of configuration values for customizing application deployment.
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -361,12 +477,18 @@ Profile is a set of configuration values for customizing application deployment.
 | create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | The creation time of the profile. |
 | update_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | The last update time of the profile. |
 
+
+
+
+
+
 <a name="catalog-v3-Registry"></a>
 
 ### Registry
 
 Registry represents a repository from which various artifacts, such as application Docker\* images or Helm\* charts
 can be retrieved. As such, the registry entity holds information used for finding and accessing the represented repository.
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -383,11 +505,17 @@ can be retrieved. As such, the registry entity holds information used for findin
 | create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | The creation time of the registry. |
 | update_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  | The last update time of the registry. |
 
+
+
+
+
+
 <a name="catalog-v3-ResourceReference"></a>
 
 ### ResourceReference
 
 ResourceReference represents a Kubernetes resource identifier.
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -396,11 +524,17 @@ ResourceReference represents a Kubernetes resource identifier.
 | namespace | [string](#string) |  | Kubernetes namespace where the ignored resource resides. When empty, the application namespace will be used. |
 | ignore | [bool](#bool) |  | Ignore whole resource if true. Will use "remove" if false or not present. |
 
+
+
+
+
+
 <a name="catalog-v3-UIExtension"></a>
 
 ### UIExtension
 
 UIExtension is an augmentation of an API extension.
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -411,16 +545,26 @@ UIExtension is an augmentation of an API extension.
 | app_name | [string](#string) |  | The name of the application corresponding to this UI extension. |
 | module_name | [string](#string) |  | Name of the application module to be loaded. |
 
+
+
+
+
+
 <a name="catalog-v3-Upload"></a>
 
 ### Upload
 
 Upload represents a single file-upload record.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | file_name | [string](#string) |  | Name of the file being uploaded. |
 | artifact | [bytes](#bytes) |  | Raw bytes content of the file being uploaded. |
+
+
+
+
 
  <!-- end messages -->
 
@@ -435,6 +579,7 @@ Empty is an empty Protobuf message.
 ### Timestamp
 
 Timestamp is a Protobuf message containing a timestamp.
+
 
 <a name="catalog-v3-Kind"></a>
 
@@ -449,15 +594,20 @@ Kind designation for applications and packages, normal (unspecified), extension,
 | KIND_EXTENSION | 2 |  |
 | KIND_ADDON | 3 |  |
 
+
  <!-- end enums -->
 
  <!-- end HasExtensions -->
 
  <!-- end services -->
 
+
+
 <a name="catalog_v3_service-proto"></a>
 
 ## catalog/v3/service.proto
+
+
 
 <a name="catalog-v3-CreateApplicationRequest"></a>
 
@@ -465,9 +615,16 @@ Kind designation for applications and packages, normal (unspecified), extension,
 
 Request message for the CreateApplication method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | application | [Application](#catalog-v3-Application) |  | The registry to create. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-CreateApplicationResponse"></a>
 
@@ -475,9 +632,15 @@ Request message for the CreateApplication method.
 
 Response message for the CreateApplication method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | application | [Application](#catalog-v3-Application) |  | The application created. |
+
+
+
+
+
 
 <a name="catalog-v3-CreateArtifactRequest"></a>
 
@@ -485,9 +648,16 @@ Response message for the CreateApplication method.
 
 Request message for the CreateArtifact method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | artifact | [Artifact](#catalog-v3-Artifact) |  | The artifact to create. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-CreateArtifactResponse"></a>
 
@@ -495,9 +665,15 @@ Request message for the CreateArtifact method.
 
 Response message for the CreateArtifact method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | artifact | [Artifact](#catalog-v3-Artifact) |  | The artifact created. |
+
+
+
+
+
 
 <a name="catalog-v3-CreateDeploymentPackageRequest"></a>
 
@@ -505,9 +681,16 @@ Response message for the CreateArtifact method.
 
 Request message for the CreateDeploymentPackage method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | deployment_package | [DeploymentPackage](#catalog-v3-DeploymentPackage) |  | The deployment package to create. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-CreateDeploymentPackageResponse"></a>
 
@@ -515,9 +698,15 @@ Request message for the CreateDeploymentPackage method.
 
 Response message for the CreateDeploymentPackage method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | deployment_package | [DeploymentPackage](#catalog-v3-DeploymentPackage) |  | The deployment package created. |
+
+
+
+
+
 
 <a name="catalog-v3-CreateRegistryRequest"></a>
 
@@ -525,9 +714,16 @@ Response message for the CreateDeploymentPackage method.
 
 Request message for the CreateRegistry method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | registry | [Registry](#catalog-v3-Registry) |  | The registry to create. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-CreateRegistryResponse"></a>
 
@@ -535,9 +731,15 @@ Request message for the CreateRegistry method.
 
 Response message for the CreateRegistry method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | registry | [Registry](#catalog-v3-Registry) |  | The created registry. |
+
+
+
+
+
 
 <a name="catalog-v3-DeleteApplicationRequest"></a>
 
@@ -545,10 +747,17 @@ Response message for the CreateRegistry method.
 
 Request message for the DeleteApplication method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | application_name | [string](#string) |  | Name of the application. |
 | version | [string](#string) |  | Version of the application. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-DeleteArtifactRequest"></a>
 
@@ -556,9 +765,16 @@ Request message for the DeleteApplication method.
 
 Request message for the DeleteArtifact method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | artifact_name | [string](#string) |  | Name of the artifact. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-DeleteDeploymentPackageRequest"></a>
 
@@ -566,10 +782,17 @@ Request message for the DeleteArtifact method.
 
 Request message for DeleteDeploymentPackage.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | deployment_package_name | [string](#string) |  | Name of the DeploymentPackage. |
 | version | [string](#string) |  | Version of the DeploymentPackage. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-DeleteRegistryRequest"></a>
 
@@ -577,9 +800,16 @@ Request message for DeleteDeploymentPackage.
 
 Request message for the DeleteRegistry method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | registry_name | [string](#string) |  | Name of the registry. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-DownloadDeploymentPackageRequest"></a>
 
@@ -588,10 +818,17 @@ Request message for the DeleteRegistry method.
 Request message for the DownloadDeploymentPackage method.
 Same parameters as GetDeploymentPackageRequest
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | deployment_package_name | [string](#string) |  | Name of the DeploymentPackage. |
 | version | [string](#string) |  | Version of the DeploymentPackage. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-DownloadDeploymentPackageResponse"></a>
 
@@ -599,9 +836,15 @@ Same parameters as GetDeploymentPackageRequest
 
 Response message for the DownloadDeploymentPackage method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | artifact | [bytes](#bytes) |  | Raw bytes content of the file being downloaded. |
+
+
+
+
+
 
 <a name="catalog-v3-GetApplicationReferenceCountRequest"></a>
 
@@ -609,10 +852,17 @@ Response message for the DownloadDeploymentPackage method.
 
 Request message for the GetApplicationReferenceCount method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | application_name | [string](#string) |  | Name of the application. |
 | version | [string](#string) |  | Version of the application. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-GetApplicationReferenceCountResponse"></a>
 
@@ -620,9 +870,15 @@ Request message for the GetApplicationReferenceCount method.
 
 Response message for the GetApplicationReferenceCount method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | reference_count | [uint32](#uint32) |  |  |
+
+
+
+
+
 
 <a name="catalog-v3-GetApplicationRequest"></a>
 
@@ -630,10 +886,17 @@ Response message for the GetApplicationReferenceCount method.
 
 Request message for the GetApplication method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | application_name | [string](#string) |  | Name of the application. |
 | version | [string](#string) |  | Version of the application. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-GetApplicationResponse"></a>
 
@@ -641,9 +904,15 @@ Request message for the GetApplication method.
 
 Response message for the GetApplication method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | application | [Application](#catalog-v3-Application) |  | The requested application. |
+
+
+
+
+
 
 <a name="catalog-v3-GetApplicationVersionsRequest"></a>
 
@@ -651,9 +920,16 @@ Response message for the GetApplication method.
 
 Request message for the GetApplicationVersions method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | application_name | [string](#string) |  | Name of the application. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-GetApplicationVersionsResponse"></a>
 
@@ -661,11 +937,17 @@ Request message for the GetApplicationVersions method.
 
 Response message for the GetApplication method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | application | [Application](#catalog-v3-Application) | repeated | A list of applications with the same project and name.
 
 TODO rename to 'applications' |
+
+
+
+
+
 
 <a name="catalog-v3-GetArtifactRequest"></a>
 
@@ -673,9 +955,16 @@ TODO rename to 'applications' |
 
 Request message for the GetArtifact method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | artifact_name | [string](#string) |  | Name of the artifact. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-GetArtifactResponse"></a>
 
@@ -683,9 +972,15 @@ Request message for the GetArtifact method.
 
 Response message for the GetArtifact method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | artifact | [Artifact](#catalog-v3-Artifact) |  | The requested artifact. |
+
+
+
+
+
 
 <a name="catalog-v3-GetDeploymentPackageRequest"></a>
 
@@ -693,10 +988,17 @@ Response message for the GetArtifact method.
 
 Request message for the GetDeploymentPackage method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | deployment_package_name | [string](#string) |  | Name of the DeploymentPackage. |
 | version | [string](#string) |  | Version of the DeploymentPackage. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-GetDeploymentPackageResponse"></a>
 
@@ -704,9 +1006,15 @@ Request message for the GetDeploymentPackage method.
 
 Response message for the GetDeploymentPackage method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | deployment_package | [DeploymentPackage](#catalog-v3-DeploymentPackage) |  | The DeploymentPackage requested. |
+
+
+
+
+
 
 <a name="catalog-v3-GetDeploymentPackageVersionsRequest"></a>
 
@@ -714,9 +1022,16 @@ Response message for the GetDeploymentPackage method.
 
 Request message for the GetDeploymentPackageVersions method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | deployment_package_name | [string](#string) |  | Name of the DeploymentPackage. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-GetDeploymentPackageVersionsResponse"></a>
 
@@ -724,9 +1039,15 @@ Request message for the GetDeploymentPackageVersions method.
 
 Response message for the GetDeploymentPackageVersions method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | deployment_packages | [DeploymentPackage](#catalog-v3-DeploymentPackage) | repeated | A list of DeploymentPackages with the same project and name. |
+
+
+
+
+
 
 <a name="catalog-v3-GetRegistryRequest"></a>
 
@@ -734,10 +1055,17 @@ Response message for the GetDeploymentPackageVersions method.
 
 Request message for the GetRegistry method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | registry_name | [string](#string) |  | Name of the registry. |
 | show_sensitive_info | [bool](#bool) |  | Request that sensitive information, such as username, auth_token, and CA certificates are included in the response. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-GetRegistryResponse"></a>
 
@@ -745,15 +1073,22 @@ Request message for the GetRegistry method.
 
 Response message for the GetRegistry method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | registry | [Registry](#catalog-v3-Registry) |  |  |
+
+
+
+
+
 
 <a name="catalog-v3-ImportRequest"></a>
 
 ### ImportRequest
 
 ImportRequest is a request for importing a helm chart from an OCI registry
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -765,6 +1100,12 @@ ImportRequest is a request for importing a helm chart from an OCI registry
 | generate_default_values | [bool](#bool) |  | If true and chart_values is not set, then the values.yaml will be extracted and used to generate default profile values. |
 | generate_default_parameters | [bool](#bool) |  | Generates default parameters from the values, from chart_values or from generate_default_values as appropriate. |
 | namespace | [string](#string) |  | Optional namespace |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-ImportResponse"></a>
 
@@ -772,15 +1113,22 @@ ImportRequest is a request for importing a helm chart from an OCI registry
 
 Response message for the Import method
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | error_messages | [string](#string) | repeated | Any error messages encountered either during chart parsing or entity creation or update. |
+
+
+
+
+
 
 <a name="catalog-v3-ListApplicationsRequest"></a>
 
 ### ListApplicationsRequest
 
 Request message for the ListApplications method.
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -789,6 +1137,12 @@ Request message for the ListApplications method.
 | page_size | [int32](#int32) |  | Maximum number of items to return. |
 | offset | [int32](#int32) |  | Index of the first item to return. |
 | kinds | [Kind](#catalog-v3-Kind) | repeated | List of application kinds to be returned; empty list means all kinds. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-ListApplicationsResponse"></a>
 
@@ -796,10 +1150,16 @@ Request message for the ListApplications method.
 
 Response message for the ListApplications method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | applications | [Application](#catalog-v3-Application) | repeated | A list of applications. |
 | total_elements | [int32](#int32) |  | Count of items in the entire list, regardless of pagination. |
+
+
+
+
+
 
 <a name="catalog-v3-ListArtifactsRequest"></a>
 
@@ -807,12 +1167,19 @@ Response message for the ListApplications method.
 
 Request message for the ListArtifacts method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | order_by | [string](#string) |  | Names the field to be used for ordering the returned results. |
 | filter | [string](#string) |  | Expression to use for filtering the results. |
 | page_size | [int32](#int32) |  | Maximum number of items to return. |
 | offset | [int32](#int32) |  | Index of the first item to return. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-ListArtifactsResponse"></a>
 
@@ -820,16 +1187,23 @@ Request message for the ListArtifacts method.
 
 Response message for the ListArtifacts method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | artifacts | [Artifact](#catalog-v3-Artifact) | repeated | A list of artifacts. |
 | total_elements | [int32](#int32) |  | Count of items in the entire list, regardless of pagination. |
+
+
+
+
+
 
 <a name="catalog-v3-ListDeploymentPackagesRequest"></a>
 
 ### ListDeploymentPackagesRequest
 
 Request message for the ListDeploymentPackages method.
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -838,6 +1212,12 @@ Request message for the ListDeploymentPackages method.
 | page_size | [int32](#int32) |  | Maximum number of items to return. |
 | offset | [int32](#int32) |  | Index of the first item to return. |
 | kinds | [Kind](#catalog-v3-Kind) | repeated | List of deployment package kinds to be returned; empty list means all kinds. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-ListDeploymentPackagesResponse"></a>
 
@@ -845,16 +1225,23 @@ Request message for the ListDeploymentPackages method.
 
 Response message for the ListDeploymentPackages method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | deployment_packages | [DeploymentPackage](#catalog-v3-DeploymentPackage) | repeated | A list of DeploymentPackages. |
 | total_elements | [int32](#int32) |  | Count of items in the entire list, regardless of pagination. |
+
+
+
+
+
 
 <a name="catalog-v3-ListRegistriesRequest"></a>
 
 ### ListRegistriesRequest
 
 Request message for the ListRegistries method.
+
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
@@ -863,6 +1250,12 @@ Request message for the ListRegistries method.
 | page_size | [int32](#int32) |  | Maximum number of items to return. |
 | offset | [int32](#int32) |  | Index of the first item to return. |
 | show_sensitive_info | [bool](#bool) |  | Request that sensitive information, such as username, auth_token, and CA certificates are included in the response. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-ListRegistriesResponse"></a>
 
@@ -870,10 +1263,16 @@ Request message for the ListRegistries method.
 
 Response message for the ListRegistries method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | registries | [Registry](#catalog-v3-Registry) | repeated | A list of registries. |
 | total_elements | [int32](#int32) |  | Count of items in the entire list, regardless of pagination. |
+
+
+
+
+
 
 <a name="catalog-v3-UpdateApplicationRequest"></a>
 
@@ -881,11 +1280,18 @@ Response message for the ListRegistries method.
 
 Request message for the UpdateApplication method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | application_name | [string](#string) |  | Name of the application. |
 | version | [string](#string) |  | Version of the application. |
 | application | [Application](#catalog-v3-Application) |  | The application update. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-UpdateArtifactRequest"></a>
 
@@ -893,10 +1299,17 @@ Request message for the UpdateApplication method.
 
 Request message for the UpdateArtifact method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | artifact_name | [string](#string) |  | Name of the artifact. |
 | artifact | [Artifact](#catalog-v3-Artifact) |  | The artifact update. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-UpdateDeploymentPackageRequest"></a>
 
@@ -904,11 +1317,18 @@ Request message for the UpdateArtifact method.
 
 Request message for the UpdateDeploymentPackage method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | deployment_package_name | [string](#string) |  | Name of the DeploymentPackage. |
 | version | [string](#string) |  | Version of the DeploymentPackage. |
 | deployment_package | [DeploymentPackage](#catalog-v3-DeploymentPackage) |  | The DeploymentPackage update. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-UpdateRegistryRequest"></a>
 
@@ -916,10 +1336,17 @@ Request message for the UpdateDeploymentPackage method.
 
 Request message for the UpdateRegistry method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | registry_name | [string](#string) |  | Name of the Registry. |
 | registry | [Registry](#catalog-v3-Registry) |  | The Registry update. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-UploadCatalogEntitiesRequest"></a>
 
@@ -927,12 +1354,19 @@ Request message for the UpdateRegistry method.
 
 Request message for the UploadCatalogItems method
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | session_id | [string](#string) |  | First upload request in the batch must not specify session ID. Subsequent upload requests must copy the session ID from the previously issued response. |
 | upload_number | [uint32](#uint32) |  | Deprecated: Upload number must increase sequentially, starting with 1. |
 | last_upload | [bool](#bool) |  | Must be set to 'true' to perform load of all entity files uploaded as part of this session. |
 | upload | [Upload](#catalog-v3-Upload) |  | Upload record containing the file name and file contents being uploaded. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-UploadCatalogEntitiesResponse"></a>
 
@@ -940,11 +1374,17 @@ Request message for the UploadCatalogItems method
 
 Response message for the UploadCatalogItems method
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | session_id | [string](#string) |  | Session ID, generated by the server after the first upload request has been processed. |
 | upload_number | [uint32](#uint32) |  | Deprecated: Next expected upload number or total number of uploads on the last upload request. |
 | error_messages | [string](#string) | repeated | Any error messages encountered either during YAML parsing or entity creation or update. |
+
+
+
+
+
 
 <a name="catalog-v3-UploadMultipleCatalogEntitiesResponse"></a>
 
@@ -952,9 +1392,15 @@ Response message for the UploadCatalogItems method
 
 Response message when multiple files are uploaded at the same time through rest-proxy.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | responses | [UploadCatalogEntitiesResponse](#catalog-v3-UploadCatalogEntitiesResponse) | repeated |  |
+
+
+
+
+
 
 <a name="catalog-v3-WatchApplicationsRequest"></a>
 
@@ -962,11 +1408,18 @@ Response message when multiple files are uploaded at the same time through rest-
 
 Request message for the WatchApplications method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | project_id | [string](#string) |  | ID of the project. |
 | no_replay | [bool](#bool) |  | Indicates whether replay of existing entities will be performed. |
 | kinds | [Kind](#catalog-v3-Kind) | repeated | Application kinds to be watched; empty list means all kinds. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-WatchApplicationsResponse"></a>
 
@@ -974,10 +1427,16 @@ Request message for the WatchApplications method.
 
 Response message for the WatchApplications method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | event | [Event](#catalog-v3-Event) |  |  |
 | application | [Application](#catalog-v3-Application) |  |  |
+
+
+
+
+
 
 <a name="catalog-v3-WatchArtifactsRequest"></a>
 
@@ -985,10 +1444,17 @@ Response message for the WatchApplications method.
 
 Request message for the WatchArtifacts method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | project_id | [string](#string) |  | ID of the project. |
 | no_replay | [bool](#bool) |  | Indicates whether replay of existing entities will be performed. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-WatchArtifactsResponse"></a>
 
@@ -996,10 +1462,16 @@ Request message for the WatchArtifacts method.
 
 Response message for the WatchArtifacts method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | event | [Event](#catalog-v3-Event) |  |  |
 | artifact | [Artifact](#catalog-v3-Artifact) |  |  |
+
+
+
+
+
 
 <a name="catalog-v3-WatchDeploymentPackagesRequest"></a>
 
@@ -1007,11 +1479,18 @@ Response message for the WatchArtifacts method.
 
 Request message for the WatchDeploymentPackages method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | project_id | [string](#string) |  | ID of the project. |
 | no_replay | [bool](#bool) |  | Indicates whether replay of existing entities will be performed. |
 | kinds | [Kind](#catalog-v3-Kind) | repeated | Deployment package kinds to be watched; empty list means all kinds. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-WatchDeploymentPackagesResponse"></a>
 
@@ -1019,10 +1498,16 @@ Request message for the WatchDeploymentPackages method.
 
 Response message for the WatchDeploymentPackages method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | event | [Event](#catalog-v3-Event) |  |  |
 | deployment_package | [DeploymentPackage](#catalog-v3-DeploymentPackage) |  |  |
+
+
+
+
+
 
 <a name="catalog-v3-WatchRegistriesRequest"></a>
 
@@ -1030,11 +1515,18 @@ Response message for the WatchDeploymentPackages method.
 
 Request message for the WatchRegistries method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | project_id | [string](#string) |  | ID of the project. |
 | no_replay | [bool](#bool) |  | Indicates whether replay of existing entities will be performed. |
 | show_sensitive_info | [bool](#bool) |  | Request that sensitive information, such as username, auth_token, and CA certificates are included in the response. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
+
+
+
+
+
 
 <a name="catalog-v3-WatchRegistriesResponse"></a>
 
@@ -1042,10 +1534,15 @@ Request message for the WatchRegistries method.
 
 Response message for the WatchRegistries method.
 
+
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | event | [Event](#catalog-v3-Event) |  |  |
 | registry | [Registry](#catalog-v3-Registry) |  |  |
+
+
+
+
 
  <!-- end messages -->
 
@@ -1064,6 +1561,7 @@ Timestamp is a Protobuf message containing a timestamp.
  <!-- end enums -->
 
  <!-- end HasExtensions -->
+
 
 <a name="catalog-v3-CatalogService"></a>
 
@@ -1125,6 +1623,8 @@ REST get API handler is special-cased in rest-proxy to cause file to be download
 | WatchArtifacts | [WatchArtifactsRequest](#catalog-v3-WatchArtifactsRequest) | [WatchArtifactsResponse](#catalog-v3-WatchArtifactsResponse) stream | Watches inventory of artifacts for changes. |
 
  <!-- end services -->
+
+
 
 ## Scalar Value Types
 
