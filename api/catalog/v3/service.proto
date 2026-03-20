@@ -39,7 +39,7 @@ service CatalogService {
   // catalog entities as a single transaction.
   rpc UploadCatalogEntities(UploadCatalogEntitiesRequest) returns (UploadCatalogEntitiesResponse) {
     option (google.api.http) = {
-      post: "/v1/projects/{projectName}/catalog/uploads"
+      post: "/v3/projects/{projectName}/catalog/uploads"
       body: "upload"
       additional_bindings: {
         post: "/catalog.orchestrator.apis/v3/uploads"
@@ -52,7 +52,7 @@ service CatalogService {
   // of the asset to be imported.
   rpc Import(ImportRequest) returns (ImportResponse) {
     option (google.api.http) = {
-      post: "/v1/projects/{projectName}/catalog/import"
+      post: "/v3/projects/{projectName}/catalog/import"
       additional_bindings: {post: "/catalog.orchestrator.apis/v3/import"}
     };
   }
@@ -62,7 +62,7 @@ service CatalogService {
   // Creates a new registry.
   rpc CreateRegistry(CreateRegistryRequest) returns (CreateRegistryResponse) {
     option (google.api.http) = {
-      post: "/v1/projects/{projectName}/catalog/registries"
+      post: "/v3/projects/{projectName}/catalog/registries"
       body: "registry"
       additional_bindings: {
         post: "/catalog.orchestrator.apis/v3/registries"
@@ -73,21 +73,21 @@ service CatalogService {
   // Gets a list of registries.
   rpc ListRegistries(ListRegistriesRequest) returns (ListRegistriesResponse) {
     option (google.api.http) = {
-      get: "/v1/projects/{projectName}/catalog/registries"
+      get: "/v3/projects/{projectName}/catalog/registries"
       additional_bindings: {get: "/catalog.orchestrator.apis/v3/registries"}
     };
   }
   // Gets a specific registry.
   rpc GetRegistry(GetRegistryRequest) returns (GetRegistryResponse) {
     option (google.api.http) = {
-      get: "/v1/projects/{projectName}/catalog/registries/{registry_name}"
+      get: "/v3/projects/{projectName}/catalog/registries/{registry_name}"
       additional_bindings: {get: "/catalog.orchestrator.apis/v3/registries/{registry_name}"}
     };
   }
   // Updates a registry.
   rpc UpdateRegistry(UpdateRegistryRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/v1/projects/{projectName}/catalog/registries/{registry_name}"
+      put: "/v3/projects/{projectName}/catalog/registries/{registry_name}"
       body: "registry"
       additional_bindings: {
         put: "/catalog.orchestrator.apis/v3/registries/{registry_name}"
@@ -98,7 +98,7 @@ service CatalogService {
   // Deletes a registry.
   rpc DeleteRegistry(DeleteRegistryRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/v1/projects/{projectName}/catalog/registries/{registry_name}"
+      delete: "/v3/projects/{projectName}/catalog/registries/{registry_name}"
       additional_bindings: {delete: "/catalog.orchestrator.apis/v3/registries/{registry_name}"}
     };
   }
@@ -110,7 +110,7 @@ service CatalogService {
   // Creates a new deployment package.
   rpc CreateDeploymentPackage(CreateDeploymentPackageRequest) returns (CreateDeploymentPackageResponse) {
     option (google.api.http) = {
-      post: "/v1/projects/{projectName}/catalog/deployment_packages"
+      post: "/v3/projects/{projectName}/catalog/deployment_packages"
       body: "deployment_package"
       additional_bindings: {
         post: "/catalog.orchestrator.apis/v3/deployment_packages"
@@ -121,28 +121,28 @@ service CatalogService {
   // Gets a list of deployment packages.
   rpc ListDeploymentPackages(ListDeploymentPackagesRequest) returns (ListDeploymentPackagesResponse) {
     option (google.api.http) = {
-      get: "/v1/projects/{projectName}/catalog/deployment_packages"
+      get: "/v3/projects/{projectName}/catalog/deployment_packages"
       additional_bindings: {get: "/catalog.orchestrator.apis/v3/deployment_packages"}
     };
   }
   // Gets a specific deployment package.
   rpc GetDeploymentPackage(GetDeploymentPackageRequest) returns (GetDeploymentPackageResponse) {
     option (google.api.http) = {
-      get: "/v1/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"
+      get: "/v3/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"
       additional_bindings: {get: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}"}
     };
   }
   // Gets all versions of a named deployment package.
   rpc GetDeploymentPackageVersions(GetDeploymentPackageVersionsRequest) returns (GetDeploymentPackageVersionsResponse) {
     option (google.api.http) = {
-      get: "/v1/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions"
+      get: "/v3/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions"
       additional_bindings: {get: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions"}
     };
   }
   // Updates a deployment package.
   rpc UpdateDeploymentPackage(UpdateDeploymentPackageRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/v1/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"
+      put: "/v3/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"
       body: "deployment_package"
       additional_bindings: {
         put: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}"
@@ -153,7 +153,7 @@ service CatalogService {
   // Deletes a deployment package.
   rpc DeleteDeploymentPackage(DeleteDeploymentPackageRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/v1/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"
+      delete: "/v3/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"
       additional_bindings: {delete: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}"}
     };
   }
@@ -169,7 +169,7 @@ service CatalogService {
   // Creates a new application.
   rpc CreateApplication(CreateApplicationRequest) returns (CreateApplicationResponse) {
     option (google.api.http) = {
-      post: "/v1/projects/{projectName}/catalog/applications"
+      post: "/v3/projects/{projectName}/catalog/applications"
       body: "application"
       additional_bindings: {
         post: "/catalog.orchestrator.apis/v3/applications"
@@ -180,35 +180,35 @@ service CatalogService {
   // Gets a list of applications.
   rpc ListApplications(ListApplicationsRequest) returns (ListApplicationsResponse) {
     option (google.api.http) = {
-      get: "/v1/projects/{projectName}/catalog/applications"
+      get: "/v3/projects/{projectName}/catalog/applications"
       additional_bindings: {get: "/catalog.orchestrator.apis/v3/applications"}
     };
   }
   // Gets a specific application.
   rpc GetApplication(GetApplicationRequest) returns (GetApplicationResponse) {
     option (google.api.http) = {
-      get: "/v1/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"
+      get: "/v3/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"
       additional_bindings: {get: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}"}
     };
   }
   // Gets application reference count - the number of deployment packages using this application.
   rpc GetApplicationReferenceCount(GetApplicationReferenceCountRequest) returns (GetApplicationReferenceCountResponse) {
     option (google.api.http) = {
-      get: "/v1/projects/{projectName}/catalog/applications/{application_name}/versions/{version}/reference_count"
+      get: "/v3/projects/{projectName}/catalog/applications/{application_name}/versions/{version}/reference_count"
       additional_bindings: {get: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}/reference_count"}
     };
   }
   // Gets all versions of a named application.
   rpc GetApplicationVersions(GetApplicationVersionsRequest) returns (GetApplicationVersionsResponse) {
     option (google.api.http) = {
-      get: "/v1/projects/{projectName}/catalog/applications/{application_name}/versions"
+      get: "/v3/projects/{projectName}/catalog/applications/{application_name}/versions"
       additional_bindings: {get: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions"}
     };
   }
   // Updates an application.
   rpc UpdateApplication(UpdateApplicationRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/v1/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"
+      put: "/v3/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"
       body: "application"
       additional_bindings: {
         put: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}"
@@ -219,7 +219,7 @@ service CatalogService {
   // Deletes an application.
   rpc DeleteApplication(DeleteApplicationRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/v1/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"
+      delete: "/v3/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"
       additional_bindings: {delete: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}"}
     };
   }
@@ -232,7 +232,7 @@ service CatalogService {
   // Creates a new artifact.
   rpc CreateArtifact(CreateArtifactRequest) returns (CreateArtifactResponse) {
     option (google.api.http) = {
-      post: "/v1/projects/{projectName}/catalog/artifacts"
+      post: "/v3/projects/{projectName}/catalog/artifacts"
       body: "artifact"
       additional_bindings: {
         post: "/catalog.orchestrator.apis/v3/artifacts"
@@ -243,21 +243,21 @@ service CatalogService {
   // Gets a list of artifacts.
   rpc ListArtifacts(ListArtifactsRequest) returns (ListArtifactsResponse) {
     option (google.api.http) = {
-      get: "/v1/projects/{projectName}/catalog/artifacts"
+      get: "/v3/projects/{projectName}/catalog/artifacts"
       additional_bindings: {get: "/catalog.orchestrator.apis/v3/artifacts"}
     };
   }
   // Gets a specific artifact.
   rpc GetArtifact(GetArtifactRequest) returns (GetArtifactResponse) {
     option (google.api.http) = {
-      get: "/v1/projects/{projectName}/catalog/artifacts/{artifact_name}"
+      get: "/v3/projects/{projectName}/catalog/artifacts/{artifact_name}"
       additional_bindings: {get: "/catalog.orchestrator.apis/v3/artifacts/{artifact_name}"}
     };
   }
   // Updates an artifact.
   rpc UpdateArtifact(UpdateArtifactRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/v1/projects/{projectName}/catalog/artifacts/{artifact_name}"
+      put: "/v3/projects/{projectName}/catalog/artifacts/{artifact_name}"
       body: "artifact"
       additional_bindings: {
         put: "/catalog.orchestrator.apis/v3/artifacts/{artifact_name}"
@@ -268,7 +268,7 @@ service CatalogService {
   // Deletes an artifact.
   rpc DeleteArtifact(DeleteArtifactRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/v1/projects/{projectName}/catalog/artifacts/{artifact_name}"
+      delete: "/v3/projects/{projectName}/catalog/artifacts/{artifact_name}"
       additional_bindings: {delete: "/catalog.orchestrator.apis/v3/artifacts/{artifact_name}"}
     };
   }

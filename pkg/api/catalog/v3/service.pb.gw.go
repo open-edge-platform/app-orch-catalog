@@ -3749,7 +3749,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/UploadCatalogEntities", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/uploads"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/UploadCatalogEntities", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/uploads"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -3799,7 +3799,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/Import", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/import"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/Import", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/import"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -3849,7 +3849,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/CreateRegistry", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/registries"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/CreateRegistry", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/registries"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -3899,7 +3899,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/ListRegistries", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/registries"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/ListRegistries", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/registries"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -3949,7 +3949,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/GetRegistry", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/registries/{registry_name}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/GetRegistry", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/registries/{registry_name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -3999,7 +3999,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/UpdateRegistry", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/registries/{registry_name}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/UpdateRegistry", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/registries/{registry_name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4049,7 +4049,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/DeleteRegistry", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/registries/{registry_name}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/DeleteRegistry", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/registries/{registry_name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4099,7 +4099,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/CreateDeploymentPackage", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/deployment_packages"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/CreateDeploymentPackage", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/deployment_packages"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4149,7 +4149,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/ListDeploymentPackages", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/deployment_packages"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/ListDeploymentPackages", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/deployment_packages"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4199,7 +4199,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/GetDeploymentPackage", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/GetDeploymentPackage", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4249,7 +4249,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/GetDeploymentPackageVersions", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/GetDeploymentPackageVersions", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4299,7 +4299,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/UpdateDeploymentPackage", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/UpdateDeploymentPackage", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4349,7 +4349,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/DeleteDeploymentPackage", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/DeleteDeploymentPackage", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4399,7 +4399,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/CreateApplication", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/applications"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/CreateApplication", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/applications"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4449,7 +4449,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/ListApplications", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/applications"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/ListApplications", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/applications"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4499,7 +4499,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/GetApplication", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/GetApplication", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4549,7 +4549,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/GetApplicationReferenceCount", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/applications/{application_name}/versions/{version}/reference_count"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/GetApplicationReferenceCount", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/applications/{application_name}/versions/{version}/reference_count"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4599,7 +4599,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/GetApplicationVersions", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/applications/{application_name}/versions"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/GetApplicationVersions", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/applications/{application_name}/versions"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4649,7 +4649,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/UpdateApplication", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/UpdateApplication", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4699,7 +4699,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/DeleteApplication", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/DeleteApplication", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4749,7 +4749,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/CreateArtifact", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/artifacts"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/CreateArtifact", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/artifacts"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4799,7 +4799,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/ListArtifacts", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/artifacts"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/ListArtifacts", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/artifacts"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4849,7 +4849,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/GetArtifact", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/artifacts/{artifact_name}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/GetArtifact", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/artifacts/{artifact_name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4899,7 +4899,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/UpdateArtifact", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/artifacts/{artifact_name}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/UpdateArtifact", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/artifacts/{artifact_name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -4949,7 +4949,7 @@ func RegisterCatalogServiceHandlerServer(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/DeleteArtifact", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/artifacts/{artifact_name}"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/catalog.v3.CatalogService/DeleteArtifact", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/artifacts/{artifact_name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5038,7 +5038,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/UploadCatalogEntities", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/uploads"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/UploadCatalogEntities", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/uploads"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5082,7 +5082,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/Import", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/import"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/Import", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/import"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5126,7 +5126,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/CreateRegistry", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/registries"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/CreateRegistry", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/registries"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5170,7 +5170,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/ListRegistries", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/registries"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/ListRegistries", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/registries"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5214,7 +5214,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/GetRegistry", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/registries/{registry_name}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/GetRegistry", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/registries/{registry_name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5258,7 +5258,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/UpdateRegistry", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/registries/{registry_name}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/UpdateRegistry", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/registries/{registry_name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5302,7 +5302,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/DeleteRegistry", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/registries/{registry_name}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/DeleteRegistry", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/registries/{registry_name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5346,7 +5346,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/CreateDeploymentPackage", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/deployment_packages"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/CreateDeploymentPackage", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/deployment_packages"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5390,7 +5390,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/ListDeploymentPackages", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/deployment_packages"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/ListDeploymentPackages", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/deployment_packages"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5434,7 +5434,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/GetDeploymentPackage", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/GetDeploymentPackage", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5478,7 +5478,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/GetDeploymentPackageVersions", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/GetDeploymentPackageVersions", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5522,7 +5522,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/UpdateDeploymentPackage", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/UpdateDeploymentPackage", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5566,7 +5566,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/DeleteDeploymentPackage", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/DeleteDeploymentPackage", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5610,7 +5610,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/CreateApplication", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/applications"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/CreateApplication", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/applications"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5654,7 +5654,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/ListApplications", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/applications"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/ListApplications", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/applications"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5698,7 +5698,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/GetApplication", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/GetApplication", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5742,7 +5742,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/GetApplicationReferenceCount", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/applications/{application_name}/versions/{version}/reference_count"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/GetApplicationReferenceCount", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/applications/{application_name}/versions/{version}/reference_count"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5786,7 +5786,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/GetApplicationVersions", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/applications/{application_name}/versions"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/GetApplicationVersions", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/applications/{application_name}/versions"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5830,7 +5830,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/UpdateApplication", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/UpdateApplication", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5874,7 +5874,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/DeleteApplication", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/DeleteApplication", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5918,7 +5918,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/CreateArtifact", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/artifacts"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/CreateArtifact", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/artifacts"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -5962,7 +5962,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/ListArtifacts", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/artifacts"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/ListArtifacts", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/artifacts"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -6006,7 +6006,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/GetArtifact", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/artifacts/{artifact_name}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/GetArtifact", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/artifacts/{artifact_name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -6050,7 +6050,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/UpdateArtifact", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/artifacts/{artifact_name}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/UpdateArtifact", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/artifacts/{artifact_name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -6094,7 +6094,7 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/DeleteArtifact", runtime.WithHTTPPathPattern("/v1/projects/{projectName}/catalog/artifacts/{artifact_name}"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/catalog.v3.CatalogService/DeleteArtifact", runtime.WithHTTPPathPattern("/v3/projects/{projectName}/catalog/artifacts/{artifact_name}"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
@@ -6136,103 +6136,103 @@ func RegisterCatalogServiceHandlerClient(ctx context.Context, mux *runtime.Serve
 }
 
 var (
-	pattern_CatalogService_UploadCatalogEntities_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "projects", "projectName", "catalog", "uploads"}, ""))
+	pattern_CatalogService_UploadCatalogEntities_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v3", "projects", "projectName", "catalog", "uploads"}, ""))
 
 	pattern_CatalogService_UploadCatalogEntities_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"catalog.orchestrator.apis", "v3", "uploads"}, ""))
 
-	pattern_CatalogService_Import_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "projects", "projectName", "catalog", "import"}, ""))
+	pattern_CatalogService_Import_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v3", "projects", "projectName", "catalog", "import"}, ""))
 
 	pattern_CatalogService_Import_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"catalog.orchestrator.apis", "v3", "import"}, ""))
 
-	pattern_CatalogService_CreateRegistry_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "projects", "projectName", "catalog", "registries"}, ""))
+	pattern_CatalogService_CreateRegistry_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v3", "projects", "projectName", "catalog", "registries"}, ""))
 
 	pattern_CatalogService_CreateRegistry_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"catalog.orchestrator.apis", "v3", "registries"}, ""))
 
-	pattern_CatalogService_ListRegistries_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "projects", "projectName", "catalog", "registries"}, ""))
+	pattern_CatalogService_ListRegistries_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v3", "projects", "projectName", "catalog", "registries"}, ""))
 
 	pattern_CatalogService_ListRegistries_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"catalog.orchestrator.apis", "v3", "registries"}, ""))
 
-	pattern_CatalogService_GetRegistry_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"v1", "projects", "projectName", "catalog", "registries", "registry_name"}, ""))
+	pattern_CatalogService_GetRegistry_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"v3", "projects", "projectName", "catalog", "registries", "registry_name"}, ""))
 
 	pattern_CatalogService_GetRegistry_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"catalog.orchestrator.apis", "v3", "registries", "registry_name"}, ""))
 
-	pattern_CatalogService_UpdateRegistry_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"v1", "projects", "projectName", "catalog", "registries", "registry_name"}, ""))
+	pattern_CatalogService_UpdateRegistry_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"v3", "projects", "projectName", "catalog", "registries", "registry_name"}, ""))
 
 	pattern_CatalogService_UpdateRegistry_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"catalog.orchestrator.apis", "v3", "registries", "registry_name"}, ""))
 
-	pattern_CatalogService_DeleteRegistry_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"v1", "projects", "projectName", "catalog", "registries", "registry_name"}, ""))
+	pattern_CatalogService_DeleteRegistry_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"v3", "projects", "projectName", "catalog", "registries", "registry_name"}, ""))
 
 	pattern_CatalogService_DeleteRegistry_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"catalog.orchestrator.apis", "v3", "registries", "registry_name"}, ""))
 
-	pattern_CatalogService_CreateDeploymentPackage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "projects", "projectName", "catalog", "deployment_packages"}, ""))
+	pattern_CatalogService_CreateDeploymentPackage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v3", "projects", "projectName", "catalog", "deployment_packages"}, ""))
 
 	pattern_CatalogService_CreateDeploymentPackage_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"catalog.orchestrator.apis", "v3", "deployment_packages"}, ""))
 
-	pattern_CatalogService_ListDeploymentPackages_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "projects", "projectName", "catalog", "deployment_packages"}, ""))
+	pattern_CatalogService_ListDeploymentPackages_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v3", "projects", "projectName", "catalog", "deployment_packages"}, ""))
 
 	pattern_CatalogService_ListDeploymentPackages_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"catalog.orchestrator.apis", "v3", "deployment_packages"}, ""))
 
-	pattern_CatalogService_GetDeploymentPackage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"v1", "projects", "projectName", "catalog", "deployment_packages", "deployment_package_name", "versions", "version"}, ""))
+	pattern_CatalogService_GetDeploymentPackage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"v3", "projects", "projectName", "catalog", "deployment_packages", "deployment_package_name", "versions", "version"}, ""))
 
 	pattern_CatalogService_GetDeploymentPackage_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"catalog.orchestrator.apis", "v3", "deployment_packages", "deployment_package_name", "versions", "version"}, ""))
 
-	pattern_CatalogService_GetDeploymentPackageVersions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6}, []string{"v1", "projects", "projectName", "catalog", "deployment_packages", "deployment_package_name", "versions"}, ""))
+	pattern_CatalogService_GetDeploymentPackageVersions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6}, []string{"v3", "projects", "projectName", "catalog", "deployment_packages", "deployment_package_name", "versions"}, ""))
 
 	pattern_CatalogService_GetDeploymentPackageVersions_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"catalog.orchestrator.apis", "v3", "deployment_packages", "deployment_package_name", "versions"}, ""))
 
-	pattern_CatalogService_UpdateDeploymentPackage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"v1", "projects", "projectName", "catalog", "deployment_packages", "deployment_package_name", "versions", "version"}, ""))
+	pattern_CatalogService_UpdateDeploymentPackage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"v3", "projects", "projectName", "catalog", "deployment_packages", "deployment_package_name", "versions", "version"}, ""))
 
 	pattern_CatalogService_UpdateDeploymentPackage_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"catalog.orchestrator.apis", "v3", "deployment_packages", "deployment_package_name", "versions", "version"}, ""))
 
-	pattern_CatalogService_DeleteDeploymentPackage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"v1", "projects", "projectName", "catalog", "deployment_packages", "deployment_package_name", "versions", "version"}, ""))
+	pattern_CatalogService_DeleteDeploymentPackage_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"v3", "projects", "projectName", "catalog", "deployment_packages", "deployment_package_name", "versions", "version"}, ""))
 
 	pattern_CatalogService_DeleteDeploymentPackage_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"catalog.orchestrator.apis", "v3", "deployment_packages", "deployment_package_name", "versions", "version"}, ""))
 
-	pattern_CatalogService_CreateApplication_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "projects", "projectName", "catalog", "applications"}, ""))
+	pattern_CatalogService_CreateApplication_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v3", "projects", "projectName", "catalog", "applications"}, ""))
 
 	pattern_CatalogService_CreateApplication_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"catalog.orchestrator.apis", "v3", "applications"}, ""))
 
-	pattern_CatalogService_ListApplications_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "projects", "projectName", "catalog", "applications"}, ""))
+	pattern_CatalogService_ListApplications_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v3", "projects", "projectName", "catalog", "applications"}, ""))
 
 	pattern_CatalogService_ListApplications_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"catalog.orchestrator.apis", "v3", "applications"}, ""))
 
-	pattern_CatalogService_GetApplication_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"v1", "projects", "projectName", "catalog", "applications", "application_name", "versions", "version"}, ""))
+	pattern_CatalogService_GetApplication_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"v3", "projects", "projectName", "catalog", "applications", "application_name", "versions", "version"}, ""))
 
 	pattern_CatalogService_GetApplication_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"catalog.orchestrator.apis", "v3", "applications", "application_name", "versions", "version"}, ""))
 
-	pattern_CatalogService_GetApplicationReferenceCount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7, 2, 8}, []string{"v1", "projects", "projectName", "catalog", "applications", "application_name", "versions", "version", "reference_count"}, ""))
+	pattern_CatalogService_GetApplicationReferenceCount_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7, 2, 8}, []string{"v3", "projects", "projectName", "catalog", "applications", "application_name", "versions", "version", "reference_count"}, ""))
 
 	pattern_CatalogService_GetApplicationReferenceCount_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6}, []string{"catalog.orchestrator.apis", "v3", "applications", "application_name", "versions", "version", "reference_count"}, ""))
 
-	pattern_CatalogService_GetApplicationVersions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6}, []string{"v1", "projects", "projectName", "catalog", "applications", "application_name", "versions"}, ""))
+	pattern_CatalogService_GetApplicationVersions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6}, []string{"v3", "projects", "projectName", "catalog", "applications", "application_name", "versions"}, ""))
 
 	pattern_CatalogService_GetApplicationVersions_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4}, []string{"catalog.orchestrator.apis", "v3", "applications", "application_name", "versions"}, ""))
 
-	pattern_CatalogService_UpdateApplication_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"v1", "projects", "projectName", "catalog", "applications", "application_name", "versions", "version"}, ""))
+	pattern_CatalogService_UpdateApplication_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"v3", "projects", "projectName", "catalog", "applications", "application_name", "versions", "version"}, ""))
 
 	pattern_CatalogService_UpdateApplication_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"catalog.orchestrator.apis", "v3", "applications", "application_name", "versions", "version"}, ""))
 
-	pattern_CatalogService_DeleteApplication_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"v1", "projects", "projectName", "catalog", "applications", "application_name", "versions", "version"}, ""))
+	pattern_CatalogService_DeleteApplication_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5, 2, 6, 1, 0, 4, 1, 5, 7}, []string{"v3", "projects", "projectName", "catalog", "applications", "application_name", "versions", "version"}, ""))
 
 	pattern_CatalogService_DeleteApplication_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"catalog.orchestrator.apis", "v3", "applications", "application_name", "versions", "version"}, ""))
 
-	pattern_CatalogService_CreateArtifact_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "projects", "projectName", "catalog", "artifacts"}, ""))
+	pattern_CatalogService_CreateArtifact_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v3", "projects", "projectName", "catalog", "artifacts"}, ""))
 
 	pattern_CatalogService_CreateArtifact_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"catalog.orchestrator.apis", "v3", "artifacts"}, ""))
 
-	pattern_CatalogService_ListArtifacts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v1", "projects", "projectName", "catalog", "artifacts"}, ""))
+	pattern_CatalogService_ListArtifacts_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4}, []string{"v3", "projects", "projectName", "catalog", "artifacts"}, ""))
 
 	pattern_CatalogService_ListArtifacts_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"catalog.orchestrator.apis", "v3", "artifacts"}, ""))
 
-	pattern_CatalogService_GetArtifact_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"v1", "projects", "projectName", "catalog", "artifacts", "artifact_name"}, ""))
+	pattern_CatalogService_GetArtifact_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"v3", "projects", "projectName", "catalog", "artifacts", "artifact_name"}, ""))
 
 	pattern_CatalogService_GetArtifact_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"catalog.orchestrator.apis", "v3", "artifacts", "artifact_name"}, ""))
 
-	pattern_CatalogService_UpdateArtifact_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"v1", "projects", "projectName", "catalog", "artifacts", "artifact_name"}, ""))
+	pattern_CatalogService_UpdateArtifact_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"v3", "projects", "projectName", "catalog", "artifacts", "artifact_name"}, ""))
 
 	pattern_CatalogService_UpdateArtifact_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"catalog.orchestrator.apis", "v3", "artifacts", "artifact_name"}, ""))
 
-	pattern_CatalogService_DeleteArtifact_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"v1", "projects", "projectName", "catalog", "artifacts", "artifact_name"}, ""))
+	pattern_CatalogService_DeleteArtifact_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 2, 3, 2, 4, 1, 0, 4, 1, 5, 5}, []string{"v3", "projects", "projectName", "catalog", "artifacts", "artifact_name"}, ""))
 
 	pattern_CatalogService_DeleteArtifact_1 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2, 1, 0, 4, 1, 5, 3}, []string{"catalog.orchestrator.apis", "v3", "artifacts", "artifact_name"}, ""))
 )

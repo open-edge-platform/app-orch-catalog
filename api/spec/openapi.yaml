@@ -1059,7 +1059,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/catalog.v3.UploadCatalogEntitiesResponse'
-  /v1/projects/{projectName}/catalog/applications:
+  /v3/projects/{projectName}/catalog/applications:
     get:
       tags:
         - CatalogService
@@ -1152,7 +1152,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/catalog.v3.CreateApplicationResponse'
-  /v1/projects/{projectName}/catalog/applications/{application_name}/versions:
+  /v3/projects/{projectName}/catalog/applications/{application_name}/versions:
     get:
       tags:
         - CatalogService
@@ -1183,7 +1183,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/catalog.v3.GetApplicationVersionsResponse'
-  /v1/projects/{projectName}/catalog/applications/{application_name}/versions/{version}:
+  /v3/projects/{projectName}/catalog/applications/{application_name}/versions/{version}:
     get:
       tags:
         - CatalogService
@@ -1306,7 +1306,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/google.protobuf.Empty'
-  /v1/projects/{projectName}/catalog/applications/{application_name}/versions/{version}/reference_count:
+  /v3/projects/{projectName}/catalog/applications/{application_name}/versions/{version}/reference_count:
     get:
       tags:
         - CatalogService
@@ -1345,7 +1345,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/catalog.v3.GetApplicationReferenceCountResponse'
-  /v1/projects/{projectName}/catalog/artifacts:
+  /v3/projects/{projectName}/catalog/artifacts:
     get:
       tags:
         - CatalogService
@@ -1428,7 +1428,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/catalog.v3.CreateArtifactResponse'
-  /v1/projects/{projectName}/catalog/artifacts/{artifact_name}:
+  /v3/projects/{projectName}/catalog/artifacts/{artifact_name}:
     get:
       tags:
         - CatalogService
@@ -1527,7 +1527,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/google.protobuf.Empty'
-  /v1/projects/{projectName}/catalog/deployment_packages:
+  /v3/projects/{projectName}/catalog/deployment_packages:
     get:
       tags:
         - CatalogService
@@ -1620,7 +1620,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/catalog.v3.CreateDeploymentPackageResponse'
-  /v1/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions:
+  /v3/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions:
     get:
       tags:
         - CatalogService
@@ -1651,7 +1651,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/catalog.v3.GetDeploymentPackageVersionsResponse'
-  /v1/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}:
+  /v3/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}:
     get:
       tags:
         - CatalogService
@@ -1774,7 +1774,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/google.protobuf.Empty'
-  /v1/projects/{projectName}/catalog/import:
+  /v3/projects/{projectName}/catalog/import:
     post:
       tags:
         - CatalogService
@@ -1875,7 +1875,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/catalog.v3.ImportResponse'
-  /v1/projects/{projectName}/catalog/registries:
+  /v3/projects/{projectName}/catalog/registries:
     get:
       tags:
         - CatalogService
@@ -1965,7 +1965,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/catalog.v3.CreateRegistryResponse'
-  /v1/projects/{projectName}/catalog/registries/{registry_name}:
+  /v3/projects/{projectName}/catalog/registries/{registry_name}:
     get:
       tags:
         - CatalogService
@@ -2080,7 +2080,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/google.protobuf.Empty'
-  /v1/projects/{projectName}/catalog/uploads:
+  /v3/projects/{projectName}/catalog/uploads:
     post:
       tags:
         - CatalogService

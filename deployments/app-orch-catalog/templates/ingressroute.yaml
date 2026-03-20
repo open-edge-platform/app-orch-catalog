@@ -7,7 +7,7 @@
 # bypassing the nexus-api-gateway.
 #
 # New-style paths routed here (project name extracted by service middleware):
-#   /v1/projects/{projectName}/catalog/...  -> catalog REST proxy
+#   /v3/projects/{projectName}/catalog/...  -> catalog REST proxy
 #
 # Legacy paths (catalog.orchestrator.apis/v3/...) continue to be routed
 # via the nexus-api-gateway for backward compatibility.
@@ -23,7 +23,7 @@ spec:
   routes:
     # Route for new-style multi-tenant catalog API paths.
     # ActiveProjectID is extracted from the URL path by the service middleware.
-    - match: Host(`{{ required "A valid apiHostname entry required!" .Values.ingressRoute.apiHostname }}`) && PathRegexp(`^/v1/projects/[^/]+/catalog(/.*)?$`)
+    - match: Host(`{{ required "A valid apiHostname entry required!" .Values.ingressRoute.apiHostname }}`) && PathRegexp(`^/v3/projects/[^/]+/catalog(/.*)?$`)
       kind: Rule
       priority: 50
       middlewares:
