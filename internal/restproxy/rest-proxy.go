@@ -194,6 +194,8 @@ func NewRESTProxy(cfg *Config) (*RESTProxy, error) {
 	engine.Use(QueryParameterValidationMiddleware())
 	engine.StaticFile(fmt.Sprintf("%scatalog.orchestrator.apis/api/v3", cfg.BasePath), cfg.SpecFilePath)
 	engine.Group(fmt.Sprintf("%scatalog.orchestrator.apis/v3/*{grpc_gateway}", cfg.BasePath)).Match(allowedMethods, "", gin.WrapH(mux))
+	// Route new-style multi-tenant paths to the same grpc-gateway mux
+	engine.Group(fmt.Sprintf("%sv3/projects/*{grpc_gateway}", cfg.BasePath)).Match(allowedMethods, "", gin.WrapH(mux))
 
 	engine.GET("/test", func(c *gin.Context) {
 		c.String(http.StatusOK, "Ok")
