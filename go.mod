@@ -24,7 +24,7 @@ require (
 	github.com/lib/pq v1.11.2
 	github.com/mattn/go-sqlite3 v1.14.34
 	github.com/oapi-codegen/runtime v1.1.2
-	github.com/open-edge-platform/orch-library/go v0.6.3
+	github.com/open-edge-platform/orch-library/go v0.6.4-0.20260211092341-cfad67ad247d
 	github.com/open-edge-platform/orch-library/go/dazl v0.5.4
 	github.com/open-edge-platform/orch-library/go/dazl/zap v0.5.4
 	github.com/opencontainers/image-spec v1.1.1
@@ -183,5 +183,3 @@ require (
 	sigs.k8s.io/structured-merge-diff/v6 v6.3.0 // indirect
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )
-
-replace github.com/open-edge-platform/orch-library/go => /home/seu/orch-library/go

@@ -9,7 +9,7 @@ replicaCount: 1
 # -- serviceArgs contains arguments that are passed to the running PODs
 serviceArgs:
   restProxy:
-    nexus-api-url: ""
+    nexus-api-url: "http://svc-iam-nexus-api-gw.orch-iam.svc:8082"
 
 # -- service contains details for creating k8s services.
 service:
