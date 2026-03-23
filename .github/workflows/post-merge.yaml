@@ -21,7 +21,7 @@ jobs:
       security-events: write
       id-token: write
       actions: read
-    uses: open-edge-platform/orch-ci/.github/workflows/post-merge.yml@24a3a495be45af021486e265cf09a17ac3798405  # 2026.0.13
+    uses: open-edge-platform/orch-ci/.github/workflows/post-merge.yml@b5930c48c1fcdb6b34ffbcd465cff96dabfbde70  # 2026.0.17
     with:
       run_version_check: true
       run_dep_version_check: true
@@ -32,7 +32,14 @@ jobs:
       run_helm_push: true
       run_version_tag: true
       project_folder: ""
-      trivy_image_skip: "ghcr.io/dependabot/dependabot-updater-core:latest"
+      trivy_image_skip: |
+        ghcr.io/dependabot/dependabot-updater-core:latest,
+        ghcr.io/github/github-mcp-server:latest,
+        ghcr.io/github/gh-aw-mcpg:latest,
+        ghcr.io/github/gh-aw-firewall/agent:latest,
+        ghcr.io/github/gh-aw-firewall/api-proxy:latest,
+        ghcr.io/github/gh-aw-firewall/squid:latest,
+        debian@sha256:0a5bf4ecacfc050bad0131c8e1401063fd1e8343a418723f6dbd3cd13a7b9e33
     secrets:
       SYS_EMF_GH_TOKEN: ${{ secrets.SYS_EMF_GH_TOKEN }}
       NO_AUTH_ECR_PUSH_USERNAME: ${{ secrets.NO_AUTH_ECR_PUSH_USERNAME }}
