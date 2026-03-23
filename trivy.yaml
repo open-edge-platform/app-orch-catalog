@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+# SPDX-FileCopyrightText: (C) 2026 Intel Corporation
 #
 # SPDX-License-Identifier: Apache-2.0
 
@@ -20,4 +20,3 @@ scan:
     - CVE-2026-26958  # edwards25519 v1.1.0 in atlas binary (DB migration CLI tool in final image; atlas v1.1.0 still uses v1.1.0, fixed v1.1.1 not yet available upstream)
     - CVE-2025-58767  # rexml in golang builder base image only; absent from final distroless/static image
     - CVE-2026-24051  # otel/sdk v1.37.0 in atlas binary (DB migration CLI tool in final image); atlas v1.1.0 still uses otel/sdk v1.37.0, fixed v1.40.0 not yet available upstream
-    - GHSA-6g7g-w4f8-9c9x  # buger/jsonparser v1.1.1 DoS via large JSON input; indirect dependency, no fixed version available upstream
