@@ -204,23 +204,18 @@ catalogServer:
   httpsProxy: ""
   noProxy: ""
 
-# -- traefikReverseProxy configures Traefik reverse proxy for direct API access,
-# bypassing the nexus-api-gateway. Enabled for new-style /v1/projects/{name}/catalog/... paths.
+# traefikReverseProxy configures Traefik reverse proxy for direct API access,
+# bypassing the nexus-api-gateway.
 traefikReverseProxy:
   enabled: false
 
-# https://doc.traefik.io/traefik/migrate/v2-to-v3-details/#kubernetes-crds-api-group-traefikcontainous
 traefikApiGroup: "traefik.io/v1alpha1"
 
-# -- ingressRoute configures the Traefik IngressRoute for new multi-tenant API paths.
-# Required when traefikReverseProxy.enabled is true.
+# ingressRoute configures the Traefik IngressRoute to route /v3/projects/{name}/catalog/...
+# directly to the catalog REST proxy, bypassing the nexus-api-gateway.
 ingressRoute:
-  # -- enabled turns on the Traefik IngressRoute for direct multi-tenant API access.
-  # NOTE: Requires proto base-URL change from catalog.orchestrator.apis/v3 to /v1/projects first (Track 1 Step 4).
+  # enabled turns on the Traefik IngressRoute for direct API routing, bypassing nexus-api-gateway.
   enabled: false
-  # -- apiHostname is the hostname for the API endpoint (e.g. api.kind.internal)
   apiHostname: ""
-  # -- tlsOptionName is the Traefik TLS option name
   tlsOptionName: "gateway-tls"
-  # -- orchSecretName is the TLS secret name in orch-gateway namespace
   orchSecretName: "tls-orch"

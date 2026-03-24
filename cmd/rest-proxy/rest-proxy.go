@@ -26,8 +26,8 @@ func main() {
 		"The endpoint of the gRPC server")
 	oidcExternal := flag.String("openidc-external", "",
 		"URL of external OIDC server")
-	nexusAPIURL := flag.String("nexus-api-url", "",
-		"URL of the Nexus API for project name to UUID resolution (e.g. http://svc-iam-nexus-api-gw.orch-iam.svc:8082)")
+	projectServiceURL := flag.String("project-service-url", "",
+			"URL of the project lookup service for resolving project name to UUID (currently Nexus API GW, will be Tenant Manager in future)")
 	flag.Parse()
 
 	cfg := &restproxy.Config{
@@ -37,7 +37,7 @@ func main() {
 		Port:               *port,
 		GRPCEndpoint:       *gRPCEndpoint,
 		OIDCExternal:       *oidcExternal,
-		NexusAPIURL:        *nexusAPIURL,
+		ProjectServiceURL:  *projectServiceURL,
 	}
 
 	rp, err := restproxy.NewRESTProxy(cfg)

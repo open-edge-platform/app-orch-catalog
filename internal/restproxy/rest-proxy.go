@@ -36,10 +36,11 @@ type Config struct {
 	BasePath           string
 	SpecFilePath       string
 	AllowedCorsOrigins string
-	// NexusAPIURL is the Nexus API gateway URL for resolving project names to UUIDs
-	// inside runtime.WithMetadata() following the EIM/infra-core pattern.
-	// e.g. "http://svc-iam-nexus-api-gw.orch-iam.svc:8082"
-	NexusAPIURL string
+	// ProjectServiceURL is the URL of the project lookup service used to resolve
+	// a project name (from the URL path) to its UUID for OPA authorization.
+	// Currently points to the Nexus API GW as an interim solution;
+	// will be replaced by the Tenant Manager REST API.
+	ProjectServiceURL string
 }
 
 // RESTProxy represents the REST proxy state
@@ -78,16 +79,18 @@ func NewRESTProxy(cfg *Config) (*RESTProxy, error) {
 			authHeader := request.Header.Get("Authorization")
 			uaHeader := request.Header.Get("User-Agent")
 			projectIDHeader := request.Header.Get(ActiveProjectID)
-			// Resolve project ID from URL path or JWT, following EIM/infra-core pattern.
-			// For new-style paths (/v1/projects/{name}/...), resolves name→UUID via Nexus.
-			// For legacy paths, falls back to JWT extraction.
+				// Resolve project UUID from the URL path project name and set ActiveProjectID
+				// for OPA authorization. For /v3/projects/{name}/catalog/... paths the name
+				// is resolved to a UUID via the project service (Nexus API GW today, Tenant
+				// Manager REST API in future. Falls back to JWT extraction
+				// for legacy /catalog.orchestrator.apis/v3/... paths.
 			projectUUID, err := projectcontext.ResolveAndValidateProjectID(
 				ctx,
 				request.URL.Path,
 				authHeader,
 				projectIDHeader,
 				projectcontext.ProjectResolverConfig{
-					ProjectServiceURL:     cfg.NexusAPIURL,
+					ProjectServiceURL:     cfg.ProjectServiceURL,
 					ErrorOnMissingProject: false,
 				},
 			)
@@ -194,7 +197,8 @@ func NewRESTProxy(cfg *Config) (*RESTProxy, error) {
 	engine.Use(QueryParameterValidationMiddleware())
 	engine.StaticFile(fmt.Sprintf("%scatalog.orchestrator.apis/api/v3", cfg.BasePath), cfg.SpecFilePath)
 	engine.Group(fmt.Sprintf("%scatalog.orchestrator.apis/v3/*{grpc_gateway}", cfg.BasePath)).Match(allowedMethods, "", gin.WrapH(mux))
-	// Route new-style multi-tenant paths to the same grpc-gateway mux
+	// Route /v3/projects/{name}/catalog/... paths to the grpc-gateway mux.
+	// The project name is resolved to a UUID by the WithMetadata handler above.
 	engine.Group(fmt.Sprintf("%sv3/projects/*{grpc_gateway}", cfg.BasePath)).Match(allowedMethods, "", gin.WrapH(mux))
 
 	engine.GET("/test", func(c *gin.Context) {

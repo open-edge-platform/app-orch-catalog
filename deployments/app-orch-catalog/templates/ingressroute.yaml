@@ -5,10 +5,6 @@
 # Traefik IngressRoute for App Orch Catalog API routing.
 # Routes multi-tenant paths directly to the catalog REST proxy,
 # bypassing the nexus-api-gateway.
-#
-# Paths routed here (project name extracted by service middleware):
-#   /v3/projects/{projectName}/catalog/...   -> catalog REST proxy (new-style)
-#   /catalog.orchestrator.apis/v3/...        -> catalog REST proxy (legacy)
 {{- if .Values.ingressRoute.enabled }}
 apiVersion: {{ .Values.traefikApiGroup | default "traefik.io/v1alpha1" }}
 kind: IngressRoute
