@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (C) 2024 Intel Corporation
+// SPDX-FileCopyrightText: (C) 2026 Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -22,7 +22,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.28.0
 	github.com/hashicorp/vault/api v1.22.0
 	github.com/lib/pq v1.11.2
-	github.com/mattn/go-sqlite3 v1.14.34
+	github.com/mattn/go-sqlite3 v1.14.37
 	github.com/oapi-codegen/runtime v1.1.2
 	github.com/open-edge-platform/orch-library/go v0.6.4-0.20260211092341-cfad67ad247d
 	github.com/open-edge-platform/orch-library/go/dazl v0.5.4
@@ -31,15 +31,15 @@ require (
 	github.com/santhosh-tekuri/jsonschema/v5 v5.3.1
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.11.1
-	github.com/sudorandom/protoc-gen-connect-openapi v0.25.4
+	github.com/sudorandom/protoc-gen-connect-openapi v0.25.5
 	go.uber.org/mock v0.6.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20260209200024-4cfbd4190f57
-	google.golang.org/grpc v1.79.1
+	google.golang.org/grpc v1.79.3
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.6.1
 	google.golang.org/protobuf v1.36.11
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
-	k8s.io/apimachinery v0.35.2
+	k8s.io/apimachinery v0.35.3
 	k8s.io/client-go v0.35.1
 	oras.land/oras-go/v2 v2.6.0
 )
