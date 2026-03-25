@@ -27,7 +27,7 @@ func main() {
 	oidcExternal := flag.String("openidc-external", "",
 		"URL of external OIDC server")
 	projectServiceURL := flag.String("project-service-url", "",
-			"URL of the project lookup service for resolving project name to UUID (currently Nexus API GW, will be Tenant Manager in future)")
+		"URL of the project lookup service for resolving project name to UUID (currently Nexus API GW, will be Tenant Manager in future)")
 	flag.Parse()
 
 	cfg := &restproxy.Config{

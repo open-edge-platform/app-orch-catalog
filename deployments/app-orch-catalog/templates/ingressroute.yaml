@@ -10,7 +10,7 @@ apiVersion: {{ .Values.traefikApiGroup | default "traefik.io/v1alpha1" }}
 kind: IngressRoute
 metadata:
   name: {{ include "application-catalog.fullname" . }}-http
-  namespace: orch-gateway
+  namespace: {{ .Values.traefikReverseProxy.gatewayNamespace | default "orch-gateway" }}
 spec:
   entryPoints:
     - websecure
@@ -22,9 +22,9 @@ spec:
       priority: 50
       middlewares:
         - name: validate-jwt
-          namespace: orch-gateway
+          namespace: {{ .Values.traefikReverseProxy.gatewayNamespace | default "orch-gateway" }}
         - name: secure-headers
-          namespace: orch-gateway
+          namespace: {{ .Values.traefikReverseProxy.gatewayNamespace | default "orch-gateway" }}
       services:
         - name: {{ include "application-catalog.fullname" . }}-rest-proxy
           namespace: {{ .Release.Namespace }}
@@ -38,9 +38,9 @@ spec:
       priority: 40
       middlewares:
         - name: validate-jwt
-          namespace: orch-gateway
+          namespace: {{ .Values.traefikReverseProxy.gatewayNamespace | default "orch-gateway" }}
         - name: secure-headers
-          namespace: orch-gateway
+          namespace: {{ .Values.traefikReverseProxy.gatewayNamespace | default "orch-gateway" }}
       services:
         - name: {{ include "application-catalog.fullname" . }}-rest-proxy
           namespace: {{ .Release.Namespace }}

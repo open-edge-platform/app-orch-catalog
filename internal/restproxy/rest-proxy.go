@@ -79,11 +79,11 @@ func NewRESTProxy(cfg *Config) (*RESTProxy, error) {
 			authHeader := request.Header.Get("Authorization")
 			uaHeader := request.Header.Get("User-Agent")
 			projectIDHeader := request.Header.Get(ActiveProjectID)
-				// Resolve project UUID from the URL path project name and set ActiveProjectID
-				// for OPA authorization. For /v3/projects/{name}/catalog/... paths the name
-				// is resolved to a UUID via the project service (Nexus API GW today, Tenant
-				// Manager REST API in future. Falls back to JWT extraction
-				// for legacy /catalog.orchestrator.apis/v3/... paths.
+			// Resolve project UUID from the URL path project name and set ActiveProjectID
+			// for OPA authorization. For /v3/projects/{name}/catalog/... paths the name
+			// is resolved to a UUID via the project service (Nexus API GW today, Tenant
+			// Manager REST API in future. Falls back to JWT extraction
+			// for legacy /catalog.orchestrator.apis/v3/... paths.
 			projectUUID, err := projectcontext.ResolveAndValidateProjectID(
 				ctx,
 				request.URL.Path,
@@ -199,7 +199,8 @@ func NewRESTProxy(cfg *Config) (*RESTProxy, error) {
 	engine.Group(fmt.Sprintf("%scatalog.orchestrator.apis/v3/*{grpc_gateway}", cfg.BasePath)).Match(allowedMethods, "", gin.WrapH(mux))
 	// Route /v3/projects/{name}/catalog/... paths to the grpc-gateway mux.
 	// The project name is resolved to a UUID by the WithMetadata handler above.
-	engine.Group(fmt.Sprintf("%sv3/projects/*{grpc_gateway}", cfg.BasePath)).Match(allowedMethods, "", gin.WrapH(mux))
+	// Use a specific pattern to avoid routing conflicts with future non-catalog /v3/projects/... endpoints.
+	engine.Group(fmt.Sprintf("%sv3/projects/:projectName/catalog/*{grpc_gateway}", cfg.BasePath)).Match(allowedMethods, "", gin.WrapH(mux))
 
 	engine.GET("/test", func(c *gin.Context) {
 		c.String(http.StatusOK, "Ok")
