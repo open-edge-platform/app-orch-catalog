@@ -57,6 +57,7 @@ jobs:
           deployment_type: 'all'
         env:
           ORCH_DEFAULT_PASSWORD: ${{ secrets.ORCH_DEFAULT_PASSWORD }}
+          DEPLOY_REPO_BRANCH: ${{ inputs.emf-branch || 'main' }}
 
       - name: Configure kubectl for Kind cluster
         run: |
