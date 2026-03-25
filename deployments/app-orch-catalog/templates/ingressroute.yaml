@@ -47,8 +47,10 @@ spec:
           port: {{ .Values.service.restProxy.port }}
           scheme: http
   tls:
+    secretName: {{ .Values.traefikReverseProxy.secretName | default "tls-orch" }}
+    {{- if .Values.traefikReverseProxy.tlsOption }}
     options:
-      name: {{ required "A valid tlsOptionName entry required!" .Values.ingressRoute.tlsOptionName }}
-      namespace: orch-gateway
-    secretName: {{ required "A valid orchSecretName entry required!" .Values.ingressRoute.orchSecretName }}
+      name: {{ .Values.traefikReverseProxy.tlsOption }}
+      namespace: {{ .Values.traefikReverseProxy.gatewayNamespace | default "orch-gateway" }}
+    {{- end }}
 {{- end }}

@@ -91,12 +91,11 @@ func (w *restWiper) prepareApplicationsForDeletion(ctx context.Context, projectN
 	hasMorePages := true
 	for hasMorePages {
 		resp, err := w.client.CatalogServiceListApplicationsWithResponse(ctx, projectName, &restClient.CatalogServiceListApplicationsParams{PageSize: &maxPageSize, Offset: &offset}, w.reqEditors...)
-		if resp.StatusCode() != http.StatusOK {
-			return nil
-		}
-
 		if err != nil {
 			return append(errors, err)
+		}
+		if resp == nil || resp.StatusCode() != http.StatusOK {
+			return nil
 		}
 		for _, app := range resp.JSON200.Applications {
 			if err = w.prepareApplicationForDeletion(ctx, projectName, app.Name, app.Version); err != nil {
