@@ -43,12 +43,18 @@ jobs:
       CODER_DIR: ${{ github.workspace }}
 
     steps:
+      - name: Get EMF repository SHA
+        id: get-emf-sha
+        run: |
+          EMF_SHA=$(git ls-remote https://github.com/open-edge-platform/edge-manageability-framework.git ${{ inputs.emf-branch || 'main' }} | cut -f1)
+          echo "EMF_SHA=$EMF_SHA" >> "$GITHUB_OUTPUT"
+
       - name: Deploy Kind Orchestrator
         id: deploy-kind-orchestrator
         uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@46120551e1854c9d8ad7339346fc68ec46d3a966
         timeout-minutes: 45
         with:
-          orch_version: ${{ inputs.emf-branch || 'main' }}
+          orch_version: ${{ steps.get-emf-sha.outputs.EMF_SHA }}
           orch_password: ${{ env.ORCH_DEFAULT_PASSWORD }}
           # Skip Docker Hub credentials since they're not available
           # docker_username: ${{ secrets.SYS_DOCKERHUB_USERNAME }}
@@ -57,8 +63,8 @@ jobs:
           deployment_type: 'all'
         env:
           ORCH_DEFAULT_PASSWORD: ${{ secrets.ORCH_DEFAULT_PASSWORD }}
-          DEPLOY_REPO_BRANCH: ${{ inputs.emf-branch || 'main' }}
-
+          DEPLOY_REPO_BRANCH: ${{ steps.get-emf-sha.outputs.EMF_SHA }}
+      
       - name: Configure kubectl for Kind cluster
         run: |
           # First check if kubectl is already configured by the EMF action
