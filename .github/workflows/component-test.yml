@@ -19,7 +19,7 @@ on:
         description: 'The branch, tag or SHA to checkout EMF'
         required: true
         type: string
-        default: 'HEAD'
+        default: 'main'
 
 permissions:
   contents: read
@@ -41,16 +41,14 @@ jobs:
     env:
       ORCH_DEFAULT_PASSWORD: ${{ secrets.ORCH_DEFAULT_PASSWORD }}
       CODER_DIR: ${{ github.workspace }}
-      EDGE_MANAGEABILITY_FRAMEWORK_REV: ${{ inputs.emf-branch || 'HEAD' }}
-      DEPLOY_REPO_BRANCH: ${{ inputs.emf-branch || 'HEAD' }}
 
     steps:
       - name: Deploy Kind Orchestrator
         id: deploy-kind-orchestrator
-        uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@46120551e1854c9d8ad7339346fc68ec46d3a966
+        uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@348f26a53e36190245bca2a397ad703b66969b9b
         timeout-minutes: 45
         with:
-          orch_version: ${{ inputs.emf-branch || 'HEAD' }}
+          orch_version: ${{ inputs.emf-branch }}
           orch_password: ${{ env.ORCH_DEFAULT_PASSWORD }}
           # Skip Docker Hub credentials since they're not available
           # docker_username: ${{ secrets.SYS_DOCKERHUB_USERNAME }}
@@ -59,8 +57,6 @@ jobs:
           deployment_type: 'all'
         env:
           ORCH_DEFAULT_PASSWORD: ${{ secrets.ORCH_DEFAULT_PASSWORD }}
-          EDGE_MANAGEABILITY_FRAMEWORK_REV: ${{ inputs.emf-branch || 'HEAD' }}
-          DEPLOY_REPO_BRANCH: ${{ inputs.emf-branch || 'HEAD' }}
 
       - name: Configure kubectl for Kind cluster
         run: |
