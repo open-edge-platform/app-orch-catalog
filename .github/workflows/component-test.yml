@@ -19,7 +19,7 @@ on:
         description: 'The branch, tag or SHA to checkout EMF'
         required: true
         type: string
-        default: main
+        default: 'HEAD'
 
 permissions:
   contents: read
@@ -41,6 +41,8 @@ jobs:
     env:
       ORCH_DEFAULT_PASSWORD: ${{ secrets.ORCH_DEFAULT_PASSWORD }}
       CODER_DIR: ${{ github.workspace }}
+      EDGE_MANAGEABILITY_FRAMEWORK_REV: ${{ inputs.emf-branch || 'HEAD' }}
+      DEPLOY_REPO_BRANCH: ${{ inputs.emf-branch || 'HEAD' }}
 
     steps:
       - name: Deploy Kind Orchestrator
@@ -58,6 +60,7 @@ jobs:
         env:
           ORCH_DEFAULT_PASSWORD: ${{ secrets.ORCH_DEFAULT_PASSWORD }}
           EDGE_MANAGEABILITY_FRAMEWORK_REV: ${{ inputs.emf-branch || 'HEAD' }}
+          DEPLOY_REPO_BRANCH: ${{ inputs.emf-branch || 'HEAD' }}
 
       - name: Configure kubectl for Kind cluster
         run: |
