@@ -8,7 +8,8 @@ replicaCount: 1
 
 # -- serviceArgs contains arguments that are passed to the running PODs
 serviceArgs:
-  restProxy: {}
+  restProxy:
+    project-service-url: "http://svc-iam-nexus-api-gw.orch-iam.svc:8082"
 
 # -- service contains details for creating k8s services.
 service:
@@ -202,3 +203,22 @@ catalogServer:
   httpProxy: ""
   httpsProxy: ""
   noProxy: ""
+
+# traefikReverseProxy configures Traefik reverse proxy TLS settings.
+# secretName: the k8s secret containing the TLS server cert (in orch-gateway namespace).
+# tlsOption: the Traefik TLS option name; set for cloud deployments (e.g. gateway-tls),
+#            leave empty for on-prem (no TLS option required).
+# gatewayNamespace: namespace where Traefik and TLS resources reside.
+traefikReverseProxy:
+  secretName: tls-orch
+  tlsOption: gateway-tls
+  gatewayNamespace: orch-gateway
+
+traefikApiGroup: "traefik.io/v1alpha1"
+
+# ingressRoute configures the Traefik IngressRoute to route /v3/projects/{name}/catalog/...
+# directly to the catalog REST proxy, bypassing the nexus-api-gateway.
+ingressRoute:
+  # enabled turns on the Traefik IngressRoute for direct API routing, bypassing nexus-api-gateway.
+  enabled: false
+  apiHostname: ""

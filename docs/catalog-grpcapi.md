@@ -468,6 +468,7 @@ Request message for the CreateApplication method.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | application | [Application](#catalog-v3-Application) |  | The registry to create. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-CreateApplicationResponse"></a>
 
@@ -488,6 +489,7 @@ Request message for the CreateArtifact method.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | artifact | [Artifact](#catalog-v3-Artifact) |  | The artifact to create. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-CreateArtifactResponse"></a>
 
@@ -508,6 +510,7 @@ Request message for the CreateDeploymentPackage method.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | deployment_package | [DeploymentPackage](#catalog-v3-DeploymentPackage) |  | The deployment package to create. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-CreateDeploymentPackageResponse"></a>
 
@@ -528,6 +531,7 @@ Request message for the CreateRegistry method.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | registry | [Registry](#catalog-v3-Registry) |  | The registry to create. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-CreateRegistryResponse"></a>
 
@@ -549,6 +553,7 @@ Request message for the DeleteApplication method.
 | ----- | ---- | ----- | ----------- |
 | application_name | [string](#string) |  | Name of the application. |
 | version | [string](#string) |  | Version of the application. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-DeleteArtifactRequest"></a>
 
@@ -559,6 +564,7 @@ Request message for the DeleteArtifact method.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | artifact_name | [string](#string) |  | Name of the artifact. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-DeleteDeploymentPackageRequest"></a>
 
@@ -570,6 +576,7 @@ Request message for DeleteDeploymentPackage.
 | ----- | ---- | ----- | ----------- |
 | deployment_package_name | [string](#string) |  | Name of the DeploymentPackage. |
 | version | [string](#string) |  | Version of the DeploymentPackage. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-DeleteRegistryRequest"></a>
 
@@ -580,6 +587,7 @@ Request message for the DeleteRegistry method.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | registry_name | [string](#string) |  | Name of the registry. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-DownloadDeploymentPackageRequest"></a>
 
@@ -592,6 +600,7 @@ Same parameters as GetDeploymentPackageRequest
 | ----- | ---- | ----- | ----------- |
 | deployment_package_name | [string](#string) |  | Name of the DeploymentPackage. |
 | version | [string](#string) |  | Version of the DeploymentPackage. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-DownloadDeploymentPackageResponse"></a>
 
@@ -613,6 +622,7 @@ Request message for the GetApplicationReferenceCount method.
 | ----- | ---- | ----- | ----------- |
 | application_name | [string](#string) |  | Name of the application. |
 | version | [string](#string) |  | Version of the application. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-GetApplicationReferenceCountResponse"></a>
 
@@ -634,6 +644,7 @@ Request message for the GetApplication method.
 | ----- | ---- | ----- | ----------- |
 | application_name | [string](#string) |  | Name of the application. |
 | version | [string](#string) |  | Version of the application. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-GetApplicationResponse"></a>
 
@@ -654,6 +665,7 @@ Request message for the GetApplicationVersions method.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | application_name | [string](#string) |  | Name of the application. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-GetApplicationVersionsResponse"></a>
 
@@ -676,6 +688,7 @@ Request message for the GetArtifact method.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | artifact_name | [string](#string) |  | Name of the artifact. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-GetArtifactResponse"></a>
 
@@ -697,6 +710,7 @@ Request message for the GetDeploymentPackage method.
 | ----- | ---- | ----- | ----------- |
 | deployment_package_name | [string](#string) |  | Name of the DeploymentPackage. |
 | version | [string](#string) |  | Version of the DeploymentPackage. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-GetDeploymentPackageResponse"></a>
 
@@ -717,6 +731,7 @@ Request message for the GetDeploymentPackageVersions method.
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | deployment_package_name | [string](#string) |  | Name of the DeploymentPackage. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-GetDeploymentPackageVersionsResponse"></a>
 
@@ -738,6 +753,7 @@ Request message for the GetRegistry method.
 | ----- | ---- | ----- | ----------- |
 | registry_name | [string](#string) |  | Name of the registry. |
 | show_sensitive_info | [bool](#bool) |  | Request that sensitive information, such as username, auth_token, and CA certificates are included in the response. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-GetRegistryResponse"></a>
 
@@ -765,6 +781,7 @@ ImportRequest is a request for importing a helm chart from an OCI registry
 | generate_default_values | [bool](#bool) |  | If true and chart_values is not set, then the values.yaml will be extracted and used to generate default profile values. |
 | generate_default_parameters | [bool](#bool) |  | Generates default parameters from the values, from chart_values or from generate_default_values as appropriate. |
 | namespace | [string](#string) |  | Optional namespace |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-ImportResponse"></a>
 
@@ -789,6 +806,7 @@ Request message for the ListApplications method.
 | page_size | [int32](#int32) |  | Maximum number of items to return. |
 | offset | [int32](#int32) |  | Index of the first item to return. |
 | kinds | [Kind](#catalog-v3-Kind) | repeated | List of application kinds to be returned; empty list means all kinds. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-ListApplicationsResponse"></a>
 
@@ -813,6 +831,7 @@ Request message for the ListArtifacts method.
 | filter | [string](#string) |  | Expression to use for filtering the results. |
 | page_size | [int32](#int32) |  | Maximum number of items to return. |
 | offset | [int32](#int32) |  | Index of the first item to return. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-ListArtifactsResponse"></a>
 
@@ -838,6 +857,7 @@ Request message for the ListDeploymentPackages method.
 | page_size | [int32](#int32) |  | Maximum number of items to return. |
 | offset | [int32](#int32) |  | Index of the first item to return. |
 | kinds | [Kind](#catalog-v3-Kind) | repeated | List of deployment package kinds to be returned; empty list means all kinds. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-ListDeploymentPackagesResponse"></a>
 
@@ -863,6 +883,7 @@ Request message for the ListRegistries method.
 | page_size | [int32](#int32) |  | Maximum number of items to return. |
 | offset | [int32](#int32) |  | Index of the first item to return. |
 | show_sensitive_info | [bool](#bool) |  | Request that sensitive information, such as username, auth_token, and CA certificates are included in the response. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-ListRegistriesResponse"></a>
 
@@ -886,6 +907,7 @@ Request message for the UpdateApplication method.
 | application_name | [string](#string) |  | Name of the application. |
 | version | [string](#string) |  | Version of the application. |
 | application | [Application](#catalog-v3-Application) |  | The application update. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-UpdateArtifactRequest"></a>
 
@@ -897,6 +919,7 @@ Request message for the UpdateArtifact method.
 | ----- | ---- | ----- | ----------- |
 | artifact_name | [string](#string) |  | Name of the artifact. |
 | artifact | [Artifact](#catalog-v3-Artifact) |  | The artifact update. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-UpdateDeploymentPackageRequest"></a>
 
@@ -909,6 +932,7 @@ Request message for the UpdateDeploymentPackage method.
 | deployment_package_name | [string](#string) |  | Name of the DeploymentPackage. |
 | version | [string](#string) |  | Version of the DeploymentPackage. |
 | deployment_package | [DeploymentPackage](#catalog-v3-DeploymentPackage) |  | The DeploymentPackage update. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-UpdateRegistryRequest"></a>
 
@@ -920,6 +944,7 @@ Request message for the UpdateRegistry method.
 | ----- | ---- | ----- | ----------- |
 | registry_name | [string](#string) |  | Name of the Registry. |
 | registry | [Registry](#catalog-v3-Registry) |  | The Registry update. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-UploadCatalogEntitiesRequest"></a>
 
@@ -933,6 +958,7 @@ Request message for the UploadCatalogItems method
 | upload_number | [uint32](#uint32) |  | Deprecated: Upload number must increase sequentially, starting with 1. |
 | last_upload | [bool](#bool) |  | Must be set to 'true' to perform load of all entity files uploaded as part of this session. |
 | upload | [Upload](#catalog-v3-Upload) |  | Upload record containing the file name and file contents being uploaded. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-UploadCatalogEntitiesResponse"></a>
 
@@ -967,6 +993,7 @@ Request message for the WatchApplications method.
 | project_id | [string](#string) |  | ID of the project. |
 | no_replay | [bool](#bool) |  | Indicates whether replay of existing entities will be performed. |
 | kinds | [Kind](#catalog-v3-Kind) | repeated | Application kinds to be watched; empty list means all kinds. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-WatchApplicationsResponse"></a>
 
@@ -989,6 +1016,7 @@ Request message for the WatchArtifacts method.
 | ----- | ---- | ----- | ----------- |
 | project_id | [string](#string) |  | ID of the project. |
 | no_replay | [bool](#bool) |  | Indicates whether replay of existing entities will be performed. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-WatchArtifactsResponse"></a>
 
@@ -1012,6 +1040,7 @@ Request message for the WatchDeploymentPackages method.
 | project_id | [string](#string) |  | ID of the project. |
 | no_replay | [bool](#bool) |  | Indicates whether replay of existing entities will be performed. |
 | kinds | [Kind](#catalog-v3-Kind) | repeated | Deployment package kinds to be watched; empty list means all kinds. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-WatchDeploymentPackagesResponse"></a>
 
@@ -1035,6 +1064,7 @@ Request message for the WatchRegistries method.
 | project_id | [string](#string) |  | ID of the project. |
 | no_replay | [bool](#bool) |  | Indicates whether replay of existing entities will be performed. |
 | show_sensitive_info | [bool](#bool) |  | Request that sensitive information, such as username, auth_token, and CA certificates are included in the response. |
+| projectName | [string](#string) |  | Project name for multi-tenant path routing. |
 
 <a name="catalog-v3-WatchRegistriesResponse"></a>
 

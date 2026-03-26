@@ -89,102 +89,195 @@ func WithRequestEditorFn(fn RequestEditorFn) ClientOption {
 
 // The interface specification for the client above.
 type ClientInterface interface {
+	// CatalogServiceListApplications2 request
+	CatalogServiceListApplications2(ctx context.Context, params *CatalogServiceListApplications2Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceCreateApplication2WithBody request with any body
+	CatalogServiceCreateApplication2WithBody(ctx context.Context, params *CatalogServiceCreateApplication2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CatalogServiceCreateApplication2(ctx context.Context, params *CatalogServiceCreateApplication2Params, body CatalogServiceCreateApplication2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceGetApplicationVersions2 request
+	CatalogServiceGetApplicationVersions2(ctx context.Context, applicationName string, params *CatalogServiceGetApplicationVersions2Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceDeleteApplication2 request
+	CatalogServiceDeleteApplication2(ctx context.Context, applicationName string, version string, params *CatalogServiceDeleteApplication2Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceGetApplication2 request
+	CatalogServiceGetApplication2(ctx context.Context, applicationName string, version string, params *CatalogServiceGetApplication2Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceUpdateApplication2WithBody request with any body
+	CatalogServiceUpdateApplication2WithBody(ctx context.Context, applicationName string, version string, params *CatalogServiceUpdateApplication2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CatalogServiceUpdateApplication2(ctx context.Context, applicationName string, version string, params *CatalogServiceUpdateApplication2Params, body CatalogServiceUpdateApplication2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceGetApplicationReferenceCount2 request
+	CatalogServiceGetApplicationReferenceCount2(ctx context.Context, applicationName string, version string, params *CatalogServiceGetApplicationReferenceCount2Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceListArtifacts2 request
+	CatalogServiceListArtifacts2(ctx context.Context, params *CatalogServiceListArtifacts2Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceCreateArtifact2WithBody request with any body
+	CatalogServiceCreateArtifact2WithBody(ctx context.Context, params *CatalogServiceCreateArtifact2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CatalogServiceCreateArtifact2(ctx context.Context, params *CatalogServiceCreateArtifact2Params, body CatalogServiceCreateArtifact2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceDeleteArtifact2 request
+	CatalogServiceDeleteArtifact2(ctx context.Context, artifactName string, params *CatalogServiceDeleteArtifact2Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceGetArtifact2 request
+	CatalogServiceGetArtifact2(ctx context.Context, artifactName string, params *CatalogServiceGetArtifact2Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceUpdateArtifact2WithBody request with any body
+	CatalogServiceUpdateArtifact2WithBody(ctx context.Context, artifactName string, params *CatalogServiceUpdateArtifact2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CatalogServiceUpdateArtifact2(ctx context.Context, artifactName string, params *CatalogServiceUpdateArtifact2Params, body CatalogServiceUpdateArtifact2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceListDeploymentPackages2 request
+	CatalogServiceListDeploymentPackages2(ctx context.Context, params *CatalogServiceListDeploymentPackages2Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceCreateDeploymentPackage2WithBody request with any body
+	CatalogServiceCreateDeploymentPackage2WithBody(ctx context.Context, params *CatalogServiceCreateDeploymentPackage2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CatalogServiceCreateDeploymentPackage2(ctx context.Context, params *CatalogServiceCreateDeploymentPackage2Params, body CatalogServiceCreateDeploymentPackage2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceGetDeploymentPackageVersions2 request
+	CatalogServiceGetDeploymentPackageVersions2(ctx context.Context, deploymentPackageName string, params *CatalogServiceGetDeploymentPackageVersions2Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceDeleteDeploymentPackage2 request
+	CatalogServiceDeleteDeploymentPackage2(ctx context.Context, deploymentPackageName string, version string, params *CatalogServiceDeleteDeploymentPackage2Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceGetDeploymentPackage2 request
+	CatalogServiceGetDeploymentPackage2(ctx context.Context, deploymentPackageName string, version string, params *CatalogServiceGetDeploymentPackage2Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceUpdateDeploymentPackage2WithBody request with any body
+	CatalogServiceUpdateDeploymentPackage2WithBody(ctx context.Context, deploymentPackageName string, version string, params *CatalogServiceUpdateDeploymentPackage2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CatalogServiceUpdateDeploymentPackage2(ctx context.Context, deploymentPackageName string, version string, params *CatalogServiceUpdateDeploymentPackage2Params, body CatalogServiceUpdateDeploymentPackage2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceImport2 request
+	CatalogServiceImport2(ctx context.Context, params *CatalogServiceImport2Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceListRegistries2 request
+	CatalogServiceListRegistries2(ctx context.Context, params *CatalogServiceListRegistries2Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceCreateRegistry2WithBody request with any body
+	CatalogServiceCreateRegistry2WithBody(ctx context.Context, params *CatalogServiceCreateRegistry2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CatalogServiceCreateRegistry2(ctx context.Context, params *CatalogServiceCreateRegistry2Params, body CatalogServiceCreateRegistry2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceDeleteRegistry2 request
+	CatalogServiceDeleteRegistry2(ctx context.Context, registryName string, params *CatalogServiceDeleteRegistry2Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceGetRegistry2 request
+	CatalogServiceGetRegistry2(ctx context.Context, registryName string, params *CatalogServiceGetRegistry2Params, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceUpdateRegistry2WithBody request with any body
+	CatalogServiceUpdateRegistry2WithBody(ctx context.Context, registryName string, params *CatalogServiceUpdateRegistry2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CatalogServiceUpdateRegistry2(ctx context.Context, registryName string, params *CatalogServiceUpdateRegistry2Params, body CatalogServiceUpdateRegistry2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	// CatalogServiceUploadCatalogEntities2WithBody request with any body
+	CatalogServiceUploadCatalogEntities2WithBody(ctx context.Context, params *CatalogServiceUploadCatalogEntities2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+
+	CatalogServiceUploadCatalogEntities2(ctx context.Context, params *CatalogServiceUploadCatalogEntities2Params, body CatalogServiceUploadCatalogEntities2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+
 	// CatalogServiceListApplications request
-	CatalogServiceListApplications(ctx context.Context, params *CatalogServiceListApplicationsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceListApplications(ctx context.Context, projectName string, params *CatalogServiceListApplicationsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceCreateApplicationWithBody request with any body
-	CatalogServiceCreateApplicationWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceCreateApplicationWithBody(ctx context.Context, projectName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	CatalogServiceCreateApplication(ctx context.Context, body CatalogServiceCreateApplicationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceCreateApplication(ctx context.Context, projectName string, body CatalogServiceCreateApplicationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceGetApplicationVersions request
-	CatalogServiceGetApplicationVersions(ctx context.Context, applicationName string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceGetApplicationVersions(ctx context.Context, projectName string, applicationName string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceDeleteApplication request
-	CatalogServiceDeleteApplication(ctx context.Context, applicationName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceDeleteApplication(ctx context.Context, projectName string, applicationName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceGetApplication request
-	CatalogServiceGetApplication(ctx context.Context, applicationName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceGetApplication(ctx context.Context, projectName string, applicationName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceUpdateApplicationWithBody request with any body
-	CatalogServiceUpdateApplicationWithBody(ctx context.Context, applicationName string, version string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceUpdateApplicationWithBody(ctx context.Context, projectName string, applicationName string, version string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	CatalogServiceUpdateApplication(ctx context.Context, applicationName string, version string, body CatalogServiceUpdateApplicationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceUpdateApplication(ctx context.Context, projectName string, applicationName string, version string, body CatalogServiceUpdateApplicationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceGetApplicationReferenceCount request
-	CatalogServiceGetApplicationReferenceCount(ctx context.Context, applicationName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceGetApplicationReferenceCount(ctx context.Context, projectName string, applicationName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceListArtifacts request
-	CatalogServiceListArtifacts(ctx context.Context, params *CatalogServiceListArtifactsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceListArtifacts(ctx context.Context, projectName string, params *CatalogServiceListArtifactsParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceCreateArtifactWithBody request with any body
-	CatalogServiceCreateArtifactWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceCreateArtifactWithBody(ctx context.Context, projectName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	CatalogServiceCreateArtifact(ctx context.Context, body CatalogServiceCreateArtifactJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceCreateArtifact(ctx context.Context, projectName string, body CatalogServiceCreateArtifactJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceDeleteArtifact request
-	CatalogServiceDeleteArtifact(ctx context.Context, artifactName string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceDeleteArtifact(ctx context.Context, projectName string, artifactName string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceGetArtifact request
-	CatalogServiceGetArtifact(ctx context.Context, artifactName string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceGetArtifact(ctx context.Context, projectName string, artifactName string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceUpdateArtifactWithBody request with any body
-	CatalogServiceUpdateArtifactWithBody(ctx context.Context, artifactName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceUpdateArtifactWithBody(ctx context.Context, projectName string, artifactName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	CatalogServiceUpdateArtifact(ctx context.Context, artifactName string, body CatalogServiceUpdateArtifactJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceUpdateArtifact(ctx context.Context, projectName string, artifactName string, body CatalogServiceUpdateArtifactJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceListDeploymentPackages request
-	CatalogServiceListDeploymentPackages(ctx context.Context, params *CatalogServiceListDeploymentPackagesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceListDeploymentPackages(ctx context.Context, projectName string, params *CatalogServiceListDeploymentPackagesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceCreateDeploymentPackageWithBody request with any body
-	CatalogServiceCreateDeploymentPackageWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceCreateDeploymentPackageWithBody(ctx context.Context, projectName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	CatalogServiceCreateDeploymentPackage(ctx context.Context, body CatalogServiceCreateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceCreateDeploymentPackage(ctx context.Context, projectName string, body CatalogServiceCreateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceGetDeploymentPackageVersions request
-	CatalogServiceGetDeploymentPackageVersions(ctx context.Context, deploymentPackageName string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceGetDeploymentPackageVersions(ctx context.Context, projectName string, deploymentPackageName string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceDeleteDeploymentPackage request
-	CatalogServiceDeleteDeploymentPackage(ctx context.Context, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceDeleteDeploymentPackage(ctx context.Context, projectName string, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceGetDeploymentPackage request
-	CatalogServiceGetDeploymentPackage(ctx context.Context, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceGetDeploymentPackage(ctx context.Context, projectName string, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceUpdateDeploymentPackageWithBody request with any body
-	CatalogServiceUpdateDeploymentPackageWithBody(ctx context.Context, deploymentPackageName string, version string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceUpdateDeploymentPackageWithBody(ctx context.Context, projectName string, deploymentPackageName string, version string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	CatalogServiceUpdateDeploymentPackage(ctx context.Context, deploymentPackageName string, version string, body CatalogServiceUpdateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceUpdateDeploymentPackage(ctx context.Context, projectName string, deploymentPackageName string, version string, body CatalogServiceUpdateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceImport request
-	CatalogServiceImport(ctx context.Context, params *CatalogServiceImportParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceImport(ctx context.Context, projectName string, params *CatalogServiceImportParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceListRegistries request
-	CatalogServiceListRegistries(ctx context.Context, params *CatalogServiceListRegistriesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceListRegistries(ctx context.Context, projectName string, params *CatalogServiceListRegistriesParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceCreateRegistryWithBody request with any body
-	CatalogServiceCreateRegistryWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceCreateRegistryWithBody(ctx context.Context, projectName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	CatalogServiceCreateRegistry(ctx context.Context, body CatalogServiceCreateRegistryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceCreateRegistry(ctx context.Context, projectName string, body CatalogServiceCreateRegistryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceDeleteRegistry request
-	CatalogServiceDeleteRegistry(ctx context.Context, registryName string, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceDeleteRegistry(ctx context.Context, projectName string, registryName string, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceGetRegistry request
-	CatalogServiceGetRegistry(ctx context.Context, registryName string, params *CatalogServiceGetRegistryParams, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceGetRegistry(ctx context.Context, projectName string, registryName string, params *CatalogServiceGetRegistryParams, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceUpdateRegistryWithBody request with any body
-	CatalogServiceUpdateRegistryWithBody(ctx context.Context, registryName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceUpdateRegistryWithBody(ctx context.Context, projectName string, registryName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	CatalogServiceUpdateRegistry(ctx context.Context, registryName string, body CatalogServiceUpdateRegistryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceUpdateRegistry(ctx context.Context, projectName string, registryName string, body CatalogServiceUpdateRegistryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 
 	// CatalogServiceUploadCatalogEntitiesWithBody request with any body
-	CatalogServiceUploadCatalogEntitiesWithBody(ctx context.Context, params *CatalogServiceUploadCatalogEntitiesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceUploadCatalogEntitiesWithBody(ctx context.Context, projectName string, params *CatalogServiceUploadCatalogEntitiesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error)
 
-	CatalogServiceUploadCatalogEntities(ctx context.Context, params *CatalogServiceUploadCatalogEntitiesParams, body CatalogServiceUploadCatalogEntitiesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
+	CatalogServiceUploadCatalogEntities(ctx context.Context, projectName string, params *CatalogServiceUploadCatalogEntitiesParams, body CatalogServiceUploadCatalogEntitiesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error)
 }
 
-func (c *Client) CatalogServiceListApplications(ctx context.Context, params *CatalogServiceListApplicationsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceListApplicationsRequest(c.Server, params)
+func (c *Client) CatalogServiceListApplications2(ctx context.Context, params *CatalogServiceListApplications2Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceListApplications2Request(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -195,8 +288,8 @@ func (c *Client) CatalogServiceListApplications(ctx context.Context, params *Cat
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceCreateApplicationWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceCreateApplicationRequestWithBody(c.Server, contentType, body)
+func (c *Client) CatalogServiceCreateApplication2WithBody(ctx context.Context, params *CatalogServiceCreateApplication2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceCreateApplication2RequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -207,8 +300,8 @@ func (c *Client) CatalogServiceCreateApplicationWithBody(ctx context.Context, co
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceCreateApplication(ctx context.Context, body CatalogServiceCreateApplicationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceCreateApplicationRequest(c.Server, body)
+func (c *Client) CatalogServiceCreateApplication2(ctx context.Context, params *CatalogServiceCreateApplication2Params, body CatalogServiceCreateApplication2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceCreateApplication2Request(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -219,8 +312,8 @@ func (c *Client) CatalogServiceCreateApplication(ctx context.Context, body Catal
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceGetApplicationVersions(ctx context.Context, applicationName string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceGetApplicationVersionsRequest(c.Server, applicationName)
+func (c *Client) CatalogServiceGetApplicationVersions2(ctx context.Context, applicationName string, params *CatalogServiceGetApplicationVersions2Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceGetApplicationVersions2Request(c.Server, applicationName, params)
 	if err != nil {
 		return nil, err
 	}
@@ -231,8 +324,8 @@ func (c *Client) CatalogServiceGetApplicationVersions(ctx context.Context, appli
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceDeleteApplication(ctx context.Context, applicationName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceDeleteApplicationRequest(c.Server, applicationName, version)
+func (c *Client) CatalogServiceDeleteApplication2(ctx context.Context, applicationName string, version string, params *CatalogServiceDeleteApplication2Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceDeleteApplication2Request(c.Server, applicationName, version, params)
 	if err != nil {
 		return nil, err
 	}
@@ -243,8 +336,8 @@ func (c *Client) CatalogServiceDeleteApplication(ctx context.Context, applicatio
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceGetApplication(ctx context.Context, applicationName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceGetApplicationRequest(c.Server, applicationName, version)
+func (c *Client) CatalogServiceGetApplication2(ctx context.Context, applicationName string, version string, params *CatalogServiceGetApplication2Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceGetApplication2Request(c.Server, applicationName, version, params)
 	if err != nil {
 		return nil, err
 	}
@@ -255,8 +348,8 @@ func (c *Client) CatalogServiceGetApplication(ctx context.Context, applicationNa
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceUpdateApplicationWithBody(ctx context.Context, applicationName string, version string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceUpdateApplicationRequestWithBody(c.Server, applicationName, version, contentType, body)
+func (c *Client) CatalogServiceUpdateApplication2WithBody(ctx context.Context, applicationName string, version string, params *CatalogServiceUpdateApplication2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUpdateApplication2RequestWithBody(c.Server, applicationName, version, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -267,8 +360,8 @@ func (c *Client) CatalogServiceUpdateApplicationWithBody(ctx context.Context, ap
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceUpdateApplication(ctx context.Context, applicationName string, version string, body CatalogServiceUpdateApplicationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceUpdateApplicationRequest(c.Server, applicationName, version, body)
+func (c *Client) CatalogServiceUpdateApplication2(ctx context.Context, applicationName string, version string, params *CatalogServiceUpdateApplication2Params, body CatalogServiceUpdateApplication2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUpdateApplication2Request(c.Server, applicationName, version, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -279,8 +372,8 @@ func (c *Client) CatalogServiceUpdateApplication(ctx context.Context, applicatio
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceGetApplicationReferenceCount(ctx context.Context, applicationName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceGetApplicationReferenceCountRequest(c.Server, applicationName, version)
+func (c *Client) CatalogServiceGetApplicationReferenceCount2(ctx context.Context, applicationName string, version string, params *CatalogServiceGetApplicationReferenceCount2Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceGetApplicationReferenceCount2Request(c.Server, applicationName, version, params)
 	if err != nil {
 		return nil, err
 	}
@@ -291,8 +384,8 @@ func (c *Client) CatalogServiceGetApplicationReferenceCount(ctx context.Context,
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceListArtifacts(ctx context.Context, params *CatalogServiceListArtifactsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceListArtifactsRequest(c.Server, params)
+func (c *Client) CatalogServiceListArtifacts2(ctx context.Context, params *CatalogServiceListArtifacts2Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceListArtifacts2Request(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -303,8 +396,8 @@ func (c *Client) CatalogServiceListArtifacts(ctx context.Context, params *Catalo
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceCreateArtifactWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceCreateArtifactRequestWithBody(c.Server, contentType, body)
+func (c *Client) CatalogServiceCreateArtifact2WithBody(ctx context.Context, params *CatalogServiceCreateArtifact2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceCreateArtifact2RequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -315,8 +408,8 @@ func (c *Client) CatalogServiceCreateArtifactWithBody(ctx context.Context, conte
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceCreateArtifact(ctx context.Context, body CatalogServiceCreateArtifactJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceCreateArtifactRequest(c.Server, body)
+func (c *Client) CatalogServiceCreateArtifact2(ctx context.Context, params *CatalogServiceCreateArtifact2Params, body CatalogServiceCreateArtifact2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceCreateArtifact2Request(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -327,8 +420,8 @@ func (c *Client) CatalogServiceCreateArtifact(ctx context.Context, body CatalogS
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceDeleteArtifact(ctx context.Context, artifactName string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceDeleteArtifactRequest(c.Server, artifactName)
+func (c *Client) CatalogServiceDeleteArtifact2(ctx context.Context, artifactName string, params *CatalogServiceDeleteArtifact2Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceDeleteArtifact2Request(c.Server, artifactName, params)
 	if err != nil {
 		return nil, err
 	}
@@ -339,8 +432,8 @@ func (c *Client) CatalogServiceDeleteArtifact(ctx context.Context, artifactName 
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceGetArtifact(ctx context.Context, artifactName string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceGetArtifactRequest(c.Server, artifactName)
+func (c *Client) CatalogServiceGetArtifact2(ctx context.Context, artifactName string, params *CatalogServiceGetArtifact2Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceGetArtifact2Request(c.Server, artifactName, params)
 	if err != nil {
 		return nil, err
 	}
@@ -351,8 +444,8 @@ func (c *Client) CatalogServiceGetArtifact(ctx context.Context, artifactName str
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceUpdateArtifactWithBody(ctx context.Context, artifactName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceUpdateArtifactRequestWithBody(c.Server, artifactName, contentType, body)
+func (c *Client) CatalogServiceUpdateArtifact2WithBody(ctx context.Context, artifactName string, params *CatalogServiceUpdateArtifact2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUpdateArtifact2RequestWithBody(c.Server, artifactName, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -363,8 +456,8 @@ func (c *Client) CatalogServiceUpdateArtifactWithBody(ctx context.Context, artif
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceUpdateArtifact(ctx context.Context, artifactName string, body CatalogServiceUpdateArtifactJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceUpdateArtifactRequest(c.Server, artifactName, body)
+func (c *Client) CatalogServiceUpdateArtifact2(ctx context.Context, artifactName string, params *CatalogServiceUpdateArtifact2Params, body CatalogServiceUpdateArtifact2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUpdateArtifact2Request(c.Server, artifactName, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -375,8 +468,8 @@ func (c *Client) CatalogServiceUpdateArtifact(ctx context.Context, artifactName 
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceListDeploymentPackages(ctx context.Context, params *CatalogServiceListDeploymentPackagesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceListDeploymentPackagesRequest(c.Server, params)
+func (c *Client) CatalogServiceListDeploymentPackages2(ctx context.Context, params *CatalogServiceListDeploymentPackages2Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceListDeploymentPackages2Request(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -387,8 +480,8 @@ func (c *Client) CatalogServiceListDeploymentPackages(ctx context.Context, param
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceCreateDeploymentPackageWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceCreateDeploymentPackageRequestWithBody(c.Server, contentType, body)
+func (c *Client) CatalogServiceCreateDeploymentPackage2WithBody(ctx context.Context, params *CatalogServiceCreateDeploymentPackage2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceCreateDeploymentPackage2RequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -399,8 +492,8 @@ func (c *Client) CatalogServiceCreateDeploymentPackageWithBody(ctx context.Conte
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceCreateDeploymentPackage(ctx context.Context, body CatalogServiceCreateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceCreateDeploymentPackageRequest(c.Server, body)
+func (c *Client) CatalogServiceCreateDeploymentPackage2(ctx context.Context, params *CatalogServiceCreateDeploymentPackage2Params, body CatalogServiceCreateDeploymentPackage2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceCreateDeploymentPackage2Request(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -411,8 +504,8 @@ func (c *Client) CatalogServiceCreateDeploymentPackage(ctx context.Context, body
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceGetDeploymentPackageVersions(ctx context.Context, deploymentPackageName string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceGetDeploymentPackageVersionsRequest(c.Server, deploymentPackageName)
+func (c *Client) CatalogServiceGetDeploymentPackageVersions2(ctx context.Context, deploymentPackageName string, params *CatalogServiceGetDeploymentPackageVersions2Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceGetDeploymentPackageVersions2Request(c.Server, deploymentPackageName, params)
 	if err != nil {
 		return nil, err
 	}
@@ -423,8 +516,8 @@ func (c *Client) CatalogServiceGetDeploymentPackageVersions(ctx context.Context,
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceDeleteDeploymentPackage(ctx context.Context, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceDeleteDeploymentPackageRequest(c.Server, deploymentPackageName, version)
+func (c *Client) CatalogServiceDeleteDeploymentPackage2(ctx context.Context, deploymentPackageName string, version string, params *CatalogServiceDeleteDeploymentPackage2Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceDeleteDeploymentPackage2Request(c.Server, deploymentPackageName, version, params)
 	if err != nil {
 		return nil, err
 	}
@@ -435,8 +528,8 @@ func (c *Client) CatalogServiceDeleteDeploymentPackage(ctx context.Context, depl
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceGetDeploymentPackage(ctx context.Context, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceGetDeploymentPackageRequest(c.Server, deploymentPackageName, version)
+func (c *Client) CatalogServiceGetDeploymentPackage2(ctx context.Context, deploymentPackageName string, version string, params *CatalogServiceGetDeploymentPackage2Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceGetDeploymentPackage2Request(c.Server, deploymentPackageName, version, params)
 	if err != nil {
 		return nil, err
 	}
@@ -447,8 +540,8 @@ func (c *Client) CatalogServiceGetDeploymentPackage(ctx context.Context, deploym
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceUpdateDeploymentPackageWithBody(ctx context.Context, deploymentPackageName string, version string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceUpdateDeploymentPackageRequestWithBody(c.Server, deploymentPackageName, version, contentType, body)
+func (c *Client) CatalogServiceUpdateDeploymentPackage2WithBody(ctx context.Context, deploymentPackageName string, version string, params *CatalogServiceUpdateDeploymentPackage2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUpdateDeploymentPackage2RequestWithBody(c.Server, deploymentPackageName, version, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -459,8 +552,8 @@ func (c *Client) CatalogServiceUpdateDeploymentPackageWithBody(ctx context.Conte
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceUpdateDeploymentPackage(ctx context.Context, deploymentPackageName string, version string, body CatalogServiceUpdateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceUpdateDeploymentPackageRequest(c.Server, deploymentPackageName, version, body)
+func (c *Client) CatalogServiceUpdateDeploymentPackage2(ctx context.Context, deploymentPackageName string, version string, params *CatalogServiceUpdateDeploymentPackage2Params, body CatalogServiceUpdateDeploymentPackage2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUpdateDeploymentPackage2Request(c.Server, deploymentPackageName, version, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -471,8 +564,8 @@ func (c *Client) CatalogServiceUpdateDeploymentPackage(ctx context.Context, depl
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceImport(ctx context.Context, params *CatalogServiceImportParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceImportRequest(c.Server, params)
+func (c *Client) CatalogServiceImport2(ctx context.Context, params *CatalogServiceImport2Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceImport2Request(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -483,8 +576,8 @@ func (c *Client) CatalogServiceImport(ctx context.Context, params *CatalogServic
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceListRegistries(ctx context.Context, params *CatalogServiceListRegistriesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceListRegistriesRequest(c.Server, params)
+func (c *Client) CatalogServiceListRegistries2(ctx context.Context, params *CatalogServiceListRegistries2Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceListRegistries2Request(c.Server, params)
 	if err != nil {
 		return nil, err
 	}
@@ -495,8 +588,8 @@ func (c *Client) CatalogServiceListRegistries(ctx context.Context, params *Catal
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceCreateRegistryWithBody(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceCreateRegistryRequestWithBody(c.Server, contentType, body)
+func (c *Client) CatalogServiceCreateRegistry2WithBody(ctx context.Context, params *CatalogServiceCreateRegistry2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceCreateRegistry2RequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -507,8 +600,8 @@ func (c *Client) CatalogServiceCreateRegistryWithBody(ctx context.Context, conte
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceCreateRegistry(ctx context.Context, body CatalogServiceCreateRegistryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceCreateRegistryRequest(c.Server, body)
+func (c *Client) CatalogServiceCreateRegistry2(ctx context.Context, params *CatalogServiceCreateRegistry2Params, body CatalogServiceCreateRegistry2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceCreateRegistry2Request(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -519,8 +612,8 @@ func (c *Client) CatalogServiceCreateRegistry(ctx context.Context, body CatalogS
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceDeleteRegistry(ctx context.Context, registryName string, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceDeleteRegistryRequest(c.Server, registryName)
+func (c *Client) CatalogServiceDeleteRegistry2(ctx context.Context, registryName string, params *CatalogServiceDeleteRegistry2Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceDeleteRegistry2Request(c.Server, registryName, params)
 	if err != nil {
 		return nil, err
 	}
@@ -531,8 +624,8 @@ func (c *Client) CatalogServiceDeleteRegistry(ctx context.Context, registryName 
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceGetRegistry(ctx context.Context, registryName string, params *CatalogServiceGetRegistryParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceGetRegistryRequest(c.Server, registryName, params)
+func (c *Client) CatalogServiceGetRegistry2(ctx context.Context, registryName string, params *CatalogServiceGetRegistry2Params, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceGetRegistry2Request(c.Server, registryName, params)
 	if err != nil {
 		return nil, err
 	}
@@ -543,8 +636,8 @@ func (c *Client) CatalogServiceGetRegistry(ctx context.Context, registryName str
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceUpdateRegistryWithBody(ctx context.Context, registryName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceUpdateRegistryRequestWithBody(c.Server, registryName, contentType, body)
+func (c *Client) CatalogServiceUpdateRegistry2WithBody(ctx context.Context, registryName string, params *CatalogServiceUpdateRegistry2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUpdateRegistry2RequestWithBody(c.Server, registryName, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -555,8 +648,8 @@ func (c *Client) CatalogServiceUpdateRegistryWithBody(ctx context.Context, regis
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceUpdateRegistry(ctx context.Context, registryName string, body CatalogServiceUpdateRegistryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceUpdateRegistryRequest(c.Server, registryName, body)
+func (c *Client) CatalogServiceUpdateRegistry2(ctx context.Context, registryName string, params *CatalogServiceUpdateRegistry2Params, body CatalogServiceUpdateRegistry2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUpdateRegistry2Request(c.Server, registryName, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -567,8 +660,8 @@ func (c *Client) CatalogServiceUpdateRegistry(ctx context.Context, registryName 
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceUploadCatalogEntitiesWithBody(ctx context.Context, params *CatalogServiceUploadCatalogEntitiesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceUploadCatalogEntitiesRequestWithBody(c.Server, params, contentType, body)
+func (c *Client) CatalogServiceUploadCatalogEntities2WithBody(ctx context.Context, params *CatalogServiceUploadCatalogEntities2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUploadCatalogEntities2RequestWithBody(c.Server, params, contentType, body)
 	if err != nil {
 		return nil, err
 	}
@@ -579,8 +672,8 @@ func (c *Client) CatalogServiceUploadCatalogEntitiesWithBody(ctx context.Context
 	return c.Client.Do(req)
 }
 
-func (c *Client) CatalogServiceUploadCatalogEntities(ctx context.Context, params *CatalogServiceUploadCatalogEntitiesParams, body CatalogServiceUploadCatalogEntitiesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
-	req, err := NewCatalogServiceUploadCatalogEntitiesRequest(c.Server, params, body)
+func (c *Client) CatalogServiceUploadCatalogEntities2(ctx context.Context, params *CatalogServiceUploadCatalogEntities2Params, body CatalogServiceUploadCatalogEntities2JSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUploadCatalogEntities2Request(c.Server, params, body)
 	if err != nil {
 		return nil, err
 	}
@@ -591,8 +684,416 @@ func (c *Client) CatalogServiceUploadCatalogEntities(ctx context.Context, params
 	return c.Client.Do(req)
 }
 
-// NewCatalogServiceListApplicationsRequest generates requests for CatalogServiceListApplications
-func NewCatalogServiceListApplicationsRequest(server string, params *CatalogServiceListApplicationsParams) (*http.Request, error) {
+func (c *Client) CatalogServiceListApplications(ctx context.Context, projectName string, params *CatalogServiceListApplicationsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceListApplicationsRequest(c.Server, projectName, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceCreateApplicationWithBody(ctx context.Context, projectName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceCreateApplicationRequestWithBody(c.Server, projectName, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceCreateApplication(ctx context.Context, projectName string, body CatalogServiceCreateApplicationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceCreateApplicationRequest(c.Server, projectName, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceGetApplicationVersions(ctx context.Context, projectName string, applicationName string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceGetApplicationVersionsRequest(c.Server, projectName, applicationName)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceDeleteApplication(ctx context.Context, projectName string, applicationName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceDeleteApplicationRequest(c.Server, projectName, applicationName, version)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceGetApplication(ctx context.Context, projectName string, applicationName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceGetApplicationRequest(c.Server, projectName, applicationName, version)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceUpdateApplicationWithBody(ctx context.Context, projectName string, applicationName string, version string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUpdateApplicationRequestWithBody(c.Server, projectName, applicationName, version, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceUpdateApplication(ctx context.Context, projectName string, applicationName string, version string, body CatalogServiceUpdateApplicationJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUpdateApplicationRequest(c.Server, projectName, applicationName, version, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceGetApplicationReferenceCount(ctx context.Context, projectName string, applicationName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceGetApplicationReferenceCountRequest(c.Server, projectName, applicationName, version)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceListArtifacts(ctx context.Context, projectName string, params *CatalogServiceListArtifactsParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceListArtifactsRequest(c.Server, projectName, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceCreateArtifactWithBody(ctx context.Context, projectName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceCreateArtifactRequestWithBody(c.Server, projectName, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceCreateArtifact(ctx context.Context, projectName string, body CatalogServiceCreateArtifactJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceCreateArtifactRequest(c.Server, projectName, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceDeleteArtifact(ctx context.Context, projectName string, artifactName string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceDeleteArtifactRequest(c.Server, projectName, artifactName)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceGetArtifact(ctx context.Context, projectName string, artifactName string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceGetArtifactRequest(c.Server, projectName, artifactName)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceUpdateArtifactWithBody(ctx context.Context, projectName string, artifactName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUpdateArtifactRequestWithBody(c.Server, projectName, artifactName, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceUpdateArtifact(ctx context.Context, projectName string, artifactName string, body CatalogServiceUpdateArtifactJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUpdateArtifactRequest(c.Server, projectName, artifactName, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceListDeploymentPackages(ctx context.Context, projectName string, params *CatalogServiceListDeploymentPackagesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceListDeploymentPackagesRequest(c.Server, projectName, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceCreateDeploymentPackageWithBody(ctx context.Context, projectName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceCreateDeploymentPackageRequestWithBody(c.Server, projectName, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceCreateDeploymentPackage(ctx context.Context, projectName string, body CatalogServiceCreateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceCreateDeploymentPackageRequest(c.Server, projectName, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceGetDeploymentPackageVersions(ctx context.Context, projectName string, deploymentPackageName string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceGetDeploymentPackageVersionsRequest(c.Server, projectName, deploymentPackageName)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceDeleteDeploymentPackage(ctx context.Context, projectName string, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceDeleteDeploymentPackageRequest(c.Server, projectName, deploymentPackageName, version)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceGetDeploymentPackage(ctx context.Context, projectName string, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceGetDeploymentPackageRequest(c.Server, projectName, deploymentPackageName, version)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceUpdateDeploymentPackageWithBody(ctx context.Context, projectName string, deploymentPackageName string, version string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUpdateDeploymentPackageRequestWithBody(c.Server, projectName, deploymentPackageName, version, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceUpdateDeploymentPackage(ctx context.Context, projectName string, deploymentPackageName string, version string, body CatalogServiceUpdateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUpdateDeploymentPackageRequest(c.Server, projectName, deploymentPackageName, version, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceImport(ctx context.Context, projectName string, params *CatalogServiceImportParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceImportRequest(c.Server, projectName, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceListRegistries(ctx context.Context, projectName string, params *CatalogServiceListRegistriesParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceListRegistriesRequest(c.Server, projectName, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceCreateRegistryWithBody(ctx context.Context, projectName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceCreateRegistryRequestWithBody(c.Server, projectName, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceCreateRegistry(ctx context.Context, projectName string, body CatalogServiceCreateRegistryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceCreateRegistryRequest(c.Server, projectName, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceDeleteRegistry(ctx context.Context, projectName string, registryName string, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceDeleteRegistryRequest(c.Server, projectName, registryName)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceGetRegistry(ctx context.Context, projectName string, registryName string, params *CatalogServiceGetRegistryParams, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceGetRegistryRequest(c.Server, projectName, registryName, params)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceUpdateRegistryWithBody(ctx context.Context, projectName string, registryName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUpdateRegistryRequestWithBody(c.Server, projectName, registryName, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceUpdateRegistry(ctx context.Context, projectName string, registryName string, body CatalogServiceUpdateRegistryJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUpdateRegistryRequest(c.Server, projectName, registryName, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceUploadCatalogEntitiesWithBody(ctx context.Context, projectName string, params *CatalogServiceUploadCatalogEntitiesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUploadCatalogEntitiesRequestWithBody(c.Server, projectName, params, contentType, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+func (c *Client) CatalogServiceUploadCatalogEntities(ctx context.Context, projectName string, params *CatalogServiceUploadCatalogEntitiesParams, body CatalogServiceUploadCatalogEntitiesJSONRequestBody, reqEditors ...RequestEditorFn) (*http.Response, error) {
+	req, err := NewCatalogServiceUploadCatalogEntitiesRequest(c.Server, projectName, params, body)
+	if err != nil {
+		return nil, err
+	}
+	req = req.WithContext(ctx)
+	if err := c.applyEditors(ctx, req, reqEditors); err != nil {
+		return nil, err
+	}
+	return c.Client.Do(req)
+}
+
+// NewCatalogServiceListApplications2Request generates requests for CatalogServiceListApplications2
+func NewCatalogServiceListApplications2Request(server string, params *CatalogServiceListApplications2Params) (*http.Request, error) {
 	var err error
 
 	serverURL, err := url.Parse(server)
@@ -601,6 +1102,2001 @@ func NewCatalogServiceListApplicationsRequest(server string, params *CatalogServ
 	}
 
 	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/applications")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.OrderBy != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "orderBy", runtime.ParamLocationQuery, *params.OrderBy); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Filter != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "filter", runtime.ParamLocationQuery, *params.Filter); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "pageSize", runtime.ParamLocationQuery, *params.PageSize); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Kinds != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "kinds", runtime.ParamLocationQuery, *params.Kinds); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCatalogServiceCreateApplication2Request calls the generic CatalogServiceCreateApplication2 builder with application/json body
+func NewCatalogServiceCreateApplication2Request(server string, params *CatalogServiceCreateApplication2Params, body CatalogServiceCreateApplication2JSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCatalogServiceCreateApplication2RequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewCatalogServiceCreateApplication2RequestWithBody generates requests for CatalogServiceCreateApplication2 with any type of body
+func NewCatalogServiceCreateApplication2RequestWithBody(server string, params *CatalogServiceCreateApplication2Params, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/applications")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCatalogServiceGetApplicationVersions2Request generates requests for CatalogServiceGetApplicationVersions2
+func NewCatalogServiceGetApplicationVersions2Request(server string, applicationName string, params *CatalogServiceGetApplicationVersions2Params) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/applications/%s/versions", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCatalogServiceDeleteApplication2Request generates requests for CatalogServiceDeleteApplication2
+func NewCatalogServiceDeleteApplication2Request(server string, applicationName string, version string, params *CatalogServiceDeleteApplication2Params) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/applications/%s/versions/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCatalogServiceGetApplication2Request generates requests for CatalogServiceGetApplication2
+func NewCatalogServiceGetApplication2Request(server string, applicationName string, version string, params *CatalogServiceGetApplication2Params) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/applications/%s/versions/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCatalogServiceUpdateApplication2Request calls the generic CatalogServiceUpdateApplication2 builder with application/json body
+func NewCatalogServiceUpdateApplication2Request(server string, applicationName string, version string, params *CatalogServiceUpdateApplication2Params, body CatalogServiceUpdateApplication2JSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCatalogServiceUpdateApplication2RequestWithBody(server, applicationName, version, params, "application/json", bodyReader)
+}
+
+// NewCatalogServiceUpdateApplication2RequestWithBody generates requests for CatalogServiceUpdateApplication2 with any type of body
+func NewCatalogServiceUpdateApplication2RequestWithBody(server string, applicationName string, version string, params *CatalogServiceUpdateApplication2Params, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/applications/%s/versions/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCatalogServiceGetApplicationReferenceCount2Request generates requests for CatalogServiceGetApplicationReferenceCount2
+func NewCatalogServiceGetApplicationReferenceCount2Request(server string, applicationName string, version string, params *CatalogServiceGetApplicationReferenceCount2Params) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/applications/%s/versions/%s/reference_count", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCatalogServiceListArtifacts2Request generates requests for CatalogServiceListArtifacts2
+func NewCatalogServiceListArtifacts2Request(server string, params *CatalogServiceListArtifacts2Params) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/artifacts")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.OrderBy != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "orderBy", runtime.ParamLocationQuery, *params.OrderBy); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Filter != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "filter", runtime.ParamLocationQuery, *params.Filter); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "pageSize", runtime.ParamLocationQuery, *params.PageSize); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCatalogServiceCreateArtifact2Request calls the generic CatalogServiceCreateArtifact2 builder with application/json body
+func NewCatalogServiceCreateArtifact2Request(server string, params *CatalogServiceCreateArtifact2Params, body CatalogServiceCreateArtifact2JSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCatalogServiceCreateArtifact2RequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewCatalogServiceCreateArtifact2RequestWithBody generates requests for CatalogServiceCreateArtifact2 with any type of body
+func NewCatalogServiceCreateArtifact2RequestWithBody(server string, params *CatalogServiceCreateArtifact2Params, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/artifacts")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCatalogServiceDeleteArtifact2Request generates requests for CatalogServiceDeleteArtifact2
+func NewCatalogServiceDeleteArtifact2Request(server string, artifactName string, params *CatalogServiceDeleteArtifact2Params) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "artifact_name", runtime.ParamLocationPath, artifactName)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/artifacts/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCatalogServiceGetArtifact2Request generates requests for CatalogServiceGetArtifact2
+func NewCatalogServiceGetArtifact2Request(server string, artifactName string, params *CatalogServiceGetArtifact2Params) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "artifact_name", runtime.ParamLocationPath, artifactName)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/artifacts/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCatalogServiceUpdateArtifact2Request calls the generic CatalogServiceUpdateArtifact2 builder with application/json body
+func NewCatalogServiceUpdateArtifact2Request(server string, artifactName string, params *CatalogServiceUpdateArtifact2Params, body CatalogServiceUpdateArtifact2JSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCatalogServiceUpdateArtifact2RequestWithBody(server, artifactName, params, "application/json", bodyReader)
+}
+
+// NewCatalogServiceUpdateArtifact2RequestWithBody generates requests for CatalogServiceUpdateArtifact2 with any type of body
+func NewCatalogServiceUpdateArtifact2RequestWithBody(server string, artifactName string, params *CatalogServiceUpdateArtifact2Params, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "artifact_name", runtime.ParamLocationPath, artifactName)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/artifacts/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCatalogServiceListDeploymentPackages2Request generates requests for CatalogServiceListDeploymentPackages2
+func NewCatalogServiceListDeploymentPackages2Request(server string, params *CatalogServiceListDeploymentPackages2Params) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/deployment_packages")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.OrderBy != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "orderBy", runtime.ParamLocationQuery, *params.OrderBy); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Filter != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "filter", runtime.ParamLocationQuery, *params.Filter); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "pageSize", runtime.ParamLocationQuery, *params.PageSize); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Kinds != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "kinds", runtime.ParamLocationQuery, *params.Kinds); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCatalogServiceCreateDeploymentPackage2Request calls the generic CatalogServiceCreateDeploymentPackage2 builder with application/json body
+func NewCatalogServiceCreateDeploymentPackage2Request(server string, params *CatalogServiceCreateDeploymentPackage2Params, body CatalogServiceCreateDeploymentPackage2JSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCatalogServiceCreateDeploymentPackage2RequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewCatalogServiceCreateDeploymentPackage2RequestWithBody generates requests for CatalogServiceCreateDeploymentPackage2 with any type of body
+func NewCatalogServiceCreateDeploymentPackage2RequestWithBody(server string, params *CatalogServiceCreateDeploymentPackage2Params, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/deployment_packages")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCatalogServiceGetDeploymentPackageVersions2Request generates requests for CatalogServiceGetDeploymentPackageVersions2
+func NewCatalogServiceGetDeploymentPackageVersions2Request(server string, deploymentPackageName string, params *CatalogServiceGetDeploymentPackageVersions2Params) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deployment_package_name", runtime.ParamLocationPath, deploymentPackageName)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/deployment_packages/%s/versions", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCatalogServiceDeleteDeploymentPackage2Request generates requests for CatalogServiceDeleteDeploymentPackage2
+func NewCatalogServiceDeleteDeploymentPackage2Request(server string, deploymentPackageName string, version string, params *CatalogServiceDeleteDeploymentPackage2Params) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deployment_package_name", runtime.ParamLocationPath, deploymentPackageName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/deployment_packages/%s/versions/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCatalogServiceGetDeploymentPackage2Request generates requests for CatalogServiceGetDeploymentPackage2
+func NewCatalogServiceGetDeploymentPackage2Request(server string, deploymentPackageName string, version string, params *CatalogServiceGetDeploymentPackage2Params) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deployment_package_name", runtime.ParamLocationPath, deploymentPackageName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/deployment_packages/%s/versions/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCatalogServiceUpdateDeploymentPackage2Request calls the generic CatalogServiceUpdateDeploymentPackage2 builder with application/json body
+func NewCatalogServiceUpdateDeploymentPackage2Request(server string, deploymentPackageName string, version string, params *CatalogServiceUpdateDeploymentPackage2Params, body CatalogServiceUpdateDeploymentPackage2JSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCatalogServiceUpdateDeploymentPackage2RequestWithBody(server, deploymentPackageName, version, params, "application/json", bodyReader)
+}
+
+// NewCatalogServiceUpdateDeploymentPackage2RequestWithBody generates requests for CatalogServiceUpdateDeploymentPackage2 with any type of body
+func NewCatalogServiceUpdateDeploymentPackage2RequestWithBody(server string, deploymentPackageName string, version string, params *CatalogServiceUpdateDeploymentPackage2Params, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deployment_package_name", runtime.ParamLocationPath, deploymentPackageName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/deployment_packages/%s/versions/%s", pathParam0, pathParam1)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCatalogServiceImport2Request generates requests for CatalogServiceImport2
+func NewCatalogServiceImport2Request(server string, params *CatalogServiceImport2Params) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/import")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if queryFrag, err := runtime.StyleParamWithLocation("form", true, "url", runtime.ParamLocationQuery, params.Url); err != nil {
+			return nil, err
+		} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+			return nil, err
+		} else {
+			for k, v := range parsed {
+				for _, v2 := range v {
+					queryValues.Add(k, v2)
+				}
+			}
+		}
+
+		if params.Username != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "username", runtime.ParamLocationQuery, *params.Username); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.AuthToken != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "authToken", runtime.ParamLocationQuery, *params.AuthToken); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.ChartValues != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "chartValues", runtime.ParamLocationQuery, *params.ChartValues); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.IncludeAuth != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "includeAuth", runtime.ParamLocationQuery, *params.IncludeAuth); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.GenerateDefaultValues != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "generateDefaultValues", runtime.ParamLocationQuery, *params.GenerateDefaultValues); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.GenerateDefaultParameters != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "generateDefaultParameters", runtime.ParamLocationQuery, *params.GenerateDefaultParameters); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Namespace != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "namespace", runtime.ParamLocationQuery, *params.Namespace); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCatalogServiceListRegistries2Request generates requests for CatalogServiceListRegistries2
+func NewCatalogServiceListRegistries2Request(server string, params *CatalogServiceListRegistries2Params) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/registries")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.OrderBy != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "orderBy", runtime.ParamLocationQuery, *params.OrderBy); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Filter != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "filter", runtime.ParamLocationQuery, *params.Filter); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.PageSize != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "pageSize", runtime.ParamLocationQuery, *params.PageSize); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.Offset != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "offset", runtime.ParamLocationQuery, *params.Offset); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.ShowSensitiveInfo != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "showSensitiveInfo", runtime.ParamLocationQuery, *params.ShowSensitiveInfo); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCatalogServiceCreateRegistry2Request calls the generic CatalogServiceCreateRegistry2 builder with application/json body
+func NewCatalogServiceCreateRegistry2Request(server string, params *CatalogServiceCreateRegistry2Params, body CatalogServiceCreateRegistry2JSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCatalogServiceCreateRegistry2RequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewCatalogServiceCreateRegistry2RequestWithBody generates requests for CatalogServiceCreateRegistry2 with any type of body
+func NewCatalogServiceCreateRegistry2RequestWithBody(server string, params *CatalogServiceCreateRegistry2Params, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/registries")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCatalogServiceDeleteRegistry2Request generates requests for CatalogServiceDeleteRegistry2
+func NewCatalogServiceDeleteRegistry2Request(server string, registryName string, params *CatalogServiceDeleteRegistry2Params) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "registry_name", runtime.ParamLocationPath, registryName)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/registries/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("DELETE", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCatalogServiceGetRegistry2Request generates requests for CatalogServiceGetRegistry2
+func NewCatalogServiceGetRegistry2Request(server string, registryName string, params *CatalogServiceGetRegistry2Params) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "registry_name", runtime.ParamLocationPath, registryName)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/registries/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ShowSensitiveInfo != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "showSensitiveInfo", runtime.ParamLocationQuery, *params.ShowSensitiveInfo); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("GET", queryURL.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+// NewCatalogServiceUpdateRegistry2Request calls the generic CatalogServiceUpdateRegistry2 builder with application/json body
+func NewCatalogServiceUpdateRegistry2Request(server string, registryName string, params *CatalogServiceUpdateRegistry2Params, body CatalogServiceUpdateRegistry2JSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCatalogServiceUpdateRegistry2RequestWithBody(server, registryName, params, "application/json", bodyReader)
+}
+
+// NewCatalogServiceUpdateRegistry2RequestWithBody generates requests for CatalogServiceUpdateRegistry2 with any type of body
+func NewCatalogServiceUpdateRegistry2RequestWithBody(server string, registryName string, params *CatalogServiceUpdateRegistry2Params, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "registry_name", runtime.ParamLocationPath, registryName)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/registries/%s", pathParam0)
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("PUT", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCatalogServiceUploadCatalogEntities2Request calls the generic CatalogServiceUploadCatalogEntities2 builder with application/json body
+func NewCatalogServiceUploadCatalogEntities2Request(server string, params *CatalogServiceUploadCatalogEntities2Params, body CatalogServiceUploadCatalogEntities2JSONRequestBody) (*http.Request, error) {
+	var bodyReader io.Reader
+	buf, err := json.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+	bodyReader = bytes.NewReader(buf)
+	return NewCatalogServiceUploadCatalogEntities2RequestWithBody(server, params, "application/json", bodyReader)
+}
+
+// NewCatalogServiceUploadCatalogEntities2RequestWithBody generates requests for CatalogServiceUploadCatalogEntities2 with any type of body
+func NewCatalogServiceUploadCatalogEntities2RequestWithBody(server string, params *CatalogServiceUploadCatalogEntities2Params, contentType string, body io.Reader) (*http.Request, error) {
+	var err error
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/uploads")
+	if operationPath[0] == '/' {
+		operationPath = "." + operationPath
+	}
+
+	queryURL, err := serverURL.Parse(operationPath)
+	if err != nil {
+		return nil, err
+	}
+
+	if params != nil {
+		queryValues := queryURL.Query()
+
+		if params.SessionId != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "sessionId", runtime.ParamLocationQuery, *params.SessionId); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.UploadNumber != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "uploadNumber", runtime.ParamLocationQuery, *params.UploadNumber); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.LastUpload != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "lastUpload", runtime.ParamLocationQuery, *params.LastUpload); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		if params.ProjectName != nil {
+
+			if queryFrag, err := runtime.StyleParamWithLocation("form", true, "projectName", runtime.ParamLocationQuery, *params.ProjectName); err != nil {
+				return nil, err
+			} else if parsed, err := url.ParseQuery(queryFrag); err != nil {
+				return nil, err
+			} else {
+				for k, v := range parsed {
+					for _, v2 := range v {
+						queryValues.Add(k, v2)
+					}
+				}
+			}
+
+		}
+
+		queryURL.RawQuery = queryValues.Encode()
+	}
+
+	req, err := http.NewRequest("POST", queryURL.String(), body)
+	if err != nil {
+		return nil, err
+	}
+
+	req.Header.Add("Content-Type", contentType)
+
+	return req, nil
+}
+
+// NewCatalogServiceListApplicationsRequest generates requests for CatalogServiceListApplications
+func NewCatalogServiceListApplicationsRequest(server string, projectName string, params *CatalogServiceListApplicationsParams) (*http.Request, error) {
+	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
+	if err != nil {
+		return nil, err
+	}
+
+	serverURL, err := url.Parse(server)
+	if err != nil {
+		return nil, err
+	}
+
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/applications", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -705,26 +3201,33 @@ func NewCatalogServiceListApplicationsRequest(server string, params *CatalogServ
 }
 
 // NewCatalogServiceCreateApplicationRequest calls the generic CatalogServiceCreateApplication builder with application/json body
-func NewCatalogServiceCreateApplicationRequest(server string, body CatalogServiceCreateApplicationJSONRequestBody) (*http.Request, error) {
+func NewCatalogServiceCreateApplicationRequest(server string, projectName string, body CatalogServiceCreateApplicationJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCatalogServiceCreateApplicationRequestWithBody(server, "application/json", bodyReader)
+	return NewCatalogServiceCreateApplicationRequestWithBody(server, projectName, "application/json", bodyReader)
 }
 
 // NewCatalogServiceCreateApplicationRequestWithBody generates requests for CatalogServiceCreateApplication with any type of body
-func NewCatalogServiceCreateApplicationRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCatalogServiceCreateApplicationRequestWithBody(server string, projectName string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/applications")
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/applications", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -745,12 +3248,19 @@ func NewCatalogServiceCreateApplicationRequestWithBody(server string, contentTyp
 }
 
 // NewCatalogServiceGetApplicationVersionsRequest generates requests for CatalogServiceGetApplicationVersions
-func NewCatalogServiceGetApplicationVersionsRequest(server string, applicationName string) (*http.Request, error) {
+func NewCatalogServiceGetApplicationVersionsRequest(server string, projectName string, applicationName string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
 	if err != nil {
 		return nil, err
 	}
@@ -760,7 +3270,7 @@ func NewCatalogServiceGetApplicationVersionsRequest(server string, applicationNa
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/applications/%s/versions", pathParam0)
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/applications/%s/versions", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -779,19 +3289,26 @@ func NewCatalogServiceGetApplicationVersionsRequest(server string, applicationNa
 }
 
 // NewCatalogServiceDeleteApplicationRequest generates requests for CatalogServiceDeleteApplication
-func NewCatalogServiceDeleteApplicationRequest(server string, applicationName string, version string) (*http.Request, error) {
+func NewCatalogServiceDeleteApplicationRequest(server string, projectName string, applicationName string, version string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
 	if err != nil {
 		return nil, err
 	}
 
 	var pathParam1 string
 
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
 	if err != nil {
 		return nil, err
 	}
@@ -801,7 +3318,7 @@ func NewCatalogServiceDeleteApplicationRequest(server string, applicationName st
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/applications/%s/versions/%s", pathParam0, pathParam1)
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/applications/%s/versions/%s", pathParam0, pathParam1, pathParam2)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -820,19 +3337,26 @@ func NewCatalogServiceDeleteApplicationRequest(server string, applicationName st
 }
 
 // NewCatalogServiceGetApplicationRequest generates requests for CatalogServiceGetApplication
-func NewCatalogServiceGetApplicationRequest(server string, applicationName string, version string) (*http.Request, error) {
+func NewCatalogServiceGetApplicationRequest(server string, projectName string, applicationName string, version string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
 	if err != nil {
 		return nil, err
 	}
 
 	var pathParam1 string
 
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
 	if err != nil {
 		return nil, err
 	}
@@ -842,7 +3366,7 @@ func NewCatalogServiceGetApplicationRequest(server string, applicationName strin
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/applications/%s/versions/%s", pathParam0, pathParam1)
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/applications/%s/versions/%s", pathParam0, pathParam1, pathParam2)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -861,30 +3385,37 @@ func NewCatalogServiceGetApplicationRequest(server string, applicationName strin
 }
 
 // NewCatalogServiceUpdateApplicationRequest calls the generic CatalogServiceUpdateApplication builder with application/json body
-func NewCatalogServiceUpdateApplicationRequest(server string, applicationName string, version string, body CatalogServiceUpdateApplicationJSONRequestBody) (*http.Request, error) {
+func NewCatalogServiceUpdateApplicationRequest(server string, projectName string, applicationName string, version string, body CatalogServiceUpdateApplicationJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCatalogServiceUpdateApplicationRequestWithBody(server, applicationName, version, "application/json", bodyReader)
+	return NewCatalogServiceUpdateApplicationRequestWithBody(server, projectName, applicationName, version, "application/json", bodyReader)
 }
 
 // NewCatalogServiceUpdateApplicationRequestWithBody generates requests for CatalogServiceUpdateApplication with any type of body
-func NewCatalogServiceUpdateApplicationRequestWithBody(server string, applicationName string, version string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCatalogServiceUpdateApplicationRequestWithBody(server string, projectName string, applicationName string, version string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
 	if err != nil {
 		return nil, err
 	}
 
 	var pathParam1 string
 
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
 	if err != nil {
 		return nil, err
 	}
@@ -894,7 +3425,7 @@ func NewCatalogServiceUpdateApplicationRequestWithBody(server string, applicatio
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/applications/%s/versions/%s", pathParam0, pathParam1)
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/applications/%s/versions/%s", pathParam0, pathParam1, pathParam2)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -915,19 +3446,26 @@ func NewCatalogServiceUpdateApplicationRequestWithBody(server string, applicatio
 }
 
 // NewCatalogServiceGetApplicationReferenceCountRequest generates requests for CatalogServiceGetApplicationReferenceCount
-func NewCatalogServiceGetApplicationReferenceCountRequest(server string, applicationName string, version string) (*http.Request, error) {
+func NewCatalogServiceGetApplicationReferenceCountRequest(server string, projectName string, applicationName string, version string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
 	if err != nil {
 		return nil, err
 	}
 
 	var pathParam1 string
 
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "application_name", runtime.ParamLocationPath, applicationName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
 	if err != nil {
 		return nil, err
 	}
@@ -937,7 +3475,7 @@ func NewCatalogServiceGetApplicationReferenceCountRequest(server string, applica
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/applications/%s/versions/%s/reference_count", pathParam0, pathParam1)
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/applications/%s/versions/%s/reference_count", pathParam0, pathParam1, pathParam2)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -956,15 +3494,22 @@ func NewCatalogServiceGetApplicationReferenceCountRequest(server string, applica
 }
 
 // NewCatalogServiceListArtifactsRequest generates requests for CatalogServiceListArtifacts
-func NewCatalogServiceListArtifactsRequest(server string, params *CatalogServiceListArtifactsParams) (*http.Request, error) {
+func NewCatalogServiceListArtifactsRequest(server string, projectName string, params *CatalogServiceListArtifactsParams) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/artifacts")
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/artifacts", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1053,26 +3598,33 @@ func NewCatalogServiceListArtifactsRequest(server string, params *CatalogService
 }
 
 // NewCatalogServiceCreateArtifactRequest calls the generic CatalogServiceCreateArtifact builder with application/json body
-func NewCatalogServiceCreateArtifactRequest(server string, body CatalogServiceCreateArtifactJSONRequestBody) (*http.Request, error) {
+func NewCatalogServiceCreateArtifactRequest(server string, projectName string, body CatalogServiceCreateArtifactJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCatalogServiceCreateArtifactRequestWithBody(server, "application/json", bodyReader)
+	return NewCatalogServiceCreateArtifactRequestWithBody(server, projectName, "application/json", bodyReader)
 }
 
 // NewCatalogServiceCreateArtifactRequestWithBody generates requests for CatalogServiceCreateArtifact with any type of body
-func NewCatalogServiceCreateArtifactRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCatalogServiceCreateArtifactRequestWithBody(server string, projectName string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/artifacts")
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/artifacts", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1093,12 +3645,19 @@ func NewCatalogServiceCreateArtifactRequestWithBody(server string, contentType s
 }
 
 // NewCatalogServiceDeleteArtifactRequest generates requests for CatalogServiceDeleteArtifact
-func NewCatalogServiceDeleteArtifactRequest(server string, artifactName string) (*http.Request, error) {
+func NewCatalogServiceDeleteArtifactRequest(server string, projectName string, artifactName string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "artifact_name", runtime.ParamLocationPath, artifactName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "artifact_name", runtime.ParamLocationPath, artifactName)
 	if err != nil {
 		return nil, err
 	}
@@ -1108,7 +3667,7 @@ func NewCatalogServiceDeleteArtifactRequest(server string, artifactName string) 
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/artifacts/%s", pathParam0)
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/artifacts/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1127,12 +3686,19 @@ func NewCatalogServiceDeleteArtifactRequest(server string, artifactName string) 
 }
 
 // NewCatalogServiceGetArtifactRequest generates requests for CatalogServiceGetArtifact
-func NewCatalogServiceGetArtifactRequest(server string, artifactName string) (*http.Request, error) {
+func NewCatalogServiceGetArtifactRequest(server string, projectName string, artifactName string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "artifact_name", runtime.ParamLocationPath, artifactName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "artifact_name", runtime.ParamLocationPath, artifactName)
 	if err != nil {
 		return nil, err
 	}
@@ -1142,7 +3708,7 @@ func NewCatalogServiceGetArtifactRequest(server string, artifactName string) (*h
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/artifacts/%s", pathParam0)
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/artifacts/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1161,23 +3727,30 @@ func NewCatalogServiceGetArtifactRequest(server string, artifactName string) (*h
 }
 
 // NewCatalogServiceUpdateArtifactRequest calls the generic CatalogServiceUpdateArtifact builder with application/json body
-func NewCatalogServiceUpdateArtifactRequest(server string, artifactName string, body CatalogServiceUpdateArtifactJSONRequestBody) (*http.Request, error) {
+func NewCatalogServiceUpdateArtifactRequest(server string, projectName string, artifactName string, body CatalogServiceUpdateArtifactJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCatalogServiceUpdateArtifactRequestWithBody(server, artifactName, "application/json", bodyReader)
+	return NewCatalogServiceUpdateArtifactRequestWithBody(server, projectName, artifactName, "application/json", bodyReader)
 }
 
 // NewCatalogServiceUpdateArtifactRequestWithBody generates requests for CatalogServiceUpdateArtifact with any type of body
-func NewCatalogServiceUpdateArtifactRequestWithBody(server string, artifactName string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCatalogServiceUpdateArtifactRequestWithBody(server string, projectName string, artifactName string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "artifact_name", runtime.ParamLocationPath, artifactName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "artifact_name", runtime.ParamLocationPath, artifactName)
 	if err != nil {
 		return nil, err
 	}
@@ -1187,7 +3760,7 @@ func NewCatalogServiceUpdateArtifactRequestWithBody(server string, artifactName 
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/artifacts/%s", pathParam0)
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/artifacts/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1208,15 +3781,22 @@ func NewCatalogServiceUpdateArtifactRequestWithBody(server string, artifactName 
 }
 
 // NewCatalogServiceListDeploymentPackagesRequest generates requests for CatalogServiceListDeploymentPackages
-func NewCatalogServiceListDeploymentPackagesRequest(server string, params *CatalogServiceListDeploymentPackagesParams) (*http.Request, error) {
+func NewCatalogServiceListDeploymentPackagesRequest(server string, projectName string, params *CatalogServiceListDeploymentPackagesParams) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/deployment_packages")
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/deployment_packages", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1321,26 +3901,33 @@ func NewCatalogServiceListDeploymentPackagesRequest(server string, params *Catal
 }
 
 // NewCatalogServiceCreateDeploymentPackageRequest calls the generic CatalogServiceCreateDeploymentPackage builder with application/json body
-func NewCatalogServiceCreateDeploymentPackageRequest(server string, body CatalogServiceCreateDeploymentPackageJSONRequestBody) (*http.Request, error) {
+func NewCatalogServiceCreateDeploymentPackageRequest(server string, projectName string, body CatalogServiceCreateDeploymentPackageJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCatalogServiceCreateDeploymentPackageRequestWithBody(server, "application/json", bodyReader)
+	return NewCatalogServiceCreateDeploymentPackageRequestWithBody(server, projectName, "application/json", bodyReader)
 }
 
 // NewCatalogServiceCreateDeploymentPackageRequestWithBody generates requests for CatalogServiceCreateDeploymentPackage with any type of body
-func NewCatalogServiceCreateDeploymentPackageRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCatalogServiceCreateDeploymentPackageRequestWithBody(server string, projectName string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/deployment_packages")
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/deployment_packages", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1361,12 +3948,19 @@ func NewCatalogServiceCreateDeploymentPackageRequestWithBody(server string, cont
 }
 
 // NewCatalogServiceGetDeploymentPackageVersionsRequest generates requests for CatalogServiceGetDeploymentPackageVersions
-func NewCatalogServiceGetDeploymentPackageVersionsRequest(server string, deploymentPackageName string) (*http.Request, error) {
+func NewCatalogServiceGetDeploymentPackageVersionsRequest(server string, projectName string, deploymentPackageName string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deployment_package_name", runtime.ParamLocationPath, deploymentPackageName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "deployment_package_name", runtime.ParamLocationPath, deploymentPackageName)
 	if err != nil {
 		return nil, err
 	}
@@ -1376,7 +3970,7 @@ func NewCatalogServiceGetDeploymentPackageVersionsRequest(server string, deploym
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/deployment_packages/%s/versions", pathParam0)
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/deployment_packages/%s/versions", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1395,19 +3989,26 @@ func NewCatalogServiceGetDeploymentPackageVersionsRequest(server string, deploym
 }
 
 // NewCatalogServiceDeleteDeploymentPackageRequest generates requests for CatalogServiceDeleteDeploymentPackage
-func NewCatalogServiceDeleteDeploymentPackageRequest(server string, deploymentPackageName string, version string) (*http.Request, error) {
+func NewCatalogServiceDeleteDeploymentPackageRequest(server string, projectName string, deploymentPackageName string, version string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deployment_package_name", runtime.ParamLocationPath, deploymentPackageName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
 	if err != nil {
 		return nil, err
 	}
 
 	var pathParam1 string
 
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "deployment_package_name", runtime.ParamLocationPath, deploymentPackageName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
 	if err != nil {
 		return nil, err
 	}
@@ -1417,7 +4018,7 @@ func NewCatalogServiceDeleteDeploymentPackageRequest(server string, deploymentPa
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/deployment_packages/%s/versions/%s", pathParam0, pathParam1)
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/deployment_packages/%s/versions/%s", pathParam0, pathParam1, pathParam2)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1436,19 +4037,26 @@ func NewCatalogServiceDeleteDeploymentPackageRequest(server string, deploymentPa
 }
 
 // NewCatalogServiceGetDeploymentPackageRequest generates requests for CatalogServiceGetDeploymentPackage
-func NewCatalogServiceGetDeploymentPackageRequest(server string, deploymentPackageName string, version string) (*http.Request, error) {
+func NewCatalogServiceGetDeploymentPackageRequest(server string, projectName string, deploymentPackageName string, version string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deployment_package_name", runtime.ParamLocationPath, deploymentPackageName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
 	if err != nil {
 		return nil, err
 	}
 
 	var pathParam1 string
 
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "deployment_package_name", runtime.ParamLocationPath, deploymentPackageName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
 	if err != nil {
 		return nil, err
 	}
@@ -1458,7 +4066,7 @@ func NewCatalogServiceGetDeploymentPackageRequest(server string, deploymentPacka
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/deployment_packages/%s/versions/%s", pathParam0, pathParam1)
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/deployment_packages/%s/versions/%s", pathParam0, pathParam1, pathParam2)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1477,30 +4085,37 @@ func NewCatalogServiceGetDeploymentPackageRequest(server string, deploymentPacka
 }
 
 // NewCatalogServiceUpdateDeploymentPackageRequest calls the generic CatalogServiceUpdateDeploymentPackage builder with application/json body
-func NewCatalogServiceUpdateDeploymentPackageRequest(server string, deploymentPackageName string, version string, body CatalogServiceUpdateDeploymentPackageJSONRequestBody) (*http.Request, error) {
+func NewCatalogServiceUpdateDeploymentPackageRequest(server string, projectName string, deploymentPackageName string, version string, body CatalogServiceUpdateDeploymentPackageJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCatalogServiceUpdateDeploymentPackageRequestWithBody(server, deploymentPackageName, version, "application/json", bodyReader)
+	return NewCatalogServiceUpdateDeploymentPackageRequestWithBody(server, projectName, deploymentPackageName, version, "application/json", bodyReader)
 }
 
 // NewCatalogServiceUpdateDeploymentPackageRequestWithBody generates requests for CatalogServiceUpdateDeploymentPackage with any type of body
-func NewCatalogServiceUpdateDeploymentPackageRequestWithBody(server string, deploymentPackageName string, version string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCatalogServiceUpdateDeploymentPackageRequestWithBody(server string, projectName string, deploymentPackageName string, version string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "deployment_package_name", runtime.ParamLocationPath, deploymentPackageName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
 	if err != nil {
 		return nil, err
 	}
 
 	var pathParam1 string
 
-	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "deployment_package_name", runtime.ParamLocationPath, deploymentPackageName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam2 string
+
+	pathParam2, err = runtime.StyleParamWithLocation("simple", false, "version", runtime.ParamLocationPath, version)
 	if err != nil {
 		return nil, err
 	}
@@ -1510,7 +4125,7 @@ func NewCatalogServiceUpdateDeploymentPackageRequestWithBody(server string, depl
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/deployment_packages/%s/versions/%s", pathParam0, pathParam1)
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/deployment_packages/%s/versions/%s", pathParam0, pathParam1, pathParam2)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1531,15 +4146,22 @@ func NewCatalogServiceUpdateDeploymentPackageRequestWithBody(server string, depl
 }
 
 // NewCatalogServiceImportRequest generates requests for CatalogServiceImport
-func NewCatalogServiceImportRequest(server string, params *CatalogServiceImportParams) (*http.Request, error) {
+func NewCatalogServiceImportRequest(server string, projectName string, params *CatalogServiceImportParams) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/import")
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/import", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1688,15 +4310,22 @@ func NewCatalogServiceImportRequest(server string, params *CatalogServiceImportP
 }
 
 // NewCatalogServiceListRegistriesRequest generates requests for CatalogServiceListRegistries
-func NewCatalogServiceListRegistriesRequest(server string, params *CatalogServiceListRegistriesParams) (*http.Request, error) {
+func NewCatalogServiceListRegistriesRequest(server string, projectName string, params *CatalogServiceListRegistriesParams) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/registries")
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/registries", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1801,26 +4430,33 @@ func NewCatalogServiceListRegistriesRequest(server string, params *CatalogServic
 }
 
 // NewCatalogServiceCreateRegistryRequest calls the generic CatalogServiceCreateRegistry builder with application/json body
-func NewCatalogServiceCreateRegistryRequest(server string, body CatalogServiceCreateRegistryJSONRequestBody) (*http.Request, error) {
+func NewCatalogServiceCreateRegistryRequest(server string, projectName string, body CatalogServiceCreateRegistryJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCatalogServiceCreateRegistryRequestWithBody(server, "application/json", bodyReader)
+	return NewCatalogServiceCreateRegistryRequestWithBody(server, projectName, "application/json", bodyReader)
 }
 
 // NewCatalogServiceCreateRegistryRequestWithBody generates requests for CatalogServiceCreateRegistry with any type of body
-func NewCatalogServiceCreateRegistryRequestWithBody(server string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCatalogServiceCreateRegistryRequestWithBody(server string, projectName string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/registries")
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/registries", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1841,12 +4477,19 @@ func NewCatalogServiceCreateRegistryRequestWithBody(server string, contentType s
 }
 
 // NewCatalogServiceDeleteRegistryRequest generates requests for CatalogServiceDeleteRegistry
-func NewCatalogServiceDeleteRegistryRequest(server string, registryName string) (*http.Request, error) {
+func NewCatalogServiceDeleteRegistryRequest(server string, projectName string, registryName string) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "registry_name", runtime.ParamLocationPath, registryName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "registry_name", runtime.ParamLocationPath, registryName)
 	if err != nil {
 		return nil, err
 	}
@@ -1856,7 +4499,7 @@ func NewCatalogServiceDeleteRegistryRequest(server string, registryName string) 
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/registries/%s", pathParam0)
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/registries/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1875,12 +4518,19 @@ func NewCatalogServiceDeleteRegistryRequest(server string, registryName string) 
 }
 
 // NewCatalogServiceGetRegistryRequest generates requests for CatalogServiceGetRegistry
-func NewCatalogServiceGetRegistryRequest(server string, registryName string, params *CatalogServiceGetRegistryParams) (*http.Request, error) {
+func NewCatalogServiceGetRegistryRequest(server string, projectName string, registryName string, params *CatalogServiceGetRegistryParams) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "registry_name", runtime.ParamLocationPath, registryName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "registry_name", runtime.ParamLocationPath, registryName)
 	if err != nil {
 		return nil, err
 	}
@@ -1890,7 +4540,7 @@ func NewCatalogServiceGetRegistryRequest(server string, registryName string, par
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/registries/%s", pathParam0)
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/registries/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1931,23 +4581,30 @@ func NewCatalogServiceGetRegistryRequest(server string, registryName string, par
 }
 
 // NewCatalogServiceUpdateRegistryRequest calls the generic CatalogServiceUpdateRegistry builder with application/json body
-func NewCatalogServiceUpdateRegistryRequest(server string, registryName string, body CatalogServiceUpdateRegistryJSONRequestBody) (*http.Request, error) {
+func NewCatalogServiceUpdateRegistryRequest(server string, projectName string, registryName string, body CatalogServiceUpdateRegistryJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCatalogServiceUpdateRegistryRequestWithBody(server, registryName, "application/json", bodyReader)
+	return NewCatalogServiceUpdateRegistryRequestWithBody(server, projectName, registryName, "application/json", bodyReader)
 }
 
 // NewCatalogServiceUpdateRegistryRequestWithBody generates requests for CatalogServiceUpdateRegistry with any type of body
-func NewCatalogServiceUpdateRegistryRequestWithBody(server string, registryName string, contentType string, body io.Reader) (*http.Request, error) {
+func NewCatalogServiceUpdateRegistryRequestWithBody(server string, projectName string, registryName string, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
 
 	var pathParam0 string
 
-	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "registry_name", runtime.ParamLocationPath, registryName)
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
+	if err != nil {
+		return nil, err
+	}
+
+	var pathParam1 string
+
+	pathParam1, err = runtime.StyleParamWithLocation("simple", false, "registry_name", runtime.ParamLocationPath, registryName)
 	if err != nil {
 		return nil, err
 	}
@@ -1957,7 +4614,7 @@ func NewCatalogServiceUpdateRegistryRequestWithBody(server string, registryName 
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/registries/%s", pathParam0)
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/registries/%s", pathParam0, pathParam1)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -1978,26 +4635,33 @@ func NewCatalogServiceUpdateRegistryRequestWithBody(server string, registryName 
 }
 
 // NewCatalogServiceUploadCatalogEntitiesRequest calls the generic CatalogServiceUploadCatalogEntities builder with application/json body
-func NewCatalogServiceUploadCatalogEntitiesRequest(server string, params *CatalogServiceUploadCatalogEntitiesParams, body CatalogServiceUploadCatalogEntitiesJSONRequestBody) (*http.Request, error) {
+func NewCatalogServiceUploadCatalogEntitiesRequest(server string, projectName string, params *CatalogServiceUploadCatalogEntitiesParams, body CatalogServiceUploadCatalogEntitiesJSONRequestBody) (*http.Request, error) {
 	var bodyReader io.Reader
 	buf, err := json.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
 	bodyReader = bytes.NewReader(buf)
-	return NewCatalogServiceUploadCatalogEntitiesRequestWithBody(server, params, "application/json", bodyReader)
+	return NewCatalogServiceUploadCatalogEntitiesRequestWithBody(server, projectName, params, "application/json", bodyReader)
 }
 
 // NewCatalogServiceUploadCatalogEntitiesRequestWithBody generates requests for CatalogServiceUploadCatalogEntities with any type of body
-func NewCatalogServiceUploadCatalogEntitiesRequestWithBody(server string, params *CatalogServiceUploadCatalogEntitiesParams, contentType string, body io.Reader) (*http.Request, error) {
+func NewCatalogServiceUploadCatalogEntitiesRequestWithBody(server string, projectName string, params *CatalogServiceUploadCatalogEntitiesParams, contentType string, body io.Reader) (*http.Request, error) {
 	var err error
+
+	var pathParam0 string
+
+	pathParam0, err = runtime.StyleParamWithLocation("simple", false, "projectName", runtime.ParamLocationPath, projectName)
+	if err != nil {
+		return nil, err
+	}
 
 	serverURL, err := url.Parse(server)
 	if err != nil {
 		return nil, err
 	}
 
-	operationPath := fmt.Sprintf("/catalog.orchestrator.apis/v3/uploads")
+	operationPath := fmt.Sprintf("/v3/projects/%s/catalog/uploads", pathParam0)
 	if operationPath[0] == '/' {
 		operationPath = "." + operationPath
 	}
@@ -2114,98 +4778,741 @@ func WithBaseURL(baseURL string) ClientOption {
 
 // ClientWithResponsesInterface is the interface specification for the client with responses above.
 type ClientWithResponsesInterface interface {
+	// CatalogServiceListApplications2WithResponse request
+	CatalogServiceListApplications2WithResponse(ctx context.Context, params *CatalogServiceListApplications2Params, reqEditors ...RequestEditorFn) (*CatalogServiceListApplications2Response, error)
+
+	// CatalogServiceCreateApplication2WithBodyWithResponse request with any body
+	CatalogServiceCreateApplication2WithBodyWithResponse(ctx context.Context, params *CatalogServiceCreateApplication2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateApplication2Response, error)
+
+	CatalogServiceCreateApplication2WithResponse(ctx context.Context, params *CatalogServiceCreateApplication2Params, body CatalogServiceCreateApplication2JSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateApplication2Response, error)
+
+	// CatalogServiceGetApplicationVersions2WithResponse request
+	CatalogServiceGetApplicationVersions2WithResponse(ctx context.Context, applicationName string, params *CatalogServiceGetApplicationVersions2Params, reqEditors ...RequestEditorFn) (*CatalogServiceGetApplicationVersions2Response, error)
+
+	// CatalogServiceDeleteApplication2WithResponse request
+	CatalogServiceDeleteApplication2WithResponse(ctx context.Context, applicationName string, version string, params *CatalogServiceDeleteApplication2Params, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteApplication2Response, error)
+
+	// CatalogServiceGetApplication2WithResponse request
+	CatalogServiceGetApplication2WithResponse(ctx context.Context, applicationName string, version string, params *CatalogServiceGetApplication2Params, reqEditors ...RequestEditorFn) (*CatalogServiceGetApplication2Response, error)
+
+	// CatalogServiceUpdateApplication2WithBodyWithResponse request with any body
+	CatalogServiceUpdateApplication2WithBodyWithResponse(ctx context.Context, applicationName string, version string, params *CatalogServiceUpdateApplication2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateApplication2Response, error)
+
+	CatalogServiceUpdateApplication2WithResponse(ctx context.Context, applicationName string, version string, params *CatalogServiceUpdateApplication2Params, body CatalogServiceUpdateApplication2JSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateApplication2Response, error)
+
+	// CatalogServiceGetApplicationReferenceCount2WithResponse request
+	CatalogServiceGetApplicationReferenceCount2WithResponse(ctx context.Context, applicationName string, version string, params *CatalogServiceGetApplicationReferenceCount2Params, reqEditors ...RequestEditorFn) (*CatalogServiceGetApplicationReferenceCount2Response, error)
+
+	// CatalogServiceListArtifacts2WithResponse request
+	CatalogServiceListArtifacts2WithResponse(ctx context.Context, params *CatalogServiceListArtifacts2Params, reqEditors ...RequestEditorFn) (*CatalogServiceListArtifacts2Response, error)
+
+	// CatalogServiceCreateArtifact2WithBodyWithResponse request with any body
+	CatalogServiceCreateArtifact2WithBodyWithResponse(ctx context.Context, params *CatalogServiceCreateArtifact2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateArtifact2Response, error)
+
+	CatalogServiceCreateArtifact2WithResponse(ctx context.Context, params *CatalogServiceCreateArtifact2Params, body CatalogServiceCreateArtifact2JSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateArtifact2Response, error)
+
+	// CatalogServiceDeleteArtifact2WithResponse request
+	CatalogServiceDeleteArtifact2WithResponse(ctx context.Context, artifactName string, params *CatalogServiceDeleteArtifact2Params, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteArtifact2Response, error)
+
+	// CatalogServiceGetArtifact2WithResponse request
+	CatalogServiceGetArtifact2WithResponse(ctx context.Context, artifactName string, params *CatalogServiceGetArtifact2Params, reqEditors ...RequestEditorFn) (*CatalogServiceGetArtifact2Response, error)
+
+	// CatalogServiceUpdateArtifact2WithBodyWithResponse request with any body
+	CatalogServiceUpdateArtifact2WithBodyWithResponse(ctx context.Context, artifactName string, params *CatalogServiceUpdateArtifact2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateArtifact2Response, error)
+
+	CatalogServiceUpdateArtifact2WithResponse(ctx context.Context, artifactName string, params *CatalogServiceUpdateArtifact2Params, body CatalogServiceUpdateArtifact2JSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateArtifact2Response, error)
+
+	// CatalogServiceListDeploymentPackages2WithResponse request
+	CatalogServiceListDeploymentPackages2WithResponse(ctx context.Context, params *CatalogServiceListDeploymentPackages2Params, reqEditors ...RequestEditorFn) (*CatalogServiceListDeploymentPackages2Response, error)
+
+	// CatalogServiceCreateDeploymentPackage2WithBodyWithResponse request with any body
+	CatalogServiceCreateDeploymentPackage2WithBodyWithResponse(ctx context.Context, params *CatalogServiceCreateDeploymentPackage2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateDeploymentPackage2Response, error)
+
+	CatalogServiceCreateDeploymentPackage2WithResponse(ctx context.Context, params *CatalogServiceCreateDeploymentPackage2Params, body CatalogServiceCreateDeploymentPackage2JSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateDeploymentPackage2Response, error)
+
+	// CatalogServiceGetDeploymentPackageVersions2WithResponse request
+	CatalogServiceGetDeploymentPackageVersions2WithResponse(ctx context.Context, deploymentPackageName string, params *CatalogServiceGetDeploymentPackageVersions2Params, reqEditors ...RequestEditorFn) (*CatalogServiceGetDeploymentPackageVersions2Response, error)
+
+	// CatalogServiceDeleteDeploymentPackage2WithResponse request
+	CatalogServiceDeleteDeploymentPackage2WithResponse(ctx context.Context, deploymentPackageName string, version string, params *CatalogServiceDeleteDeploymentPackage2Params, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteDeploymentPackage2Response, error)
+
+	// CatalogServiceGetDeploymentPackage2WithResponse request
+	CatalogServiceGetDeploymentPackage2WithResponse(ctx context.Context, deploymentPackageName string, version string, params *CatalogServiceGetDeploymentPackage2Params, reqEditors ...RequestEditorFn) (*CatalogServiceGetDeploymentPackage2Response, error)
+
+	// CatalogServiceUpdateDeploymentPackage2WithBodyWithResponse request with any body
+	CatalogServiceUpdateDeploymentPackage2WithBodyWithResponse(ctx context.Context, deploymentPackageName string, version string, params *CatalogServiceUpdateDeploymentPackage2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateDeploymentPackage2Response, error)
+
+	CatalogServiceUpdateDeploymentPackage2WithResponse(ctx context.Context, deploymentPackageName string, version string, params *CatalogServiceUpdateDeploymentPackage2Params, body CatalogServiceUpdateDeploymentPackage2JSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateDeploymentPackage2Response, error)
+
+	// CatalogServiceImport2WithResponse request
+	CatalogServiceImport2WithResponse(ctx context.Context, params *CatalogServiceImport2Params, reqEditors ...RequestEditorFn) (*CatalogServiceImport2Response, error)
+
+	// CatalogServiceListRegistries2WithResponse request
+	CatalogServiceListRegistries2WithResponse(ctx context.Context, params *CatalogServiceListRegistries2Params, reqEditors ...RequestEditorFn) (*CatalogServiceListRegistries2Response, error)
+
+	// CatalogServiceCreateRegistry2WithBodyWithResponse request with any body
+	CatalogServiceCreateRegistry2WithBodyWithResponse(ctx context.Context, params *CatalogServiceCreateRegistry2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateRegistry2Response, error)
+
+	CatalogServiceCreateRegistry2WithResponse(ctx context.Context, params *CatalogServiceCreateRegistry2Params, body CatalogServiceCreateRegistry2JSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateRegistry2Response, error)
+
+	// CatalogServiceDeleteRegistry2WithResponse request
+	CatalogServiceDeleteRegistry2WithResponse(ctx context.Context, registryName string, params *CatalogServiceDeleteRegistry2Params, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteRegistry2Response, error)
+
+	// CatalogServiceGetRegistry2WithResponse request
+	CatalogServiceGetRegistry2WithResponse(ctx context.Context, registryName string, params *CatalogServiceGetRegistry2Params, reqEditors ...RequestEditorFn) (*CatalogServiceGetRegistry2Response, error)
+
+	// CatalogServiceUpdateRegistry2WithBodyWithResponse request with any body
+	CatalogServiceUpdateRegistry2WithBodyWithResponse(ctx context.Context, registryName string, params *CatalogServiceUpdateRegistry2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateRegistry2Response, error)
+
+	CatalogServiceUpdateRegistry2WithResponse(ctx context.Context, registryName string, params *CatalogServiceUpdateRegistry2Params, body CatalogServiceUpdateRegistry2JSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateRegistry2Response, error)
+
+	// CatalogServiceUploadCatalogEntities2WithBodyWithResponse request with any body
+	CatalogServiceUploadCatalogEntities2WithBodyWithResponse(ctx context.Context, params *CatalogServiceUploadCatalogEntities2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUploadCatalogEntities2Response, error)
+
+	CatalogServiceUploadCatalogEntities2WithResponse(ctx context.Context, params *CatalogServiceUploadCatalogEntities2Params, body CatalogServiceUploadCatalogEntities2JSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUploadCatalogEntities2Response, error)
+
 	// CatalogServiceListApplicationsWithResponse request
-	CatalogServiceListApplicationsWithResponse(ctx context.Context, params *CatalogServiceListApplicationsParams, reqEditors ...RequestEditorFn) (*CatalogServiceListApplicationsResponse, error)
+	CatalogServiceListApplicationsWithResponse(ctx context.Context, projectName string, params *CatalogServiceListApplicationsParams, reqEditors ...RequestEditorFn) (*CatalogServiceListApplicationsResponse, error)
 
 	// CatalogServiceCreateApplicationWithBodyWithResponse request with any body
-	CatalogServiceCreateApplicationWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateApplicationResponse, error)
+	CatalogServiceCreateApplicationWithBodyWithResponse(ctx context.Context, projectName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateApplicationResponse, error)
 
-	CatalogServiceCreateApplicationWithResponse(ctx context.Context, body CatalogServiceCreateApplicationJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateApplicationResponse, error)
+	CatalogServiceCreateApplicationWithResponse(ctx context.Context, projectName string, body CatalogServiceCreateApplicationJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateApplicationResponse, error)
 
 	// CatalogServiceGetApplicationVersionsWithResponse request
-	CatalogServiceGetApplicationVersionsWithResponse(ctx context.Context, applicationName string, reqEditors ...RequestEditorFn) (*CatalogServiceGetApplicationVersionsResponse, error)
+	CatalogServiceGetApplicationVersionsWithResponse(ctx context.Context, projectName string, applicationName string, reqEditors ...RequestEditorFn) (*CatalogServiceGetApplicationVersionsResponse, error)
 
 	// CatalogServiceDeleteApplicationWithResponse request
-	CatalogServiceDeleteApplicationWithResponse(ctx context.Context, applicationName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteApplicationResponse, error)
+	CatalogServiceDeleteApplicationWithResponse(ctx context.Context, projectName string, applicationName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteApplicationResponse, error)
 
 	// CatalogServiceGetApplicationWithResponse request
-	CatalogServiceGetApplicationWithResponse(ctx context.Context, applicationName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceGetApplicationResponse, error)
+	CatalogServiceGetApplicationWithResponse(ctx context.Context, projectName string, applicationName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceGetApplicationResponse, error)
 
 	// CatalogServiceUpdateApplicationWithBodyWithResponse request with any body
-	CatalogServiceUpdateApplicationWithBodyWithResponse(ctx context.Context, applicationName string, version string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateApplicationResponse, error)
+	CatalogServiceUpdateApplicationWithBodyWithResponse(ctx context.Context, projectName string, applicationName string, version string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateApplicationResponse, error)
 
-	CatalogServiceUpdateApplicationWithResponse(ctx context.Context, applicationName string, version string, body CatalogServiceUpdateApplicationJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateApplicationResponse, error)
+	CatalogServiceUpdateApplicationWithResponse(ctx context.Context, projectName string, applicationName string, version string, body CatalogServiceUpdateApplicationJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateApplicationResponse, error)
 
 	// CatalogServiceGetApplicationReferenceCountWithResponse request
-	CatalogServiceGetApplicationReferenceCountWithResponse(ctx context.Context, applicationName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceGetApplicationReferenceCountResponse, error)
+	CatalogServiceGetApplicationReferenceCountWithResponse(ctx context.Context, projectName string, applicationName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceGetApplicationReferenceCountResponse, error)
 
 	// CatalogServiceListArtifactsWithResponse request
-	CatalogServiceListArtifactsWithResponse(ctx context.Context, params *CatalogServiceListArtifactsParams, reqEditors ...RequestEditorFn) (*CatalogServiceListArtifactsResponse, error)
+	CatalogServiceListArtifactsWithResponse(ctx context.Context, projectName string, params *CatalogServiceListArtifactsParams, reqEditors ...RequestEditorFn) (*CatalogServiceListArtifactsResponse, error)
 
 	// CatalogServiceCreateArtifactWithBodyWithResponse request with any body
-	CatalogServiceCreateArtifactWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateArtifactResponse, error)
+	CatalogServiceCreateArtifactWithBodyWithResponse(ctx context.Context, projectName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateArtifactResponse, error)
 
-	CatalogServiceCreateArtifactWithResponse(ctx context.Context, body CatalogServiceCreateArtifactJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateArtifactResponse, error)
+	CatalogServiceCreateArtifactWithResponse(ctx context.Context, projectName string, body CatalogServiceCreateArtifactJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateArtifactResponse, error)
 
 	// CatalogServiceDeleteArtifactWithResponse request
-	CatalogServiceDeleteArtifactWithResponse(ctx context.Context, artifactName string, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteArtifactResponse, error)
+	CatalogServiceDeleteArtifactWithResponse(ctx context.Context, projectName string, artifactName string, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteArtifactResponse, error)
 
 	// CatalogServiceGetArtifactWithResponse request
-	CatalogServiceGetArtifactWithResponse(ctx context.Context, artifactName string, reqEditors ...RequestEditorFn) (*CatalogServiceGetArtifactResponse, error)
+	CatalogServiceGetArtifactWithResponse(ctx context.Context, projectName string, artifactName string, reqEditors ...RequestEditorFn) (*CatalogServiceGetArtifactResponse, error)
 
 	// CatalogServiceUpdateArtifactWithBodyWithResponse request with any body
-	CatalogServiceUpdateArtifactWithBodyWithResponse(ctx context.Context, artifactName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateArtifactResponse, error)
+	CatalogServiceUpdateArtifactWithBodyWithResponse(ctx context.Context, projectName string, artifactName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateArtifactResponse, error)
 
-	CatalogServiceUpdateArtifactWithResponse(ctx context.Context, artifactName string, body CatalogServiceUpdateArtifactJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateArtifactResponse, error)
+	CatalogServiceUpdateArtifactWithResponse(ctx context.Context, projectName string, artifactName string, body CatalogServiceUpdateArtifactJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateArtifactResponse, error)
 
 	// CatalogServiceListDeploymentPackagesWithResponse request
-	CatalogServiceListDeploymentPackagesWithResponse(ctx context.Context, params *CatalogServiceListDeploymentPackagesParams, reqEditors ...RequestEditorFn) (*CatalogServiceListDeploymentPackagesResponse, error)
+	CatalogServiceListDeploymentPackagesWithResponse(ctx context.Context, projectName string, params *CatalogServiceListDeploymentPackagesParams, reqEditors ...RequestEditorFn) (*CatalogServiceListDeploymentPackagesResponse, error)
 
 	// CatalogServiceCreateDeploymentPackageWithBodyWithResponse request with any body
-	CatalogServiceCreateDeploymentPackageWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateDeploymentPackageResponse, error)
+	CatalogServiceCreateDeploymentPackageWithBodyWithResponse(ctx context.Context, projectName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateDeploymentPackageResponse, error)
 
-	CatalogServiceCreateDeploymentPackageWithResponse(ctx context.Context, body CatalogServiceCreateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateDeploymentPackageResponse, error)
+	CatalogServiceCreateDeploymentPackageWithResponse(ctx context.Context, projectName string, body CatalogServiceCreateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateDeploymentPackageResponse, error)
 
 	// CatalogServiceGetDeploymentPackageVersionsWithResponse request
-	CatalogServiceGetDeploymentPackageVersionsWithResponse(ctx context.Context, deploymentPackageName string, reqEditors ...RequestEditorFn) (*CatalogServiceGetDeploymentPackageVersionsResponse, error)
+	CatalogServiceGetDeploymentPackageVersionsWithResponse(ctx context.Context, projectName string, deploymentPackageName string, reqEditors ...RequestEditorFn) (*CatalogServiceGetDeploymentPackageVersionsResponse, error)
 
 	// CatalogServiceDeleteDeploymentPackageWithResponse request
-	CatalogServiceDeleteDeploymentPackageWithResponse(ctx context.Context, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteDeploymentPackageResponse, error)
+	CatalogServiceDeleteDeploymentPackageWithResponse(ctx context.Context, projectName string, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteDeploymentPackageResponse, error)
 
 	// CatalogServiceGetDeploymentPackageWithResponse request
-	CatalogServiceGetDeploymentPackageWithResponse(ctx context.Context, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceGetDeploymentPackageResponse, error)
+	CatalogServiceGetDeploymentPackageWithResponse(ctx context.Context, projectName string, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceGetDeploymentPackageResponse, error)
 
 	// CatalogServiceUpdateDeploymentPackageWithBodyWithResponse request with any body
-	CatalogServiceUpdateDeploymentPackageWithBodyWithResponse(ctx context.Context, deploymentPackageName string, version string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateDeploymentPackageResponse, error)
+	CatalogServiceUpdateDeploymentPackageWithBodyWithResponse(ctx context.Context, projectName string, deploymentPackageName string, version string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateDeploymentPackageResponse, error)
 
-	CatalogServiceUpdateDeploymentPackageWithResponse(ctx context.Context, deploymentPackageName string, version string, body CatalogServiceUpdateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateDeploymentPackageResponse, error)
+	CatalogServiceUpdateDeploymentPackageWithResponse(ctx context.Context, projectName string, deploymentPackageName string, version string, body CatalogServiceUpdateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateDeploymentPackageResponse, error)
 
 	// CatalogServiceImportWithResponse request
-	CatalogServiceImportWithResponse(ctx context.Context, params *CatalogServiceImportParams, reqEditors ...RequestEditorFn) (*CatalogServiceImportResponse, error)
+	CatalogServiceImportWithResponse(ctx context.Context, projectName string, params *CatalogServiceImportParams, reqEditors ...RequestEditorFn) (*CatalogServiceImportResponse, error)
 
 	// CatalogServiceListRegistriesWithResponse request
-	CatalogServiceListRegistriesWithResponse(ctx context.Context, params *CatalogServiceListRegistriesParams, reqEditors ...RequestEditorFn) (*CatalogServiceListRegistriesResponse, error)
+	CatalogServiceListRegistriesWithResponse(ctx context.Context, projectName string, params *CatalogServiceListRegistriesParams, reqEditors ...RequestEditorFn) (*CatalogServiceListRegistriesResponse, error)
 
 	// CatalogServiceCreateRegistryWithBodyWithResponse request with any body
-	CatalogServiceCreateRegistryWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateRegistryResponse, error)
+	CatalogServiceCreateRegistryWithBodyWithResponse(ctx context.Context, projectName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateRegistryResponse, error)
 
-	CatalogServiceCreateRegistryWithResponse(ctx context.Context, body CatalogServiceCreateRegistryJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateRegistryResponse, error)
+	CatalogServiceCreateRegistryWithResponse(ctx context.Context, projectName string, body CatalogServiceCreateRegistryJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateRegistryResponse, error)
 
 	// CatalogServiceDeleteRegistryWithResponse request
-	CatalogServiceDeleteRegistryWithResponse(ctx context.Context, registryName string, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteRegistryResponse, error)
+	CatalogServiceDeleteRegistryWithResponse(ctx context.Context, projectName string, registryName string, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteRegistryResponse, error)
 
 	// CatalogServiceGetRegistryWithResponse request
-	CatalogServiceGetRegistryWithResponse(ctx context.Context, registryName string, params *CatalogServiceGetRegistryParams, reqEditors ...RequestEditorFn) (*CatalogServiceGetRegistryResponse, error)
+	CatalogServiceGetRegistryWithResponse(ctx context.Context, projectName string, registryName string, params *CatalogServiceGetRegistryParams, reqEditors ...RequestEditorFn) (*CatalogServiceGetRegistryResponse, error)
 
 	// CatalogServiceUpdateRegistryWithBodyWithResponse request with any body
-	CatalogServiceUpdateRegistryWithBodyWithResponse(ctx context.Context, registryName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateRegistryResponse, error)
+	CatalogServiceUpdateRegistryWithBodyWithResponse(ctx context.Context, projectName string, registryName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateRegistryResponse, error)
 
-	CatalogServiceUpdateRegistryWithResponse(ctx context.Context, registryName string, body CatalogServiceUpdateRegistryJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateRegistryResponse, error)
+	CatalogServiceUpdateRegistryWithResponse(ctx context.Context, projectName string, registryName string, body CatalogServiceUpdateRegistryJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateRegistryResponse, error)
 
 	// CatalogServiceUploadCatalogEntitiesWithBodyWithResponse request with any body
-	CatalogServiceUploadCatalogEntitiesWithBodyWithResponse(ctx context.Context, params *CatalogServiceUploadCatalogEntitiesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUploadCatalogEntitiesResponse, error)
+	CatalogServiceUploadCatalogEntitiesWithBodyWithResponse(ctx context.Context, projectName string, params *CatalogServiceUploadCatalogEntitiesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUploadCatalogEntitiesResponse, error)
 
-	CatalogServiceUploadCatalogEntitiesWithResponse(ctx context.Context, params *CatalogServiceUploadCatalogEntitiesParams, body CatalogServiceUploadCatalogEntitiesJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUploadCatalogEntitiesResponse, error)
+	CatalogServiceUploadCatalogEntitiesWithResponse(ctx context.Context, projectName string, params *CatalogServiceUploadCatalogEntitiesParams, body CatalogServiceUploadCatalogEntitiesJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUploadCatalogEntitiesResponse, error)
+}
+
+type CatalogServiceListApplications2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CatalogV3ListApplicationsResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceListApplications2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceListApplications2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceCreateApplication2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CatalogV3CreateApplicationResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceCreateApplication2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceCreateApplication2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceGetApplicationVersions2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CatalogV3GetApplicationVersionsResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceGetApplicationVersions2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceGetApplicationVersions2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceDeleteApplication2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *GoogleProtobufEmpty
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceDeleteApplication2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceDeleteApplication2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceGetApplication2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CatalogV3GetApplicationResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceGetApplication2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceGetApplication2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceUpdateApplication2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *GoogleProtobufEmpty
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceUpdateApplication2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceUpdateApplication2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceGetApplicationReferenceCount2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CatalogV3GetApplicationReferenceCountResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceGetApplicationReferenceCount2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceGetApplicationReferenceCount2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceListArtifacts2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CatalogV3ListArtifactsResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceListArtifacts2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceListArtifacts2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceCreateArtifact2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CatalogV3CreateArtifactResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceCreateArtifact2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceCreateArtifact2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceDeleteArtifact2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *GoogleProtobufEmpty
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceDeleteArtifact2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceDeleteArtifact2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceGetArtifact2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CatalogV3GetArtifactResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceGetArtifact2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceGetArtifact2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceUpdateArtifact2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *GoogleProtobufEmpty
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceUpdateArtifact2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceUpdateArtifact2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceListDeploymentPackages2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CatalogV3ListDeploymentPackagesResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceListDeploymentPackages2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceListDeploymentPackages2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceCreateDeploymentPackage2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CatalogV3CreateDeploymentPackageResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceCreateDeploymentPackage2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceCreateDeploymentPackage2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceGetDeploymentPackageVersions2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CatalogV3GetDeploymentPackageVersionsResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceGetDeploymentPackageVersions2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceGetDeploymentPackageVersions2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceDeleteDeploymentPackage2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *GoogleProtobufEmpty
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceDeleteDeploymentPackage2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceDeleteDeploymentPackage2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceGetDeploymentPackage2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CatalogV3GetDeploymentPackageResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceGetDeploymentPackage2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceGetDeploymentPackage2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceUpdateDeploymentPackage2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *GoogleProtobufEmpty
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceUpdateDeploymentPackage2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceUpdateDeploymentPackage2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceImport2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CatalogV3ImportResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceImport2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceImport2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceListRegistries2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CatalogV3ListRegistriesResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceListRegistries2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceListRegistries2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceCreateRegistry2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CatalogV3CreateRegistryResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceCreateRegistry2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceCreateRegistry2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceDeleteRegistry2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *GoogleProtobufEmpty
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceDeleteRegistry2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceDeleteRegistry2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceGetRegistry2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CatalogV3GetRegistryResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceGetRegistry2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceGetRegistry2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceUpdateRegistry2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *GoogleProtobufEmpty
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceUpdateRegistry2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceUpdateRegistry2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
+}
+
+type CatalogServiceUploadCatalogEntities2Response struct {
+	Body         []byte
+	HTTPResponse *http.Response
+	JSON200      *CatalogV3UploadCatalogEntitiesResponse
+}
+
+// Status returns HTTPResponse.Status
+func (r CatalogServiceUploadCatalogEntities2Response) Status() string {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.Status
+	}
+	return http.StatusText(0)
+}
+
+// StatusCode returns HTTPResponse.StatusCode
+func (r CatalogServiceUploadCatalogEntities2Response) StatusCode() int {
+	if r.HTTPResponse != nil {
+		return r.HTTPResponse.StatusCode
+	}
+	return 0
 }
 
 type CatalogServiceListApplicationsResponse struct {
@@ -2758,9 +6065,306 @@ func (r CatalogServiceUploadCatalogEntitiesResponse) StatusCode() int {
 	return 0
 }
 
+// CatalogServiceListApplications2WithResponse request returning *CatalogServiceListApplications2Response
+func (c *ClientWithResponses) CatalogServiceListApplications2WithResponse(ctx context.Context, params *CatalogServiceListApplications2Params, reqEditors ...RequestEditorFn) (*CatalogServiceListApplications2Response, error) {
+	rsp, err := c.CatalogServiceListApplications2(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceListApplications2Response(rsp)
+}
+
+// CatalogServiceCreateApplication2WithBodyWithResponse request with arbitrary body returning *CatalogServiceCreateApplication2Response
+func (c *ClientWithResponses) CatalogServiceCreateApplication2WithBodyWithResponse(ctx context.Context, params *CatalogServiceCreateApplication2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateApplication2Response, error) {
+	rsp, err := c.CatalogServiceCreateApplication2WithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceCreateApplication2Response(rsp)
+}
+
+func (c *ClientWithResponses) CatalogServiceCreateApplication2WithResponse(ctx context.Context, params *CatalogServiceCreateApplication2Params, body CatalogServiceCreateApplication2JSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateApplication2Response, error) {
+	rsp, err := c.CatalogServiceCreateApplication2(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceCreateApplication2Response(rsp)
+}
+
+// CatalogServiceGetApplicationVersions2WithResponse request returning *CatalogServiceGetApplicationVersions2Response
+func (c *ClientWithResponses) CatalogServiceGetApplicationVersions2WithResponse(ctx context.Context, applicationName string, params *CatalogServiceGetApplicationVersions2Params, reqEditors ...RequestEditorFn) (*CatalogServiceGetApplicationVersions2Response, error) {
+	rsp, err := c.CatalogServiceGetApplicationVersions2(ctx, applicationName, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceGetApplicationVersions2Response(rsp)
+}
+
+// CatalogServiceDeleteApplication2WithResponse request returning *CatalogServiceDeleteApplication2Response
+func (c *ClientWithResponses) CatalogServiceDeleteApplication2WithResponse(ctx context.Context, applicationName string, version string, params *CatalogServiceDeleteApplication2Params, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteApplication2Response, error) {
+	rsp, err := c.CatalogServiceDeleteApplication2(ctx, applicationName, version, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceDeleteApplication2Response(rsp)
+}
+
+// CatalogServiceGetApplication2WithResponse request returning *CatalogServiceGetApplication2Response
+func (c *ClientWithResponses) CatalogServiceGetApplication2WithResponse(ctx context.Context, applicationName string, version string, params *CatalogServiceGetApplication2Params, reqEditors ...RequestEditorFn) (*CatalogServiceGetApplication2Response, error) {
+	rsp, err := c.CatalogServiceGetApplication2(ctx, applicationName, version, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceGetApplication2Response(rsp)
+}
+
+// CatalogServiceUpdateApplication2WithBodyWithResponse request with arbitrary body returning *CatalogServiceUpdateApplication2Response
+func (c *ClientWithResponses) CatalogServiceUpdateApplication2WithBodyWithResponse(ctx context.Context, applicationName string, version string, params *CatalogServiceUpdateApplication2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateApplication2Response, error) {
+	rsp, err := c.CatalogServiceUpdateApplication2WithBody(ctx, applicationName, version, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceUpdateApplication2Response(rsp)
+}
+
+func (c *ClientWithResponses) CatalogServiceUpdateApplication2WithResponse(ctx context.Context, applicationName string, version string, params *CatalogServiceUpdateApplication2Params, body CatalogServiceUpdateApplication2JSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateApplication2Response, error) {
+	rsp, err := c.CatalogServiceUpdateApplication2(ctx, applicationName, version, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceUpdateApplication2Response(rsp)
+}
+
+// CatalogServiceGetApplicationReferenceCount2WithResponse request returning *CatalogServiceGetApplicationReferenceCount2Response
+func (c *ClientWithResponses) CatalogServiceGetApplicationReferenceCount2WithResponse(ctx context.Context, applicationName string, version string, params *CatalogServiceGetApplicationReferenceCount2Params, reqEditors ...RequestEditorFn) (*CatalogServiceGetApplicationReferenceCount2Response, error) {
+	rsp, err := c.CatalogServiceGetApplicationReferenceCount2(ctx, applicationName, version, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceGetApplicationReferenceCount2Response(rsp)
+}
+
+// CatalogServiceListArtifacts2WithResponse request returning *CatalogServiceListArtifacts2Response
+func (c *ClientWithResponses) CatalogServiceListArtifacts2WithResponse(ctx context.Context, params *CatalogServiceListArtifacts2Params, reqEditors ...RequestEditorFn) (*CatalogServiceListArtifacts2Response, error) {
+	rsp, err := c.CatalogServiceListArtifacts2(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceListArtifacts2Response(rsp)
+}
+
+// CatalogServiceCreateArtifact2WithBodyWithResponse request with arbitrary body returning *CatalogServiceCreateArtifact2Response
+func (c *ClientWithResponses) CatalogServiceCreateArtifact2WithBodyWithResponse(ctx context.Context, params *CatalogServiceCreateArtifact2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateArtifact2Response, error) {
+	rsp, err := c.CatalogServiceCreateArtifact2WithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceCreateArtifact2Response(rsp)
+}
+
+func (c *ClientWithResponses) CatalogServiceCreateArtifact2WithResponse(ctx context.Context, params *CatalogServiceCreateArtifact2Params, body CatalogServiceCreateArtifact2JSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateArtifact2Response, error) {
+	rsp, err := c.CatalogServiceCreateArtifact2(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceCreateArtifact2Response(rsp)
+}
+
+// CatalogServiceDeleteArtifact2WithResponse request returning *CatalogServiceDeleteArtifact2Response
+func (c *ClientWithResponses) CatalogServiceDeleteArtifact2WithResponse(ctx context.Context, artifactName string, params *CatalogServiceDeleteArtifact2Params, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteArtifact2Response, error) {
+	rsp, err := c.CatalogServiceDeleteArtifact2(ctx, artifactName, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceDeleteArtifact2Response(rsp)
+}
+
+// CatalogServiceGetArtifact2WithResponse request returning *CatalogServiceGetArtifact2Response
+func (c *ClientWithResponses) CatalogServiceGetArtifact2WithResponse(ctx context.Context, artifactName string, params *CatalogServiceGetArtifact2Params, reqEditors ...RequestEditorFn) (*CatalogServiceGetArtifact2Response, error) {
+	rsp, err := c.CatalogServiceGetArtifact2(ctx, artifactName, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceGetArtifact2Response(rsp)
+}
+
+// CatalogServiceUpdateArtifact2WithBodyWithResponse request with arbitrary body returning *CatalogServiceUpdateArtifact2Response
+func (c *ClientWithResponses) CatalogServiceUpdateArtifact2WithBodyWithResponse(ctx context.Context, artifactName string, params *CatalogServiceUpdateArtifact2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateArtifact2Response, error) {
+	rsp, err := c.CatalogServiceUpdateArtifact2WithBody(ctx, artifactName, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceUpdateArtifact2Response(rsp)
+}
+
+func (c *ClientWithResponses) CatalogServiceUpdateArtifact2WithResponse(ctx context.Context, artifactName string, params *CatalogServiceUpdateArtifact2Params, body CatalogServiceUpdateArtifact2JSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateArtifact2Response, error) {
+	rsp, err := c.CatalogServiceUpdateArtifact2(ctx, artifactName, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceUpdateArtifact2Response(rsp)
+}
+
+// CatalogServiceListDeploymentPackages2WithResponse request returning *CatalogServiceListDeploymentPackages2Response
+func (c *ClientWithResponses) CatalogServiceListDeploymentPackages2WithResponse(ctx context.Context, params *CatalogServiceListDeploymentPackages2Params, reqEditors ...RequestEditorFn) (*CatalogServiceListDeploymentPackages2Response, error) {
+	rsp, err := c.CatalogServiceListDeploymentPackages2(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceListDeploymentPackages2Response(rsp)
+}
+
+// CatalogServiceCreateDeploymentPackage2WithBodyWithResponse request with arbitrary body returning *CatalogServiceCreateDeploymentPackage2Response
+func (c *ClientWithResponses) CatalogServiceCreateDeploymentPackage2WithBodyWithResponse(ctx context.Context, params *CatalogServiceCreateDeploymentPackage2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateDeploymentPackage2Response, error) {
+	rsp, err := c.CatalogServiceCreateDeploymentPackage2WithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceCreateDeploymentPackage2Response(rsp)
+}
+
+func (c *ClientWithResponses) CatalogServiceCreateDeploymentPackage2WithResponse(ctx context.Context, params *CatalogServiceCreateDeploymentPackage2Params, body CatalogServiceCreateDeploymentPackage2JSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateDeploymentPackage2Response, error) {
+	rsp, err := c.CatalogServiceCreateDeploymentPackage2(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceCreateDeploymentPackage2Response(rsp)
+}
+
+// CatalogServiceGetDeploymentPackageVersions2WithResponse request returning *CatalogServiceGetDeploymentPackageVersions2Response
+func (c *ClientWithResponses) CatalogServiceGetDeploymentPackageVersions2WithResponse(ctx context.Context, deploymentPackageName string, params *CatalogServiceGetDeploymentPackageVersions2Params, reqEditors ...RequestEditorFn) (*CatalogServiceGetDeploymentPackageVersions2Response, error) {
+	rsp, err := c.CatalogServiceGetDeploymentPackageVersions2(ctx, deploymentPackageName, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceGetDeploymentPackageVersions2Response(rsp)
+}
+
+// CatalogServiceDeleteDeploymentPackage2WithResponse request returning *CatalogServiceDeleteDeploymentPackage2Response
+func (c *ClientWithResponses) CatalogServiceDeleteDeploymentPackage2WithResponse(ctx context.Context, deploymentPackageName string, version string, params *CatalogServiceDeleteDeploymentPackage2Params, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteDeploymentPackage2Response, error) {
+	rsp, err := c.CatalogServiceDeleteDeploymentPackage2(ctx, deploymentPackageName, version, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceDeleteDeploymentPackage2Response(rsp)
+}
+
+// CatalogServiceGetDeploymentPackage2WithResponse request returning *CatalogServiceGetDeploymentPackage2Response
+func (c *ClientWithResponses) CatalogServiceGetDeploymentPackage2WithResponse(ctx context.Context, deploymentPackageName string, version string, params *CatalogServiceGetDeploymentPackage2Params, reqEditors ...RequestEditorFn) (*CatalogServiceGetDeploymentPackage2Response, error) {
+	rsp, err := c.CatalogServiceGetDeploymentPackage2(ctx, deploymentPackageName, version, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceGetDeploymentPackage2Response(rsp)
+}
+
+// CatalogServiceUpdateDeploymentPackage2WithBodyWithResponse request with arbitrary body returning *CatalogServiceUpdateDeploymentPackage2Response
+func (c *ClientWithResponses) CatalogServiceUpdateDeploymentPackage2WithBodyWithResponse(ctx context.Context, deploymentPackageName string, version string, params *CatalogServiceUpdateDeploymentPackage2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateDeploymentPackage2Response, error) {
+	rsp, err := c.CatalogServiceUpdateDeploymentPackage2WithBody(ctx, deploymentPackageName, version, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceUpdateDeploymentPackage2Response(rsp)
+}
+
+func (c *ClientWithResponses) CatalogServiceUpdateDeploymentPackage2WithResponse(ctx context.Context, deploymentPackageName string, version string, params *CatalogServiceUpdateDeploymentPackage2Params, body CatalogServiceUpdateDeploymentPackage2JSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateDeploymentPackage2Response, error) {
+	rsp, err := c.CatalogServiceUpdateDeploymentPackage2(ctx, deploymentPackageName, version, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceUpdateDeploymentPackage2Response(rsp)
+}
+
+// CatalogServiceImport2WithResponse request returning *CatalogServiceImport2Response
+func (c *ClientWithResponses) CatalogServiceImport2WithResponse(ctx context.Context, params *CatalogServiceImport2Params, reqEditors ...RequestEditorFn) (*CatalogServiceImport2Response, error) {
+	rsp, err := c.CatalogServiceImport2(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceImport2Response(rsp)
+}
+
+// CatalogServiceListRegistries2WithResponse request returning *CatalogServiceListRegistries2Response
+func (c *ClientWithResponses) CatalogServiceListRegistries2WithResponse(ctx context.Context, params *CatalogServiceListRegistries2Params, reqEditors ...RequestEditorFn) (*CatalogServiceListRegistries2Response, error) {
+	rsp, err := c.CatalogServiceListRegistries2(ctx, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceListRegistries2Response(rsp)
+}
+
+// CatalogServiceCreateRegistry2WithBodyWithResponse request with arbitrary body returning *CatalogServiceCreateRegistry2Response
+func (c *ClientWithResponses) CatalogServiceCreateRegistry2WithBodyWithResponse(ctx context.Context, params *CatalogServiceCreateRegistry2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateRegistry2Response, error) {
+	rsp, err := c.CatalogServiceCreateRegistry2WithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceCreateRegistry2Response(rsp)
+}
+
+func (c *ClientWithResponses) CatalogServiceCreateRegistry2WithResponse(ctx context.Context, params *CatalogServiceCreateRegistry2Params, body CatalogServiceCreateRegistry2JSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateRegistry2Response, error) {
+	rsp, err := c.CatalogServiceCreateRegistry2(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceCreateRegistry2Response(rsp)
+}
+
+// CatalogServiceDeleteRegistry2WithResponse request returning *CatalogServiceDeleteRegistry2Response
+func (c *ClientWithResponses) CatalogServiceDeleteRegistry2WithResponse(ctx context.Context, registryName string, params *CatalogServiceDeleteRegistry2Params, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteRegistry2Response, error) {
+	rsp, err := c.CatalogServiceDeleteRegistry2(ctx, registryName, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceDeleteRegistry2Response(rsp)
+}
+
+// CatalogServiceGetRegistry2WithResponse request returning *CatalogServiceGetRegistry2Response
+func (c *ClientWithResponses) CatalogServiceGetRegistry2WithResponse(ctx context.Context, registryName string, params *CatalogServiceGetRegistry2Params, reqEditors ...RequestEditorFn) (*CatalogServiceGetRegistry2Response, error) {
+	rsp, err := c.CatalogServiceGetRegistry2(ctx, registryName, params, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceGetRegistry2Response(rsp)
+}
+
+// CatalogServiceUpdateRegistry2WithBodyWithResponse request with arbitrary body returning *CatalogServiceUpdateRegistry2Response
+func (c *ClientWithResponses) CatalogServiceUpdateRegistry2WithBodyWithResponse(ctx context.Context, registryName string, params *CatalogServiceUpdateRegistry2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateRegistry2Response, error) {
+	rsp, err := c.CatalogServiceUpdateRegistry2WithBody(ctx, registryName, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceUpdateRegistry2Response(rsp)
+}
+
+func (c *ClientWithResponses) CatalogServiceUpdateRegistry2WithResponse(ctx context.Context, registryName string, params *CatalogServiceUpdateRegistry2Params, body CatalogServiceUpdateRegistry2JSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateRegistry2Response, error) {
+	rsp, err := c.CatalogServiceUpdateRegistry2(ctx, registryName, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceUpdateRegistry2Response(rsp)
+}
+
+// CatalogServiceUploadCatalogEntities2WithBodyWithResponse request with arbitrary body returning *CatalogServiceUploadCatalogEntities2Response
+func (c *ClientWithResponses) CatalogServiceUploadCatalogEntities2WithBodyWithResponse(ctx context.Context, params *CatalogServiceUploadCatalogEntities2Params, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUploadCatalogEntities2Response, error) {
+	rsp, err := c.CatalogServiceUploadCatalogEntities2WithBody(ctx, params, contentType, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceUploadCatalogEntities2Response(rsp)
+}
+
+func (c *ClientWithResponses) CatalogServiceUploadCatalogEntities2WithResponse(ctx context.Context, params *CatalogServiceUploadCatalogEntities2Params, body CatalogServiceUploadCatalogEntities2JSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUploadCatalogEntities2Response, error) {
+	rsp, err := c.CatalogServiceUploadCatalogEntities2(ctx, params, body, reqEditors...)
+	if err != nil {
+		return nil, err
+	}
+	return ParseCatalogServiceUploadCatalogEntities2Response(rsp)
+}
+
 // CatalogServiceListApplicationsWithResponse request returning *CatalogServiceListApplicationsResponse
-func (c *ClientWithResponses) CatalogServiceListApplicationsWithResponse(ctx context.Context, params *CatalogServiceListApplicationsParams, reqEditors ...RequestEditorFn) (*CatalogServiceListApplicationsResponse, error) {
-	rsp, err := c.CatalogServiceListApplications(ctx, params, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceListApplicationsWithResponse(ctx context.Context, projectName string, params *CatalogServiceListApplicationsParams, reqEditors ...RequestEditorFn) (*CatalogServiceListApplicationsResponse, error) {
+	rsp, err := c.CatalogServiceListApplications(ctx, projectName, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2768,16 +6372,16 @@ func (c *ClientWithResponses) CatalogServiceListApplicationsWithResponse(ctx con
 }
 
 // CatalogServiceCreateApplicationWithBodyWithResponse request with arbitrary body returning *CatalogServiceCreateApplicationResponse
-func (c *ClientWithResponses) CatalogServiceCreateApplicationWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateApplicationResponse, error) {
-	rsp, err := c.CatalogServiceCreateApplicationWithBody(ctx, contentType, body, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceCreateApplicationWithBodyWithResponse(ctx context.Context, projectName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateApplicationResponse, error) {
+	rsp, err := c.CatalogServiceCreateApplicationWithBody(ctx, projectName, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseCatalogServiceCreateApplicationResponse(rsp)
 }
 
-func (c *ClientWithResponses) CatalogServiceCreateApplicationWithResponse(ctx context.Context, body CatalogServiceCreateApplicationJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateApplicationResponse, error) {
-	rsp, err := c.CatalogServiceCreateApplication(ctx, body, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceCreateApplicationWithResponse(ctx context.Context, projectName string, body CatalogServiceCreateApplicationJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateApplicationResponse, error) {
+	rsp, err := c.CatalogServiceCreateApplication(ctx, projectName, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2785,8 +6389,8 @@ func (c *ClientWithResponses) CatalogServiceCreateApplicationWithResponse(ctx co
 }
 
 // CatalogServiceGetApplicationVersionsWithResponse request returning *CatalogServiceGetApplicationVersionsResponse
-func (c *ClientWithResponses) CatalogServiceGetApplicationVersionsWithResponse(ctx context.Context, applicationName string, reqEditors ...RequestEditorFn) (*CatalogServiceGetApplicationVersionsResponse, error) {
-	rsp, err := c.CatalogServiceGetApplicationVersions(ctx, applicationName, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceGetApplicationVersionsWithResponse(ctx context.Context, projectName string, applicationName string, reqEditors ...RequestEditorFn) (*CatalogServiceGetApplicationVersionsResponse, error) {
+	rsp, err := c.CatalogServiceGetApplicationVersions(ctx, projectName, applicationName, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2794,8 +6398,8 @@ func (c *ClientWithResponses) CatalogServiceGetApplicationVersionsWithResponse(c
 }
 
 // CatalogServiceDeleteApplicationWithResponse request returning *CatalogServiceDeleteApplicationResponse
-func (c *ClientWithResponses) CatalogServiceDeleteApplicationWithResponse(ctx context.Context, applicationName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteApplicationResponse, error) {
-	rsp, err := c.CatalogServiceDeleteApplication(ctx, applicationName, version, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceDeleteApplicationWithResponse(ctx context.Context, projectName string, applicationName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteApplicationResponse, error) {
+	rsp, err := c.CatalogServiceDeleteApplication(ctx, projectName, applicationName, version, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2803,8 +6407,8 @@ func (c *ClientWithResponses) CatalogServiceDeleteApplicationWithResponse(ctx co
 }
 
 // CatalogServiceGetApplicationWithResponse request returning *CatalogServiceGetApplicationResponse
-func (c *ClientWithResponses) CatalogServiceGetApplicationWithResponse(ctx context.Context, applicationName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceGetApplicationResponse, error) {
-	rsp, err := c.CatalogServiceGetApplication(ctx, applicationName, version, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceGetApplicationWithResponse(ctx context.Context, projectName string, applicationName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceGetApplicationResponse, error) {
+	rsp, err := c.CatalogServiceGetApplication(ctx, projectName, applicationName, version, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2812,16 +6416,16 @@ func (c *ClientWithResponses) CatalogServiceGetApplicationWithResponse(ctx conte
 }
 
 // CatalogServiceUpdateApplicationWithBodyWithResponse request with arbitrary body returning *CatalogServiceUpdateApplicationResponse
-func (c *ClientWithResponses) CatalogServiceUpdateApplicationWithBodyWithResponse(ctx context.Context, applicationName string, version string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateApplicationResponse, error) {
-	rsp, err := c.CatalogServiceUpdateApplicationWithBody(ctx, applicationName, version, contentType, body, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceUpdateApplicationWithBodyWithResponse(ctx context.Context, projectName string, applicationName string, version string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateApplicationResponse, error) {
+	rsp, err := c.CatalogServiceUpdateApplicationWithBody(ctx, projectName, applicationName, version, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseCatalogServiceUpdateApplicationResponse(rsp)
 }
 
-func (c *ClientWithResponses) CatalogServiceUpdateApplicationWithResponse(ctx context.Context, applicationName string, version string, body CatalogServiceUpdateApplicationJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateApplicationResponse, error) {
-	rsp, err := c.CatalogServiceUpdateApplication(ctx, applicationName, version, body, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceUpdateApplicationWithResponse(ctx context.Context, projectName string, applicationName string, version string, body CatalogServiceUpdateApplicationJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateApplicationResponse, error) {
+	rsp, err := c.CatalogServiceUpdateApplication(ctx, projectName, applicationName, version, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2829,8 +6433,8 @@ func (c *ClientWithResponses) CatalogServiceUpdateApplicationWithResponse(ctx co
 }
 
 // CatalogServiceGetApplicationReferenceCountWithResponse request returning *CatalogServiceGetApplicationReferenceCountResponse
-func (c *ClientWithResponses) CatalogServiceGetApplicationReferenceCountWithResponse(ctx context.Context, applicationName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceGetApplicationReferenceCountResponse, error) {
-	rsp, err := c.CatalogServiceGetApplicationReferenceCount(ctx, applicationName, version, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceGetApplicationReferenceCountWithResponse(ctx context.Context, projectName string, applicationName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceGetApplicationReferenceCountResponse, error) {
+	rsp, err := c.CatalogServiceGetApplicationReferenceCount(ctx, projectName, applicationName, version, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2838,8 +6442,8 @@ func (c *ClientWithResponses) CatalogServiceGetApplicationReferenceCountWithResp
 }
 
 // CatalogServiceListArtifactsWithResponse request returning *CatalogServiceListArtifactsResponse
-func (c *ClientWithResponses) CatalogServiceListArtifactsWithResponse(ctx context.Context, params *CatalogServiceListArtifactsParams, reqEditors ...RequestEditorFn) (*CatalogServiceListArtifactsResponse, error) {
-	rsp, err := c.CatalogServiceListArtifacts(ctx, params, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceListArtifactsWithResponse(ctx context.Context, projectName string, params *CatalogServiceListArtifactsParams, reqEditors ...RequestEditorFn) (*CatalogServiceListArtifactsResponse, error) {
+	rsp, err := c.CatalogServiceListArtifacts(ctx, projectName, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2847,16 +6451,16 @@ func (c *ClientWithResponses) CatalogServiceListArtifactsWithResponse(ctx contex
 }
 
 // CatalogServiceCreateArtifactWithBodyWithResponse request with arbitrary body returning *CatalogServiceCreateArtifactResponse
-func (c *ClientWithResponses) CatalogServiceCreateArtifactWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateArtifactResponse, error) {
-	rsp, err := c.CatalogServiceCreateArtifactWithBody(ctx, contentType, body, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceCreateArtifactWithBodyWithResponse(ctx context.Context, projectName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateArtifactResponse, error) {
+	rsp, err := c.CatalogServiceCreateArtifactWithBody(ctx, projectName, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseCatalogServiceCreateArtifactResponse(rsp)
 }
 
-func (c *ClientWithResponses) CatalogServiceCreateArtifactWithResponse(ctx context.Context, body CatalogServiceCreateArtifactJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateArtifactResponse, error) {
-	rsp, err := c.CatalogServiceCreateArtifact(ctx, body, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceCreateArtifactWithResponse(ctx context.Context, projectName string, body CatalogServiceCreateArtifactJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateArtifactResponse, error) {
+	rsp, err := c.CatalogServiceCreateArtifact(ctx, projectName, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2864,8 +6468,8 @@ func (c *ClientWithResponses) CatalogServiceCreateArtifactWithResponse(ctx conte
 }
 
 // CatalogServiceDeleteArtifactWithResponse request returning *CatalogServiceDeleteArtifactResponse
-func (c *ClientWithResponses) CatalogServiceDeleteArtifactWithResponse(ctx context.Context, artifactName string, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteArtifactResponse, error) {
-	rsp, err := c.CatalogServiceDeleteArtifact(ctx, artifactName, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceDeleteArtifactWithResponse(ctx context.Context, projectName string, artifactName string, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteArtifactResponse, error) {
+	rsp, err := c.CatalogServiceDeleteArtifact(ctx, projectName, artifactName, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2873,8 +6477,8 @@ func (c *ClientWithResponses) CatalogServiceDeleteArtifactWithResponse(ctx conte
 }
 
 // CatalogServiceGetArtifactWithResponse request returning *CatalogServiceGetArtifactResponse
-func (c *ClientWithResponses) CatalogServiceGetArtifactWithResponse(ctx context.Context, artifactName string, reqEditors ...RequestEditorFn) (*CatalogServiceGetArtifactResponse, error) {
-	rsp, err := c.CatalogServiceGetArtifact(ctx, artifactName, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceGetArtifactWithResponse(ctx context.Context, projectName string, artifactName string, reqEditors ...RequestEditorFn) (*CatalogServiceGetArtifactResponse, error) {
+	rsp, err := c.CatalogServiceGetArtifact(ctx, projectName, artifactName, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2882,16 +6486,16 @@ func (c *ClientWithResponses) CatalogServiceGetArtifactWithResponse(ctx context.
 }
 
 // CatalogServiceUpdateArtifactWithBodyWithResponse request with arbitrary body returning *CatalogServiceUpdateArtifactResponse
-func (c *ClientWithResponses) CatalogServiceUpdateArtifactWithBodyWithResponse(ctx context.Context, artifactName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateArtifactResponse, error) {
-	rsp, err := c.CatalogServiceUpdateArtifactWithBody(ctx, artifactName, contentType, body, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceUpdateArtifactWithBodyWithResponse(ctx context.Context, projectName string, artifactName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateArtifactResponse, error) {
+	rsp, err := c.CatalogServiceUpdateArtifactWithBody(ctx, projectName, artifactName, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseCatalogServiceUpdateArtifactResponse(rsp)
 }
 
-func (c *ClientWithResponses) CatalogServiceUpdateArtifactWithResponse(ctx context.Context, artifactName string, body CatalogServiceUpdateArtifactJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateArtifactResponse, error) {
-	rsp, err := c.CatalogServiceUpdateArtifact(ctx, artifactName, body, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceUpdateArtifactWithResponse(ctx context.Context, projectName string, artifactName string, body CatalogServiceUpdateArtifactJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateArtifactResponse, error) {
+	rsp, err := c.CatalogServiceUpdateArtifact(ctx, projectName, artifactName, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2899,8 +6503,8 @@ func (c *ClientWithResponses) CatalogServiceUpdateArtifactWithResponse(ctx conte
 }
 
 // CatalogServiceListDeploymentPackagesWithResponse request returning *CatalogServiceListDeploymentPackagesResponse
-func (c *ClientWithResponses) CatalogServiceListDeploymentPackagesWithResponse(ctx context.Context, params *CatalogServiceListDeploymentPackagesParams, reqEditors ...RequestEditorFn) (*CatalogServiceListDeploymentPackagesResponse, error) {
-	rsp, err := c.CatalogServiceListDeploymentPackages(ctx, params, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceListDeploymentPackagesWithResponse(ctx context.Context, projectName string, params *CatalogServiceListDeploymentPackagesParams, reqEditors ...RequestEditorFn) (*CatalogServiceListDeploymentPackagesResponse, error) {
+	rsp, err := c.CatalogServiceListDeploymentPackages(ctx, projectName, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2908,16 +6512,16 @@ func (c *ClientWithResponses) CatalogServiceListDeploymentPackagesWithResponse(c
 }
 
 // CatalogServiceCreateDeploymentPackageWithBodyWithResponse request with arbitrary body returning *CatalogServiceCreateDeploymentPackageResponse
-func (c *ClientWithResponses) CatalogServiceCreateDeploymentPackageWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateDeploymentPackageResponse, error) {
-	rsp, err := c.CatalogServiceCreateDeploymentPackageWithBody(ctx, contentType, body, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceCreateDeploymentPackageWithBodyWithResponse(ctx context.Context, projectName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateDeploymentPackageResponse, error) {
+	rsp, err := c.CatalogServiceCreateDeploymentPackageWithBody(ctx, projectName, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseCatalogServiceCreateDeploymentPackageResponse(rsp)
 }
 
-func (c *ClientWithResponses) CatalogServiceCreateDeploymentPackageWithResponse(ctx context.Context, body CatalogServiceCreateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateDeploymentPackageResponse, error) {
-	rsp, err := c.CatalogServiceCreateDeploymentPackage(ctx, body, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceCreateDeploymentPackageWithResponse(ctx context.Context, projectName string, body CatalogServiceCreateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateDeploymentPackageResponse, error) {
+	rsp, err := c.CatalogServiceCreateDeploymentPackage(ctx, projectName, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2925,8 +6529,8 @@ func (c *ClientWithResponses) CatalogServiceCreateDeploymentPackageWithResponse(
 }
 
 // CatalogServiceGetDeploymentPackageVersionsWithResponse request returning *CatalogServiceGetDeploymentPackageVersionsResponse
-func (c *ClientWithResponses) CatalogServiceGetDeploymentPackageVersionsWithResponse(ctx context.Context, deploymentPackageName string, reqEditors ...RequestEditorFn) (*CatalogServiceGetDeploymentPackageVersionsResponse, error) {
-	rsp, err := c.CatalogServiceGetDeploymentPackageVersions(ctx, deploymentPackageName, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceGetDeploymentPackageVersionsWithResponse(ctx context.Context, projectName string, deploymentPackageName string, reqEditors ...RequestEditorFn) (*CatalogServiceGetDeploymentPackageVersionsResponse, error) {
+	rsp, err := c.CatalogServiceGetDeploymentPackageVersions(ctx, projectName, deploymentPackageName, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2934,8 +6538,8 @@ func (c *ClientWithResponses) CatalogServiceGetDeploymentPackageVersionsWithResp
 }
 
 // CatalogServiceDeleteDeploymentPackageWithResponse request returning *CatalogServiceDeleteDeploymentPackageResponse
-func (c *ClientWithResponses) CatalogServiceDeleteDeploymentPackageWithResponse(ctx context.Context, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteDeploymentPackageResponse, error) {
-	rsp, err := c.CatalogServiceDeleteDeploymentPackage(ctx, deploymentPackageName, version, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceDeleteDeploymentPackageWithResponse(ctx context.Context, projectName string, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteDeploymentPackageResponse, error) {
+	rsp, err := c.CatalogServiceDeleteDeploymentPackage(ctx, projectName, deploymentPackageName, version, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2943,8 +6547,8 @@ func (c *ClientWithResponses) CatalogServiceDeleteDeploymentPackageWithResponse(
 }
 
 // CatalogServiceGetDeploymentPackageWithResponse request returning *CatalogServiceGetDeploymentPackageResponse
-func (c *ClientWithResponses) CatalogServiceGetDeploymentPackageWithResponse(ctx context.Context, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceGetDeploymentPackageResponse, error) {
-	rsp, err := c.CatalogServiceGetDeploymentPackage(ctx, deploymentPackageName, version, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceGetDeploymentPackageWithResponse(ctx context.Context, projectName string, deploymentPackageName string, version string, reqEditors ...RequestEditorFn) (*CatalogServiceGetDeploymentPackageResponse, error) {
+	rsp, err := c.CatalogServiceGetDeploymentPackage(ctx, projectName, deploymentPackageName, version, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2952,16 +6556,16 @@ func (c *ClientWithResponses) CatalogServiceGetDeploymentPackageWithResponse(ctx
 }
 
 // CatalogServiceUpdateDeploymentPackageWithBodyWithResponse request with arbitrary body returning *CatalogServiceUpdateDeploymentPackageResponse
-func (c *ClientWithResponses) CatalogServiceUpdateDeploymentPackageWithBodyWithResponse(ctx context.Context, deploymentPackageName string, version string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateDeploymentPackageResponse, error) {
-	rsp, err := c.CatalogServiceUpdateDeploymentPackageWithBody(ctx, deploymentPackageName, version, contentType, body, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceUpdateDeploymentPackageWithBodyWithResponse(ctx context.Context, projectName string, deploymentPackageName string, version string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateDeploymentPackageResponse, error) {
+	rsp, err := c.CatalogServiceUpdateDeploymentPackageWithBody(ctx, projectName, deploymentPackageName, version, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseCatalogServiceUpdateDeploymentPackageResponse(rsp)
 }
 
-func (c *ClientWithResponses) CatalogServiceUpdateDeploymentPackageWithResponse(ctx context.Context, deploymentPackageName string, version string, body CatalogServiceUpdateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateDeploymentPackageResponse, error) {
-	rsp, err := c.CatalogServiceUpdateDeploymentPackage(ctx, deploymentPackageName, version, body, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceUpdateDeploymentPackageWithResponse(ctx context.Context, projectName string, deploymentPackageName string, version string, body CatalogServiceUpdateDeploymentPackageJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateDeploymentPackageResponse, error) {
+	rsp, err := c.CatalogServiceUpdateDeploymentPackage(ctx, projectName, deploymentPackageName, version, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2969,8 +6573,8 @@ func (c *ClientWithResponses) CatalogServiceUpdateDeploymentPackageWithResponse(
 }
 
 // CatalogServiceImportWithResponse request returning *CatalogServiceImportResponse
-func (c *ClientWithResponses) CatalogServiceImportWithResponse(ctx context.Context, params *CatalogServiceImportParams, reqEditors ...RequestEditorFn) (*CatalogServiceImportResponse, error) {
-	rsp, err := c.CatalogServiceImport(ctx, params, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceImportWithResponse(ctx context.Context, projectName string, params *CatalogServiceImportParams, reqEditors ...RequestEditorFn) (*CatalogServiceImportResponse, error) {
+	rsp, err := c.CatalogServiceImport(ctx, projectName, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2978,8 +6582,8 @@ func (c *ClientWithResponses) CatalogServiceImportWithResponse(ctx context.Conte
 }
 
 // CatalogServiceListRegistriesWithResponse request returning *CatalogServiceListRegistriesResponse
-func (c *ClientWithResponses) CatalogServiceListRegistriesWithResponse(ctx context.Context, params *CatalogServiceListRegistriesParams, reqEditors ...RequestEditorFn) (*CatalogServiceListRegistriesResponse, error) {
-	rsp, err := c.CatalogServiceListRegistries(ctx, params, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceListRegistriesWithResponse(ctx context.Context, projectName string, params *CatalogServiceListRegistriesParams, reqEditors ...RequestEditorFn) (*CatalogServiceListRegistriesResponse, error) {
+	rsp, err := c.CatalogServiceListRegistries(ctx, projectName, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -2987,16 +6591,16 @@ func (c *ClientWithResponses) CatalogServiceListRegistriesWithResponse(ctx conte
 }
 
 // CatalogServiceCreateRegistryWithBodyWithResponse request with arbitrary body returning *CatalogServiceCreateRegistryResponse
-func (c *ClientWithResponses) CatalogServiceCreateRegistryWithBodyWithResponse(ctx context.Context, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateRegistryResponse, error) {
-	rsp, err := c.CatalogServiceCreateRegistryWithBody(ctx, contentType, body, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceCreateRegistryWithBodyWithResponse(ctx context.Context, projectName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceCreateRegistryResponse, error) {
+	rsp, err := c.CatalogServiceCreateRegistryWithBody(ctx, projectName, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseCatalogServiceCreateRegistryResponse(rsp)
 }
 
-func (c *ClientWithResponses) CatalogServiceCreateRegistryWithResponse(ctx context.Context, body CatalogServiceCreateRegistryJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateRegistryResponse, error) {
-	rsp, err := c.CatalogServiceCreateRegistry(ctx, body, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceCreateRegistryWithResponse(ctx context.Context, projectName string, body CatalogServiceCreateRegistryJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceCreateRegistryResponse, error) {
+	rsp, err := c.CatalogServiceCreateRegistry(ctx, projectName, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -3004,8 +6608,8 @@ func (c *ClientWithResponses) CatalogServiceCreateRegistryWithResponse(ctx conte
 }
 
 // CatalogServiceDeleteRegistryWithResponse request returning *CatalogServiceDeleteRegistryResponse
-func (c *ClientWithResponses) CatalogServiceDeleteRegistryWithResponse(ctx context.Context, registryName string, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteRegistryResponse, error) {
-	rsp, err := c.CatalogServiceDeleteRegistry(ctx, registryName, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceDeleteRegistryWithResponse(ctx context.Context, projectName string, registryName string, reqEditors ...RequestEditorFn) (*CatalogServiceDeleteRegistryResponse, error) {
+	rsp, err := c.CatalogServiceDeleteRegistry(ctx, projectName, registryName, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -3013,8 +6617,8 @@ func (c *ClientWithResponses) CatalogServiceDeleteRegistryWithResponse(ctx conte
 }
 
 // CatalogServiceGetRegistryWithResponse request returning *CatalogServiceGetRegistryResponse
-func (c *ClientWithResponses) CatalogServiceGetRegistryWithResponse(ctx context.Context, registryName string, params *CatalogServiceGetRegistryParams, reqEditors ...RequestEditorFn) (*CatalogServiceGetRegistryResponse, error) {
-	rsp, err := c.CatalogServiceGetRegistry(ctx, registryName, params, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceGetRegistryWithResponse(ctx context.Context, projectName string, registryName string, params *CatalogServiceGetRegistryParams, reqEditors ...RequestEditorFn) (*CatalogServiceGetRegistryResponse, error) {
+	rsp, err := c.CatalogServiceGetRegistry(ctx, projectName, registryName, params, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -3022,16 +6626,16 @@ func (c *ClientWithResponses) CatalogServiceGetRegistryWithResponse(ctx context.
 }
 
 // CatalogServiceUpdateRegistryWithBodyWithResponse request with arbitrary body returning *CatalogServiceUpdateRegistryResponse
-func (c *ClientWithResponses) CatalogServiceUpdateRegistryWithBodyWithResponse(ctx context.Context, registryName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateRegistryResponse, error) {
-	rsp, err := c.CatalogServiceUpdateRegistryWithBody(ctx, registryName, contentType, body, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceUpdateRegistryWithBodyWithResponse(ctx context.Context, projectName string, registryName string, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateRegistryResponse, error) {
+	rsp, err := c.CatalogServiceUpdateRegistryWithBody(ctx, projectName, registryName, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseCatalogServiceUpdateRegistryResponse(rsp)
 }
 
-func (c *ClientWithResponses) CatalogServiceUpdateRegistryWithResponse(ctx context.Context, registryName string, body CatalogServiceUpdateRegistryJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateRegistryResponse, error) {
-	rsp, err := c.CatalogServiceUpdateRegistry(ctx, registryName, body, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceUpdateRegistryWithResponse(ctx context.Context, projectName string, registryName string, body CatalogServiceUpdateRegistryJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUpdateRegistryResponse, error) {
+	rsp, err := c.CatalogServiceUpdateRegistry(ctx, projectName, registryName, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
@@ -3039,20 +6643,670 @@ func (c *ClientWithResponses) CatalogServiceUpdateRegistryWithResponse(ctx conte
 }
 
 // CatalogServiceUploadCatalogEntitiesWithBodyWithResponse request with arbitrary body returning *CatalogServiceUploadCatalogEntitiesResponse
-func (c *ClientWithResponses) CatalogServiceUploadCatalogEntitiesWithBodyWithResponse(ctx context.Context, params *CatalogServiceUploadCatalogEntitiesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUploadCatalogEntitiesResponse, error) {
-	rsp, err := c.CatalogServiceUploadCatalogEntitiesWithBody(ctx, params, contentType, body, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceUploadCatalogEntitiesWithBodyWithResponse(ctx context.Context, projectName string, params *CatalogServiceUploadCatalogEntitiesParams, contentType string, body io.Reader, reqEditors ...RequestEditorFn) (*CatalogServiceUploadCatalogEntitiesResponse, error) {
+	rsp, err := c.CatalogServiceUploadCatalogEntitiesWithBody(ctx, projectName, params, contentType, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseCatalogServiceUploadCatalogEntitiesResponse(rsp)
 }
 
-func (c *ClientWithResponses) CatalogServiceUploadCatalogEntitiesWithResponse(ctx context.Context, params *CatalogServiceUploadCatalogEntitiesParams, body CatalogServiceUploadCatalogEntitiesJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUploadCatalogEntitiesResponse, error) {
-	rsp, err := c.CatalogServiceUploadCatalogEntities(ctx, params, body, reqEditors...)
+func (c *ClientWithResponses) CatalogServiceUploadCatalogEntitiesWithResponse(ctx context.Context, projectName string, params *CatalogServiceUploadCatalogEntitiesParams, body CatalogServiceUploadCatalogEntitiesJSONRequestBody, reqEditors ...RequestEditorFn) (*CatalogServiceUploadCatalogEntitiesResponse, error) {
+	rsp, err := c.CatalogServiceUploadCatalogEntities(ctx, projectName, params, body, reqEditors...)
 	if err != nil {
 		return nil, err
 	}
 	return ParseCatalogServiceUploadCatalogEntitiesResponse(rsp)
+}
+
+// ParseCatalogServiceListApplications2Response parses an HTTP response from a CatalogServiceListApplications2WithResponse call
+func ParseCatalogServiceListApplications2Response(rsp *http.Response) (*CatalogServiceListApplications2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceListApplications2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CatalogV3ListApplicationsResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceCreateApplication2Response parses an HTTP response from a CatalogServiceCreateApplication2WithResponse call
+func ParseCatalogServiceCreateApplication2Response(rsp *http.Response) (*CatalogServiceCreateApplication2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceCreateApplication2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CatalogV3CreateApplicationResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceGetApplicationVersions2Response parses an HTTP response from a CatalogServiceGetApplicationVersions2WithResponse call
+func ParseCatalogServiceGetApplicationVersions2Response(rsp *http.Response) (*CatalogServiceGetApplicationVersions2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceGetApplicationVersions2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CatalogV3GetApplicationVersionsResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceDeleteApplication2Response parses an HTTP response from a CatalogServiceDeleteApplication2WithResponse call
+func ParseCatalogServiceDeleteApplication2Response(rsp *http.Response) (*CatalogServiceDeleteApplication2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceDeleteApplication2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GoogleProtobufEmpty
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceGetApplication2Response parses an HTTP response from a CatalogServiceGetApplication2WithResponse call
+func ParseCatalogServiceGetApplication2Response(rsp *http.Response) (*CatalogServiceGetApplication2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceGetApplication2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CatalogV3GetApplicationResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceUpdateApplication2Response parses an HTTP response from a CatalogServiceUpdateApplication2WithResponse call
+func ParseCatalogServiceUpdateApplication2Response(rsp *http.Response) (*CatalogServiceUpdateApplication2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceUpdateApplication2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GoogleProtobufEmpty
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceGetApplicationReferenceCount2Response parses an HTTP response from a CatalogServiceGetApplicationReferenceCount2WithResponse call
+func ParseCatalogServiceGetApplicationReferenceCount2Response(rsp *http.Response) (*CatalogServiceGetApplicationReferenceCount2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceGetApplicationReferenceCount2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CatalogV3GetApplicationReferenceCountResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceListArtifacts2Response parses an HTTP response from a CatalogServiceListArtifacts2WithResponse call
+func ParseCatalogServiceListArtifacts2Response(rsp *http.Response) (*CatalogServiceListArtifacts2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceListArtifacts2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CatalogV3ListArtifactsResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceCreateArtifact2Response parses an HTTP response from a CatalogServiceCreateArtifact2WithResponse call
+func ParseCatalogServiceCreateArtifact2Response(rsp *http.Response) (*CatalogServiceCreateArtifact2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceCreateArtifact2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CatalogV3CreateArtifactResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceDeleteArtifact2Response parses an HTTP response from a CatalogServiceDeleteArtifact2WithResponse call
+func ParseCatalogServiceDeleteArtifact2Response(rsp *http.Response) (*CatalogServiceDeleteArtifact2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceDeleteArtifact2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GoogleProtobufEmpty
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceGetArtifact2Response parses an HTTP response from a CatalogServiceGetArtifact2WithResponse call
+func ParseCatalogServiceGetArtifact2Response(rsp *http.Response) (*CatalogServiceGetArtifact2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceGetArtifact2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CatalogV3GetArtifactResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceUpdateArtifact2Response parses an HTTP response from a CatalogServiceUpdateArtifact2WithResponse call
+func ParseCatalogServiceUpdateArtifact2Response(rsp *http.Response) (*CatalogServiceUpdateArtifact2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceUpdateArtifact2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GoogleProtobufEmpty
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceListDeploymentPackages2Response parses an HTTP response from a CatalogServiceListDeploymentPackages2WithResponse call
+func ParseCatalogServiceListDeploymentPackages2Response(rsp *http.Response) (*CatalogServiceListDeploymentPackages2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceListDeploymentPackages2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CatalogV3ListDeploymentPackagesResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceCreateDeploymentPackage2Response parses an HTTP response from a CatalogServiceCreateDeploymentPackage2WithResponse call
+func ParseCatalogServiceCreateDeploymentPackage2Response(rsp *http.Response) (*CatalogServiceCreateDeploymentPackage2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceCreateDeploymentPackage2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CatalogV3CreateDeploymentPackageResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceGetDeploymentPackageVersions2Response parses an HTTP response from a CatalogServiceGetDeploymentPackageVersions2WithResponse call
+func ParseCatalogServiceGetDeploymentPackageVersions2Response(rsp *http.Response) (*CatalogServiceGetDeploymentPackageVersions2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceGetDeploymentPackageVersions2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CatalogV3GetDeploymentPackageVersionsResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceDeleteDeploymentPackage2Response parses an HTTP response from a CatalogServiceDeleteDeploymentPackage2WithResponse call
+func ParseCatalogServiceDeleteDeploymentPackage2Response(rsp *http.Response) (*CatalogServiceDeleteDeploymentPackage2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceDeleteDeploymentPackage2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GoogleProtobufEmpty
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceGetDeploymentPackage2Response parses an HTTP response from a CatalogServiceGetDeploymentPackage2WithResponse call
+func ParseCatalogServiceGetDeploymentPackage2Response(rsp *http.Response) (*CatalogServiceGetDeploymentPackage2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceGetDeploymentPackage2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CatalogV3GetDeploymentPackageResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceUpdateDeploymentPackage2Response parses an HTTP response from a CatalogServiceUpdateDeploymentPackage2WithResponse call
+func ParseCatalogServiceUpdateDeploymentPackage2Response(rsp *http.Response) (*CatalogServiceUpdateDeploymentPackage2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceUpdateDeploymentPackage2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GoogleProtobufEmpty
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceImport2Response parses an HTTP response from a CatalogServiceImport2WithResponse call
+func ParseCatalogServiceImport2Response(rsp *http.Response) (*CatalogServiceImport2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceImport2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CatalogV3ImportResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceListRegistries2Response parses an HTTP response from a CatalogServiceListRegistries2WithResponse call
+func ParseCatalogServiceListRegistries2Response(rsp *http.Response) (*CatalogServiceListRegistries2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceListRegistries2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CatalogV3ListRegistriesResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceCreateRegistry2Response parses an HTTP response from a CatalogServiceCreateRegistry2WithResponse call
+func ParseCatalogServiceCreateRegistry2Response(rsp *http.Response) (*CatalogServiceCreateRegistry2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceCreateRegistry2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CatalogV3CreateRegistryResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceDeleteRegistry2Response parses an HTTP response from a CatalogServiceDeleteRegistry2WithResponse call
+func ParseCatalogServiceDeleteRegistry2Response(rsp *http.Response) (*CatalogServiceDeleteRegistry2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceDeleteRegistry2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GoogleProtobufEmpty
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceGetRegistry2Response parses an HTTP response from a CatalogServiceGetRegistry2WithResponse call
+func ParseCatalogServiceGetRegistry2Response(rsp *http.Response) (*CatalogServiceGetRegistry2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceGetRegistry2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CatalogV3GetRegistryResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceUpdateRegistry2Response parses an HTTP response from a CatalogServiceUpdateRegistry2WithResponse call
+func ParseCatalogServiceUpdateRegistry2Response(rsp *http.Response) (*CatalogServiceUpdateRegistry2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceUpdateRegistry2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest GoogleProtobufEmpty
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
+}
+
+// ParseCatalogServiceUploadCatalogEntities2Response parses an HTTP response from a CatalogServiceUploadCatalogEntities2WithResponse call
+func ParseCatalogServiceUploadCatalogEntities2Response(rsp *http.Response) (*CatalogServiceUploadCatalogEntities2Response, error) {
+	bodyBytes, err := io.ReadAll(rsp.Body)
+	defer func() { _ = rsp.Body.Close() }()
+	if err != nil {
+		return nil, err
+	}
+
+	response := &CatalogServiceUploadCatalogEntities2Response{
+		Body:         bodyBytes,
+		HTTPResponse: rsp,
+	}
+
+	switch {
+	case strings.Contains(rsp.Header.Get("Content-Type"), "json") && rsp.StatusCode == 200:
+		var dest CatalogV3UploadCatalogEntitiesResponse
+		if err := json.Unmarshal(bodyBytes, &dest); err != nil {
+			return nil, err
+		}
+		response.JSON200 = &dest
+
+	}
+
+	return response, nil
 }
 
 // ParseCatalogServiceListApplicationsResponse parses an HTTP response from a CatalogServiceListApplicationsWithResponse call

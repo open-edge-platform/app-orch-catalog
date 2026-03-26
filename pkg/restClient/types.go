@@ -1741,6 +1741,253 @@ type GoogleProtobufEmpty = map[string]interface{}
 //	) to obtain a formatter capable of generating timestamps in this format.
 type GoogleProtobufTimestamp = time.Time
 
+// CatalogServiceListApplications2Params defines parameters for CatalogServiceListApplications2.
+type CatalogServiceListApplications2Params struct {
+	// OrderBy Names the field to be used for ordering the returned results.
+	OrderBy *string `form:"orderBy,omitempty" json:"orderBy,omitempty"`
+
+	// Filter Expression to use for filtering the results.
+	Filter *string `form:"filter,omitempty" json:"filter,omitempty"`
+
+	// PageSize Maximum number of items to return.
+	PageSize *int32 `form:"pageSize,omitempty" json:"pageSize,omitempty"`
+
+	// Offset Index of the first item to return.
+	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Kinds List of application kinds to be returned; empty list means all kinds.
+	Kinds *[]CatalogV3Kind `form:"kinds,omitempty" json:"kinds,omitempty"`
+
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceCreateApplication2Params defines parameters for CatalogServiceCreateApplication2.
+type CatalogServiceCreateApplication2Params struct {
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceGetApplicationVersions2Params defines parameters for CatalogServiceGetApplicationVersions2.
+type CatalogServiceGetApplicationVersions2Params struct {
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceDeleteApplication2Params defines parameters for CatalogServiceDeleteApplication2.
+type CatalogServiceDeleteApplication2Params struct {
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceGetApplication2Params defines parameters for CatalogServiceGetApplication2.
+type CatalogServiceGetApplication2Params struct {
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceUpdateApplication2Params defines parameters for CatalogServiceUpdateApplication2.
+type CatalogServiceUpdateApplication2Params struct {
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceGetApplicationReferenceCount2Params defines parameters for CatalogServiceGetApplicationReferenceCount2.
+type CatalogServiceGetApplicationReferenceCount2Params struct {
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceListArtifacts2Params defines parameters for CatalogServiceListArtifacts2.
+type CatalogServiceListArtifacts2Params struct {
+	// OrderBy Names the field to be used for ordering the returned results.
+	OrderBy *string `form:"orderBy,omitempty" json:"orderBy,omitempty"`
+
+	// Filter Expression to use for filtering the results.
+	Filter *string `form:"filter,omitempty" json:"filter,omitempty"`
+
+	// PageSize Maximum number of items to return.
+	PageSize *int32 `form:"pageSize,omitempty" json:"pageSize,omitempty"`
+
+	// Offset Index of the first item to return.
+	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceCreateArtifact2Params defines parameters for CatalogServiceCreateArtifact2.
+type CatalogServiceCreateArtifact2Params struct {
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceDeleteArtifact2Params defines parameters for CatalogServiceDeleteArtifact2.
+type CatalogServiceDeleteArtifact2Params struct {
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceGetArtifact2Params defines parameters for CatalogServiceGetArtifact2.
+type CatalogServiceGetArtifact2Params struct {
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceUpdateArtifact2Params defines parameters for CatalogServiceUpdateArtifact2.
+type CatalogServiceUpdateArtifact2Params struct {
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceListDeploymentPackages2Params defines parameters for CatalogServiceListDeploymentPackages2.
+type CatalogServiceListDeploymentPackages2Params struct {
+	// OrderBy Names the field to be used for ordering the returned results.
+	OrderBy *string `form:"orderBy,omitempty" json:"orderBy,omitempty"`
+
+	// Filter Expression to use for filtering the results.
+	Filter *string `form:"filter,omitempty" json:"filter,omitempty"`
+
+	// PageSize Maximum number of items to return.
+	PageSize *int32 `form:"pageSize,omitempty" json:"pageSize,omitempty"`
+
+	// Offset Index of the first item to return.
+	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Kinds List of deployment package kinds to be returned; empty list means all kinds.
+	Kinds *[]CatalogV3Kind `form:"kinds,omitempty" json:"kinds,omitempty"`
+
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceCreateDeploymentPackage2Params defines parameters for CatalogServiceCreateDeploymentPackage2.
+type CatalogServiceCreateDeploymentPackage2Params struct {
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceGetDeploymentPackageVersions2Params defines parameters for CatalogServiceGetDeploymentPackageVersions2.
+type CatalogServiceGetDeploymentPackageVersions2Params struct {
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceDeleteDeploymentPackage2Params defines parameters for CatalogServiceDeleteDeploymentPackage2.
+type CatalogServiceDeleteDeploymentPackage2Params struct {
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceGetDeploymentPackage2Params defines parameters for CatalogServiceGetDeploymentPackage2.
+type CatalogServiceGetDeploymentPackage2Params struct {
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceUpdateDeploymentPackage2Params defines parameters for CatalogServiceUpdateDeploymentPackage2.
+type CatalogServiceUpdateDeploymentPackage2Params struct {
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceImport2Params defines parameters for CatalogServiceImport2.
+type CatalogServiceImport2Params struct {
+	// Url Required URL of Helm Chart to import
+	Url string `form:"url" json:"url"`
+
+	// Username Optional username for downloading from the URL
+	Username *string `form:"username,omitempty" json:"username,omitempty"`
+
+	// AuthToken Optional authentication token or password for downloading from the URL
+	AuthToken *string `form:"authToken,omitempty" json:"authToken,omitempty"`
+
+	// ChartValues Optional raw byte value containing the chart values as raw YAML bytes.
+	ChartValues *string `form:"chartValues,omitempty" json:"chartValues,omitempty"`
+
+	// IncludeAuth If true and a username/auth_token is specified then they will be included
+	//  in the generated Registry object.
+	IncludeAuth *bool `form:"includeAuth,omitempty" json:"includeAuth,omitempty"`
+
+	// GenerateDefaultValues If true and chart_values is not set, then the values.yaml will be extracted and
+	//  used to generate default profile values.
+	GenerateDefaultValues *bool `form:"generateDefaultValues,omitempty" json:"generateDefaultValues,omitempty"`
+
+	// GenerateDefaultParameters Generates default parameters from the values, from chart_values or from
+	//  generate_default_values as appropriate.
+	GenerateDefaultParameters *bool `form:"generateDefaultParameters,omitempty" json:"generateDefaultParameters,omitempty"`
+
+	// Namespace Optional namespace
+	Namespace *string `form:"namespace,omitempty" json:"namespace,omitempty"`
+
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceListRegistries2Params defines parameters for CatalogServiceListRegistries2.
+type CatalogServiceListRegistries2Params struct {
+	// OrderBy Names the field to be used for ordering the returned results.
+	OrderBy *string `form:"orderBy,omitempty" json:"orderBy,omitempty"`
+
+	// Filter Expression to use for filtering the results.
+	Filter *string `form:"filter,omitempty" json:"filter,omitempty"`
+
+	// PageSize Maximum number of items to return.
+	PageSize *int32 `form:"pageSize,omitempty" json:"pageSize,omitempty"`
+
+	// Offset Index of the first item to return.
+	Offset *int32 `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// ShowSensitiveInfo Request that sensitive information, such as username, auth_token, and CA certificates are included in the response.
+	ShowSensitiveInfo *bool `form:"showSensitiveInfo,omitempty" json:"showSensitiveInfo,omitempty"`
+
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceCreateRegistry2Params defines parameters for CatalogServiceCreateRegistry2.
+type CatalogServiceCreateRegistry2Params struct {
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceDeleteRegistry2Params defines parameters for CatalogServiceDeleteRegistry2.
+type CatalogServiceDeleteRegistry2Params struct {
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceGetRegistry2Params defines parameters for CatalogServiceGetRegistry2.
+type CatalogServiceGetRegistry2Params struct {
+	// ShowSensitiveInfo Request that sensitive information, such as username, auth_token, and CA certificates are included in the response.
+	ShowSensitiveInfo *bool `form:"showSensitiveInfo,omitempty" json:"showSensitiveInfo,omitempty"`
+
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceUpdateRegistry2Params defines parameters for CatalogServiceUpdateRegistry2.
+type CatalogServiceUpdateRegistry2Params struct {
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
+// CatalogServiceUploadCatalogEntities2Params defines parameters for CatalogServiceUploadCatalogEntities2.
+type CatalogServiceUploadCatalogEntities2Params struct {
+	// SessionId First upload request in the batch must not specify session ID. Subsequent upload requests must copy
+	//  the session ID from the previously issued response.
+	SessionId *string `form:"sessionId,omitempty" json:"sessionId,omitempty"`
+
+	// UploadNumber Deprecated: Upload number must increase sequentially, starting with 1.
+	UploadNumber *int `form:"uploadNumber,omitempty" json:"uploadNumber,omitempty"`
+
+	// LastUpload Must be set to 'true' to perform load of all entity files uploaded as part of this session.
+	LastUpload *bool `form:"lastUpload,omitempty" json:"lastUpload,omitempty"`
+
+	// ProjectName Project name for multi-tenant path routing.
+	ProjectName *string `form:"projectName,omitempty" json:"projectName,omitempty"`
+}
+
 // CatalogServiceListApplicationsParams defines parameters for CatalogServiceListApplications.
 type CatalogServiceListApplicationsParams struct {
 	// OrderBy Names the field to be used for ordering the returned results.
@@ -1858,6 +2105,33 @@ type CatalogServiceUploadCatalogEntitiesParams struct {
 	// LastUpload Must be set to 'true' to perform load of all entity files uploaded as part of this session.
 	LastUpload *bool `form:"lastUpload,omitempty" json:"lastUpload,omitempty"`
 }
+
+// CatalogServiceCreateApplication2JSONRequestBody defines body for CatalogServiceCreateApplication2 for application/json ContentType.
+type CatalogServiceCreateApplication2JSONRequestBody = CatalogV3Application
+
+// CatalogServiceUpdateApplication2JSONRequestBody defines body for CatalogServiceUpdateApplication2 for application/json ContentType.
+type CatalogServiceUpdateApplication2JSONRequestBody = CatalogV3Application
+
+// CatalogServiceCreateArtifact2JSONRequestBody defines body for CatalogServiceCreateArtifact2 for application/json ContentType.
+type CatalogServiceCreateArtifact2JSONRequestBody = CatalogV3Artifact
+
+// CatalogServiceUpdateArtifact2JSONRequestBody defines body for CatalogServiceUpdateArtifact2 for application/json ContentType.
+type CatalogServiceUpdateArtifact2JSONRequestBody = CatalogV3Artifact
+
+// CatalogServiceCreateDeploymentPackage2JSONRequestBody defines body for CatalogServiceCreateDeploymentPackage2 for application/json ContentType.
+type CatalogServiceCreateDeploymentPackage2JSONRequestBody = CatalogV3DeploymentPackage
+
+// CatalogServiceUpdateDeploymentPackage2JSONRequestBody defines body for CatalogServiceUpdateDeploymentPackage2 for application/json ContentType.
+type CatalogServiceUpdateDeploymentPackage2JSONRequestBody = CatalogV3DeploymentPackage
+
+// CatalogServiceCreateRegistry2JSONRequestBody defines body for CatalogServiceCreateRegistry2 for application/json ContentType.
+type CatalogServiceCreateRegistry2JSONRequestBody = CatalogV3Registry
+
+// CatalogServiceUpdateRegistry2JSONRequestBody defines body for CatalogServiceUpdateRegistry2 for application/json ContentType.
+type CatalogServiceUpdateRegistry2JSONRequestBody = CatalogV3Registry
+
+// CatalogServiceUploadCatalogEntities2JSONRequestBody defines body for CatalogServiceUploadCatalogEntities2 for application/json ContentType.
+type CatalogServiceUploadCatalogEntities2JSONRequestBody = CatalogV3Upload
 
 // CatalogServiceCreateApplicationJSONRequestBody defines body for CatalogServiceCreateApplication for application/json ContentType.
 type CatalogServiceCreateApplicationJSONRequestBody = CatalogV3Application

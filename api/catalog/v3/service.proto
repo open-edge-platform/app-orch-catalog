@@ -39,15 +39,22 @@ service CatalogService {
   // catalog entities as a single transaction.
   rpc UploadCatalogEntities(UploadCatalogEntitiesRequest) returns (UploadCatalogEntitiesResponse) {
     option (google.api.http) = {
-      post: "/catalog.orchestrator.apis/v3/uploads"
+      post: "/v3/projects/{projectName}/catalog/uploads"
       body: "upload"
+      additional_bindings: {
+        post: "/catalog.orchestrator.apis/v3/uploads"
+        body: "upload"
+      }
     };
   }
 
   // Allows importing a deployment package from a Helm Chart. This is done as a single invocation with the URL
   // of the asset to be imported.
   rpc Import(ImportRequest) returns (ImportResponse) {
-    option (google.api.http) = {post: "/catalog.orchestrator.apis/v3/import"};
+    option (google.api.http) = {
+      post: "/v3/projects/{projectName}/catalog/import"
+      additional_bindings: {post: "/catalog.orchestrator.apis/v3/import"}
+    };
   }
 
   // === Registry ===
@@ -55,28 +62,45 @@ service CatalogService {
   // Creates a new registry.
   rpc CreateRegistry(CreateRegistryRequest) returns (CreateRegistryResponse) {
     option (google.api.http) = {
-      post: "/catalog.orchestrator.apis/v3/registries"
+      post: "/v3/projects/{projectName}/catalog/registries"
       body: "registry"
+      additional_bindings: {
+        post: "/catalog.orchestrator.apis/v3/registries"
+        body: "registry"
+      }
     };
   }
   // Gets a list of registries.
   rpc ListRegistries(ListRegistriesRequest) returns (ListRegistriesResponse) {
-    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/registries"};
+    option (google.api.http) = {
+      get: "/v3/projects/{projectName}/catalog/registries"
+      additional_bindings: {get: "/catalog.orchestrator.apis/v3/registries"}
+    };
   }
   // Gets a specific registry.
   rpc GetRegistry(GetRegistryRequest) returns (GetRegistryResponse) {
-    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/registries/{registry_name}"};
+    option (google.api.http) = {
+      get: "/v3/projects/{projectName}/catalog/registries/{registry_name}"
+      additional_bindings: {get: "/catalog.orchestrator.apis/v3/registries/{registry_name}"}
+    };
   }
   // Updates a registry.
   rpc UpdateRegistry(UpdateRegistryRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/catalog.orchestrator.apis/v3/registries/{registry_name}"
+      put: "/v3/projects/{projectName}/catalog/registries/{registry_name}"
       body: "registry"
+      additional_bindings: {
+        put: "/catalog.orchestrator.apis/v3/registries/{registry_name}"
+        body: "registry"
+      }
     };
   }
   // Deletes a registry.
   rpc DeleteRegistry(DeleteRegistryRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {delete: "/catalog.orchestrator.apis/v3/registries/{registry_name}"};
+    option (google.api.http) = {
+      delete: "/v3/projects/{projectName}/catalog/registries/{registry_name}"
+      additional_bindings: {delete: "/catalog.orchestrator.apis/v3/registries/{registry_name}"}
+    };
   }
   // Watches inventory of registries for changes.
   rpc WatchRegistries(WatchRegistriesRequest) returns (stream WatchRegistriesResponse) {}
@@ -86,32 +110,52 @@ service CatalogService {
   // Creates a new deployment package.
   rpc CreateDeploymentPackage(CreateDeploymentPackageRequest) returns (CreateDeploymentPackageResponse) {
     option (google.api.http) = {
-      post: "/catalog.orchestrator.apis/v3/deployment_packages"
+      post: "/v3/projects/{projectName}/catalog/deployment_packages"
       body: "deployment_package"
+      additional_bindings: {
+        post: "/catalog.orchestrator.apis/v3/deployment_packages"
+        body: "deployment_package"
+      }
     };
   }
   // Gets a list of deployment packages.
   rpc ListDeploymentPackages(ListDeploymentPackagesRequest) returns (ListDeploymentPackagesResponse) {
-    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/deployment_packages"};
+    option (google.api.http) = {
+      get: "/v3/projects/{projectName}/catalog/deployment_packages"
+      additional_bindings: {get: "/catalog.orchestrator.apis/v3/deployment_packages"}
+    };
   }
   // Gets a specific deployment package.
   rpc GetDeploymentPackage(GetDeploymentPackageRequest) returns (GetDeploymentPackageResponse) {
-    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}"};
+    option (google.api.http) = {
+      get: "/v3/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"
+      additional_bindings: {get: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}"}
+    };
   }
   // Gets all versions of a named deployment package.
   rpc GetDeploymentPackageVersions(GetDeploymentPackageVersionsRequest) returns (GetDeploymentPackageVersionsResponse) {
-    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions"};
+    option (google.api.http) = {
+      get: "/v3/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions"
+      additional_bindings: {get: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions"}
+    };
   }
   // Updates a deployment package.
   rpc UpdateDeploymentPackage(UpdateDeploymentPackageRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}"
+      put: "/v3/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"
       body: "deployment_package"
+      additional_bindings: {
+        put: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}"
+        body: "deployment_package"
+      }
     };
   }
   // Deletes a deployment package.
   rpc DeleteDeploymentPackage(DeleteDeploymentPackageRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {delete: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}"};
+    option (google.api.http) = {
+      delete: "/v3/projects/{projectName}/catalog/deployment_packages/{deployment_package_name}/versions/{version}"
+      additional_bindings: {delete: "/catalog.orchestrator.apis/v3/deployment_packages/{deployment_package_name}/versions/{version}"}
+    };
   }
   // Watches inventory of deployment packages for changes.
   rpc WatchDeploymentPackages(WatchDeploymentPackagesRequest) returns (stream WatchDeploymentPackagesResponse) {}
@@ -125,36 +169,59 @@ service CatalogService {
   // Creates a new application.
   rpc CreateApplication(CreateApplicationRequest) returns (CreateApplicationResponse) {
     option (google.api.http) = {
-      post: "/catalog.orchestrator.apis/v3/applications"
+      post: "/v3/projects/{projectName}/catalog/applications"
       body: "application"
+      additional_bindings: {
+        post: "/catalog.orchestrator.apis/v3/applications"
+        body: "application"
+      }
     };
   }
   // Gets a list of applications.
   rpc ListApplications(ListApplicationsRequest) returns (ListApplicationsResponse) {
-    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/applications"};
+    option (google.api.http) = {
+      get: "/v3/projects/{projectName}/catalog/applications"
+      additional_bindings: {get: "/catalog.orchestrator.apis/v3/applications"}
+    };
   }
   // Gets a specific application.
   rpc GetApplication(GetApplicationRequest) returns (GetApplicationResponse) {
-    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}"};
+    option (google.api.http) = {
+      get: "/v3/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"
+      additional_bindings: {get: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}"}
+    };
   }
   // Gets application reference count - the number of deployment packages using this application.
   rpc GetApplicationReferenceCount(GetApplicationReferenceCountRequest) returns (GetApplicationReferenceCountResponse) {
-    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}/reference_count"};
+    option (google.api.http) = {
+      get: "/v3/projects/{projectName}/catalog/applications/{application_name}/versions/{version}/reference_count"
+      additional_bindings: {get: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}/reference_count"}
+    };
   }
   // Gets all versions of a named application.
   rpc GetApplicationVersions(GetApplicationVersionsRequest) returns (GetApplicationVersionsResponse) {
-    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions"};
+    option (google.api.http) = {
+      get: "/v3/projects/{projectName}/catalog/applications/{application_name}/versions"
+      additional_bindings: {get: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions"}
+    };
   }
   // Updates an application.
   rpc UpdateApplication(UpdateApplicationRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}"
+      put: "/v3/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"
       body: "application"
+      additional_bindings: {
+        put: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}"
+        body: "application"
+      }
     };
   }
   // Deletes an application.
   rpc DeleteApplication(DeleteApplicationRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {delete: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}"};
+    option (google.api.http) = {
+      delete: "/v3/projects/{projectName}/catalog/applications/{application_name}/versions/{version}"
+      additional_bindings: {delete: "/catalog.orchestrator.apis/v3/applications/{application_name}/versions/{version}"}
+    };
   }
 
   // Watches inventory of applications for changes.
@@ -165,28 +232,45 @@ service CatalogService {
   // Creates a new artifact.
   rpc CreateArtifact(CreateArtifactRequest) returns (CreateArtifactResponse) {
     option (google.api.http) = {
-      post: "/catalog.orchestrator.apis/v3/artifacts"
+      post: "/v3/projects/{projectName}/catalog/artifacts"
       body: "artifact"
+      additional_bindings: {
+        post: "/catalog.orchestrator.apis/v3/artifacts"
+        body: "artifact"
+      }
     };
   }
   // Gets a list of artifacts.
   rpc ListArtifacts(ListArtifactsRequest) returns (ListArtifactsResponse) {
-    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/artifacts"};
+    option (google.api.http) = {
+      get: "/v3/projects/{projectName}/catalog/artifacts"
+      additional_bindings: {get: "/catalog.orchestrator.apis/v3/artifacts"}
+    };
   }
   // Gets a specific artifact.
   rpc GetArtifact(GetArtifactRequest) returns (GetArtifactResponse) {
-    option (google.api.http) = {get: "/catalog.orchestrator.apis/v3/artifacts/{artifact_name}"};
+    option (google.api.http) = {
+      get: "/v3/projects/{projectName}/catalog/artifacts/{artifact_name}"
+      additional_bindings: {get: "/catalog.orchestrator.apis/v3/artifacts/{artifact_name}"}
+    };
   }
   // Updates an artifact.
   rpc UpdateArtifact(UpdateArtifactRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/catalog.orchestrator.apis/v3/artifacts/{artifact_name}"
+      put: "/v3/projects/{projectName}/catalog/artifacts/{artifact_name}"
       body: "artifact"
+      additional_bindings: {
+        put: "/catalog.orchestrator.apis/v3/artifacts/{artifact_name}"
+        body: "artifact"
+      }
     };
   }
   // Deletes an artifact.
   rpc DeleteArtifact(DeleteArtifactRequest) returns (google.protobuf.Empty) {
-    option (google.api.http) = {delete: "/catalog.orchestrator.apis/v3/artifacts/{artifact_name}"};
+    option (google.api.http) = {
+      delete: "/v3/projects/{projectName}/catalog/artifacts/{artifact_name}"
+      additional_bindings: {delete: "/catalog.orchestrator.apis/v3/artifacts/{artifact_name}"}
+    };
   }
   // Watches inventory of artifacts for changes.
   rpc WatchArtifacts(WatchArtifactsRequest) returns (stream WatchArtifactsResponse) {}
@@ -208,6 +292,8 @@ message UploadCatalogEntitiesRequest {
 
   // Upload record containing the file name and file contents being uploaded.
   catalog.v3.Upload upload = 4 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 5 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the UploadCatalogItems method
@@ -286,6 +372,8 @@ message ImportRequest {
       max_len: 40
     }
   ];
+  // Project name for multi-tenant path routing.
+  string projectName = 11 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the Import method
@@ -300,6 +388,8 @@ message ImportResponse {
 message CreateRegistryRequest {
   // The registry to create.
   catalog.v3.Registry registry = 2 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the CreateRegistry method.
@@ -321,6 +411,8 @@ message ListRegistriesRequest {
 
   // Request that sensitive information, such as username, auth_token, and CA certificates are included in the response.
   bool show_sensitive_info = 5 [(google.api.field_behavior) = OPTIONAL];
+  // Project name for multi-tenant path routing.
+  string projectName = 6 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the ListRegistries method.
@@ -348,6 +440,8 @@ message GetRegistryRequest {
 
   // Request that sensitive information, such as username, auth_token, and CA certificates are included in the response.
   bool show_sensitive_info = 2 [(google.api.field_behavior) = OPTIONAL];
+  // Project name for multi-tenant path routing.
+  string projectName = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the GetRegistry method.
@@ -368,6 +462,8 @@ message UpdateRegistryRequest {
   ];
   // The Registry update.
   catalog.v3.Registry registry = 2 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Request message for the DeleteRegistry method.
@@ -381,6 +477,8 @@ message DeleteRegistryRequest {
       pattern: "^[a-z0-9][a-z0-9-]{0,38}[a-z0-9]{0,1}$"
     }
   ];
+  // Project name for multi-tenant path routing.
+  string projectName = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Request message for the WatchRegistries method.
@@ -393,6 +491,8 @@ message WatchRegistriesRequest {
 
   // Request that sensitive information, such as username, auth_token, and CA certificates are included in the response.
   bool show_sensitive_info = 3 [(google.api.field_behavior) = OPTIONAL];
+  // Project name for multi-tenant path routing.
+  string projectName = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the WatchRegistries method.
@@ -407,6 +507,8 @@ message WatchRegistriesResponse {
 message CreateDeploymentPackageRequest {
   // The deployment package to create.
   catalog.v3.DeploymentPackage deployment_package = 1 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the CreateDeploymentPackage method.
@@ -431,6 +533,8 @@ message ListDeploymentPackagesRequest {
     (google.api.field_behavior) = OPTIONAL,
     (buf.validate.field).repeated = {max_items: 20}
   ];
+  // Project name for multi-tenant path routing.
+  string projectName = 6 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the ListDeploymentPackages method.
@@ -450,6 +554,8 @@ message GetDeploymentPackageRequest {
   string deployment_package_name = 1 [(google.api.field_behavior) = REQUIRED];
   // Version of the DeploymentPackage.
   string version = 2 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Request message for the DownloadDeploymentPackage method.
@@ -459,6 +565,8 @@ message DownloadDeploymentPackageRequest {
   string deployment_package_name = 1 [(google.api.field_behavior) = REQUIRED];
   // Version of the DeploymentPackage.
   string version = 2 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the GetDeploymentPackage method.
@@ -471,6 +579,8 @@ message GetDeploymentPackageResponse {
 message GetDeploymentPackageVersionsRequest {
   // Name of the DeploymentPackage.
   string deployment_package_name = 1 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the GetDeploymentPackageVersions method.
@@ -490,6 +600,8 @@ message UpdateDeploymentPackageRequest {
   string version = 2 [(google.api.field_behavior) = REQUIRED];
   // The DeploymentPackage update.
   catalog.v3.DeploymentPackage deployment_package = 3 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Request message for DeleteDeploymentPackage.
@@ -498,6 +610,8 @@ message DeleteDeploymentPackageRequest {
   string deployment_package_name = 1 [(google.api.field_behavior) = REQUIRED];
   // Version of the DeploymentPackage.
   string version = 2 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Request message for the WatchDeploymentPackages method.
@@ -513,6 +627,8 @@ message WatchDeploymentPackagesRequest {
     (google.api.field_behavior) = OPTIONAL,
     (buf.validate.field).repeated = {max_items: 20}
   ];
+  // Project name for multi-tenant path routing.
+  string projectName = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the WatchDeploymentPackages method.
@@ -533,6 +649,8 @@ message DownloadDeploymentPackageResponse {
 message CreateApplicationRequest {
   // The registry to create.
   catalog.v3.Application application = 1 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the CreateApplication method.
@@ -557,6 +675,8 @@ message ListApplicationsRequest {
     (google.api.field_behavior) = OPTIONAL,
     (buf.validate.field).repeated = {max_items: 20}
   ];
+  // Project name for multi-tenant path routing.
+  string projectName = 6 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the ListApplications method.
@@ -576,6 +696,8 @@ message GetApplicationRequest {
   string application_name = 1 [(google.api.field_behavior) = REQUIRED];
   // Version of the application.
   string version = 2 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the GetApplication method.
@@ -590,6 +712,8 @@ message GetApplicationReferenceCountRequest {
   string application_name = 1 [(google.api.field_behavior) = REQUIRED];
   // Version of the application.
   string version = 2 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the GetApplicationReferenceCount method.
@@ -601,6 +725,8 @@ message GetApplicationReferenceCountResponse {
 message GetApplicationVersionsRequest {
   // Name of the application.
   string application_name = 1 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the GetApplication method.
@@ -620,6 +746,8 @@ message UpdateApplicationRequest {
   string version = 2 [(google.api.field_behavior) = REQUIRED];
   // The application update.
   catalog.v3.Application application = 3 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Request message for the DeleteApplication method.
@@ -628,6 +756,8 @@ message DeleteApplicationRequest {
   string application_name = 1 [(google.api.field_behavior) = REQUIRED];
   // Version of the application.
   string version = 2 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Request message for the WatchApplications method.
@@ -643,6 +773,8 @@ message WatchApplicationsRequest {
     (google.api.field_behavior) = OPTIONAL,
     (buf.validate.field).repeated = {max_items: 20}
   ];
+  // Project name for multi-tenant path routing.
+  string projectName = 4 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the WatchApplications method.
@@ -657,6 +789,8 @@ message WatchApplicationsResponse {
 message CreateArtifactRequest {
   // The artifact to create.
   catalog.v3.Artifact artifact = 1 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the CreateArtifact method.
@@ -675,6 +809,8 @@ message ListArtifactsRequest {
   int32 page_size = 3 [(google.api.field_behavior) = OPTIONAL];
   // Index of the first item to return.
   int32 offset = 4 [(google.api.field_behavior) = OPTIONAL];
+  // Project name for multi-tenant path routing.
+  string projectName = 5 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the ListArtifacts method.
@@ -692,6 +828,8 @@ message ListArtifactsResponse {
 message GetArtifactRequest {
   // Name of the artifact.
   string artifact_name = 1 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the GetArtifact method.
@@ -706,12 +844,16 @@ message UpdateArtifactRequest {
   string artifact_name = 1 [(google.api.field_behavior) = REQUIRED];
   // The artifact update.
   catalog.v3.Artifact artifact = 2 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Request message for the DeleteArtifact method.
 message DeleteArtifactRequest {
   // Name of the artifact.
   string artifact_name = 1 [(google.api.field_behavior) = REQUIRED];
+  // Project name for multi-tenant path routing.
+  string projectName = 2 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Request message for the WatchArtifacts method.
@@ -721,6 +863,8 @@ message WatchArtifactsRequest {
 
   // Indicates whether replay of existing entities will be performed.
   bool no_replay = 2 [(google.api.field_behavior) = OPTIONAL];
+  // Project name for multi-tenant path routing.
+  string projectName = 3 [(google.api.field_behavior) = OPTIONAL];
 }
 
 // Response message for the WatchArtifacts method.

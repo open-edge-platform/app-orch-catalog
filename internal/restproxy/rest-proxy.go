@@ -19,6 +19,7 @@ import (
 	"github.com/open-edge-platform/orch-library/go/dazl"
 	ginlogger "github.com/open-edge-platform/orch-library/go/pkg/logging/gin"
 	ginutils "github.com/open-edge-platform/orch-library/go/pkg/middleware/gin"
+	"github.com/open-edge-platform/orch-library/go/pkg/middleware/projectcontext"
 	openapiutils "github.com/open-edge-platform/orch-library/go/pkg/openapi"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -35,6 +36,11 @@ type Config struct {
 	BasePath           string
 	SpecFilePath       string
 	AllowedCorsOrigins string
+	// ProjectServiceURL is the URL of the project lookup service used to resolve
+	// a project name (from the URL path) to its UUID for OPA authorization.
+	// Currently points to the Nexus API GW as an interim solution;
+	// will be replaced by the Tenant Manager REST API.
+	ProjectServiceURL string
 }
 
 // RESTProxy represents the REST proxy state
@@ -69,13 +75,31 @@ func NewRESTProxy(cfg *Config) (*RESTProxy, error) {
 	mux := runtime.NewServeMux(
 		// convert header in response(going from gateway) from metadata received.
 		runtime.WithOutgoingHeaderMatcher(isHeaderAllowed),
-		runtime.WithMetadata(func(_ context.Context, request *http.Request) metadata.MD {
+		runtime.WithMetadata(func(ctx context.Context, request *http.Request) metadata.MD {
 			authHeader := request.Header.Get("Authorization")
 			uaHeader := request.Header.Get("User-Agent")
 			projectIDHeader := request.Header.Get(ActiveProjectID)
-			// send all the headers received from the client
-			md := metadata.Pairs("authorization", authHeader, "user-agent", uaHeader, "activeprojectid", projectIDHeader)
-			return md
+			// Resolve project UUID from the URL path project name and set ActiveProjectID
+			// for OPA authorization. For /v3/projects/{name}/catalog/... paths the name
+			// is resolved to a UUID via the project service (Nexus API GW today, Tenant
+			// Manager REST API in future. Falls back to JWT extraction
+			// for legacy /catalog.orchestrator.apis/v3/... paths.
+			projectUUID, err := projectcontext.ResolveAndValidateProjectID(
+				ctx,
+				request.URL.Path,
+				authHeader,
+				projectIDHeader,
+				projectcontext.ProjectResolverConfig{
+					ProjectServiceURL:     cfg.ProjectServiceURL,
+					ErrorOnMissingProject: false,
+				},
+			)
+			if err != nil {
+				log.Warnf("Failed to resolve project ID: %v", err)
+			} else if projectUUID != "" {
+				projectIDHeader = projectUUID
+			}
+			return metadata.Pairs("authorization", authHeader, "user-agent", uaHeader, "activeprojectid", projectIDHeader)
 		}),
 		runtime.WithRoutingErrorHandler(ginutils.HandleRoutingError),
 	)
@@ -173,6 +197,10 @@ func NewRESTProxy(cfg *Config) (*RESTProxy, error) {
 	engine.Use(QueryParameterValidationMiddleware())
 	engine.StaticFile(fmt.Sprintf("%scatalog.orchestrator.apis/api/v3", cfg.BasePath), cfg.SpecFilePath)
 	engine.Group(fmt.Sprintf("%scatalog.orchestrator.apis/v3/*{grpc_gateway}", cfg.BasePath)).Match(allowedMethods, "", gin.WrapH(mux))
+	// Route /v3/projects/{name}/catalog/... paths to the grpc-gateway mux.
+	// The project name is resolved to a UUID by the WithMetadata handler above.
+	// Use a specific pattern to avoid routing conflicts with future non-catalog /v3/projects/... endpoints.
+	engine.Group(fmt.Sprintf("%sv3/projects/:projectName/catalog/*{grpc_gateway}", cfg.BasePath)).Match(allowedMethods, "", gin.WrapH(mux))
 
 	engine.GET("/test", func(c *gin.Context) {
 		c.String(http.StatusOK, "Ok")

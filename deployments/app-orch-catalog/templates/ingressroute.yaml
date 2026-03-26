@@ -1,0 +1,56 @@
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+---
+# Traefik IngressRoute for App Orch Catalog API routing.
+# Routes multi-tenant paths directly to the catalog REST proxy,
+# bypassing the nexus-api-gateway.
+{{- if .Values.ingressRoute.enabled }}
+apiVersion: {{ .Values.traefikApiGroup | default "traefik.io/v1alpha1" }}
+kind: IngressRoute
+metadata:
+  name: {{ include "application-catalog.fullname" . }}-http
+  namespace: {{ .Values.traefikReverseProxy.gatewayNamespace | default "orch-gateway" }}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    # Route for new-style multi-tenant catalog API paths.
+    # ActiveProjectID is extracted from the URL path by the service middleware.
+    - match: Host(`{{ required "A valid apiHostname entry required!" .Values.ingressRoute.apiHostname }}`) && PathRegexp(`^/v3/projects/[^/]+/catalog(/.*)?$`)
+      kind: Rule
+      priority: 50
+      middlewares:
+        - name: validate-jwt
+          namespace: {{ .Values.traefikReverseProxy.gatewayNamespace | default "orch-gateway" }}
+        - name: secure-headers
+          namespace: {{ .Values.traefikReverseProxy.gatewayNamespace | default "orch-gateway" }}
+      services:
+        - name: {{ include "application-catalog.fullname" . }}-rest-proxy
+          namespace: {{ .Release.Namespace }}
+          port: {{ .Values.service.restProxy.port }}
+          scheme: http
+    # Route for legacy catalog API paths (catalog.orchestrator.apis/v3/...).
+    # Maintains backward compatibility by routing legacy paths directly to the service,
+    # bypassing the nexus-api-gateway. ActiveProjectID is resolved from JWT by middleware.
+    - match: Host(`{{ required "A valid apiHostname entry required!" .Values.ingressRoute.apiHostname }}`) && PathPrefix(`/catalog.orchestrator.apis/v3`)
+      kind: Rule
+      priority: 40
+      middlewares:
+        - name: validate-jwt
+          namespace: {{ .Values.traefikReverseProxy.gatewayNamespace | default "orch-gateway" }}
+        - name: secure-headers
+          namespace: {{ .Values.traefikReverseProxy.gatewayNamespace | default "orch-gateway" }}
+      services:
+        - name: {{ include "application-catalog.fullname" . }}-rest-proxy
+          namespace: {{ .Release.Namespace }}
+          port: {{ .Values.service.restProxy.port }}
+          scheme: http
+  tls:
+    secretName: {{ .Values.traefikReverseProxy.secretName | default "tls-orch" }}
+    {{- if .Values.traefikReverseProxy.tlsOption }}
+    options:
+      name: {{ .Values.traefikReverseProxy.tlsOption }}
+      namespace: {{ .Values.traefikReverseProxy.gatewayNamespace | default "orch-gateway" }}
+    {{- end }}
+{{- end }}
