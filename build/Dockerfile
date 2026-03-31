@@ -49,7 +49,7 @@ ARG org_label_schema_vcs_ref=unknown
 ARG org_opencord_vcs_dirty=unknown
 
 RUN GO111MODULE=on go version && go build -mod=vendor -o /build/bin/rest-proxy \
-        -gcflags="all=-spectre=all -N -l" -asmflags="all=-spectre=all" --trimpath \
+        -gcflags="all=-spectre=all -N -l" -asmflags="-spectre=all" --trimpath \
         -ldflags "all=-s -w" -ldflags \
         "-X github.com/open-edge-platform/app-orch-catalog/internal/version.Version=$org_label_schema_version \
          -X github.com/open-edge-platform/app-orch-catalog/internal/version.GitCommit=$org_label_schema_vcs_ref  \
@@ -73,7 +73,7 @@ ARG org_label_schema_vcs_ref=unknown
 ARG org_opencord_vcs_dirty=unknown
 
 RUN GO111MODULE=on go version && go build -mod=vendor -o /build/bin/application-catalog \
-        -gcflags="all=-spectre=all -N -l" -asmflags="all=-spectre=all" --trimpath \
+        -gcflags="all=-spectre=all -N -l" -asmflags="-spectre=all" --trimpath \
         -ldflags "all=-s -w" -ldflags \
         "-X github.com/open-edge-platform/app-orch-catalog/internal/version.Version=$org_label_schema_version \
          -X github.com/open-edge-platform/app-orch-catalog/internal/version.GitCommit=$org_label_schema_vcs_ref  \
