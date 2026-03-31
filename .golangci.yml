@@ -37,6 +37,14 @@ linters:
         text: .*.ListApplicationReferences.* is deprecated
       - path: (.+)\.go$
         text: G115.*
+      - path: internal/shared/version/
+        linters:
+          - revive
+        text: avoid package names that conflict with Go standard library package names
+      - path: internal/testing/
+        linters:
+          - revive
+        text: avoid package names that conflict with Go standard library package names
     paths:
       - internal/ent/generated
       - third_party$

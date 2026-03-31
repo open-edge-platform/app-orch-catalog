@@ -95,7 +95,7 @@ type Base64Strings interface {
 type base64Strings struct{}
 
 func (b *base64Strings) EncodeBase64(r registrySecretData) string {
-	dataBlob, _ := json.Marshal(r)
+	dataBlob, _ := json.Marshal(r) //nolint:gosec // G117: intentional marshaling of credential data for base64 encoding
 	return base64.URLEncoding.EncodeToString(dataBlob)
 }
 

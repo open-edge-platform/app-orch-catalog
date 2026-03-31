@@ -45,7 +45,7 @@ func GetDeploymentPackages() []restClient.CatalogV3DeploymentPackage {
 	for _, dp := range []restClient.CatalogV3DeploymentPackage{
 		{Name: "cert-manager", Description: GetPointerString("cert-manager Deployment Package"), Kind: &extensionKind},
 			{Name: "headlamp", Description: GetPointerString("headlamp is a web-based UI for Kubernetes cluster management."), Kind: &extensionKind},
-			{Name: "intel-gpu", Description: GetPointerString("Intel GPU K8S extension"), Kind: &extensionKind},
+			{Name: "intel-accelerators", Description: GetPointerString("Intel Accelerators K8S extension"), Kind: &extensionKind},
 		{Name: "loadbalancer", Description: GetPointerString("Enables load balancer and ingress controller on the edge"), Kind: &extensionKind},
 		{Name: "nfd", Description: GetPointerString("Node Feature Discovery (NFD) Deployment Package"), Kind: &extensionKind},
 		{Name: "nvidia-gpu-operator", Description: GetPointerString("NVIDIA GPU Operator deployment package"), Kind: &extensionKind},
@@ -67,7 +67,6 @@ func GetApplications() []restClient.CatalogV3Application {
 	extensionKind := restClient.KINDEXTENSION
 
 	for _, sa := range []restClient.CatalogV3Application{
-		{Name: "attestation-manager", DisplayName: GetPointerString("attestation-manager"), Description: GetPointerString("Workload prptection and continus monitoring add-on for Kubernetes"), Kind: &extensionKind, ChartName: "edge-orch/trusted-compute/charts/attestation-manager", HelmRegistryName: "intel-rs-helm"},
 		{Name: "attestation-verifier", DisplayName: GetPointerString("attestation-verifier"), Description: GetPointerString("attestaion verifier of trusted compute"), Kind: &extensionKind, ChartName: "edge-orch/trusted-compute/charts/attestation-verifier", HelmRegistryName: "intel-rs-helm"},
 		{Name: "cdi", DisplayName: GetPointerString("cdi"), Description: GetPointerString("Persistent storage management add-on for Kubernetes"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/cdi", HelmRegistryName: "intel-rs-helm"},
 		{Name: "cert-manager", DisplayName: GetPointerString("cert-manager"), Description: GetPointerString("Cert Manager"), Kind: &extensionKind, ChartName: "cert-manager", HelmRegistryName: "jetstack"},
@@ -86,7 +85,7 @@ func GetApplications() []restClient.CatalogV3Application {
 		{Name: "observability-config", DisplayName: GetPointerString("observability-config"), Description: GetPointerString("Observability Config"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/observability-config", HelmRegistryName: "intel-rs-helm"},
 		{Name: "prometheus", DisplayName: GetPointerString("prometheus"), Description: GetPointerString("Prometheus"), Kind: &extensionKind, ChartName: "kube-prometheus-stack", HelmRegistryName: "prometheus"},
 		{Name: "telegraf", DisplayName: GetPointerString("telegraf"), Description: GetPointerString("Telegraf"), Kind: &extensionKind, ChartName: "telegraf", HelmRegistryName: "telegraf"},
-		{Name: "trust-agent", DisplayName: GetPointerString("trust-agent"), Description: GetPointerString("Automatically restart VM when editable VM spec is updated"), Kind: &extensionKind, ChartName: "edge-orch/trusted-compute/charts/trustagent", HelmRegistryName: "intel-rs-helm"},
+		{Name: "intel-npu-plugin", DisplayName: GetPointerString("intel-npu-plugin"), Description: GetPointerString("Intel NPU Device Plugin"), Kind: &extensionKind, ChartName: "intel-device-plugins-npu", HelmRegistryName: "intel-github-io"},
 		{Name: "trusted-workload", DisplayName: GetPointerString("trusted-workload"), Description: GetPointerString("Deploys the necessary CRD and runtime class to enable trusted compute workloads within virtual machines."), Kind: &extensionKind, ChartName: "edge-orch/trusted-compute/charts/trusted-workload", HelmRegistryName: "intel-rs-helm"},
 	} {
 		apps = append(apps, restClient.CatalogV3Application{
