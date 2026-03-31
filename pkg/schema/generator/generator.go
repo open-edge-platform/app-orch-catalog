@@ -254,7 +254,7 @@ func saveRawYAML(schemaBasePath string, schemaPath string, raw interface{}) erro
 	schema = string(baseBytes) + schema[7:]
 
 	// Save the YAML file
-	err = os.WriteFile(schemaPath+".yaml", []byte(schema), 0600)
+	err = os.WriteFile(schemaPath+".yaml", []byte(schema), 0600) //nolint:gosec // G703: schemaPath is from trusted generator configuration, not user input
 	if err != nil {
 		return err
 	}
@@ -264,5 +264,5 @@ func saveRawYAML(schemaBasePath string, schemaPath string, raw interface{}) erro
 		"\npackage schema\n\n" +
 		"// AppCatalogSchema contains auto-generated Application Catalog YAML schema\n" +
 		"const AppCatalogSchema = `\n" + schema + "\n`\n"
-	return os.WriteFile(schemaPath+".go", []byte(schemaGoFile), 0600)
+	return os.WriteFile(schemaPath+".go", []byte(schemaGoFile), 0600) //nolint:gosec // G703: schemaPath is from trusted generator configuration, not user input
 }

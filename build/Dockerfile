@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-FROM golang:1.25.7@sha256:85c0ab0b73087fda36bf8692efe2cf67c54a06d7ca3b49c489bbff98c9954d64 AS base
+FROM golang:1.26.1@sha256:595c7847cff97c9a9e76f015083c481d26078f961c9c8dca3923132f51fe12f1 AS base
 
 ENV CGO_ENABLED=0
 
@@ -13,7 +13,7 @@ ARG no_proxy
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# rebuild atlas from source to match go 1.25.7 to mitigate CVEs
+# rebuild atlas from source to match go 1.26.1 to mitigate CVEs
 # hash for atlas v1.1.0
 ENV ATLAS_HASH=1a19b3deb9b228120e4fb17cf461772da48bde73
 WORKDIR /build/src
@@ -21,7 +21,7 @@ RUN git clone https://github.com/ariga/atlas.git
 WORKDIR /build/src/atlas
 RUN git checkout $ATLAS_HASH
 WORKDIR /build/src/atlas/cmd/atlas
-RUN sed -i 's/go 1\.24\.11/go 1.25.7/g' go.mod && go build -o /go/bin/atlas .
+RUN sed -i 's/go 1\.[0-9]\+\.[0-9]\+/go 1.26.1/g' go.mod && go build -o /go/bin/atlas .
 
 WORKDIR /build
 RUN mkdir -p "$APP_ROOT/" && mkdir -p /build/etc
@@ -49,7 +49,7 @@ ARG org_label_schema_vcs_ref=unknown
 ARG org_opencord_vcs_dirty=unknown
 
 RUN GO111MODULE=on go version && go build -mod=vendor -o /build/bin/rest-proxy \
-        -gcflags="all=-spectre=all -N -l" -asmflags="all=-spectre=all" --trimpath \
+        -gcflags="all=-spectre=all -N -l" -asmflags="-spectre=all" --trimpath \
         -ldflags "all=-s -w" -ldflags \
         "-X github.com/open-edge-platform/app-orch-catalog/internal/version.Version=$org_label_schema_version \
          -X github.com/open-edge-platform/app-orch-catalog/internal/version.GitCommit=$org_label_schema_vcs_ref  \
@@ -73,7 +73,7 @@ ARG org_label_schema_vcs_ref=unknown
 ARG org_opencord_vcs_dirty=unknown
 
 RUN GO111MODULE=on go version && go build -mod=vendor -o /build/bin/application-catalog \
-        -gcflags="all=-spectre=all -N -l" -asmflags="all=-spectre=all" --trimpath \
+        -gcflags="all=-spectre=all -N -l" -asmflags="-spectre=all" --trimpath \
         -ldflags "all=-s -w" -ldflags \
         "-X github.com/open-edge-platform/app-orch-catalog/internal/version.Version=$org_label_schema_version \
          -X github.com/open-edge-platform/app-orch-catalog/internal/version.GitCommit=$org_label_schema_vcs_ref  \

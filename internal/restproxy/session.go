@@ -196,7 +196,7 @@ func (s *Session) addSubscription(c *gin.Context, kind string, projectUUID strin
 	log.Infof("Add %s subscription %s for project %s", kind, s.ID(), projectUUID)
 	// If this is the first subscriber added for this kind, let's start watching it against the catalog service
 	if _, ok := s.cancellations[kind]; !ok {
-		ctx, cancellation := context.WithCancel(c)
+		ctx, cancellation := context.WithCancel(c) //nolint:gosec // G118: cancellation is stored in s.cancellations[kind] and called in removeSubscription
 		s.cancellations[kind] = cancellation
 		s.startWatching(ctx, kind, projectUUID)
 	}
