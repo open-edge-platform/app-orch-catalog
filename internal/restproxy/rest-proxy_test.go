@@ -20,7 +20,7 @@ func (s *ProxyTestSuite) newRequest(path string) *http.Request {
 }
 
 func (s *ProxyTestSuite) checkRequest(req *http.Request, status int) {
-	resp, err := s.httpClient.Do(req)
+	resp, err := s.httpClient.Do(req) //nolint:gosec // G704: test-only HTTP client, requests target a local test server
 	s.NoError(err)
 	if s.NotNil(resp) {
 		s.Equal(status, resp.StatusCode)
@@ -28,7 +28,7 @@ func (s *ProxyTestSuite) checkRequest(req *http.Request, status int) {
 }
 
 func (s *ProxyTestSuite) checkRequestBody(req *http.Request, status int, body string) {
-	resp, err := s.httpClient.Do(req)
+	resp, err := s.httpClient.Do(req) //nolint:gosec // G704: test-only HTTP client, requests target a local test server
 	s.NoError(err)
 	if s.NotNil(resp) {
 		s.Equal(status, resp.StatusCode)
