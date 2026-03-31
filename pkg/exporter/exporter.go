@@ -51,7 +51,7 @@ func appendHeader(yaml []byte) []byte {
 
 func specToBytes(spec *upload.YamlSpec) ([]byte, error) {
 	// Marshal the spec into YAML and write the file
-	data, err := yaml.Marshal(spec)
+	data, err := yaml.Marshal(spec) //nolint:gosec // G117: intentional marshaling of deployment spec including auth fields for YAML export
 	if err != nil {
 		return nil, err
 	}
