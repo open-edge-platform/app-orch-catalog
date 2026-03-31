@@ -77,7 +77,7 @@ func loginToVault(ctx context.Context, httpClient *http.Client) (string, error) 
 		JWT:  string(tokenData),
 		Role: os.Getenv("SERVICE_ACCOUNT"),
 	}
-	body, _ := json.Marshal(loginReq)
+	body, _ := json.Marshal(loginReq) //nolint:gosec // G117: intentional marshaling of JWT for Vault authentication request
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodPost,

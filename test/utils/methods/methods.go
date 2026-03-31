@@ -59,7 +59,7 @@ func NewCatalogClient(catalogRESTServerUrl, token, projectID, orchDomain string)
 // Application-related Functions
 func (c *CatalogClient) GetApplicationList(ctx context.Context) ([]restClient.CatalogV3Application, int, error) {
 	var pageSize int32 = 100
-	resp, err := c.Client.CatalogServiceListApplicationsWithResponse(ctx, &restClient.CatalogServiceListApplicationsParams{PageSize: &pageSize})
+	resp, err := c.Client.CatalogServiceListApplicationsWithResponse(ctx, c.ProjectID, &restClient.CatalogServiceListApplicationsParams{PageSize: &pageSize})
 	if err != nil || resp == nil || resp.StatusCode() != 200 {
 		if err != nil {
 			if resp != nil {
@@ -77,7 +77,7 @@ func (c *CatalogClient) GetApplicationList(ctx context.Context) ([]restClient.Ca
 }
 
 func (c *CatalogClient) GetApplication(ctx context.Context, name, version string) (*restClient.CatalogV3Application, int, error) {
-	resp, err := c.Client.CatalogServiceGetApplicationWithResponse(ctx, name, version)
+	resp, err := c.Client.CatalogServiceGetApplicationWithResponse(ctx, c.ProjectID, name, version)
 	if err != nil || resp == nil || resp.StatusCode() != 200 {
 		if err != nil {
 			if resp != nil {
@@ -94,7 +94,7 @@ func (c *CatalogClient) GetApplication(ctx context.Context, name, version string
 }
 
 func (c *CatalogClient) GetApplicationVersions(ctx context.Context, name string) ([]restClient.CatalogV3Application, int, error) {
-	resp, err := c.Client.CatalogServiceGetApplicationVersionsWithResponse(ctx, name)
+	resp, err := c.Client.CatalogServiceGetApplicationVersionsWithResponse(ctx, c.ProjectID, name)
 	if err != nil || resp == nil || resp.StatusCode() != 200 {
 		if err != nil {
 			if resp != nil {
@@ -111,7 +111,7 @@ func (c *CatalogClient) GetApplicationVersions(ctx context.Context, name string)
 }
 
 func (c *CatalogClient) DeleteApplication(ctx context.Context, name, version string, mustExist bool) error {
-	res, err := c.Client.CatalogServiceDeleteApplication(ctx, name, version)
+	res, err := c.Client.CatalogServiceDeleteApplication(ctx, c.ProjectID, name, version)
 	if err != nil {
 		return err
 	}
@@ -128,7 +128,7 @@ func (c *CatalogClient) DeleteApplication(ctx context.Context, name, version str
 
 // Deployment Package-related Functions
 func (c *CatalogClient) GetDeploymentPackage(ctx context.Context, name, version string) (*restClient.CatalogV3DeploymentPackage, int, error) {
-	resp, err := c.Client.CatalogServiceGetDeploymentPackageWithResponse(ctx, name, version)
+	resp, err := c.Client.CatalogServiceGetDeploymentPackageWithResponse(ctx, c.ProjectID, name, version)
 	if err != nil || resp == nil || resp.StatusCode() != 200 {
 		if err != nil {
 			if resp != nil {
@@ -146,7 +146,7 @@ func (c *CatalogClient) GetDeploymentPackage(ctx context.Context, name, version 
 }
 
 func (c *CatalogClient) GetDeploymentPackageVersions(ctx context.Context, name string) ([]restClient.CatalogV3DeploymentPackage, int, error) {
-	resp, err := c.Client.CatalogServiceGetDeploymentPackageVersionsWithResponse(ctx, name)
+	resp, err := c.Client.CatalogServiceGetDeploymentPackageVersionsWithResponse(ctx, c.ProjectID, name)
 	if err != nil || resp == nil || resp.StatusCode() != 200 {
 		if err != nil {
 			if resp != nil {
@@ -164,7 +164,7 @@ func (c *CatalogClient) GetDeploymentPackageVersions(ctx context.Context, name s
 }
 
 func (c *CatalogClient) ListDeploymentPackages(ctx context.Context, params *restClient.CatalogServiceListDeploymentPackagesParams) ([]restClient.CatalogV3DeploymentPackage, int, error) {
-	resp, err := c.Client.CatalogServiceListDeploymentPackagesWithResponse(ctx, params)
+	resp, err := c.Client.CatalogServiceListDeploymentPackagesWithResponse(ctx, c.ProjectID, params)
 	if err != nil || resp == nil || resp.StatusCode() != 200 {
 		if err != nil {
 			if resp != nil {
@@ -182,7 +182,7 @@ func (c *CatalogClient) ListDeploymentPackages(ctx context.Context, params *rest
 }
 
 func (c *CatalogClient) DeleteDeploymentPackage(ctx context.Context, name, version string, mustExist bool) error {
-	res, err := c.Client.CatalogServiceDeleteDeploymentPackage(ctx, name, version)
+	res, err := c.Client.CatalogServiceDeleteDeploymentPackage(ctx, c.ProjectID, name, version)
 	if err != nil {
 		return err
 	}
@@ -220,7 +220,7 @@ func (c *CatalogClient) ExportDeploymentPackage(name string, version string) (*h
 
 // Registry-related Functions
 func (c *CatalogClient) GetRegistry(ctx context.Context, name string) (*restClient.CatalogV3Registry, int, error) {
-	resp, err := c.Client.CatalogServiceGetRegistryWithResponse(ctx, name, &restClient.CatalogServiceGetRegistryParams{})
+	resp, err := c.Client.CatalogServiceGetRegistryWithResponse(ctx, c.ProjectID, name, &restClient.CatalogServiceGetRegistryParams{})
 	if err != nil || resp == nil || resp.StatusCode() != 200 {
 		if err != nil {
 			if resp != nil {
@@ -238,7 +238,7 @@ func (c *CatalogClient) GetRegistry(ctx context.Context, name string) (*restClie
 }
 
 func (c *CatalogClient) ListRegistries(ctx context.Context, params *restClient.CatalogServiceListRegistriesParams) ([]restClient.CatalogV3Registry, int, error) {
-	resp, err := c.Client.CatalogServiceListRegistriesWithResponse(ctx, params)
+	resp, err := c.Client.CatalogServiceListRegistriesWithResponse(ctx, c.ProjectID, params)
 	if err != nil || resp == nil || resp.StatusCode() != 200 {
 		if err != nil {
 			if resp != nil {
@@ -256,7 +256,7 @@ func (c *CatalogClient) ListRegistries(ctx context.Context, params *restClient.C
 }
 
 func (c *CatalogClient) DeleteRegistry(ctx context.Context, name string, mustExist bool) error {
-	res, err := c.Client.CatalogServiceDeleteRegistry(ctx, name)
+	res, err := c.Client.CatalogServiceDeleteRegistry(ctx, c.ProjectID, name)
 	if err != nil {
 		return err
 	}
@@ -314,7 +314,7 @@ func (c *CatalogClient) UploadTarball(ctx context.Context, pathName string) (*ht
 func (c *CatalogClient) ImportHelmChart(ctx context.Context, importRequest *restClient.CatalogServiceImportParams) (int, string, error) {
 	params := url.Values{}
 	params.Add("url", importRequest.Url)
-	res, err := c.Client.CatalogServiceImport(ctx, importRequest)
+	res, err := c.Client.CatalogServiceImport(ctx, c.ProjectID, importRequest)
 	if err != nil {
 		return 0, "", fmt.Errorf("failed to import Helm chart: %w", err)
 	}
