@@ -61,8 +61,9 @@ RUN GO111MODULE=on go version && go build -mod=vendor -o /build/bin/rest-proxy \
 
 FROM base AS application-catalog
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
-RUN mkdir -p "$APP_ROOT/cmd/application-catalog"
+RUN mkdir -p "$APP_ROOT/cmd/application-catalog" && mkdir -p "$APP_ROOT/cmd/healthcheck"
 COPY ./cmd/application-catalog $APP_ROOT/cmd/application-catalog
+COPY ./cmd/healthcheck $APP_ROOT/cmd/healthcheck
 COPY ./pkg $APP_ROOT/pkg
 COPY ./internal $APP_ROOT/internal
 
@@ -83,6 +84,10 @@ RUN GO111MODULE=on go version && go build -mod=vendor -o /build/bin/application-
          -X github.com/open-edge-platform/app-orch-catalog/internal/version.Arch=$(go env GOHOSTARCH)" \
          ./cmd/application-catalog
 
+RUN go build -mod=vendor -o /build/bin/healthcheck --trimpath \
+        -ldflags "-s -w" \
+        ./cmd/healthcheck
+
 FROM gcr.io/distroless/static:nonroot@sha256:c0f429e16b13e583da7e5a6ec20dd656d325d88e6819cafe0adb0828976529dc
 USER nonroot
 
@@ -96,11 +101,13 @@ LABEL org.opencontainers.image.version=$org_label_schema_version \
 
 USER nobody
 
-HEALTHCHECK NONE
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
+    CMD ["/usr/local/bin/healthcheck"]
 
 COPY --from=rest-proxy /build/bin/rest-proxy /usr/local/bin/
 
 COPY --from=application-catalog /build/bin/application-catalog /usr/local/bin/
+COPY --from=application-catalog /build/bin/healthcheck /usr/local/bin/
 COPY --from=application-catalog /build/etc/openapi.yaml /usr/local/etc/openapi.yaml
 
 # Copy database migrations
