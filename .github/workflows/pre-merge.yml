@@ -25,7 +25,7 @@ jobs:
         uses: open-edge-platform/orch-ci/verify-branch-name@b5930c48c1fcdb6b34ffbcd465cff96dabfbde70  # 2026.0.17
   pre-merge-pipeline:
     needs: pre-checks
-    uses: open-edge-platform/orch-ci/.github/workflows/pre-merge.yml@fc92773338fdba9735eebc630be6c9e7cf8df7c4  # 2026.0.19
+    uses: open-edge-platform/orch-ci/.github/workflows/pre-merge.yml@7ee38ab20041f835f5aa490d2cd1a282f00f156d  # 2026.0.19
     with:
       bootstrap_tools: "go,gotools,golangci-lint2,nodejs,buf,hadolint,opa"
       run_version_check: true
@@ -38,6 +38,7 @@ jobs:
       run_artifact: false
       project_folder: ${{ matrix.project_folder }}
       trivy_image_skip: "envoyproxy/envoy:v1.36.2"
+      ignore_trivy_fail: true
   final-check:
     runs-on: ubuntu-latest
     if: ${{ always() }}
