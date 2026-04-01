@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (C) 2025-present Intel Corporation
+// SPDX-FileCopyrightText: (C) 2026 Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -27,12 +27,12 @@ func SetUpAccessToken(t *testing.T, server string) string {
 	c := &http.Client{
 		Transport: &http.Transport{},
 	}
-	
+
 	password := os.Getenv("ORCH_DEFAULT_PASSWORD")
 	if password == "" {
 		panic("ORCH_DEFAULT_PASSWORD environment variable is required")
 	}
-	
+
 	data := url.Values{}
 	data.Set("client_id", "system-client")
 	data.Set("username", fmt.Sprintf("%s-edge-mgr", types.SampleProject))

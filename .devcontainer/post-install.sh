@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2025 Intel Corp.
+# Copyright 2026 Intel Corp.
 # SPDX-License-Identifier: Apache-2.0
 
 #set -x

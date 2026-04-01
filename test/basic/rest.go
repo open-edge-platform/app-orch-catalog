@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2023-present Intel Corporation
+// SPDX-FileCopyrightText: 2026 Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -18,18 +18,18 @@ func (s *TestSuite) TestRESTBasics() {
 
 	// Create a few applications with embedded profiles
 	s.createRESTApplication("footen", "fooreg", "ap1", "1.1",
-		"App One", "First application", []restapi.Profile{
+		"App One", "First application", []restapi.CatalogV3Profile{
 			profileREST("p1", "Profile One", "First profile", "some yaml goes here"),
 			profileREST("p2", "Profile Two", "Second profile", "some other yaml goes here"),
 		}, "p2")
 
 	s.createRESTApplication("footen", "fooregalt", "ap2", "1.2",
-		"App Two", "Second application", []restapi.Profile{
+		"App Two", "Second application", []restapi.CatalogV3Profile{
 			profileREST("p1", "Profile One", "First profile", "some odd yaml goes here"),
 		}, "p1")
 
 	s.createRESTApplication("barten", "barreg", "ap3", "1.3",
-		"App Three", "Third application", []restapi.Profile{
+		"App Three", "Third application", []restapi.CatalogV3Profile{
 			profileREST("p1", "Profile One", "First profile", "some odd yaml goes here"),
 			profileREST("p2", "Profile Two", "Second profile", "some other yaml goes here"),
 			profileREST("p3", "Profile Three", "Third profile", "some weird yaml here"),
@@ -42,28 +42,28 @@ func (s *TestSuite) TestRESTBasics() {
 
 	// Create a new package
 	s.createRESTPackage("footen", "cap1", "1.1.0", "Package One", "First Package",
-		[]restapi.ApplicationReference{
+		[]restapi.CatalogV3ApplicationReference{
 			{Name: "ap1", Version: "1.1.0"},
 			{Name: "ap2", Version: "1.2.0"},
 		},
-		[]restapi.DeploymentProfile{
+		[]restapi.CatalogV3DeploymentProfile{
 			packageRESTProfile("p1", "Profile One", "First profile", map[string]string{"ap1": "p2", "ap2": "p1"}),
 			packageRESTProfile("p2", "Profile Two", "Second profile", map[string]string{"ap1": "p1", "ap2": "p1"}),
 		},
 		"p1",
-		[]restapi.APIExtension{
+		[]restapi.CatalogV3APIExtension{
 			extensionREST("ext1", "v1.1", "Extension 1", "First Extension", "", "",
-				[]restapi.Endpoint{
+				[]restapi.CatalogV3Endpoint{
 					endpointREST("svc1", "external/path", "internal/path"),
 					endpointREST("svc2", "another/external/path", "another/internal/path"),
 				}),
 			extensionREST("ext2", "v1.2", "Extension 2", "Second Extension", "Service Two", "svc2",
-				[]restapi.Endpoint{
+				[]restapi.CatalogV3Endpoint{
 					endpointREST("svc1", "some/external/path", "some/internal/path"),
 					endpointREST("svc2", "other/external/path", "other/internal/path"),
 				}),
 		},
-		[]restapi.ArtifactReference{
+		[]restapi.CatalogV3ArtifactReference{
 			artifactREST("icon", "icon"),
 			artifactREST("thumb", "thumbnail"),
 		},
@@ -76,26 +76,26 @@ func (s *TestSuite) TestUpdateApplicationWithDeploymentRequirements() {
 	s.createRESTRegistry("barten", "barreg", "Bar Registry", "Registry for bars", "https://reg.bar.com/")
 
 	s.createRESTApplication("barten", "barreg", "app", "1.1.0",
-		"App", "Application", []restapi.Profile{
+		"App", "Application", []restapi.CatalogV3Profile{
 			profileREST("p1", "Profile", "A Profile", "some odd yaml goes here"),
 		}, "p1")
 
 	s.createRESTPackage("barten", "pkg", "1.0.0", "Package", "Package",
-		[]restapi.ApplicationReference{
+		[]restapi.CatalogV3ApplicationReference{
 			{Name: "app", Version: "1.1.0"},
 		}, nil, "", nil, nil)
 
 	// Create an app with deployment requirement it its profile
-	requirements := []restapi.DeploymentRequirement{
+	requirements := []restapi.CatalogV3DeploymentRequirement{
 		{Name: "pkg", Version: "1.0.0"},
 	}
 
-	profiles := []restapi.Profile{
+	profiles := []restapi.CatalogV3Profile{
 		profileREST("p1", "Profile One", "First profile", "some odd yaml goes here"),
 	}
 	profiles[0].DeploymentRequirement = &requirements
 
-	cresp, err := s.restClient.CatalogServiceCreateApplicationWithResponse(s.ProjectID("barten"), restapi.CatalogServiceCreateApplicationJSONRequestBody{
+	cresp, err := s.restClient.CatalogServiceCreateApplicationWithResponse(s.ProjectID("barten"), "barten", restapi.CatalogServiceCreateApplicationJSONRequestBody{
 		Name:               "topapp",
 		Version:            "1.0.0",
 		ChartName:          "topapp-chart",
@@ -107,7 +107,7 @@ func (s *TestSuite) TestUpdateApplicationWithDeploymentRequirements() {
 	s.validateResponse(err, cresp.JSON200)
 
 	// Retrieve the app and validate that the deployment requirements are there
-	resp, err := s.restClient.CatalogServiceGetApplicationWithResponse(s.ProjectID("barten"), "topapp", "1.0.0", addHeaders)
+	resp, err := s.restClient.CatalogServiceGetApplicationWithResponse(s.ProjectID("barten"), "barten", "topapp", "1.0.0", addHeaders)
 	s.validateResponse(err, resp.JSON200)
 	if resp.JSON200.Application.Profiles != nil && s.Len(*resp.JSON200.Application.Profiles, 1) {
 		s.Len(*(*resp.JSON200.Application.Profiles)[0].DeploymentRequirement, 1)
@@ -118,7 +118,7 @@ func (s *TestSuite) TestUpdateApplicationWithDeploymentRequirements() {
 	profiles[0].ChartValues = &newValues
 
 	// Update the app
-	_, err = s.restClient.CatalogServiceUpdateApplicationWithResponse(s.ProjectID("barten"), "topapp", "1.0.0",
+	_, err = s.restClient.CatalogServiceUpdateApplicationWithResponse(s.ProjectID("barten"), "barten", "topapp", "1.0.0",
 		restapi.CatalogServiceUpdateApplicationJSONRequestBody{
 			Name:               "topapp",
 			Version:            "1.0.0",
@@ -131,7 +131,7 @@ func (s *TestSuite) TestUpdateApplicationWithDeploymentRequirements() {
 	s.NoError(err)
 
 	// Retrieve the app and validate that the deployment requirements are there
-	resp, err = s.restClient.CatalogServiceGetApplicationWithResponse(s.ProjectID("barteb"), "topapp", "1.0", addHeaders)
+	resp, err = s.restClient.CatalogServiceGetApplicationWithResponse(s.ProjectID("barteb"), "barteb", "topapp", "1.0", addHeaders)
 	s.validateResponse(err, resp.JSON200)
 	if resp.JSON200.Application.Profiles != nil && s.Len(*resp.JSON200.Application.Profiles, 1) {
 		s.Len(*(*resp.JSON200.Application.Profiles)[0].DeploymentRequirement, 1)
@@ -143,7 +143,7 @@ func (s *TestSuite) TestUpdateApplicationWithDeploymentRequirements() {
 func (s *TestSuite) TestValidateRESTBasics() {
 	// Get all registries for foo project
 	showSensitiveInfo := true
-	lr, err := s.restClient.CatalogServiceListRegistriesWithResponse(s.ProjectID("footen"), &restapi.CatalogServiceListRegistriesParams{
+	lr, err := s.restClient.CatalogServiceListRegistriesWithResponse(s.ProjectID("footen"), "footen", &restapi.CatalogServiceListRegistriesParams{
 		ShowSensitiveInfo: &showSensitiveInfo,
 	}, addHeaders)
 	s.validateResponse(err, lr)
@@ -151,28 +151,28 @@ func (s *TestSuite) TestValidateRESTBasics() {
 
 	// Get all registries for bar project
 	showSensitiveInfo = true
-	lr, err = s.restClient.CatalogServiceListRegistriesWithResponse(s.ProjectID("barten"), &restapi.CatalogServiceListRegistriesParams{
+	lr, err = s.restClient.CatalogServiceListRegistriesWithResponse(s.ProjectID("barten"), "barten", &restapi.CatalogServiceListRegistriesParams{
 		ShowSensitiveInfo: &showSensitiveInfo,
 	}, addHeaders)
 	s.validateResponse(err, lr)
 	s.Len(lr.JSON200.Registries, 1)
 
 	// Get all applications for foo project
-	lar, err := s.restClient.CatalogServiceListApplicationsWithResponse(s.ProjectID("footen"), &restapi.CatalogServiceListApplicationsParams{}, addHeaders)
+	lar, err := s.restClient.CatalogServiceListApplicationsWithResponse(s.ProjectID("footen"), "footen", &restapi.CatalogServiceListApplicationsParams{}, addHeaders)
 	s.validateResponse(err, lar)
 	s.Len(lar.JSON200.Applications, 2)
 
 	// Get all applications for bar project
-	lar, err = s.restClient.CatalogServiceListApplicationsWithResponse(s.ProjectID("barten"), &restapi.CatalogServiceListApplicationsParams{}, addHeaders)
+	lar, err = s.restClient.CatalogServiceListApplicationsWithResponse(s.ProjectID("barten"), "barten", &restapi.CatalogServiceListApplicationsParams{}, addHeaders)
 	s.validateResponse(err, lr)
 	s.Len(lar.JSON200.Applications, 1)
 
 	// Get all artifacts for foo project
-	lir, err := s.restClient.CatalogServiceListArtifactsWithResponse(s.ProjectID("footen"), &restapi.CatalogServiceListArtifactsParams{}, addHeaders)
+	lir, err := s.restClient.CatalogServiceListArtifactsWithResponse(s.ProjectID("footen"), "footen", &restapi.CatalogServiceListArtifactsParams{}, addHeaders)
 	s.validateResponse(err, lir)
 	s.Len(lir.JSON200.Artifacts, 2)
 
-	resp, err := s.restClient.CatalogServiceGetDeploymentPackageWithResponse(s.ProjectID("footen"), "cap1", "1.1", addHeaders)
+	resp, err := s.restClient.CatalogServiceGetDeploymentPackageWithResponse(s.ProjectID("footen"), "footen", "cap1", "1.1", addHeaders)
 	s.validateResponse(err, resp)
 	s.validateRESTPackage(resp.JSON200.DeploymentPackage, "cap1", "1.1", "Package One", "First Package",
 		2, 2, "p1", 2, 2)
@@ -199,12 +199,12 @@ func (s *TestSuite) TestValidateRESTBasics() {
 	s.validateRESTArtifactReference(ar, "thumb", "thumbnail")
 
 	// Get all packages for bar project
-	lbr, err := s.restClient.CatalogV3CatalogServiceListDeploymentPackagesWithResponse(s.ProjectID("footen"), &restapi.CatalogV3CatalogServiceListDeploymentPackagesParams{}, addHeaders)
+	lbr, err := s.restClient.CatalogServiceListDeploymentPackagesWithResponse(s.ProjectID("footen"), "footen", &restapi.CatalogServiceListDeploymentPackagesParams{}, addHeaders)
 	s.validateResponse(err, lbr)
 	s.Len(lbr.JSON200.DeploymentPackages, 1)
 
 	// Get all packages for foo project
-	lbr, err = s.restClient.CatalogV3CatalogServiceListDeploymentPackagesWithResponse(s.ProjectID("barten"), &restapi.CatalogV3CatalogServiceListDeploymentPackagesParams{}, addHeaders)
+	lbr, err = s.restClient.CatalogServiceListDeploymentPackagesWithResponse(s.ProjectID("barten"), "barten", &restapi.CatalogServiceListDeploymentPackagesParams{}, addHeaders)
 	s.validateResponse(err, lbr)
 	s.Len(lbr.JSON200.DeploymentPackages, 0)
 }

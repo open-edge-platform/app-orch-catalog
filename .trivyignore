@@ -1,7 +1,0 @@
-# SPDX-FileCopyrightText: (C) 2026 Intel Corporation
-#
-# SPDX-License-Identifier: Apache-2.0
-
-# buger/jsonparser v1.1.1 - Denial of service via large JSON input
-# Indirect dependency; no fixed version available upstream
-GHSA-6g7g-w4f8-9c9x

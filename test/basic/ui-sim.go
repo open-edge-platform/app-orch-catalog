@@ -85,15 +85,17 @@ func (s *Simulator) Run() {
 
 type UISimulator struct {
 	Simulator
-	registries   []restapi.Registry
-	artifacts    []restapi.Artifact
-	applications []restapi.Application
-	packages     []restapi.DeploymentPackage
+	projectName  string
+	registries   []restapi.CatalogV3Registry
+	artifacts    []restapi.CatalogV3Artifact
+	applications []restapi.CatalogV3Application
+	packages     []restapi.CatalogV3DeploymentPackage
 }
 
-func NewUISimulator(id string, client *restapi.ClientWithResponses) *UISimulator {
+func NewUISimulator(id string, client *restapi.ClientWithResponses, projectName string) *UISimulator {
 	sim := &UISimulator{
-		Simulator{id: id, client: client}, nil, nil, nil, nil,
+		Simulator:   Simulator{id: id, client: client},
+		projectName: projectName,
 	}
 	sim.WorkloadSimulator = sim
 	return sim
@@ -213,10 +215,10 @@ func (s *UISimulator) createApplication() error {
 	fmt.Printf("%s: Create application %s", s.id, name)
 	return s.measure("Create Application", func() error {
 		p1 := "p1"
-		_, err := s.client.CatalogServiceCreateApplicationWithResponse(s.ctx, restapi.CatalogServiceCreateApplicationJSONRequestBody{
+		_, err := s.client.CatalogServiceCreateApplicationWithResponse(s.ctx, s.projectName, restapi.CatalogServiceCreateApplicationJSONRequestBody{
 			Name: name, Version: "0.1.0",
 			ChartName: fmt.Sprintf("%s-chart", name), ChartVersion: "0.1.0", HelmRegistryName: registry.Name,
-			Profiles: &[]restapi.Profile{
+			Profiles: &[]restapi.CatalogV3Profile{
 				profileREST("p1", "Profile One", "First profile", "some odd yaml goes here"),
 				profileREST("p2", "Profile Two", "Second profile", "some other yaml goes here"),
 				profileREST("p3", "Profile Three", "Third profile", "some weird yaml here"),
@@ -231,7 +233,7 @@ func (s *UISimulator) deleteApplication() error {
 	application := s.applications[rand.Intn(len(s.applications))]
 	fmt.Printf("%s: Delete application %s", s.id, application.Name)
 	return s.measure("Delete Application", func() error {
-		_, err := s.client.CatalogServiceDeleteApplicationWithResponse(s.ctx, application.Name, application.Version, addHeaders)
+		_, err := s.client.CatalogServiceDeleteApplicationWithResponse(s.ctx, s.projectName, application.Name, application.Version, addHeaders)
 		return err
 	})
 }
@@ -242,10 +244,10 @@ func (s *UISimulator) createPackage() error {
 	fmt.Printf("%s: Create package %s", s.id, name)
 	return s.measure("Create Package", func() error {
 		p1 := "p1"
-		_, err := s.client.CatalogServiceCreateDeploymentPackageWithResponse(s.ctx, restapi.CatalogServiceCreateDeploymentPackageJSONRequestBody{
+		_, err := s.client.CatalogServiceCreateDeploymentPackageWithResponse(s.ctx, s.projectName, restapi.CatalogServiceCreateDeploymentPackageJSONRequestBody{
 			Name: name, Version: "0.2.0",
-			ApplicationReferences: []restapi.ApplicationReference{{Name: application.Name, Version: application.Version}},
-			Profiles: &[]restapi.DeploymentProfile{
+			ApplicationReferences: []restapi.CatalogV3ApplicationReference{{Name: application.Name, Version: application.Version}},
+			Profiles: &[]restapi.CatalogV3DeploymentProfile{
 				packageRESTProfile("p1", "Profile One", "First profile", map[string]string{application.Name: "p1"}),
 			},
 			DefaultProfileName: &p1,
@@ -258,7 +260,7 @@ func (s *UISimulator) deletePackage() error {
 	pkg := s.packages[rand.Intn(len(s.packages))]
 	fmt.Printf("%s: Delete package %s", s.id, pkg.Name)
 	return s.measure("Delete Package", func() error {
-		_, err := s.client.CatalogServiceDeleteDeploymentPackageWithResponse(s.ctx, pkg.Name, pkg.Version, addHeaders)
+		_, err := s.client.CatalogServiceDeleteDeploymentPackageWithResponse(s.ctx, s.projectName, pkg.Name, pkg.Version, addHeaders)
 		return err
 	})
 }
@@ -281,7 +283,7 @@ func (s *UISimulator) paginate(name string, initialOffset int32, pages int32, pa
 func (s *UISimulator) paginateRegistries(initialOffset int32, pages int32, pageSize int32) error {
 	return s.paginate("Page Registries", initialOffset, pages, pageSize,
 		func(offset int32, size int32) error {
-			resp, err := s.client.CatalogServiceListRegistriesWithResponse(s.ctx,
+			resp, err := s.client.CatalogServiceListRegistriesWithResponse(s.ctx, s.projectName,
 				&restapi.CatalogServiceListRegistriesParams{Offset: &offset, PageSize: &size}, addHeaders)
 			if err == nil && resp.HTTPResponse.StatusCode == 200 {
 				s.registries = resp.JSON200.Registries
@@ -293,7 +295,7 @@ func (s *UISimulator) paginateRegistries(initialOffset int32, pages int32, pageS
 func (s *UISimulator) paginateArtifacts(initialOffset int32, pages int32, pageSize int32) error {
 	return s.paginate("Page Artifacts", initialOffset, pages, pageSize,
 		func(offset int32, size int32) error {
-			resp, err := s.client.CatalogServiceListArtifactsWithResponse(s.ctx,
+			resp, err := s.client.CatalogServiceListArtifactsWithResponse(s.ctx, s.projectName,
 				&restapi.CatalogServiceListArtifactsParams{Offset: &offset, PageSize: &size}, addHeaders)
 			if err == nil && resp.HTTPResponse.StatusCode == 200 {
 				s.artifacts = resp.JSON200.Artifacts
@@ -305,7 +307,7 @@ func (s *UISimulator) paginateArtifacts(initialOffset int32, pages int32, pageSi
 func (s *UISimulator) paginateApplications(initialOffset int32, pages int32, pageSize int32) error {
 	return s.paginate("Page Applications", initialOffset, pages, pageSize,
 		func(offset int32, size int32) error {
-			resp, err := s.client.CatalogServiceListApplicationsWithResponse(s.ctx,
+			resp, err := s.client.CatalogServiceListApplicationsWithResponse(s.ctx, s.projectName,
 				&restapi.CatalogServiceListApplicationsParams{Offset: &offset, PageSize: &size}, addHeaders)
 			if err == nil && resp.HTTPResponse.StatusCode == 200 {
 				s.applications = resp.JSON200.Applications
@@ -317,8 +319,8 @@ func (s *UISimulator) paginateApplications(initialOffset int32, pages int32, pag
 func (s *UISimulator) paginatePackages(initialOffset int32, pages int32, pageSize int32) error {
 	return s.paginate("Page Packages", initialOffset, pages, pageSize,
 		func(offset int32, size int32) error {
-			resp, err := s.client.CatalogV3CatalogServiceListDeploymentPackagesWithResponse(s.ctx,
-				&restapi.CatalogV3CatalogServiceListDeploymentPackagesParams{Offset: &offset, PageSize: &size}, addHeaders)
+			resp, err := s.client.CatalogServiceListDeploymentPackagesWithResponse(s.ctx, s.projectName,
+				&restapi.CatalogServiceListDeploymentPackagesParams{Offset: &offset, PageSize: &size}, addHeaders)
 			if err == nil && resp.HTTPResponse.StatusCode == 200 {
 				s.packages = resp.JSON200.DeploymentPackages
 			}
