@@ -96,6 +96,8 @@ LABEL org.opencontainers.image.version=$org_label_schema_version \
 
 USER nobody
 
+HEALTHCHECK NONE
+
 COPY --from=rest-proxy /build/bin/rest-proxy /usr/local/bin/
 
 COPY --from=application-catalog /build/bin/application-catalog /usr/local/bin/

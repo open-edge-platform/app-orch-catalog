@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: (C) 2023 Intel Corporation
+# SPDX-FileCopyrightText: (C) 2026 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
 SHELL := bash -eu -o pipefail
@@ -8,7 +8,7 @@ VERSION            := $(shell cat VERSION)
 CHART_VERSION      := $(shell cat VERSION)
 VERSION_DEV_SUFFIX := -dev
 GIT_COMMIT         ?= $(shell git rev-parse --short HEAD)
-OPA_IMAGE_VER       = 1.12.0-dev-static
+OPA_IMAGE_VER       = 1.15.1-static
 
 
 ifeq ($(patsubst %$(VERSION_DEV_SUFFIX),,$(lastword $(VERSION))),)
