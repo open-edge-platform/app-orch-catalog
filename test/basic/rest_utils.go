@@ -13,8 +13,8 @@ import (
 	"os"
 )
 
-func (s *TestSuite) createRESTRegistry(projectUUID string, name string, display string, description string, url string) *restapi.Registry {
-	r, err := s.restClient.CatalogServiceCreateRegistryWithResponse(s.ProjectID(projectUUID), restapi.CatalogServiceCreateRegistryJSONRequestBody{
+func (s *TestSuite) createRESTRegistry(projectUUID string, name string, display string, description string, url string) *restapi.CatalogV3Registry {
+	r, err := s.restClient.CatalogServiceCreateRegistryWithResponse(s.ProjectID(projectUUID), projectUUID, restapi.CatalogServiceCreateRegistryJSONRequestBody{
 		Name: name, DisplayName: &display, Description: &description, RootUrl: url, Type: "HELM"}, addHeaders)
 	if s.validateResponse(err, r) {
 		if s.NotNil(r.JSON200) {
@@ -25,7 +25,7 @@ func (s *TestSuite) createRESTRegistry(projectUUID string, name string, display 
 	return nil
 }
 
-func (s *TestSuite) validateRESTRegistry(reg restapi.Registry, name string, display string, description string) {
+func (s *TestSuite) validateRESTRegistry(reg restapi.CatalogV3Registry, name string, display string, description string) {
 	s.Equal(name, reg.Name)
 	s.Equal(display, *reg.DisplayName)
 	s.Equal(description, *reg.Description)
@@ -33,8 +33,8 @@ func (s *TestSuite) validateRESTRegistry(reg restapi.Registry, name string, disp
 }
 
 func (s *TestSuite) createRESTApplication(projectUUID string, reg string, name string, ver string, display string, description string,
-	profiles []restapi.Profile, defaultProfile string) *restapi.Application {
-	r, err := s.restClient.CatalogServiceCreateApplicationWithResponse(s.ProjectID(projectUUID), restapi.CatalogServiceCreateApplicationJSONRequestBody{
+	profiles []restapi.CatalogV3Profile, defaultProfile string) *restapi.CatalogV3Application {
+	r, err := s.restClient.CatalogServiceCreateApplicationWithResponse(s.ProjectID(projectUUID), projectUUID, restapi.CatalogServiceCreateApplicationJSONRequestBody{
 		Name: name, Version: ver, DisplayName: &display, Description: &description,
 		ChartName: fmt.Sprintf("%s-chart", name), ChartVersion: ver, HelmRegistryName: reg,
 		Profiles: &profiles, DefaultProfileName: &defaultProfile,
@@ -48,7 +48,7 @@ func (s *TestSuite) createRESTApplication(projectUUID string, reg string, name s
 	return nil
 }
 
-func (s *TestSuite) validateRESTApplication(app restapi.Application, name string, ver string, display string, description string, profileCount int, defaultProfile string) {
+func (s *TestSuite) validateRESTApplication(app restapi.CatalogV3Application, name string, ver string, display string, description string, profileCount int, defaultProfile string) {
 	s.Equal(name, app.Name)
 	s.Equal(ver, app.Version)
 	s.Equal(display, *app.DisplayName)
@@ -59,14 +59,14 @@ func (s *TestSuite) validateRESTApplication(app restapi.Application, name string
 	s.Equal(defaultProfile, *app.DefaultProfileName)
 }
 
-func profileREST(name string, display string, description string, values string) restapi.Profile {
-	return restapi.Profile{Name: name, DisplayName: &display, Description: &description, ChartValues: &values}
+func profileREST(name string, display string, description string, values string) restapi.CatalogV3Profile {
+	return restapi.CatalogV3Profile{Name: name, DisplayName: &display, Description: &description, ChartValues: &values}
 }
 
 func (s *TestSuite) createRESTArtifact(projectUUID string, name string, display string, description string,
-	mimeType string, path string) *restapi.Artifact {
+	mimeType string, path string) *restapi.CatalogV3Artifact {
 	value, _ := os.ReadFile(path)
-	r, err := s.restClient.CatalogServiceCreateArtifactWithResponse(s.ProjectID(projectUUID), restapi.CatalogServiceCreateArtifactJSONRequestBody{
+	r, err := s.restClient.CatalogServiceCreateArtifactWithResponse(s.ProjectID(projectUUID), projectUUID, restapi.CatalogServiceCreateArtifactJSONRequestBody{
 		Name: name, DisplayName: &display, Description: &description, MimeType: mimeType, Artifact: value},
 		addHeaders)
 	if s.validateResponse(err, r) {
@@ -78,7 +78,7 @@ func (s *TestSuite) createRESTArtifact(projectUUID string, name string, display 
 	return nil
 }
 
-func (s *TestSuite) validateRESTArtifact(app restapi.Artifact, name string, display string, description string, mimeType string, value []byte) {
+func (s *TestSuite) validateRESTArtifact(app restapi.CatalogV3Artifact, name string, display string, description string, mimeType string, value []byte) {
 	s.Equal(name, app.Name)
 	s.Equal(display, *app.DisplayName)
 	s.Equal(description, *app.Description)
@@ -86,10 +86,10 @@ func (s *TestSuite) validateRESTArtifact(app restapi.Artifact, name string, disp
 	s.Equal(value, app.Artifact)
 }
 
-func (s *TestSuite) createRESTPackage(projectUUID string, name string, ver string, display string, description string, references []restapi.ApplicationReference,
-	profiles []restapi.DeploymentProfile, defaultProfile string, extensions []restapi.APIExtension,
-	artifacts []restapi.ArtifactReference) *restapi.DeploymentPackage {
-	r, err := s.restClient.CatalogServiceCreateDeploymentPackageWithResponse(s.ProjectID(projectUUID), restapi.CatalogServiceCreateDeploymentPackageJSONRequestBody{
+func (s *TestSuite) createRESTPackage(projectUUID string, name string, ver string, display string, description string, references []restapi.CatalogV3ApplicationReference,
+	profiles []restapi.CatalogV3DeploymentProfile, defaultProfile string, extensions []restapi.CatalogV3APIExtension,
+	artifacts []restapi.CatalogV3ArtifactReference) *restapi.CatalogV3DeploymentPackage {
+	r, err := s.restClient.CatalogServiceCreateDeploymentPackageWithResponse(s.ProjectID(projectUUID), projectUUID, restapi.CatalogServiceCreateDeploymentPackageJSONRequestBody{
 		Name: name, Version: ver, DisplayName: &display, Description: &description,
 		ApplicationReferences: references, Profiles: &profiles, DefaultProfileName: &defaultProfile,
 		Extensions: extensions, Artifacts: artifacts,
@@ -103,7 +103,7 @@ func (s *TestSuite) createRESTPackage(projectUUID string, name string, ver strin
 	return nil
 }
 
-func (s *TestSuite) validateRESTPackage(pkg restapi.DeploymentPackage, name string, ver string, display string, description string, referenceCount int, profileCount int, defaultProfile string, extensionCount int, artifactCount int) {
+func (s *TestSuite) validateRESTPackage(pkg restapi.CatalogV3DeploymentPackage, name string, ver string, display string, description string, referenceCount int, profileCount int, defaultProfile string, extensionCount int, artifactCount int) {
 	s.Equal(name, pkg.Name)
 	s.Equal(ver, pkg.Version)
 	s.Equal(display, *pkg.DisplayName)
@@ -115,19 +115,19 @@ func (s *TestSuite) validateRESTPackage(pkg restapi.DeploymentPackage, name stri
 	s.Len(pkg.Artifacts, artifactCount)
 }
 
-func packageRESTProfile(name string, display string, description string, applicationProfiles map[string]string) restapi.DeploymentProfile {
-	return restapi.DeploymentProfile{Name: name, DisplayName: &display, Description: &description, ApplicationProfiles: applicationProfiles}
+func packageRESTProfile(name string, display string, description string, applicationProfiles map[string]string) restapi.CatalogV3DeploymentProfile {
+	return restapi.CatalogV3DeploymentProfile{Name: name, DisplayName: &display, Description: &description, ApplicationProfiles: applicationProfiles}
 }
 
-func extensionREST(name string, version string, display string, description string, uiLabel string, uiService string, endpoints []restapi.Endpoint) restapi.APIExtension {
-	ext := restapi.APIExtension{Name: name, Version: version, DisplayName: &display, Description: &description, Endpoints: &endpoints}
+func extensionREST(name string, version string, display string, description string, uiLabel string, uiService string, endpoints []restapi.CatalogV3Endpoint) restapi.CatalogV3APIExtension {
+	ext := restapi.CatalogV3APIExtension{Name: name, Version: version, DisplayName: &display, Description: &description, Endpoints: &endpoints}
 	if uiLabel != "" {
-		ext.UiExtension = &restapi.UIExtension{AppName: name, ModuleName: name, Label: uiLabel, ServiceName: uiService, Description: description, FileName: "none"}
+		ext.UiExtension = &restapi.CatalogV3UIExtension{AppName: name, ModuleName: name, Label: uiLabel, ServiceName: uiService, Description: description, FileName: "none"}
 	}
 	return ext
 }
 
-func findRESTExtension(name string, extensions []restapi.APIExtension) *restapi.APIExtension {
+func findRESTExtension(name string, extensions []restapi.CatalogV3APIExtension) *restapi.CatalogV3APIExtension {
 	for _, ext := range extensions {
 		if ext.Name == name {
 			return &ext
@@ -136,7 +136,7 @@ func findRESTExtension(name string, extensions []restapi.APIExtension) *restapi.
 	return nil
 }
 
-func (s *TestSuite) validateRESTExtension(ext *restapi.APIExtension, name string, version string, display string, description string,
+func (s *TestSuite) validateRESTExtension(ext *restapi.CatalogV3APIExtension, name string, version string, display string, description string,
 	uiLabel string, uiService string, endpointCount int) {
 	s.Equal(name, ext.Name)
 	s.Equal(version, ext.Version)
@@ -152,11 +152,11 @@ func (s *TestSuite) validateRESTExtension(ext *restapi.APIExtension, name string
 	s.Len(*ext.Endpoints, endpointCount)
 }
 
-func endpointREST(service string, external string, internal string) restapi.Endpoint {
-	return restapi.Endpoint{ServiceName: service, ExternalPath: external, InternalPath: internal}
+func endpointREST(service string, external string, internal string) restapi.CatalogV3Endpoint {
+	return restapi.CatalogV3Endpoint{ServiceName: service, ExternalPath: external, InternalPath: internal}
 }
 
-func findRESTEndpoint(service string, endpoints []restapi.Endpoint) *restapi.Endpoint {
+func findRESTEndpoint(service string, endpoints []restapi.CatalogV3Endpoint) *restapi.CatalogV3Endpoint {
 	for _, ep := range endpoints {
 		if ep.ServiceName == service {
 			return &ep
@@ -165,17 +165,17 @@ func findRESTEndpoint(service string, endpoints []restapi.Endpoint) *restapi.End
 	return nil
 }
 
-func (s *TestSuite) validateRESTEndpoint(ep *restapi.Endpoint, service string, external string, internal string) {
+func (s *TestSuite) validateRESTEndpoint(ep *restapi.CatalogV3Endpoint, service string, external string, internal string) {
 	s.Equal(service, ep.ServiceName)
 	s.Equal(external, ep.ExternalPath)
 	s.Equal(internal, ep.InternalPath)
 }
 
-func artifactREST(name string, purpose string) restapi.ArtifactReference {
-	return restapi.ArtifactReference{Name: name, Purpose: purpose}
+func artifactREST(name string, purpose string) restapi.CatalogV3ArtifactReference {
+	return restapi.CatalogV3ArtifactReference{Name: name, Purpose: purpose}
 }
 
-func findRESTArtifactReference(name string, artifacts []restapi.ArtifactReference) *restapi.ArtifactReference {
+func findRESTArtifactReference(name string, artifacts []restapi.CatalogV3ArtifactReference) *restapi.CatalogV3ArtifactReference {
 	for _, ar := range artifacts {
 		if ar.Name == name {
 			return &ar
@@ -184,7 +184,7 @@ func findRESTArtifactReference(name string, artifacts []restapi.ArtifactReferenc
 	return nil
 }
 
-func (s *TestSuite) validateRESTArtifactReference(ar *restapi.ArtifactReference, name string, purpose string) {
+func (s *TestSuite) validateRESTArtifactReference(ar *restapi.CatalogV3ArtifactReference, name string, purpose string) {
 	s.Equal(name, ar.Name)
 	s.Equal(purpose, ar.Purpose)
 }

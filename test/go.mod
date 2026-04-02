@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (C) 2024 Intel Corporation
+// SPDX-FileCopyrightText: (C) 2026 Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -8,7 +8,7 @@ go 1.26.1
 
 require (
 	github.com/open-edge-platform/app-orch-catalog v0.17.0
-	github.com/open-edge-platform/orch-library/go v0.6.4-0.20260211092341-cfad67ad247d
+	github.com/open-edge-platform/orch-library/go v0.6.4-0.20260331163258-bead22552759
 	github.com/open-edge-platform/orch-utils/tenancy-datamodel v1.2.2
 	github.com/stretchr/testify v1.11.1
 	golang.org/x/text v0.35.0
@@ -41,8 +41,8 @@ require (
 	github.com/evanphx/json-patch/v5 v5.9.11 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.9.1 // indirect
-	github.com/go-jose/go-jose/v3 v3.0.4 // indirect
-	github.com/go-jose/go-jose/v4 v4.1.3 // indirect
+	github.com/go-jose/go-jose/v3 v3.0.5 // indirect
+	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-openapi/inflect v0.21.5 // indirect
 	github.com/go-openapi/jsonpointer v0.22.5 // indirect
@@ -115,8 +115,8 @@ require (
 	golang.org/x/time v0.15.0 // indirect
 	golang.org/x/tools v0.43.0 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.5.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20260330182312-d5a96adf58d8 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260330182312-d5a96adf58d8 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20260401024825-9d38bb4040a9 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260401024825-9d38bb4040a9 // indirect
 	google.golang.org/protobuf v1.36.11 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.13.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect

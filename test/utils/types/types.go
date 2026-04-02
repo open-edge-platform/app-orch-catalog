@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: (C) 2025-present Intel Corporation
+// SPDX-FileCopyrightText: (C) 2026 Intel Corporation
 //
 // SPDX-License-Identifier: Apache-2.0
 
@@ -44,8 +44,8 @@ func GetDeploymentPackages() []restClient.CatalogV3DeploymentPackage {
 	extensionKind := restClient.KINDEXTENSION
 	for _, dp := range []restClient.CatalogV3DeploymentPackage{
 		{Name: "cert-manager", Description: GetPointerString("cert-manager Deployment Package"), Kind: &extensionKind},
-			{Name: "headlamp", Description: GetPointerString("headlamp is a web-based UI for Kubernetes cluster management."), Kind: &extensionKind},
-			{Name: "intel-accelerators", Description: GetPointerString("Intel Accelerators K8S extension"), Kind: &extensionKind},
+		{Name: "headlamp", Description: GetPointerString("headlamp is a web-based UI for Kubernetes cluster management."), Kind: &extensionKind},
+		{Name: "intel-accelerators", Description: GetPointerString("Intel Accelerators K8S extension"), Kind: &extensionKind},
 		{Name: "loadbalancer", Description: GetPointerString("Enables load balancer and ingress controller on the edge"), Kind: &extensionKind},
 		{Name: "nfd", Description: GetPointerString("Node Feature Discovery (NFD) Deployment Package"), Kind: &extensionKind},
 		{Name: "nvidia-gpu-operator", Description: GetPointerString("NVIDIA GPU Operator deployment package"), Kind: &extensionKind},
@@ -72,7 +72,7 @@ func GetApplications() []restClient.CatalogV3Application {
 		{Name: "cert-manager", DisplayName: GetPointerString("cert-manager"), Description: GetPointerString("Cert Manager"), Kind: &extensionKind, ChartName: "cert-manager", HelmRegistryName: "jetstack"},
 		{Name: "intel-device-operator", DisplayName: GetPointerString("intel-device-operator"), Description: GetPointerString("Intel Device Plugin Operator"), Kind: &extensionKind, ChartName: "intel-device-plugins-operator", HelmRegistryName: "intel-github-io"},
 		{Name: "intel-gpu-plugin", DisplayName: GetPointerString("intel-gpu-plugin"), Description: GetPointerString("Intel GPU Device Plugin"), Kind: &extensionKind, ChartName: "intel-device-plugins-gpu", HelmRegistryName: "intel-github-io"},
-			{Name: "headlamp", DisplayName: GetPointerString("headlamp"), Description: GetPointerString("headlamp is a web-based UI for Kubernetes cluster management."), Kind: &extensionKind, ChartName: "edge-orch/en/charts/headlamp", HelmRegistryName: "intel-rs-helm"},
+		{Name: "headlamp", DisplayName: GetPointerString("headlamp"), Description: GetPointerString("headlamp is a web-based UI for Kubernetes cluster management."), Kind: &extensionKind, ChartName: "edge-orch/en/charts/headlamp", HelmRegistryName: "intel-rs-helm"},
 		{Name: "kubevirt", DisplayName: GetPointerString("kubevirt"), Description: GetPointerString("Virtual machine management add-on for Kubernetes"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/kubevirt", HelmRegistryName: "intel-rs-helm"},
 		{Name: "kubevirt-helper", DisplayName: GetPointerString("kubevirt-helper"), Description: GetPointerString("Automatically restart VM when editable VM spec is updated"), Kind: &extensionKind, ChartName: "edge-orch/en/charts/kubevirt-helper", HelmRegistryName: "intel-rs-helm"},
 		{Name: "metallb", DisplayName: GetPointerString("metallb"), Description: GetPointerString("Load balancer for bare metal k8s clusters"), Kind: &extensionKind, ChartName: "metallb", HelmRegistryName: "metallb-helm"},
@@ -113,7 +113,7 @@ func GetRegistryDefinitions(orchDomain string) []restClient.CatalogV3Registry {
 		{Name: "intel-rs-helm", DisplayName: GetPointerString("intel-rs-helm"), Description: GetPointerString("Repo on registry registry-rs.edgeorchestration.intel.com"), RootUrl: "oci://rs-proxy.orch-platform.svc.cluster.local:8443", Type: "HELM"},
 		{Name: "intel-rs-images", DisplayName: GetPointerString("intel-rs-image"), Description: GetPointerString("Repo on registry registry-rs.edgeorchestration.intel.com"), RootUrl: "oci://registry-rs.edgeorchestration.intel.com", Type: "IMAGE"},
 		{Name: "jetstack", DisplayName: GetPointerString("jetstack"), Description: GetPointerString("Public registry for cert manager chart"), RootUrl: "https://charts.jetstack.io", Type: "HELM"},
-			{Name: "headlamp", DisplayName: GetPointerString("headlamp"), Description: GetPointerString("Headlamp registry"), RootUrl: "https://kubernetes-sigs.github.io/headlamp/", Type: "HELM"},
+		{Name: "headlamp", DisplayName: GetPointerString("headlamp"), Description: GetPointerString("Headlamp registry"), RootUrl: "https://kubernetes-sigs.github.io/headlamp/", Type: "HELM"},
 		{Name: "kubernetes-ingress-helm", DisplayName: GetPointerString("kubernetes-ingress-helm"), Description: GetPointerString("Kubernetes Github helm registry for ingress-nginx"), RootUrl: "https://kubernetes.github.io/ingress-nginx", Type: "HELM"},
 	}
 }
