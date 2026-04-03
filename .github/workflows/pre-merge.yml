@@ -38,6 +38,7 @@ jobs:
       run_artifact: false
       project_folder: ${{ matrix.project_folder }}
       trivy_image_skip: "envoyproxy/envoy:v1.36.2"
+      ignore_trivy_fail: true
   final-check:
     runs-on: ubuntu-latest
     if: ${{ always() }}

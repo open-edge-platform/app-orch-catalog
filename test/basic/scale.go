@@ -352,7 +352,7 @@ func (s *TestSuite) TestScaleWorkloads() {
 	// Create and start the simulators
 	uiSims := make([]*UISimulator, 70)
 	for i := range uiSims {
-		sim := NewUISimulator(fmt.Sprintf("ui%d", i+1), s.restClient)
+		sim := NewUISimulator(fmt.Sprintf("ui%d", i+1), s.restClient, tenant)
 		uiSims[i] = sim
 		sim.Start()
 	}
