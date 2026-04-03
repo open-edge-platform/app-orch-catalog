@@ -40,7 +40,12 @@ jobs:
         ghcr.io/github/gh-aw-firewall/api-proxy:latest,
         ghcr.io/github/gh-aw-firewall/squid:latest,
         debian@sha256:0a5bf4ecacfc050bad0131c8e1401063fd1e8343a418723f6dbd3cd13a7b9e33,
-        ghcr.io/github/github-mcp-server@sha256:a9dd39eec67f09ded51631c79641dd72acb4945c6391df47824fa2d508b5431b
+        ghcr.io/github/github-mcp-server@sha256:a9dd39eec67f09ded51631c79641dd72acb4945c6391df47824fa2d508b5431b,
+        ghcr.io/github/gh-aw-mcpg@sha256:57d0a5f11c87e2cabf72e43fb18e6fc3a8ca42fb66a56c240db5e756c7b56155,
+        ghcr.io/github/gh-aw-firewall/agent@sha256:20c06d7e55af4a32983933990b5220d2c777f9cee92357597b9494a912c4a781,
+        ghcr.io/github/gh-aw-firewall/api-proxy@sha256:936666281cbe5ef2713c7e0435b1c7ad005119fb0a79ae8b7ede921d90ac672e,
+        ghcr.io/github/gh-aw-firewall/squid@sha256:6aad3d1bc9dc9233fe9bd0789e6310aa110f052ccda7c1fa4d1d39e12e2708ac
+
     secrets:
       SYS_EMF_GH_TOKEN: ${{ secrets.SYS_EMF_GH_TOKEN }}
       NO_AUTH_ECR_PUSH_USERNAME: ${{ secrets.NO_AUTH_ECR_PUSH_USERNAME }}
