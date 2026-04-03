@@ -32,23 +32,7 @@ jobs:
       run_helm_push: true
       run_version_tag: true
       project_folder: ""
-      trivy_image_skip: |
-        ghcr.io/dependabot/dependabot-updater-core:latest,
-        ghcr.io/github/github-mcp-server:latest,
-        ghcr.io/github/gh-aw-mcpg:latest,
-        ghcr.io/github/gh-aw-firewall/agent:latest,
-        ghcr.io/github/gh-aw-firewall/api-proxy:latest,
-        ghcr.io/github/gh-aw-firewall/squid:latest,
-        debian@sha256:0a5bf4ecacfc050bad0131c8e1401063fd1e8343a418723f6dbd3cd13a7b9e33,
-        ghcr.io/github/github-mcp-server@sha256:a9dd39eec67f09ded51631c79641dd72acb4945c6391df47824fa2d508b5431b,
-        ghcr.io/github/gh-aw-mcpg@sha256:57d0a5f11c87e2cabf72e43fb18e6fc3a8ca42fb66a56c240db5e756c7b56155,
-        ghcr.io/github/gh-aw-mcpg@sha256:9946c54a5924a351644349a048f448f23497d66d4c97025565eff00afa6ecb75,
-        ghcr.io/github/gh-aw-firewall/agent@sha256:20c06d7e55af4a32983933990b5220d2c777f9cee92357597b9494a912c4a781,
-        ghcr.io/github/gh-aw-firewall/agent@sha256:8ad51f216a9a0d9b2f782bfabf6a4f8f958d46eaf7de04066c548fd26ef4634a,
-        ghcr.io/github/gh-aw-firewall/api-proxy@sha256:936666281cbe5ef2713c7e0435b1c7ad005119fb0a79ae8b7ede921d90ac672e,
-        ghcr.io/github/gh-aw-firewall/api-proxy@sha256:7a0e22937109d4c2889cf19fb49ed7fef4d00f1aa00650ebe012e1b418103840,
-        ghcr.io/github/gh-aw-firewall/squid@sha256:6aad3d1bc9dc9233fe9bd0789e6310aa110f052ccda7c1fa4d1d39e12e2708ac,
-        ghcr.io/github/gh-aw-firewall/squid@sha256:118f238e49fd04100b1fb4ae9edf50f9a4e98492887a1a45b070571516d67760
+      trivy_image_skip: ghcr.io/dependabot/dependabot-updater-core:latest,ghcr.io/github/,debian
 
     secrets:
       SYS_EMF_GH_TOKEN: ${{ secrets.SYS_EMF_GH_TOKEN }}
