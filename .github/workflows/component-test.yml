@@ -45,7 +45,7 @@ jobs:
     steps:
       - name: Deploy Kind Orchestrator
         id: deploy-kind-orchestrator
-        uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@cfbe1dcbe94b3308f20896f0be2149205e0bf8be
+        uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@d92e9affa9ce96b1ad36a36d31ff4752c43bfdb7
         timeout-minutes: 45
         with:
           orch_version: ${{ inputs.emf-branch || 'main' }}
