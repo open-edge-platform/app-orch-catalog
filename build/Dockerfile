@@ -13,15 +13,24 @@ ARG no_proxy
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# rebuild atlas from source to match go 1.26.1 to mitigate CVEs
-# hash for atlas v1.1.0
-ENV ATLAS_HASH=1a19b3deb9b228120e4fb17cf461772da48bde73
+# rebuild atlas from source to match go 1.26.1 and patch CVE-affected deps
+# hash for atlas main repo
+ENV ATLAS_HASH=6243aa41c3eea0dbe7c611a2eeb249ed7ef07670
 WORKDIR /build/src
 RUN git clone https://github.com/ariga/atlas.git
 WORKDIR /build/src/atlas
 RUN git checkout $ATLAS_HASH
 WORKDIR /build/src/atlas/cmd/atlas
-RUN sed -i 's/go 1\.[0-9]\+\.[0-9]\+/go 1.26.1/g' go.mod && go build -o /go/bin/atlas .
+# Upgrade vulnerable indirect deps in cmd/atlas/go.mod before building:
+#   filippo.io/edwards25519 v1.1.0 -> v1.2.0 (fixes CVE-2026-33186)
+#   go.opentelemetry.io/otel/sdk v1.37.0 -> v1.43.0 (fixes CVE-2026-24051)
+#   google.golang.org/grpc -> v1.79.3 (fixes CVE-2026-33186 grpc auth bypass)
+RUN sed -i 's/go 1\.[0-9]\+\.[0-9]\+/go 1.26.1/g' go.mod && \
+    go get filippo.io/edwards25519@v1.2.0 && \
+    go get go.opentelemetry.io/otel/sdk@v1.43.0 && \
+    go get google.golang.org/grpc@v1.79.3 && \
+    go mod tidy && \
+    go build -o /go/bin/atlas .
 
 WORKDIR /build
 RUN mkdir -p "$APP_ROOT/" && mkdir -p /build/etc
