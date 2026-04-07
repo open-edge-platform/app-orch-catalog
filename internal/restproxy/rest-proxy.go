@@ -173,10 +173,19 @@ func NewRESTProxy(cfg *Config) (*RESTProxy, error) {
 	// New multi-tenant upload path: /v3/projects/{projectName}/catalog/upload
 	// Registered on the grpc-gateway mux (not gin) because the gin wildcard route
 	// v3/projects/:projectName/catalog/* would conflict with a static gin route.
-	// The WithMetadata handler above already resolves ActiveProjectID from the URL
-	// path for all /v3/projects/{name}/catalog/... requests, so no extra UUID
-	// resolution is needed here.
+	// NOTE: WithMetadata annotators do NOT run for HandlePath routes, so project
+	// UUID resolution is done manually inside the handler closure below.
 	err = mux.HandlePath("POST", "/v3/projects/{projectName}/catalog/upload", func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+		// WithMetadata annotators do NOT run for HandlePath routes. Manually resolve
+		// the project UUID and set ActiveProjectID so UploadHTTP can use it for OPA auth.
+		projectName := pathParams["projectName"]
+		authHeader := r.Header.Get("Authorization")
+		projectUUID, resolveErr := projectcontext.ResolveProjectUUID(r.Context(), projectName, authHeader, cfg.ProjectServiceURL)
+		if resolveErr != nil {
+			log.Warnf("Failed to resolve project UUID for upload: %v", resolveErr)
+		} else if projectUUID != "" {
+			r.Header.Set(ActiveProjectID, projectUUID)
+		}
 		fileHandler.UploadHTTP(w, r)
 	})
 	if err != nil {
