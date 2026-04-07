@@ -31,6 +31,7 @@ jobs:
       run_helm_build: true
       run_helm_push: true
       run_version_tag: true
+      run_version_dev: true
       project_folder: ""
       trivy_image_skip: ghcr.io/dependabot/dependabot-updater-core:latest,ghcr.io/github/,debian
 
