@@ -168,3 +168,75 @@ func NewFileHandler(endpoint string, opts []grpc.DialOption) (*FileHandler, erro
 		grpcClient:   client,
 	}, nil
 }
+
+// UploadHTTP is a net/http-compatible upload handler for use with grpc-gateway mux.HandlePath.
+// It is functionally identical to Upload but uses plain http.ResponseWriter and *http.Request
+// instead of gin.Context, enabling registration on the grpc-gateway ServeMux.
+// The ActiveProjectID header is already populated by the ServeMux WithMetadata handler.
+func (h *FileHandler) UploadHTTP(w http.ResponseWriter, r *http.Request) {
+	authHeader := r.Header.Get("Authorization")
+	uaHeader := r.Header.Get("User-Agent")
+	projectHeader := r.Header.Get(ActiveProjectID)
+
+	mdCtx := metadata.NewOutgoingContext(context.TODO(),
+		metadata.Pairs("authorization", authHeader, "user-agent", uaHeader, "activeprojectid", projectHeader))
+
+	if err := r.ParseMultipartForm(32 << 20); err != nil { //nolint:mnd // 32 MB max memory
+		http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusInternalServerError)
+		return
+	}
+
+	returnStatus := http.StatusOK
+	ffnregex, _ := regexp.Compile("filename=\\\"(.*)\\\"")
+
+	files := r.MultipartForm.File["files"]
+	filesCount := len(files)
+	sessionID := ""
+	responses := &catalogv3.UploadMultipleCatalogEntitiesResponse{
+		Responses: []*catalogv3.UploadCatalogEntitiesResponse{},
+	}
+	for index, file := range files {
+		path := file.Filename
+		match := ffnregex.FindStringSubmatch(file.Header.Get("Content-Disposition"))
+		if len(match) > 1 {
+			path = match[1]
+		}
+		log.Infof("processing-file: %s", path)
+		openedFile, err := file.Open()
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusInternalServerError)
+			return
+		}
+		content, err := io.ReadAll(openedFile)
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusInternalServerError)
+			return
+		}
+		res, err := h.grpcClient.UploadCatalogEntities(mdCtx, &catalogv3.UploadCatalogEntitiesRequest{
+			SessionId:  sessionID,
+			LastUpload: (index + 1) == filesCount,
+			Upload: &catalogv3.Upload{
+				FileName: path,
+				Artifact: content,
+			},
+		})
+		if err != nil {
+			responses.Responses = append(responses.Responses,
+				&catalogv3.UploadCatalogEntitiesResponse{
+					SessionId:     sessionID,
+					ErrorMessages: []string{err.Error()},
+				})
+			returnStatus = http.StatusBadRequest
+			log.Errorw("error processing file", dazl.String("file", file.Filename), dazl.Error(err))
+		} else {
+			sessionID = res.SessionId
+			responses.Responses = append(responses.Responses, res)
+		}
+	}
+
+	renderer := jsonrenderer.JSONFromProto{Data: responses}
+	w.WriteHeader(returnStatus)
+	if err := renderer.Render(w); err != nil {
+		log.Errorw("error rendering upload response", dazl.Error(err))
+	}
+}

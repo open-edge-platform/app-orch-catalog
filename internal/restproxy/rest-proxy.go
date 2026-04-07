@@ -170,6 +170,27 @@ func NewRESTProxy(cfg *Config) (*RESTProxy, error) {
 	engine.Handle("POST", fmt.Sprintf("%scatalog.orchestrator.apis/upload", cfg.BasePath), func(c *gin.Context) {
 		fileHandler.Upload(c)
 	})
+	// New multi-tenant upload path: /v3/projects/{projectName}/catalog/upload
+	// Registered on the grpc-gateway mux (not gin) because the gin wildcard route
+	// v3/projects/:projectName/catalog/* would conflict with a static gin route.
+	// NOTE: WithMetadata annotators do NOT run for HandlePath routes, so project
+	// UUID resolution is done manually inside the handler closure below.
+	err = mux.HandlePath("POST", "/v3/projects/{projectName}/catalog/upload", func(w http.ResponseWriter, r *http.Request, pathParams map[string]string) {
+		// WithMetadata annotators do NOT run for HandlePath routes. Manually resolve
+		// the project UUID and set ActiveProjectID so UploadHTTP can use it for OPA auth.
+		projectName := pathParams["projectName"]
+		authHeader := r.Header.Get("Authorization")
+		projectUUID, resolveErr := projectcontext.ResolveProjectUUID(r.Context(), projectName, authHeader, cfg.ProjectServiceURL)
+		if resolveErr != nil {
+			log.Warnf("Failed to resolve project UUID for upload: %v", resolveErr)
+		} else if projectUUID != "" {
+			r.Header.Set(ActiveProjectID, projectUUID)
+		}
+		fileHandler.UploadHTTP(w, r)
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to register multi-tenant upload handler: %w", err)
+	}
 	spec, err := openapiutils.LoadOpenAPISpec(cfg.SpecFilePath)
 	if err != nil {
 		return nil, err
