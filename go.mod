@@ -7,7 +7,7 @@ module github.com/open-edge-platform/app-orch-catalog
 go 1.26.1
 
 require (
-	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.11-20260209202127-80ab13bee0bf.1
+	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.11-20260415201107-50325440f8f2.1
 	buf.build/go/protovalidate v1.1.3
 	connectrpc.com/connect v1.19.1
 	entgo.io/contrib v0.7.0
