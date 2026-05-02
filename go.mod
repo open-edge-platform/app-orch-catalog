@@ -9,7 +9,7 @@ go 1.26.1
 require (
 	buf.build/gen/go/bufbuild/protovalidate/protocolbuffers/go v1.36.11-20260209202127-80ab13bee0bf.1
 	buf.build/go/protovalidate v1.1.3
-	connectrpc.com/connect v1.19.1
+	connectrpc.com/connect v1.19.2
 	entgo.io/contrib v0.7.0
 	entgo.io/ent v0.14.6
 	github.com/DATA-DOG/go-sqlmock v1.5.2
