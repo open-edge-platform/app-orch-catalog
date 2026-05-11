@@ -3,7 +3,7 @@
 
 buf 1.59.0
 getenvoy 0.4.1
-golang 1.26.1
+golang 1.26.3
 golangci-lint 2.11.4
 hadolint 2.12.0
 helm 3.11.1
