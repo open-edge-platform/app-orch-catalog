@@ -541,12 +541,12 @@ new line`)
 		})
 		if err != nil || created == nil {
 			// Use regex patterns to match the new protovalidate v1.0.0 error format
-namePatternRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.name: does not match regex pattern.*`)
-                    nameLenRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.name: must be at most.*characters.*`)
-                    displayNameSpacesRE, _ := regexp.Compile(`registry invalid: display name cannot contain leading or trailing spaces`)
-                    displayNameLenRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.display_name: must be at most.*characters.*`)
-                    displayNamePatternRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.display_name: does not match regex pattern.*`)
-                    rootURLPatternRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.root_url: does not match regex pattern.*`)
+			namePatternRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.name: does not match regex pattern.*`)
+			nameLenRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.name: must be at most.*characters.*`)
+			displayNameSpacesRE, _ := regexp.Compile(`registry invalid: display name cannot contain leading or trailing spaces`)
+			displayNameLenRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.display_name: must be at most.*characters.*`)
+			displayNamePatternRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.display_name: does not match regex pattern.*`)
+			rootURLPatternRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.root_url: does not match regex pattern.*`)
 
 			if !namePatternRE.Match([]byte(err.Error())) &&
 				!nameLenRE.Match([]byte(err.Error())) &&

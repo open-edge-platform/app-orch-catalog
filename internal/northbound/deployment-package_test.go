@@ -1315,14 +1315,14 @@ new line`, "v1.0.0")
 		})
 		if err != nil || created == nil {
 			// Use regex patterns to match the new protovalidate v1.0.0 error format
-namePatternRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.name: does not match regex pattern.*`)
-                   nameLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.name: must be at most.*characters.*`)
-                   displayNameLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.display_name: must be at most.*characters.*`)
-                   displayNameSpacesRE, _ := regexp.Compile(`deployment-package invalid: display name cannot contain leading or trailing spaces`)
-                   displayNamePatternRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.display_name: does not match regex pattern.*`)
-                   versionLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.version: must be at least.*characters.*`)
-                   versionMaxLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.version: must be at most.*characters.*`)
-                   versionPatternRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.version: does not match regex pattern.*`)
+			namePatternRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.name: does not match regex pattern.*`)
+			nameLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.name: must be at most.*characters.*`)
+			displayNameLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.display_name: must be at most.*characters.*`)
+			displayNameSpacesRE, _ := regexp.Compile(`deployment-package invalid: display name cannot contain leading or trailing spaces`)
+			displayNamePatternRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.display_name: does not match regex pattern.*`)
+			versionLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.version: must be at least.*characters.*`)
+			versionMaxLenRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.version: must be at most.*characters.*`)
+			versionPatternRE, _ := regexp.Compile(`(?s)deployment-package invalid: validation errors?:.*deployment_package\.version: does not match regex pattern.*`)
 
 			if !namePatternRE.Match([]byte(err.Error())) &&
 				!nameLenRE.Match([]byte(err.Error())) &&
