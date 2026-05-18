@@ -13,7 +13,7 @@ ARG no_proxy
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# rebuild atlas from source to match go 1.26.1 and patch CVE-affected deps
+# rebuild atlas from source to match go 1.26.3 and patch CVE-affected deps
 # hash for atlas main repo
 ENV ATLAS_HASH=6243aa41c3eea0dbe7c611a2eeb249ed7ef07670
 WORKDIR /build/src
