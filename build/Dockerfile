@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-FROM golang:1.26.1@sha256:595c7847cff97c9a9e76f015083c481d26078f961c9c8dca3923132f51fe12f1 AS base
+FROM golang:1.26.3@sha256:2981696eed011d747340d7252620932677929cce7d2d539602f56a8d7e9b660b AS base
 
 ENV CGO_ENABLED=0
 
@@ -13,7 +13,7 @@ ARG no_proxy
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-# rebuild atlas from source to match go 1.26.1 and patch CVE-affected deps
+# rebuild atlas from source to match go 1.26.3 and patch CVE-affected deps
 # hash for atlas main repo
 ENV ATLAS_HASH=6243aa41c3eea0dbe7c611a2eeb249ed7ef07670
 WORKDIR /build/src
@@ -25,7 +25,7 @@ WORKDIR /build/src/atlas/cmd/atlas
 #   filippo.io/edwards25519 v1.1.0 -> v1.2.0 (fixes CVE-2026-33186)
 #   go.opentelemetry.io/otel/sdk v1.37.0 -> v1.43.0 (fixes CVE-2026-24051)
 #   google.golang.org/grpc -> v1.79.3 (fixes CVE-2026-33186 grpc auth bypass)
-RUN sed -i 's/go 1\.[0-9]\+\.[0-9]\+/go 1.26.1/g' go.mod && \
+RUN sed -i 's/go 1\.[0-9]\+\.[0-9]\+/go 1.26.3/g' go.mod && \
     go get filippo.io/edwards25519@v1.2.0 && \
     go get go.opentelemetry.io/otel/sdk@v1.43.0 && \
     go get google.golang.org/grpc@v1.79.3 && \
