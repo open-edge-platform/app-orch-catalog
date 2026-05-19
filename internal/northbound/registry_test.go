@@ -98,7 +98,7 @@ func (s *NorthBoundTestSuite) TestCreateRegistryInvalidName() {
 	// Create one with invalid name
 	_, err := s.client.CreateRegistry(s.ProjectID(footen), &catalogv3.CreateRegistryRequest{Registry: &catalogv3.Registry{Name: "Third registry"}})
 	s.Error(err)
-	s.Contains(err.Error(), "registry.name: value does not match regex pattern")
+	s.Contains(err.Error(), "registry.name: does not match regex pattern")
 }
 
 func (s *NorthBoundTestSuite) TestCreateRegistryDisplayName() {
@@ -541,12 +541,12 @@ new line`)
 		})
 		if err != nil || created == nil {
 			// Use regex patterns to match the new protovalidate v1.0.0 error format
-			namePatternRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.name: value does not match regex pattern.*`)
-			nameLenRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.name: value length must be at most.*characters.*`)
+			namePatternRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.name: does not match regex pattern.*`)
+			nameLenRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.name: must be at most.*characters.*`)
 			displayNameSpacesRE, _ := regexp.Compile(`registry invalid: display name cannot contain leading or trailing spaces`)
-			displayNameLenRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.display_name: value length must be at most.*characters.*`)
-			displayNamePatternRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.display_name: value does not match regex pattern.*`)
-			rootURLPatternRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.root_url: value does not match regex pattern.*`)
+			displayNameLenRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.display_name: must be at most.*characters.*`)
+			displayNamePatternRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.display_name: does not match regex pattern.*`)
+			rootURLPatternRE, _ := regexp.Compile(`(?s)registry invalid: validation errors?:.*registry\.root_url: does not match regex pattern.*`)
 
 			if !namePatternRE.Match([]byte(err.Error())) &&
 				!nameLenRE.Match([]byte(err.Error())) &&
@@ -693,7 +693,7 @@ func (s *NorthBoundTestSuite) TestRegistryUpdateErrors() {
 		errorCode            codes.Code
 	}{
 		"change registry name":  {topLevelRegistryName: "not-the-one", errorString: "registry invalid: name cannot be changed not-the-one != fooreg", errorCode: codes.InvalidArgument},
-		"invalid registry name": {registryName: "invalid name!", errorString: `registry.name: value does not match regex pattern`, errorCode: codes.InvalidArgument},
+		"invalid registry name": {registryName: "invalid name!", errorString: `registry.name: does not match regex pattern`, errorCode: codes.InvalidArgument},
 		"invalid display name":  {displayName: "   invalid name!   ", errorString: "registry fooreg invalid: display name cannot contain leading or trailing spaces", errorCode: codes.InvalidArgument},
 		"unique display name":   {registryName: fooreg, topLevelRegistryName: fooreg, displayName: "Registry fooregalt", errorString: "registry fooreg already exists: registry fooreg display name Registry fooregalt is not unique", errorCode: codes.AlreadyExists},
 	}

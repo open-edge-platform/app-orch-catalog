@@ -116,6 +116,9 @@ MGMT_CLUSTER     ?= kind-${MGMT_NAME}
 CODER_DIR 		 ?= ~/edge-manageability-framework
 CATALOG_HELM_PKG ?= ${CHART_BUILD_DIR}${CHART_NAME}-${CHART_VERSION}.tgz
 DEVEL_HELM_VALUES ?= $(CODER_DIR)/argocd/applications/configs/app-orch-catalog.yaml
+# API_HOSTNAME is the Traefik IngressRoute Host(...) match used by the chart.
+# Override per environment, e.g. `make coder-redeploy API_HOSTNAME=api.dev.example.com`.
+API_HOSTNAME     ?= api.${MGMT_NAME}.internal
 
 SAMPLE_ORG_ID := "11111111-1111-1111-1111-111111111111"
 SAMPLE_PROJECT_ID := "11111111-1111-1111-1111-222222222222"
@@ -676,7 +679,9 @@ coder-redeploy: coder-rebuild chart ## Installs the helm chart in the kind clust
 	kubectl config use-context ${MGMT_CLUSTER}
 	kubectl patch application -n dev root-app --type=merge -p '{"spec":{"syncPolicy":{"automated":{"selfHeal":false}}}}'
 	kubectl delete application -n dev app-orch-catalog --ignore-not-found=true
-	helm upgrade --install -n orch-app app-orch-catalog -f $(DEVEL_HELM_VALUES)  $(CATALOG_HELM_PKG)
+	helm upgrade --install -n orch-app app-orch-catalog -f $(DEVEL_HELM_VALUES) \
+		--set ingressRoute.apiHostname=$(API_HOSTNAME) \
+		$(CATALOG_HELM_PKG)
 	helm -n orch-app ls
 	@echo "---END MAKEFILE CHART-INSTALL-KIND---"
 
