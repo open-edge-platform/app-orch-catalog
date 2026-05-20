@@ -157,7 +157,7 @@ func (s *NorthBoundTestSuite) TestCreateApplicationInvalidName() {
 		},
 	})
 	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		"application invalid: validation error: application.name: value does not match regex pattern `^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$`"))
+		"application invalid: validation error: application.name: does not match regex pattern `^[a-z0-9][a-z0-9-]{0,24}[a-z0-9]{0,1}$`"))
 
 	// Create one with invalid version but valid other fields
 	_, err = s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
@@ -169,7 +169,7 @@ func (s *NorthBoundTestSuite) TestCreateApplicationInvalidName() {
 		},
 	})
 	s.ErrorIs(err, status.Errorf(codes.InvalidArgument,
-		"application invalid: validation error: application.version: value does not match regex pattern `^v?[0-9]+\\.[0-9]+\\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\\+[a-z0-9]+([.-][a-z0-9]+)*)?$`"))
+		"application invalid: validation error: application.version: does not match regex pattern `^v?[0-9]+\\.[0-9]+\\.[0-9]+(-[a-z0-9]+(-[a-z0-9]+)*)?(\\+[a-z0-9]+([.-][a-z0-9]+)*)?$`"))
 
 	// Create one with invalid registry
 	_, err = s.client.CreateApplication(s.ProjectID(footen), &catalogv3.CreateApplicationRequest{
@@ -242,32 +242,32 @@ func (s *NorthBoundTestSuite) TestCreateApplicationWithInvalidChartVersions() {
 		{
 			name:         "Empty chart version",
 			chartVersion: "",
-			expectError:  "chart_version: value length must be at least 1 characters",
+			expectError:  "chart_version: must be at least 1 characters",
 		},
 		{
 			name:         "Chart version with invalid characters",
 			chartVersion: "1.0.0@invalid",
-			expectError:  "chart_version: value does not match regex pattern",
+			expectError:  "chart_version: does not match regex pattern",
 		},
 		{
 			name:         "Chart version starting with invalid character",
 			chartVersion: "@1.0.0",
-			expectError:  "chart_version: value does not match regex pattern",
+			expectError:  "chart_version: does not match regex pattern",
 		},
 		{
 			name:         "Chart version ending with invalid character",
 			chartVersion: "1.0.0@",
-			expectError:  "chart_version: value does not match regex pattern",
+			expectError:  "chart_version: does not match regex pattern",
 		},
 		{
 			name:         "Chart version with space",
 			chartVersion: "1.0.0 beta",
-			expectError:  "chart_version: value does not match regex pattern",
+			expectError:  "chart_version: does not match regex pattern",
 		},
 		{
 			name:         "Chart version with invalid special characters",
 			chartVersion: "1.0.0#invalid",
-			expectError:  "chart_version: value does not match regex pattern",
+			expectError:  "chart_version: does not match regex pattern",
 		},
 	}
 
@@ -301,57 +301,57 @@ func (s *NorthBoundTestSuite) TestCreateApplicationWithInvalidVersions() {
 		{
 			name:        "Empty application version",
 			version:     "",
-			expectError: "version: value length must be at least 1 characters",
+			expectError: "version: must be at least 1 characters",
 		},
 		{
 			name:        "Two-part version (1.0)",
 			version:     "1.0",
-			expectError: "version: value does not match regex pattern",
+			expectError: "version: does not match regex pattern",
 		},
 		{
 			name:        "Single-part version (1)",
 			version:     "1",
-			expectError: "version: value does not match regex pattern",
+			expectError: "version: does not match regex pattern",
 		},
 		{
 			name:        "Four-part version (2.4.0.2)",
 			version:     "2.4.0.2",
-			expectError: "version: value does not match regex pattern",
+			expectError: "version: does not match regex pattern",
 		},
 		{
 			name:        "Four-part version (1.2.3.4)",
 			version:     "1.2.3.4",
-			expectError: "version: value does not match regex pattern",
+			expectError: "version: does not match regex pattern",
 		},
 		{
 			name:        "Five-part version",
 			version:     "1.2.3.4.5",
-			expectError: "version: value does not match regex pattern",
+			expectError: "version: does not match regex pattern",
 		},
 		{
 			name:        "Version with uppercase letters",
 			version:     "1.0.0-RC1",
-			expectError: "version: value does not match regex pattern",
+			expectError: "version: does not match regex pattern",
 		},
 		{
 			name:        "Version with plus in main version",
 			version:     "1+2.3",
-			expectError: "version: value does not match regex pattern",
+			expectError: "version: does not match regex pattern",
 		},
 		{
 			name:        "Version with invalid characters",
 			version:     "1.0.0@invalid",
-			expectError: "version: value does not match regex pattern",
+			expectError: "version: does not match regex pattern",
 		},
 		{
 			name:        "Version starting with invalid character",
 			version:     "@1.0.0",
-			expectError: "version: value does not match regex pattern",
+			expectError: "version: does not match regex pattern",
 		},
 		{
 			name:        "Version with space",
 			version:     "1.0.0 beta",
-			expectError: "version: value does not match regex pattern",
+			expectError: "version: does not match regex pattern",
 		},
 	}
 

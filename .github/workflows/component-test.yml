@@ -45,7 +45,7 @@ jobs:
     steps:
       - name: Deploy Kind Orchestrator
         id: deploy-kind-orchestrator
-        uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@571b5a570cb5583e152ae1db0e3ea432fd1dc1cb
+        uses: open-edge-platform/edge-manageability-framework/.github/actions/deploy_kind@5d84d7d5a5df8d1340715c5b8ad8ae30803c9ffc
         timeout-minutes: 45
         with:
           orch_version: ${{ inputs.emf-branch || 'main' }}
@@ -96,7 +96,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c  # v6
         with:
-          go-version: '1.26.1'
+          go-version: '1.26.3'
           cache: true
 
       - name: Checkout app-orch-catalog repository
