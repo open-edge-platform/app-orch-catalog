@@ -5,6 +5,11 @@
 
 # Application Orchestration Catalog Service
 
+> NOTE!
+> The Edge Manageability Framework has been deprecated and will no longer receive updates or active maintenance, including security fixes.  
+> Feature requests, bug reports, and pull requests will not be reviewed or responded to.  
+> Existing releases and documentation will remain available for reference only.
+
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Component Test](https://github.com/open-edge-platform/app-orch-catalog/actions/workflows/component-test.yml/badge.svg)](https://github.com/open-edge-platform/app-orch-catalog/actions/workflows/component-test.yml)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/open-edge-platform/app-orch-catalog/badge)](https://scorecard.dev/viewer/?uri=github.com/open-edge-platform/app-orch-catalog)
