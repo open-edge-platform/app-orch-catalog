@@ -24,7 +24,7 @@ require (
 	github.com/lib/pq v1.12.3
 	github.com/mattn/go-sqlite3 v1.14.44
 	github.com/oapi-codegen/runtime v1.4.0
-	github.com/open-edge-platform/orch-library/go v0.6.4
+	github.com/open-edge-platform/orch-library/go v0.6.5
 	github.com/open-edge-platform/orch-library/go/dazl v0.5.4
 	github.com/open-edge-platform/orch-library/go/dazl/zap v0.5.4
 	github.com/opencontainers/image-spec v1.1.1
